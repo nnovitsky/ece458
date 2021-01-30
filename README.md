@@ -25,12 +25,13 @@ Then actually run the server that we put into our browser:
 `python3 manage.py runserver`
 
 ## Get react started 
+You can install Yarn or do this with npm
 Install yarn: `sudo npm install --global yarn`
 Sorry Natalie, I don't know how to install yarn on Windows!
 
 Enter the frotend folder: `cd frontend`
 
-Start the server: `yarn start`
+Start the server 2 ways: `yarn start` or `npm start`
 
 Open the page on localhost: http://localhost:3000 
 

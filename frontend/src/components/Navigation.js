@@ -5,11 +5,15 @@ import { NavLink } from 'react-router-dom';
 const Navigation = () => {
     return (
        <div>
-          <NavLink to="/">Login &nbsp;</NavLink>
-          <NavLink to="/model-table">Models &nbsp;</NavLink>
-          <NavLink to="/instrument-table">Instruments &nbsp;</NavLink>
-          <NavLink to="/user-profile">User Profile &nbsp;</NavLink>
-          <NavLink to="/admin">Admin &nbsp;</NavLink>
+           <nav>
+               <ul>
+                   <li><NavLink to="/">Login&nbsp;</NavLink></li>
+                   <li><NavLink to="/model-table">Models&nbsp;</NavLink></li>
+                   <li><NavLink to="/instrument-table">Instruments&nbsp;</NavLink></li>
+                   <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
+                   <li><NavLink to="/admin">Admin&nbsp;</NavLink></li>
+               </ul>
+           </nav>
        </div>
     );
 }

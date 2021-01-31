@@ -24,14 +24,15 @@ Then run the first migrations: `python3 manage.py migrate`
 Then actually run the server that we put into our browser: 
 `python3 manage.py runserver`
 
-## Get react started 
+## Get React started 
 You can install Yarn or do this with npm
 Install yarn: `sudo npm install --global yarn`
+
 Sorry Natalie, I don't know how to install yarn on Windows!
 
 Enter the frotend folder: `cd frontend`
 
-Start the server 2 ways: `yarn start` or `npm start`
+Start the server two ways: `yarn start` or `npm start`
 
 Open the page on localhost: http://localhost:3000 
 

@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import LoginPage from './components/login/LoginPage';
+import AdminPage from './components/admin/AdminPage';
 import Navigation from './components/Navigation';
 
 class App extends Component {
@@ -15,6 +16,7 @@ class App extends Component {
           <Navigation />
             <Switch>
              <Route path="/" component={LoginPage} exact/>
+             <Route path="/admin" component={AdminPage} exact/>
            </Switch>
         </div> 
       </BrowserRouter>

@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
+import UserProfilePage from './components/user/UserProfilePage';
 import Navigation from './components/Navigation';
 
 class App extends Component {
@@ -17,6 +18,7 @@ class App extends Component {
             <Switch>
              <Route path="/" component={LoginPage} exact/>
              <Route path="/admin" component={AdminPage} exact/>
+             <Route path="/user-profile" component={UserProfilePage} exact/>
            </Switch>
         </div> 
       </BrowserRouter>

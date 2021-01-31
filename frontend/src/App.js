@@ -1,7 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+//import logo from './logo.svg';
+//import './App.css';
 
-function App() {
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import LoginPage from './components/login/LoginPage';
+import Navigation from './components/Navigation';
+
+class App extends Component {
+  render() {
+    return (      
+       <BrowserRouter>
+        <div>
+          <Navigation />
+            <Switch>
+             <Route path="/" component={LoginPage} exact/>
+           </Switch>
+        </div> 
+      </BrowserRouter>
+    );
+  }
+}
+
+/*function App() {
   return (
     <div className="App">
       <header className="App-header">
@@ -20,6 +41,6 @@ function App() {
       </header>
     </div>
   );
-}
+}*/
 
 export default App;

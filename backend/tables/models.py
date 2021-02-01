@@ -33,6 +33,11 @@ class Instrument(models.Model):
     comment = models.CharField(max_length=two_line)
     #most_recent_calibration = models.ForeignKey(CalibrationEvent)
 
+    def __str__(self):
+        return self.model + " " + self.serial_number
+
+    #def isCalibrated(self):
+        #return days_since_calibrated < calibration_frequency
 
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)

@@ -41,7 +41,7 @@ nav ul {
   list-style: none;
   display: flex;
   background-color: rgb(147, 196, 127);
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 nav ul li {

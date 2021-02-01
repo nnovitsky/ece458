@@ -70,7 +70,7 @@ const createBody = (data) => {
             )
         })
         rowElements.push(
-            <td><Button onClick={onDetailClicked} >More</Button></td>
+            <td><Button onClick={onDetailClicked} value={currentData.key}>More</Button></td>
         )
         let currentRow = (
             <tr>
@@ -87,8 +87,7 @@ const createBody = (data) => {
 }
 
 const onDetailClicked = (e) => {
-    console.log('clicked');
-    history.push("/models/51");
+    history.push(`/models/${e.target.value}`);
 }
 
 export default ModelTable;

@@ -8,8 +8,14 @@ export default class ModelServices {
     constructor() { }
 
     getModels() {
-        return modelData.models;
+        return modelData.getModels;
         // const url = `${API_URL}/api/models/`;
+        // return axios.get(url).then(response => response.data);
+    }
+
+    getModel(pk) {
+        return modelData.modelsByKey[pk];
+        // const url = `${API_URL}/api/customers/${pk}`;
         // return axios.get(url).then(response => response.data);
     }
 }

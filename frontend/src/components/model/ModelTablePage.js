@@ -11,7 +11,6 @@ const fields = ["model number", "vendor", "description", "callibration frequency
 
 const ModelTable = () => {
     let data = modelServices.getModels();
-    console.log(data);
     history = useHistory(data);
     return (
         <div>

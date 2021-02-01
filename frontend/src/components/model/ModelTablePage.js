@@ -88,7 +88,7 @@ const createBody = (dataArr, fields) => {
 
 const onDetailClicked = (e) => {
     console.log('clicked');
-    history.push("/");
+    history.push("/models/51");
 }
 
 export default ModelTable;

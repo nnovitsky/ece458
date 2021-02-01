@@ -1,29 +1,30 @@
 import React from 'react';
 import { useHistory } from "react-router-dom";
+import ModelServices from "../../api/modelServices";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
-import data from './sampleData.json';
-
 let history;
+const modelServices = new ModelServices();
+const fields = ["model number", "vendor", "description", "callibration frequency"];
 
 
 const ModelTable = () => {
-    let dataArr = data.models;
-    let fields = data.fields;
-    history = useHistory();
+    let data = modelServices.getModels();
+    console.log(data);
+    history = useHistory(data);
     return (
         <div>
             <h1>Model Table</h1>
             <p>This is where the table with all of our models would go</p>
-            {makeTable(dataArr, fields)}
+            {makeTable(data)}
         </div>
     );
 }
 
-const makeTable = (dataArr, fields) => {
-    let header = createHeader(fields);
-    let body = createBody(dataArr, fields);
+const makeTable = (data) => {
+    let header = createHeader();
+    let body = createBody(data);
 
     return (
         <Table striped bordered hover>
@@ -35,7 +36,7 @@ const makeTable = (dataArr, fields) => {
         </Table>)
 }
 
-const createHeader = (fields) => {
+const createHeader = () => {
     let header = [];
     header.push(
         <th>#</th>
@@ -55,10 +56,10 @@ const createHeader = (fields) => {
 
 //takes in an array of models and an array of fields for those models
 //it makes the body of the table, returning a <tb> filled element
-const createBody = (dataArr, fields) => {
+const createBody = (data) => {
     let rows = [];
     let count = 1;
-    dataArr.forEach(currentData => {
+    data.forEach(currentData => {
         let rowElements = []
         rowElements.push(
             <td>{count}</td>

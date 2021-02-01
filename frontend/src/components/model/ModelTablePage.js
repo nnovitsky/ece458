@@ -1,12 +1,17 @@
 import React from 'react';
+import { useHistory } from "react-router-dom";
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
 
 import data from './sampleData.json';
 
-import Table from 'react-bootstrap/Table'
+let history;
 
-const modelTable = () => {
+
+const ModelTable = () => {
     let dataArr = data.models;
     let fields = data.fields;
+    history = useHistory();
     return (
         <div>
             <h1>Model Table</h1>
@@ -64,6 +69,9 @@ const createBody = (dataArr, fields) => {
                 <td>{currentData[f]}</td>
             )
         })
+        rowElements.push(
+            <td><Button onClick={onDetailClicked} >More</Button></td>
+        )
         let currentRow = (
             <tr>
                 {rowElements}
@@ -78,4 +86,9 @@ const createBody = (dataArr, fields) => {
     );
 }
 
-export default modelTable;
+const onDetailClicked = (e) => {
+    console.log('clicked');
+    history.push("/");
+}
+
+export default ModelTable;

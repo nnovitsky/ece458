@@ -1,0 +1,17 @@
+{
+  "fields": ["model number", "vendor", "description", "callibration frequency"],
+  "models": [
+    {
+      "model number": "87V",
+      "vendor": "Fluke",
+      "description": "Multimeter with temp probe",
+      "callibration frequency": "87"
+    },
+    {
+      "model number": "5700V",
+      "vendor": "Fluke",
+      "description": "Multimeter with temp probe",
+      "callibration frequency": "120"
+    }
+  ]
+}

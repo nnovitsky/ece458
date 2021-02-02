@@ -17,7 +17,7 @@ const buttonText = ["Delete"];
 const AdminPage = () => {
 
     let data = userServices.getUsers();
-    let buttonFunctions = [onDetailClicked]
+    let buttonFunctions = [onUserDeleted]
     history = useHistory(data);
 
         return (
@@ -28,7 +28,7 @@ const AdminPage = () => {
                 <div className="main-div">
                     <h2>Hello, Admin</h2>
                     <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={buttonFunctions} />
-                    <button>Add New User</button>
+                    <button onClick={addNewUser}>Add New User</button>
                 </div>
             </div>
 
@@ -36,8 +36,12 @@ const AdminPage = () => {
         );
 }
 
-const onDetailClicked = (e) => {
-    //api call to delete user
+const onUserDeleted= (e) => {
+    console.log("Delete user");
+}
+
+const addNewUser = (e) => {
+    console.log("Add new user");
 }
 
 export default AdminPage;

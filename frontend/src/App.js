@@ -1,4 +1,3 @@
-//import logo from './logo.svg';
 import './App.css';
 
 import React, { Component } from 'react';
@@ -10,6 +9,7 @@ import UserProfilePage from './components/user/UserProfilePage';
 import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
+import InstrumentDetailView from './components/instrument/InstrumentDetailView';
 import Navigation from './components/Navigation';
 
 class App extends Component {
@@ -23,6 +23,7 @@ class App extends Component {
             <Route path="/models" component={ModelTablePage} exact />
             <Route path="/models/:pk" component={ModelDetailPage} exact />
             <Route path="/instruments" component={InstrumentTablePage} exact />
+            <Route path="/instruments/:pk" component={InstrumentDetailView} exact />
              <Route path="/user-profile" component={UserProfilePage} exact/>
              <Route path="/admin" component={AdminPage} exact/>
            </Switch>
@@ -31,26 +32,5 @@ class App extends Component {
     );
   }
 }
-
-/*function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}*/
 
 export default App;

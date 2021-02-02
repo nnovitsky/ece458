@@ -1,29 +1,37 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
-import ModelServices from "../../api/modelServices";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import { useHistory } from "react-router-dom";
+import ModelServices from "../../api/modelServices";
+import '../generic/General.css';
+import logo from '../../assets/HPT_logo_crop.png';
 
 let history;
+let modelData;
 const modelServices = new ModelServices();
-const fields = ["model number", "vendor", "description", "callibration frequency"];
 
+const keys = ["model number", "vendor", "description", "callibration frequency"];
+const headerText = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
 
 const ModelTable = () => {
-    let data = modelServices.getModels();
-    history = useHistory(data);
+    modelData = modelServices.getModels();
+    history = useHistory();
     return (
-        <div>
-            <h1>Model Table</h1>
-            <p>This is where the table with all of our models would go</p>
-            {makeTable(data)}
+        <div className="column-div">
+            <div className="left-column">
+                <img src={logo} alt="Logo" />
+            </div>
+            <div className="main-div">
+                <h2>Models</h2>
+                {makeTable()}
+                </div>
         </div>
     );
 }
 
-const makeTable = (data) => {
+const makeTable = () => {
     let header = createHeader();
-    let body = createBody(data);
+    let body = createBody();
 
     return (
         <Table striped bordered hover>
@@ -40,10 +48,9 @@ const createHeader = () => {
     header.push(
         <th>#</th>
     )
-    fields.forEach(f => {
-        let upper = f.toUpperCase();
+    headerText.forEach(h => {
         header.push(
-            <th>{upper}</th>
+            <th>{h}</th>
         )
     })
     return (
@@ -53,24 +60,22 @@ const createHeader = () => {
     )
 }
 
-//takes in an array of models and an array of fields for those models
-//it makes the body of the table, returning a <tb> filled element
-const createBody = (data) => {
+const createBody = () => {
     let rows = [];
     let count = 1;
-    data.forEach(currentData => {
+    modelData.forEach(currentData => {
         let rowElements = []
         rowElements.push(
             <td>{count}</td>
         )
         count++;
-        fields.forEach(f => {
+        keys.forEach(k => {
             rowElements.push(
-                <td>{currentData[f]}</td>
+                <td>{currentData[k]}</td>
             )
         })
         rowElements.push(
-            <td><Button onClick={onDetailClicked} >More</Button></td>
+            <td><Button onClick={onDetailClicked} value={currentData.key}>More</Button></td>
         )
         let currentRow = (
             <tr>
@@ -87,8 +92,7 @@ const createBody = (data) => {
 }
 
 const onDetailClicked = (e) => {
-    console.log('clicked');
-    history.push("/models/51");
+    history.push(`/models/${e.target.value}`);
 }
 
 export default ModelTable;

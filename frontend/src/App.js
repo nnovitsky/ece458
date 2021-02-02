@@ -12,17 +12,6 @@ import InstrumentTablePage from './components/instrument/InstrumentTablePage';
 import Navigation from './components/Navigation';
 
 class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      displayed_form: '',
-      logged_in: localStorage.getItem('token') ? true : false,
-      username: ''
-    };
-  }
-
-
   render() {
     return (      
        <BrowserRouter>

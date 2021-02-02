@@ -21,7 +21,7 @@ class login extends React.Component {
     render() {
         return (
             <div style={{textAlign: "center"}}>
-            <form onSubmit={e => this.props.handle_login(e, this.state)}>
+            <form onSubmit={handleLogin}>
                 <h2>Log In</h2>
                 <label htmlFor="username">Username</label>
                 <input
@@ -46,18 +46,6 @@ class login extends React.Component {
 
 export default login;
 
-login.propTypes = {
-    handle_login: PropTypes.func.isRequired
-};
-
-/*const login = () => {
-
-    return (
-       <div>
-          <h1>Login</h1>
-           <p>Home page body content</p>
-       </div>
-    );
+const handleLogin = (e) => {
+    console.log("Login Holder");
 }
-
-export default login;*/

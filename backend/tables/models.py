@@ -4,13 +4,13 @@ one_line = 100
 two_line = 200
 
 
-class User(models.Model):
-    email = models.CharField(max_length=one_line)
-    username = models.CharField(max_length=one_line)
-    first_name = models.CharField(max_length=one_line)
-    last_name = models.CharField(max_length=one_line)
-    password = models.CharField(max_length=50) #forms.CharField(widget=forms.PasswordInput)
-    #isAdmin = models.BooleanField()
+# class User(models.Model):
+#     email = models.CharField(max_length=one_line)
+#     username = models.CharField(max_length=one_line)
+#     first_name = models.CharField(max_length=one_line)
+#     last_name = models.CharField(max_length=one_line)
+#     password = models.CharField(max_length=50) #forms.CharField(widget=forms.PasswordInput)
+#     #isAdmin = models.BooleanField()
 
 
 class ItemModel(models.Model):
@@ -27,19 +27,19 @@ class ItemModel(models.Model):
         return self.calibration_frequency > 0
 
 
-class Instrument(models.Model):
-    model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
-    serial_number = models.CharField(max_length=one_line)
-    comment = models.CharField(max_length=two_line)
-    #most_recent_calibration = models.ForeignKey(CalibrationEvent)
-
-    def __str__(self):
-        return self.model + " " + self.serial_number
-
-    #def isCalibrated(self):
-        #return days_since_calibrated < calibration_frequency
-
-class CalibrationEvent(models.Model):
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
-    date = models.DateField()
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+# class Instrument(models.Model):
+#     model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
+#     serial_number = models.CharField(max_length=one_line)
+#     comment = models.CharField(max_length=two_line)
+#     #most_recent_calibration = models.ForeignKey(CalibrationEvent)
+#
+#     def __str__(self):
+#         return self.model + " " + self.serial_number
+#
+#     #def isCalibrated(self):
+#         #return days_since_calibrated < calibration_frequency
+#
+# class CalibrationEvent(models.Model):
+#     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
+#     date = models.DateField()
+#     user = models.ForeignKey(User, on_delete=models.PROTECT)

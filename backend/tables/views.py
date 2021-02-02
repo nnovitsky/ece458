@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import ItemModel
-from .serializers import *
+from backend.tables.models import ItemModel
+from backend.tables.serializers import *
 
 
 def index(request):

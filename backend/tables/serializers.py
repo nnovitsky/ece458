@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ItemModel
+from backend.tables.models import ItemModel
 
 
 class ItemModelSerializer(serializers.ModelSerializer):

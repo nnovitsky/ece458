@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Model, Instrument
+from backend.tables.models import ItemModel #, Instrument
 
-admin.site.register(Model)
-admin.site.register(Instrument)
+admin.site.register(ItemModel)
+#admin.site.register(Instrument)

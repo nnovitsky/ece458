@@ -8,8 +8,8 @@ const Navigation = () => {
            <nav>
                <ul>
                    <li><NavLink to="/">Login&nbsp;</NavLink></li>
-                   <li><NavLink to="/model-table">Models&nbsp;</NavLink></li>
-                   <li><NavLink to="/instrument-table">Instruments&nbsp;</NavLink></li>
+                    <li><NavLink to="/models">Models&nbsp;</NavLink></li>
+                    <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
                    <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
                    <li><NavLink to="/admin">Admin&nbsp;</NavLink></li>
                </ul>

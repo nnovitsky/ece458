@@ -1,12 +1,29 @@
 import React from 'react';
- 
-const modelTable = () => {
+import { useHistory } from "react-router-dom";
+import ModelServices from "../../api/modelServices";
+import GenericTable from '../generic/GenericTable';
+
+let history;
+const modelServices = new ModelServices();
+
+const keys = ["model number", "vendor", "description", "callibration frequency"];
+const headers = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
+const buttonText = ["More"];
+
+const ModelTable = () => {
+    let data = modelServices.getModels();
+    let buttonFunctions = [onDetailClicked]
+    history = useHistory(data);
     return (
-       <div>
-          <h1>Model Table</h1>
-           <p>This is where the table with all of our models would go</p>
-       </div>
+        <div>
+            <h1>Model Table</h1>
+            <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={buttonFunctions} />
+        </div>
     );
 }
- 
-export default modelTable;
+
+const onDetailClicked = (e) => {
+    history.push(`/models/${e.target.value}`);
+}
+
+export default ModelTable;

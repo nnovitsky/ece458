@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from backend.tables import views
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tables/', include('tables.urls')),
+    url(r'^api/models/$', views.models_list),
+    url(r'^api/models/(?P<pk>[0-9]+)$', views.models_detail),
 ]

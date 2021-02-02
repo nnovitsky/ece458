@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
-import '../General.css';
+import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
 import ModelServices from "../../api/modelServices";

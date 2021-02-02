@@ -1,7 +1,8 @@
 button{
     margin: 10px;
+    margin-bottom: 100px;
     padding: 20px;
-    width: 80%;
+    width: 90%;
     border-radius: 5px;
     background-color: white;
     border: 2px solid rgb(214, 214, 214);

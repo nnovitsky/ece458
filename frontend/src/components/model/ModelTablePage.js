@@ -2,6 +2,7 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from "react-router-dom";
+import InstrumentServices from '../../api/instrumentServices';
 import ModelServices from "../../api/modelServices";
 import '../General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -9,13 +10,16 @@ import logo from '../../assets/HPT_logo_crop.png';
 let history;
 let data;
 const modelServices = new ModelServices();
+const instrumentServies = new InstrumentServices();
 
 const keys = ["model number", "vendor", "description", "callibration frequency"];
 const headerText = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
 
 const ModelTable = () => {
-    data = modelServices.getModels();
-    history = useHistory();
+    let data = modelServices.getModels();
+    console.log(instrumentServies.getInstrumentSerialByModel("516"));
+    let buttonFunctions = [onDetailClicked]
+    history = useHistory(data);
     return (
         <div className="column-div">
             <div className="left-column">

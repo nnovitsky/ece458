@@ -22,7 +22,8 @@ const ModelTable = () => {
                 <img src={logo} alt="Logo" />
             </div>
             <div className="main-div">
-                    {makeTable()}
+                <h2>Models</h2>
+                {makeTable()}
                 </div>
         </div>
     );

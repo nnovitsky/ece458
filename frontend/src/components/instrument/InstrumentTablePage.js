@@ -1,6 +1,6 @@
 import React from 'react';
  
-const instrumentTable = () => {
+const InstrumentTable = () => {
     return (
        <div>
           <h1>Instrument Table</h1>
@@ -9,4 +9,4 @@ const instrumentTable = () => {
     );
 }
  
-export default instrumentTable;
+export default InstrumentTable;

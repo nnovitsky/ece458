@@ -4,34 +4,28 @@
       "serial": "abc1",
       "most recent callibration date": "01-05-2021",
       "instrument pk": "115",
-      "model": {
-        "vendor": "Fluke",
-        "model number": "87V",
-        "short description": "Multimeter with temp probe",
-        "model pk": "516"
-      }
+      "vendor": "Fluke",
+      "model number": "87V",
+      "short description": "Multimeter with temp probe",
+      "model pk": "516"
     },
     {
       "serial": "abc2",
       "most recent callibration date": "02-01-2021",
       "instrument pk": "116",
-      "model": {
-        "vendor": "Fluke",
-        "model number": "87V",
-        "short description": "Multimeter with temp probe",
-        "model pk": "516"
-      }
+      "vendor": "Fluke",
+      "model number": "87V",
+      "short description": "Multimeter with temp probe",
+      "model pk": "516"
     },
     {
       "serial": "abc3",
       "most recent callibration date": "02-01-2021",
       "instrument pk": "117",
-      "model": {
-        "vendor": "Fluke",
-        "model number": "5700V",
-        "short description": "Multimeter with temp probe",
-        "model pk": "517"
-      }
+      "vendor": "Fluke",
+      "model number": "5700V",
+      "short description": "Multimeter with temp probe",
+      "model pk": "517"
     }
   ]
 }

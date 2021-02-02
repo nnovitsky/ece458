@@ -1,14 +1,14 @@
 .column-div{
     display: grid;
-    grid-template-columns: 30% 70%;
+    grid-template-columns: 20% 80%;
     grid-gap: 20;
     text-align: center;
     background-color: rgb(57, 127, 60);
 }
 
 img{
-    max-width: 50%;
-    max-height: 50%;
+    max-width: 90px;
+    max-height: 90px;
     margin: 10px;
 
 }
@@ -23,6 +23,7 @@ img{
 .main-div{
     margin: 20px;
     margin-left: 0px;
+    padding-top: 30px;
     background-color: white;
     text-align: left;
 }

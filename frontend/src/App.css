@@ -37,6 +37,7 @@
   }
 }
 
+
 nav ul {
   list-style: none;
   display: flex;
@@ -50,5 +51,10 @@ nav ul li {
 
 nav ul li a {
   color: white;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  color: black;
   text-decoration: none;
 }

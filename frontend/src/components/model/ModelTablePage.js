@@ -3,6 +3,8 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from "react-router-dom";
 import ModelServices from "../../api/modelServices";
+import '../General.css';
+import logo from '../../assets/HPT_logo_crop.png';
 
 let history;
 let data;
@@ -15,9 +17,13 @@ const ModelTable = () => {
     data = modelServices.getModels();
     history = useHistory();
     return (
-        <div>
-            <h1>Model Table</h1>
-            {makeTable()}
+        <div className="column-div">
+            <div className="left-column">
+                <img src={logo} alt="Logo" />
+            </div>
+            <div className="main-div">
+                    {makeTable()}
+                </div>
         </div>
     );
 }

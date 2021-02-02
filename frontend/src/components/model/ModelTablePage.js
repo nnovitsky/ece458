@@ -2,24 +2,20 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from "react-router-dom";
-import InstrumentServices from '../../api/instrumentServices';
 import ModelServices from "../../api/modelServices";
-import '../General.css';
+import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
 let history;
-let data;
+let modelData;
 const modelServices = new ModelServices();
-const instrumentServies = new InstrumentServices();
 
 const keys = ["model number", "vendor", "description", "callibration frequency"];
 const headerText = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
 
 const ModelTable = () => {
-    let data = modelServices.getModels();
-    console.log(instrumentServies.getInstrumentSerialByModel("516"));
-    let buttonFunctions = [onDetailClicked]
-    history = useHistory(data);
+    modelData = modelServices.getModels();
+    history = useHistory();
     return (
         <div className="column-div">
             <div className="left-column">
@@ -67,7 +63,7 @@ const createHeader = () => {
 const createBody = () => {
     let rows = [];
     let count = 1;
-    data.forEach(currentData => {
+    modelData.forEach(currentData => {
         let rowElements = []
         rowElements.push(
             <td>{count}</td>

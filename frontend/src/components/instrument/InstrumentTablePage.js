@@ -58,7 +58,6 @@ const createBody = () => {
     let rows = [];
     let count = 1;
     data.forEach(currentData => {
-        console.log(currentData)
         let rowElements = []
         rowElements.push(
             <td>{count}</td>

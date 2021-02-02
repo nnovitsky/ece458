@@ -1,9 +1,10 @@
 import React from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
 
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headers = ["Vendor", "Model", "Serial", "Description", "Last Callibration"];
-const buttonText = ["More"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
 
 let data;
 
@@ -30,6 +31,61 @@ const makeTable = () => {
             {body}
 
         </Table>)
+}
+
+const createHeader = () => {
+    let header = [];
+    header.push(
+        <th>#</th>
+    )
+    headerTextArr.forEach(h => {
+        header.push(
+            <th>{h}</th>
+        )
+    })
+    return (
+        <tr>
+            {header}
+        </tr>
+    )
+}
+
+const createBody = () => {
+    let rows = [];
+    let count = 1;
+    data.forEach(currentData => {
+        let rowElements = []
+        rowElements.push(
+            <td>{count}</td>
+        )
+        count++;
+        keys.forEach(k => {
+            rowElements.push(
+                <td>{currentData[k]}</td>
+            )
+        })
+
+        rowElements.push(
+            <td>TBD</td>
+        )
+        rowElements.push(
+            <td><Button value={currentData.key}>More</Button></td>
+        )
+        rowElements.push(
+            <td><Button>Download</Button></td>
+        )
+        let currentRow = (
+            <tr>
+                {rowElements}
+            </tr>
+        )
+        rows.push(currentRow);
+    })
+    return (
+        <tbody>
+            {rows}
+        </tbody>
+    );
 }
 
 export default InstrumentTable;

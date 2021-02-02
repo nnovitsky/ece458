@@ -1,6 +1,6 @@
 import React from 'react';
 import './UserProfilePage.css';
-import '../General.css';
+import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
  
@@ -15,7 +15,6 @@ class user extends React.Component {
                     <h2>Hello, User</h2>
                     <button>Change Display Name</button>
                     <button>Change Email</button>
-                    <button>Change Password</button>
                 </div>
             </div>
 

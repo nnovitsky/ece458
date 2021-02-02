@@ -4,12 +4,12 @@
       "serial": "abc1",
       "most recent callibration date": "01-05-2021",
       "instrument pk": "115",
-      "model": {
-        "vendor": "Fluke",
-        "model number": "87V",
-        "short description": "Multimeter with temp probe",
-        "model pk": "516"
-      }
+       "model":{
+         "vendor": "Fluke",
+         "model number": "87V",
+         "short description": "Multimeter with temp probe",
+         "model pk": "516"
+       } 
     },
     {
       "serial": "abc2",
@@ -21,6 +21,7 @@
         "short description": "Multimeter with temp probe",
         "model pk": "516"
       }
+        
     },
     {
       "serial": "abc3",

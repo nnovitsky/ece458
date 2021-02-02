@@ -1,5 +1,5 @@
 import React from 'react';
-import instrumentData from './instrumentData.json.json';
+import instrumentData from './instrumentData.json';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
@@ -15,12 +15,13 @@ export default class InstrumentServices {
 
     getInstrumentSerialByModel(modelPk) {
         let result = [];
-        instrumentData.instruments.forEach(element => {
-            if (el.model["model pk"] == modelPk) {
+        instrumentData.instruments.forEach(el => {
+            if (el["model"]["model pk"] === modelPk) {
                 let temp = {
                     "serial": el["serial"],
                     "pk": el["instrument pk"]
                 }
+                result.push(temp);
             }
         });
         return result;

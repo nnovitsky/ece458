@@ -1,6 +1,6 @@
 import React from 'react';
 import './UserProfilePage.css';
-import '../General.css';
+import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
  

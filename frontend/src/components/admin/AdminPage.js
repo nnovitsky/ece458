@@ -1,5 +1,6 @@
 import React from 'react';
 import './Admin.css';
+import '../General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
 class admin extends React.Component {

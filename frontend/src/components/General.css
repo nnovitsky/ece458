@@ -1,0 +1,29 @@
+.column-div{
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-gap: 20;
+    text-align: center;
+    background-color: rgb(57, 127, 60);
+}
+
+img{
+    max-width: 90px;
+    max-height: 90px;
+    margin: 10px;
+
+}
+
+.left-column{
+    margin: 20px;
+    margin-right: 0px;
+    background-color: white;
+    display: inline-block;
+}
+
+.main-div{
+    margin: 20px;
+    margin-left: 0px;
+    padding-top: 30px;
+    background-color: white;
+    text-align: left;
+}

@@ -1,0 +1,26 @@
+{
+    "usersByKey": {
+      "516": {
+        "display name": "Bob",
+        "email": "bob@gmail.com",
+        "password": "password123"
+      },
+      "517": {
+        "display name": "Sara",
+        "email": "sara@gmail.com",
+        "password": "sara123"
+      }
+    },
+    "getUsers": [
+      {
+        "display name": "Bob",
+        "email": "bob@gmail.com",
+        "password": "password123"
+      },
+      {
+        "display name": "Sara",
+        "email": "sara@gmail.com",
+        "password": "sara123"
+      }
+    ]
+  }

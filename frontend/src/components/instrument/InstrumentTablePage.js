@@ -3,14 +3,18 @@ import InstrumentServices from "../../api/instrumentServices";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
+import { useHistory } from "react-router-dom";
+
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
 const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
 
 let data;
+let history;
 
 const InstrumentTable = () => {
     let instrumentServices = new InstrumentServices();
     data = instrumentServices.getInstruments();
+    history = useHistory();
     return (
        <div>
           <h1>Instrument Table</h1>
@@ -54,6 +58,7 @@ const createBody = () => {
     let rows = [];
     let count = 1;
     data.forEach(currentData => {
+        console.log(currentData)
         let rowElements = []
         rowElements.push(
             <td>{count}</td>
@@ -69,7 +74,7 @@ const createBody = () => {
             <td>TBD</td>
         )
         rowElements.push(
-            <td><Button value={currentData.key}>More</Button></td>
+            <td><Button value={currentData["instrument pk"]} onClick={onDetailClicked}>More</Button></td>
         )
         rowElements.push(
             <td><Button>Download</Button></td>
@@ -86,6 +91,10 @@ const createBody = () => {
             {rows}
         </tbody>
     );
+}
+
+const onDetailClicked = (e) => {
+    history.push(`/instruments/${e.target.value}`);
 }
 
 export default InstrumentTable;

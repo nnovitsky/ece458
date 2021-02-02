@@ -9,6 +9,7 @@ import UserProfilePage from './components/user/UserProfilePage';
 import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
+import InstrumentDetailView from './components/instrument/InstrumentDetailView';
 import Navigation from './components/Navigation';
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
             <Route path="/models" component={ModelTablePage} exact />
             <Route path="/models/:pk" component={ModelDetailPage} exact />
             <Route path="/instruments" component={InstrumentTablePage} exact />
+            <Route path="/instruments/:pk" component={InstrumentDetailView} exact />
              <Route path="/user-profile" component={UserProfilePage} exact/>
              <Route path="/admin" component={AdminPage} exact/>
            </Switch>

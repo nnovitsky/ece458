@@ -1,11 +1,11 @@
 {
     "usersByKey": {
-      "516": {
+      "5": {
         "display name": "Bob",
         "email": "bob@gmail.com",
         "password": "password123"
       },
-      "517": {
+      "6": {
         "display name": "Sara",
         "email": "sara@gmail.com",
         "password": "sara123"
@@ -15,12 +15,14 @@
       {
         "display name": "Bob",
         "email": "bob@gmail.com",
-        "password": "password123"
+        "password": "password123",
+        "key": "5"
       },
       {
         "display name": "Sara",
         "email": "sara@gmail.com",
-        "password": "sara123"
+        "password": "sara123",
+        "key": "6"
       }
     ]
   }

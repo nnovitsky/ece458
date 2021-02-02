@@ -15,7 +15,6 @@ class user extends React.Component {
                     <h2>Hello, User</h2>
                     <button>Change Display Name</button>
                     <button>Change Email</button>
-                    <button>Change Password</button>
                 </div>
             </div>
 

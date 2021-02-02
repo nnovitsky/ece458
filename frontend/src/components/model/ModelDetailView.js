@@ -1,30 +1,42 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useParams } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
+import { useHistory, useParams } from "react-router-dom";
+import '../generic/General.css';
+import logo from '../../assets/HPT_logo_crop.png';
 
 import ModelServices from "../../api/modelServices";
+import InstrumentServices from '../../api/instrumentServices';
 
 const modelServices = new ModelServices();
+const instrumentServices = new InstrumentServices();
 let detailData;
-//let history;
+let instrumentData;
+let history;
 
 
 const ModelDetailView = () => {
     let { pk } = useParams();
     detailData = modelServices.getModel(pk);
-    //history = useHistory();
+    instrumentData = instrumentServices.getInstrumentSerialByModel(pk);
+    history = useHistory();
+    console.log(instrumentData)
     return (
-        <div>
-            <h1>{`Model: ${detailData["model number"]}`}</h1>
-            <Container>
-                <Row>
-                    <Col>{makeDetailsTable()}</Col>
-                    <Col xs={8}>Serial Instances Table to go here</Col>
-                </Row>
-            </Container>
+        <div className="column-div">
+            <div className="left-column">
+                <img src={logo} alt="Logo" />
+            </div>
+            <div className="main-div">
+                <h2>{`Model: ${detailData["model number"]}`}</h2>
+                    <Row>
+                        <Col>{makeDetailsTable()}</Col>
+                    <Col xs={6}>
+                        {makeInstrumentsTable()}
+                    </Col>
+                    </Row>
+            </div>
         </div>
 
     );
@@ -49,6 +61,45 @@ const makeDetailsTable = () => {
             </tbody>
         </Table>
     )
+}
+
+const makeInstrumentsTable = () => {
+    let rows = [];
+    let count = 1;
+    instrumentData.forEach((element) => {
+        let currentRow = [];
+        currentRow.push(
+            <td>{count}</td>
+        )
+        currentRow.push(
+            <td>{element["serial"]}</td>
+        )
+        currentRow.push(
+            <td><Button onClick={onMoreClicked} value={element["pk"]}>More</Button></td>
+        )
+        count++;
+        rows.push(
+            <tr>{currentRow}</tr>
+        )
+    });
+
+    return (
+        <Table bordered hover>
+            <thead>
+                <th>#</th>
+                <th>Serial Number</th>
+                <th>More</th>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </Table>
+    )
+
+}
+
+const onMoreClicked = (e) => {
+    history.push(`/instruments/${e.target.value}`);
 }
 
 export default ModelDetailView;

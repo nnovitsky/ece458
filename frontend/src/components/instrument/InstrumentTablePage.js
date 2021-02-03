@@ -2,6 +2,7 @@ import React from 'react';
 import InstrumentServices from "../../api/instrumentServices";
 import FilterBar from "./InstrumentFilterBar";
 import logo from '../../assets/HPT_logo_crop.png';
+import './instrument.css';
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';

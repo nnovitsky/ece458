@@ -6,9 +6,16 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import ModelServices from '../../api/modelServices';
+import InstrumentServices from '../../api/instrumentServices';
 import Button from 'react-bootstrap/esm/Button';
 
 let modelServices = new ModelServices();
+let instrumentServices = new InstrumentServices();
+
+const modelName = "model";
+const vendorName = "vendor";
+const serialName = "serial";
+const descriptionName = "description";
 
 const InstrumentFilterBar = () => {
     return (
@@ -23,25 +30,33 @@ const InstrumentFilterBar = () => {
 
                         <FilterField
                             dropdownResults={modelServices.getAllModelNumbers()}
+                            onTextInput={onTextInput}
                             fieldName="Model Number"
+                            name={modelName}
                         />
                         <FilterField
                             dropdownResults={modelServices.getAllVendors()}
+                            onTextInput={onTextInput}
                             fieldName="Vendor"
+                            name={vendorName}
                         />
                     </Col>
                     <Col>
                         <FilterField
-                            dropdownResults={modelServices.getAllModelNumbers()}
+                            dropdownResults={instrumentServices.getAllSerialNumbers()}
+                            onTextInput={onTextInput}
                             fieldName="Serial Number"
+                            name={serialName}
                         />
                         <FilterField
-                            dropdownResults={modelServices.getAllVendors()}
+                            dropdownResults={instrumentServices.getAllDescriptions()}
+                            onTextInput={onTextInput}
                             fieldName="Description"
+                            name={descriptionName}
                         />
                     </Col>
                     <Col xs={2}>
-                        <Button>Search</Button>
+                        <Button className="search-button">Search</Button>
                     </Col>
                 </Row>
 
@@ -49,6 +64,23 @@ const InstrumentFilterBar = () => {
             </Container>
         </div>
     )
+}
+
+const onTextInput = (e) => {
+    switch (e.target.name) {
+        case modelName:
+            console.log(`Model input: ${e.target.value}`);
+            return;
+        case vendorName:
+            console.log(`Vendor input: ${e.target.value}`);
+            return;
+        case serialName:
+            console.log(`Serial input: ${e.target.value}`);
+            return;
+        case descriptionName:
+            console.log(`Description input: ${e.target.value}`);
+            return;
+    }
 }
 
 export default InstrumentFilterBar;

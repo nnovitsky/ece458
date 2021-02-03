@@ -18,5 +18,21 @@ export default class ModelServices {
         // const url = `${API_URL}/api/customers/${pk}`;
         // return axios.get(url).then(response => response.data);
     }
+
+    getAllModelNumbers() {
+        let result = new Set();
+        modelData.getModels.forEach(el => {
+            result.add(el["model number"]);
+        })
+        return Array.from(result);
+    }
+
+    getAllVendors() {
+        let result = new Set();
+        modelData.getModels.forEach(el => {
+            result.add(el["vendor"]);
+        })
+        return Array.from(result);
+    }
 }
 

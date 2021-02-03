@@ -16,6 +16,7 @@ const headerText = ["Model Number", "Vendor", "Description", "Callibration (days
 const ModelTable = () => {
     modelData = modelServices.getModels();
     history = useHistory();
+    console.log(modelServices.getAllModelNumbers())
     return (
         <div className="column-div">
             <div className="left-column">

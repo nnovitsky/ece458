@@ -39,7 +39,7 @@ const getDropdownItems = () => {
     let results = [];
     dropdownResults.forEach(el => {
         results.push(
-            <Dropdown.Item>el</Dropdown.Item>
+            <Dropdown.Item>{el}</Dropdown.Item>
         )
     })
     return results;

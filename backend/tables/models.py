@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import EmailValidator
 
 one_line = 100
 two_line = 200
@@ -6,7 +7,7 @@ two_line = 200
 
 class User(models.Model):
     username = models.CharField(max_length=one_line, primary_key=True)
-    email = models.EmailField(max_length=two_line)
+    email = models.EmailField(max_length=two_line, validators=[EmailValidator])
     first_name = models.CharField(max_length=one_line)
     last_name = models.CharField(max_length=one_line)
     password = models.CharField(max_length=50) #forms.CharField(widget=forms.PasswordInput)

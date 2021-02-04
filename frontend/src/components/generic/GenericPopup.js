@@ -45,3 +45,5 @@ const buttonArray = (buttonText, buttonFunctions) => {
     });
     return buttons;
 }
+
+export default genericPopup;

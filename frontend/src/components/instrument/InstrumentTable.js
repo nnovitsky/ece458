@@ -1,0 +1,83 @@
+import React from 'react';
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+
+const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
+
+//Props
+let data;   //prop array of data to display
+//'onDetailRequested': function passed in prop that will be called on a more details button click
+
+const instrumentTable = (props) => {
+    data = props.data;
+
+    let header = createHeader();
+    let body = createBody(props.onDetailRequested);
+
+    return (
+        <Table striped bordered hover>
+            <thead>
+                {header}
+            </thead>
+            {body}
+
+        </Table>)
+}
+
+const createHeader = () => {
+    let header = [];
+    header.push(
+        <th>#</th>
+    )
+    headerTextArr.forEach(h => {
+        header.push(
+            <th>{h}</th>
+        )
+    })
+    return (
+        <tr>
+            {header}
+        </tr>
+    )
+}
+
+const createBody = (onDetailRequested) => {
+    let rows = [];
+    let count = 1;
+    data.forEach(currentData => {
+        let rowElements = []
+        rowElements.push(
+            <td>{count}</td>
+        )
+        count++;
+        keys.forEach(k => {
+            rowElements.push(
+                <td>{currentData[k]}</td>
+            )
+        })
+
+        rowElements.push(
+            <td>TBD</td>
+        )
+        rowElements.push(
+            <td><Button value={currentData["instrument pk"]} onClick={onDetailRequested}>More</Button></td>
+        )
+        rowElements.push(
+            <td><Button>Download</Button></td>
+        )
+        let currentRow = (
+            <tr>
+                {rowElements}
+            </tr>
+        )
+        rows.push(currentRow);
+    })
+    return (
+        <tbody>
+            {rows}
+        </tbody>
+    );
+}
+
+export default instrumentTable;

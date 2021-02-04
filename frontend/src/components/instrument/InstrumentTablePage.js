@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
 import FilterBar from "./InstrumentFilterBar";
+import InstrumentTable from "./InstrumentTable";
+import GenericPopup from "../generic/GenericPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import './instrument.css';
 
@@ -9,22 +11,24 @@ import Button from 'react-bootstrap/Button';
 
 import { Redirect } from "react-router-dom";
 
-const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
+
 const instrumentServices = new InstrumentServices();
 
-class InstrumentTable extends Component {
+class InstrumentTablePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
-            tableData: [],
+            tableData: [],     //displayed data
             filters: {
                 model: '',
                 vendor: '',
                 serial: '',
                 description: ''
-            }
+            },
+            addInstrumentPopup: {
+                isShown: false
+            },
         }
 
         //need to bind any event callbacks
@@ -41,100 +45,57 @@ class InstrumentTable extends Component {
     }
 
     render() {
-        console.log(this.state)
+        //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
                 <Redirect to={this.state.redirect} />
             )
         }
+
+        // if (this.state.addInstrumentPopup.isShown) {
+        //     return (
+
+        //     )
+        // }
+
         return (
-            <div className="background">
-                <div className="row mainContent">
-                    <div className="col-2 text-center">
-                        <img src={logo} alt="Logo" />
-                        <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
-                    </div>
-                    <div className="col-10">
-                        <h1>Instrument Table</h1>
-                        <FilterBar
-                            onFilterChange={this.onFilterChange}
-                        />
-                        {this.makeTable()}
+            <div>
+                {this.makeAddInstrumentPopup()}
+                <div className="background">
+                    <div className="row mainContent">
+
+                        <div className="col-2 text-center">
+                            <img src={logo} alt="Logo" />
+                            <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+                        </div>
+                        <div className="col-10">
+                            <h1>Instrument Table</h1>
+                            <FilterBar
+                                onFilterChange={this.onFilterChange}
+                            />
+                            <InstrumentTable
+                                data={this.state.tableData}
+                                onDetailRequested={this.onDetailClicked}
+                            />
+                        </div>
+
                     </div>
                 </div>
             </div>
+
         );
     }
 
-
-    makeTable() {
-        let header = this.createHeader();
-        let body = this.createBody();
-
+    makeAddInstrumentPopup() {
+        // let body = (
+            
+        // )
         return (
-            <Table striped bordered hover>
-                <thead>
-                    {header}
-                </thead>
-                {body}
-
-            </Table>)
-    }
-
-    createHeader() {
-        let header = [];
-        header.push(
-            <th>#</th>
-        )
-        headerTextArr.forEach(h => {
-            header.push(
-                <th>{h}</th>
-            )
-        })
-        return (
-            <tr>
-                {header}
-            </tr>
+            < GenericPopup show={this.state.addInstrumentPopup.isShown} body={< p > Body</p >} headerText="Add Instrument" buttonText={["Cancel", "Submit"]} />
         )
     }
 
-    createBody() {
-        let rows = [];
-        let count = 1;
-        this.state.tableData.forEach(currentData => {
-            let rowElements = []
-            rowElements.push(
-                <td>{count}</td>
-            )
-            count++;
-            keys.forEach(k => {
-                rowElements.push(
-                    <td>{currentData[k]}</td>
-                )
-            })
 
-            rowElements.push(
-                <td>TBD</td>
-            )
-            rowElements.push(
-                <td><Button value={currentData["instrument pk"]} onClick={this.onDetailClicked}>More</Button></td>
-            )
-            rowElements.push(
-                <td><Button>Download</Button></td>
-            )
-            let currentRow = (
-                <tr>
-                    {rowElements}
-                </tr>
-            )
-            rows.push(currentRow);
-        })
-        return (
-            <tbody>
-                {rows}
-            </tbody>
-        );
-    }
 
 
     onDetailClicked(e) {
@@ -153,7 +114,12 @@ class InstrumentTable extends Component {
     }
 
     onAddInstrumentClicked() {
-
+        this.setState({
+            addInstrumentPopup: {
+                ...this.state.addInstrumentPopup,
+                isShown: true
+            }
+        })
     }
 }
-export default InstrumentTable;
+export default InstrumentTablePage;

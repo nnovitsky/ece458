@@ -1,21 +1,25 @@
 import React from 'react';
 
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
 // This popup will make a generic dialog that will appear, it'll have a header, a body that is passed in as a prop,
 // and then a row of buttons based on props passed in
 // When passing in the body, it would likely be useful to keep track of the fields and a way to access them
 
 // Props:
+// 'show': true or false depending on if the modal is visible
 // 'body': html to put into the body of the popup
 // 'headerText': string of the text to be displayed in the header
 // 'buttonText': array of strings of for the buttons to be displayed
 //, note: you can enter any number of buttons, the last one will be the primary button
 // 'buttonFunctions': array of functions that corresponds to the button text in the previous prop
 // the button function will be called on a click event
-const genericPopup = () => {
+const genericPopup = (props) => {
 
     return (
-        <Modal.Dialog>
-            <Modal.Header closeButton>
+        <Modal show={props.show}>
+            <Modal.Header>
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
 
@@ -24,9 +28,10 @@ const genericPopup = () => {
             </Modal.Body>
 
             <Modal.Footer>
-                {buttonArray(props.buttonText, props.buttonFunctions)}
+                Buttons
+                 
             </Modal.Footer>
-        </Modal.Dialog>
+        </Modal>
     )
 }
 

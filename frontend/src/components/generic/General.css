@@ -1,9 +1,12 @@
-.column-div{
-    display: grid;
-    grid-template-columns: 20% 80%;
-    grid-gap: 20;
-    text-align: center;
+.background{
     background-color: rgb(57, 127, 60);
+    padding: 10px;
+}
+
+.mainContent{
+    background-color: white;
+    padding: 20px;
+    margin: 30px;
 }
 
 img{
@@ -11,21 +14,6 @@ img{
     max-height: 90px;
     margin: 10px;
 
-}
-
-.left-column{
-    margin: 20px;
-    margin-right: 0px;
-    background-color: white;
-    display: inline-block;
-}
-
-.main-div{
-    margin: 20px;
-    margin-left: 0px;
-    padding: 30px;
-    background-color: white;
-    text-align: left;
 }
 
 /* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 

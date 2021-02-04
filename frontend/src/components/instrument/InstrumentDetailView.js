@@ -17,19 +17,21 @@ const InstrumentDetailView = () => {
     detailData = instrumentServices.getInstrument(pk);
     //history = useHistory();
     return (
-        <div className="column-div">
-            <div className="left-column">
-                <img src={logo} alt="Logo" />
-            </div>
-            <div className="main-div">
-                <h1>{`Instrument: ${detailData["serial"]}`}</h1>
+        <div className="background">
+            <div className="row mainContent">
+                <div className="col-2 text-center">
+                        <img src={logo} alt="Logo" />
+                    </div>
+                <div className="col-10">
+                        <h1>{`Instrument: ${detailData["serial"]}`}</h1>
                 <Row>
                     <Col>{makeDetailsTable()}</Col>
                     <Col xs={6}>
                         {makeCallibrationTable()}
                     </Col>
                 </Row>
-            </div>
+                    </div>
+                </div>
         </div>
 
     );

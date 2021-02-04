@@ -19,8 +19,8 @@ class User(models.Model):
 class ItemModel(models.Model):
     vendor = models.CharField(max_length=one_line)
     model_number = models.CharField(max_length=one_line)
-    description = models.CharField(max_length=two_line)
-    comment = models.CharField(max_length=two_line)
+    description = models.CharField(max_length=two_line, blank=True)
+    comment = models.CharField(max_length=two_line, blank=True)
     calibration_frequency = models.IntegerField(default=0)
 
     def __str__(self):
@@ -36,11 +36,11 @@ class ItemModel(models.Model):
 class Instrument(models.Model):
     model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
     serial_number = models.CharField(max_length=one_line)
-    comment = models.CharField(max_length=two_line)
+    comment = models.CharField(max_length=two_line, blank=True)
     #most_recent_calibration = models.ForeignKey(CalibrationEvent)
 
     def __str__(self):
-        return self.model + " " + self.serial_number
+        return str(self.model) + " " + self.serial_number
 
     #def isCalibrated(self):
         #return days_since_calibrated < calibration_frequency

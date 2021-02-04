@@ -18,21 +18,30 @@ class InstrumentTable extends Component {
         super(props);
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
-            tableData: []
+            tableData: [],
+            filters: {
+                model: '',
+                vendor: '',
+                serial: '',
+                description: ''
+            }
         }
 
         //need to bind any event callbacks
         this.onDetailClicked = this.onDetailClicked.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
+        this.onAddInstrumentClicked = this.onAddInstrumentClicked(this);
     }
     //make async calls here
     componentDidMount() {
         let data = instrumentServices.getInstruments();
         this.setState({
             tableData: data
-        })
+        });
     }
 
     render() {
+        console.log(this.state)
         if (this.state.redirect !== null) {
             return (
                 <Redirect to={this.state.redirect} />
@@ -43,10 +52,13 @@ class InstrumentTable extends Component {
                 <div className="row mainContent">
                     <div className="col-2 text-center">
                         <img src={logo} alt="Logo" />
+                        <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
                     </div>
                     <div className="col-10">
                         <h1>Instrument Table</h1>
-                        <FilterBar />
+                        <FilterBar
+                            onFilterChange={this.onFilterChange}
+                        />
                         {this.makeTable()}
                     </div>
                 </div>
@@ -130,6 +142,18 @@ class InstrumentTable extends Component {
         this.setState({
             redirect: `/instruments/${e.target.value}`
         });
+    }
+
+    onFilterChange(newFilter) {
+        this.setState({
+            ...this.state,
+            filters: newFilter
+        })
+        console.log(this.state)
+    }
+
+    onAddInstrumentClicked() {
+
     }
 }
 export default InstrumentTable;

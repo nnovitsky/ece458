@@ -49,7 +49,7 @@ const InstrumentFilterBar = () => {
                             name={serialName}
                         />
                         <FilterField
-                            dropdownResults={instrumentServices.getAllDescriptions()}
+                            dropdownResults={modelServices.getAllDescriptions()}
                             onTextInput={onTextInput}
                             fieldName="Description"
                             name={descriptionName}

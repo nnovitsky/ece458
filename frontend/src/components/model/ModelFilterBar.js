@@ -45,13 +45,13 @@ const ModelFilterBar = () => {
                     <Col>
 
                         <FilterField
-                            dropdownResults={instrumentServices.getAllDescriptions()}
+                            dropdownResults={modelServices.getAllDescriptions()}
                             onTextInput={onTextInput}
                             fieldName="Description"
                             name={descriptionName}
                         />
                         <FilterField
-                            dropdownResults={[]}
+                            dropdownResults={modelServices.getAllCallibrationFrequencies()}
                             onTextInput={onTextInput}
                             fieldName="Callibration Frequency"
                             name={callibrationName}

@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import logo from '../../assets/HPT_logo_crop.png';
 import { useParams } from "react-router-dom";
 
 import InstrumentServices from "../../api/instrumentServices";
@@ -14,11 +15,16 @@ let detailData;
 
 const InstrumentDetailView = () => {
     let { pk } = useParams();
-    //detailData = instrumentServices.getModel(pk);
+    //detailData = instrumentServices.get(pk);
     //history = useHistory();
     return (
-        <div>
-            <p>Instrument Detail View</p>
+        <div className="column-div">
+            <div className="left-column">
+                <img src={logo} alt="Logo" />
+            </div>
+            <div className="main-div">
+                <h1>Instrument detail view</h1>
+            </div>
         </div>
 
     );

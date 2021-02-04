@@ -1,6 +1,5 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -15,7 +14,7 @@ let detailData;
 
 const InstrumentDetailView = () => {
     let { pk } = useParams();
-    //detailData = instrumentServices.get(pk);
+    detailData = instrumentServices.getInstrument(pk);
     //history = useHistory();
     return (
         <div className="column-div">
@@ -23,32 +22,52 @@ const InstrumentDetailView = () => {
                 <img src={logo} alt="Logo" />
             </div>
             <div className="main-div">
-                <h1>Instrument detail view</h1>
+                <h1>{`Instrument: ${detailData["serial"]}`}</h1>
+                <Row>
+                    <Col>{makeDetailsTable()}</Col>
+                    <Col xs={6}>
+                        {makeCallibrationTable()}
+                    </Col>
+                </Row>
             </div>
         </div>
 
     );
 }
 
-// const makeDetailsTable = () => {
-//     return (
-//         <Table bordered hover>
-//             <tbody>
-//                 <tr>
-//                     <td><strong>Vendor: </strong>{detailData["vendor"]}</td>
-//                 </tr>
-//                 <tr>
-//                     <td><strong>Model: </strong>{detailData["model number"]}</td>
-//                 </tr>
-//                 <tr>
-//                     <td><strong>Description: </strong>{detailData["description"]}</td>
-//                 </tr>
-//                 <tr>
-//                     <td><strong>Comment: </strong>{detailData["comment"]}</td>
-//                 </tr>
-//             </tbody>
-//         </Table>
-//     )
-// }
+const makeDetailsTable = () => {
+    return (
+        <Table bordered hover>
+            <tbody>
+                <tr>
+                    <td><strong>Vendor</strong></td>
+                    <td>{detailData["vendor"]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Model</strong></td>
+                    <td>{detailData["model number"]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Description</strong></td>
+                    <td>{detailData["short description"]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Last Callibration</strong></td>
+                    <td>{detailData["most recent callibration date"]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Next Callibration</strong></td>
+                    <td>TBD</td>
+                </tr>
+            </tbody>
+        </Table>
+    )
+}
+
+const makeCallibrationTable = () => {
+    return (
+        <h3>Callibration History will go here</h3>
+    )
+}
 
 export default InstrumentDetailView;

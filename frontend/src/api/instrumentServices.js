@@ -13,6 +13,16 @@ export default class InstrumentServices {
         // return axios.get(url).then(response => response.data);
     }
 
+    getInstrument(instrumentPk) {
+        let result;
+        instrumentData.instruments.forEach(el => {
+            if (el["instrument pk"] === instrumentPk) {
+                result = el;
+            }
+        });
+        return result;
+    }
+
     getInstrumentSerialByModel(modelPk) {
         let result = [];
         instrumentData.instruments.forEach(el => {

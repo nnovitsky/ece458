@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from "react-router-dom";
 import ModelServices from "../../api/modelServices";
+import ModelFilterBar from "./ModelFilterBar";
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
@@ -23,7 +24,8 @@ const ModelTable = () => {
                 <img src={logo} alt="Logo" />
             </div>
             <div className="main-div">
-                <h2>Models</h2>
+                <h1>Models</h1>
+                <ModelFilterBar />
                 {makeTable()}
                 </div>
         </div>

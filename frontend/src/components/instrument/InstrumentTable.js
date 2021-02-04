@@ -8,12 +8,13 @@ const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibr
 //Props
 let data;   //prop array of data to display
 //'onDetailRequested': function passed in prop that will be called on a more details button click
+//'onCertificateRequested': function passed in prop that will be called on certificate button clicked
 
 const instrumentTable = (props) => {
     data = props.data;
 
     let header = createHeader();
-    let body = createBody(props.onDetailRequested);
+    let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
     return (
         <Table striped bordered hover>
@@ -42,7 +43,7 @@ const createHeader = () => {
     )
 }
 
-const createBody = (onDetailRequested) => {
+const createBody = (onDetailRequested, onCertificateRequested) => {
     let rows = [];
     let count = 1;
     data.forEach(currentData => {
@@ -64,7 +65,7 @@ const createBody = (onDetailRequested) => {
             <td><Button value={currentData["instrument pk"]} onClick={onDetailRequested}>More</Button></td>
         )
         rowElements.push(
-            <td><Button>Download</Button></td>
+            <td><Button value={currentData["instrument pk"]} onClick={onCertificateRequested}>Download</Button></td>
         )
         let currentRow = (
             <tr>

@@ -32,7 +32,8 @@ class InstrumentTablePage extends Component {
         }
 
         //need to bind any event callbacks
-        this.onDetailClicked = this.onDetailClicked.bind(this);
+        this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
+        this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilterChange = this.onFilterChange.bind(this);
         this.onAddInstrumentClicked = this.onAddInstrumentClicked(this);
     }
@@ -75,7 +76,8 @@ class InstrumentTablePage extends Component {
                             />
                             <InstrumentTable
                                 data={this.state.tableData}
-                                onDetailRequested={this.onDetailClicked}
+                                onDetailRequested={this.onDetailViewRequested}
+                                onCertificateRequested={this.onCertificateRequested}
                             />
                         </div>
 
@@ -98,11 +100,14 @@ class InstrumentTablePage extends Component {
 
 
 
-    onDetailClicked(e) {
-        //history.push(`/instruments/${e.target.value}`);
+    onDetailViewRequested(e) {
         this.setState({
             redirect: `/instruments/${e.target.value}`
         });
+    }
+
+    onCertificateRequested(e) {
+        console.log(`Certificate requested for instrument: ${e.target.value}`);
     }
 
     onFilterChange(newFilter) {

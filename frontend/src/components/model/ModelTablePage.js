@@ -19,18 +19,23 @@ const ModelTable = () => {
     history = useHistory();
     console.log(modelServices.getAllModelNumbers())
     return (
-        <div className="column-div">
-            <div className="left-column">
+        <div className="background">
+        <div className="row mainContent">
+            <div className="col-2 text-center">
                 <img src={logo} alt="Logo" />
             </div>
-            <div className="main-div">
+                <div className="col-10">
                 <h1>Models</h1>
-                <ModelFilterBar />
+                
+            
+                <h2>Models</h2>
                 {makeTable()}
                 </div>
         </div>
+        </div>
     );
 }
+
 
 const makeTable = () => {
     let header = createHeader();

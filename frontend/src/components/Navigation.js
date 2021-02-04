@@ -10,6 +10,7 @@ const Navigation = () => {
                    <li><NavLink to="/">Login&nbsp;</NavLink></li>
                     <li><NavLink to="/models">Models&nbsp;</NavLink></li>
                     <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
+                    <li><NavLink to="/import">Import&nbsp;</NavLink></li>
                    <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
                    <li><NavLink to="/admin">Admin&nbsp;</NavLink></li>
                </ul>

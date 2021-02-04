@@ -16,7 +16,7 @@ export default class InstrumentServices {
     getInstrumentSerialByModel(modelPk) {
         let result = [];
         instrumentData.instruments.forEach(el => {
-            if (el["model"]["model pk"] === modelPk) {
+            if (el["model pk"] === modelPk) {
                 let temp = {
                     "serial": el["serial"],
                     "pk": el["instrument pk"]
@@ -40,7 +40,7 @@ export default class InstrumentServices {
     getAllDescriptions() {
         let result = new Set();
         instrumentData.instruments.forEach(el => {
-            result.add(el["model"]["short description"]);
+            result.add(el["short description"]);
         })
         return Array.from(result);
     }

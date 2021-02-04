@@ -6,6 +6,17 @@
     background-color: rgb(57, 127, 60);
 }
 
+.background{
+    background-color: rgb(57, 127, 60);
+    padding: 10px;
+}
+
+.mainContent{
+    background-color: white;
+    padding: 20px;
+    margin: 30px;
+}
+
 img{
     max-width: 90px;
     max-height: 90px;

@@ -28,5 +28,23 @@ export default class InstrumentServices {
         // const url = `${API_URL}/api/customers/${pk}`;
         // return axios.get(url).then(response => response.data);
     }
+
+    getAllSerialNumbers() {
+        let result = new Set();
+        instrumentData.instruments.forEach(el => {
+            result.add(el["serial"]);
+        })
+        return Array.from(result);
+    }
+
+    getAllDescriptions() {
+        let result = new Set();
+        instrumentData.instruments.forEach(el => {
+            result.add(el["model"]["short description"]);
+        })
+        return Array.from(result);
+    }
+
+    // ADD GET ALL DESCRIPTIONS?
 }
 

@@ -27,3 +27,9 @@ img{
     background-color: white;
     text-align: left;
 }
+
+/* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 
+be made to be more specific */
+.input-group {
+    padding: 5px;
+}

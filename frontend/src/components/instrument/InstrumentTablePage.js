@@ -1,5 +1,9 @@
 import React from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import FilterBar from "./InstrumentFilterBar";
+import logo from '../../assets/HPT_logo_crop.png';
+import './instrument.css';
+
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
@@ -16,10 +20,16 @@ const InstrumentTable = () => {
     data = instrumentServices.getInstruments();
     history = useHistory();
     return (
-       <div>
-          <h1>Instrument Table</h1>
-            {makeTable()}
-       </div>
+        <div className="column-div">
+            <div className="left-column">
+                <img src={logo} alt="Logo" />
+            </div>
+            <div className="main-div">
+                <h1>Instrument Table</h1>
+                <FilterBar />
+                {makeTable()}
+            </div>
+        </div>
     );
 }
 

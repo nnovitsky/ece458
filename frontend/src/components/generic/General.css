@@ -9,11 +9,15 @@
     margin: 30px;
 }
 
-img{
+.col-2 img{
     max-width: 90px;
     max-height: 90px;
     margin: 10px;
+    margin-bottom: 8vh;
+}
 
+div.col-2 button {
+    padding: 15px;
 }
 
 /* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 

@@ -29,7 +29,7 @@ class InstrumentTablePage extends Component {
                 description: ''
             },
             addInstrumentPopup: {
-                isShown: true
+                isShown: false
             },
         }
 
@@ -37,7 +37,6 @@ class InstrumentTablePage extends Component {
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilterChange = this.onFilterChange.bind(this);
-        this.onAddInstrumentClicked = this.onAddInstrumentClicked(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
@@ -57,12 +56,6 @@ class InstrumentTablePage extends Component {
                 <Redirect to={this.state.redirect} />
             )
         }
-
-        // if (this.state.addInstrumentPopup.isShown) {
-        //     return (
-
-        //     )
-        // }
 
         return (
             <div>
@@ -116,7 +109,8 @@ class InstrumentTablePage extends Component {
         console.log(this.state)
     }
 
-    onAddInstrumentClicked() {
+    onAddInstrumentClicked = (e) => {
+        console.log("clicked")
         this.setState({
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,

@@ -90,7 +90,6 @@ const onTextInput = (e) => {
 
 const onSubmit = (e, parentHandler) => {
     if (isValid) {
-        console.log(newModel)
         parentHandler(newModel);
     }
 }

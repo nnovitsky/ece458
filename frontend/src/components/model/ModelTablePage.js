@@ -47,7 +47,6 @@ class ModelTablePage extends Component {
     }
 
     render() {
-        console.log(this.state)
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -62,9 +61,10 @@ class ModelTablePage extends Component {
 
                 <div className="background">
                     <div className="row mainContent">
-                        <div className="col-2 text-center">
+                        <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <Button onClick={this.onAddModelClicked}>Add Model</Button>
+                            <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
@@ -123,6 +123,10 @@ class ModelTablePage extends Component {
                 isShown: true
             }
         })
+    }
+
+    onExportClicked = () => {
+        console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
     }
 }
 

@@ -24,20 +24,20 @@ const ModelDetailView = () => {
     history = useHistory();
     return (
         <div className="background">
-        <div className="row mainContent">
-            <div className="col-2 text-center">
-                <img src={logo} alt="Logo" />
-            </div>
-            <div className="col-10">
-                <h2>{`Model: ${detailData["model number"]}`}</h2>
+            <div className="row mainContent">
+                <div className="col-2 text-center">
+                    <img src={logo} alt="Logo" />
+                </div>
+                <div className="col-10">
+                    <h2>{`Model: ${detailData["model number"]}`}</h2>
                     <Row>
                         <Col>{makeDetailsTable()}</Col>
-                    <Col xs={6}>
-                        {makeInstrumentsTable()}
-                    </Col>
+                        <Col xs={6}>
+                            {makeInstrumentsTable()}
+                        </Col>
                     </Row>
+                </div>
             </div>
-        </div>
         </div>
 
     );
@@ -48,16 +48,20 @@ const makeDetailsTable = () => {
         <Table bordered hover>
             <tbody>
                 <tr>
-                    <td><strong>Vendor: </strong>{detailData["vendor"]}</td>
+                    <td><strong>Vendor</strong></td>
+                    <td>{detailData["vendor"]}</td>
                 </tr>
                 <tr>
-                    <td><strong>Model: </strong>{detailData["model number"]}</td>
+                    <td><strong>Model</strong></td>
+                    <td>{detailData["model number"]}</td>
                 </tr>
                 <tr>
-                    <td><strong>Description: </strong>{detailData["description"]}</td>
+                    <td><strong>Description</strong></td>
+                    <td>{detailData["description"]}</td>
                 </tr>
                 <tr>
-                    <td><strong>Comment: </strong>{detailData["comment"]}</td>
+                    <td><strong>Comment</strong></td>
+                    <td>{detailData["comment"]}</td>
                 </tr>
             </tbody>
         </Table>
@@ -87,9 +91,12 @@ const makeInstrumentsTable = () => {
     return (
         <Table bordered hover>
             <thead>
-                <th>#</th>
-                <th>Serial Number</th>
-                <th>More</th>
+                <tr>
+                    <th>#</th>
+                    <th>Serial Number</th>
+                    <th>More</th>
+                </tr>
+
             </thead>
             <tbody>
                 {rows}

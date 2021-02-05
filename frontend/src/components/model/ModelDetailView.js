@@ -53,7 +53,7 @@ const makeDetailsTable = () => {
                 </tr>
                 <tr>
                     <td><strong>Model</strong></td>
-                    <td>{detailData["model number"]}</td>
+                    <td>{detailData["model_number"]}</td>
                 </tr>
                 <tr>
                     <td><strong>Description</strong></td>

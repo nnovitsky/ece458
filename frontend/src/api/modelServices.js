@@ -7,19 +7,19 @@ const API_URL = 'http://localhost:8000';
 export default class ModelServices {
     constructor() { }
 
-    async getModels() {
+    getModels() {
         return modelData.getModels;
         // const url = `${API_URL}/api/models/`;
         // return axios.get(url).then(response => response.data);
     }
 
-    async getModel(pk) {
+    getModel(pk) {
         return modelData.modelsByKey[pk];
         // const url = `${API_URL}/api/customers/${pk}`;
         // return axios.get(url).then(response => response.data);
     }
 
-    async getAllModelNumbers() {
+    getAllModelNumbers() {
         let result = new Set();
         modelData.getModels.forEach(el => {
             result.add(el["model number"]);
@@ -27,7 +27,7 @@ export default class ModelServices {
         return Array.from(result);
     }
 
-    async getAllVendors() {
+    getAllVendors() {
         let result = new Set();
         modelData.getModels.forEach(el => {
             result.add(el["vendor"]);
@@ -35,7 +35,7 @@ export default class ModelServices {
         return Array.from(result);
     }
 
-    async getAllDescriptions() {
+    getAllDescriptions() {
         let result = new Set();
         modelData.getModels.forEach(el => {
             result.add(el["description"]);
@@ -43,7 +43,7 @@ export default class ModelServices {
         return Array.from(result);
     }
 
-    async getAllCallibrationFrequencies() {
+    getAllCallibrationFrequencies() {
         let result = new Set();
         modelData.getModels.forEach(el => {
             result.add(el["callibration frequency"]);

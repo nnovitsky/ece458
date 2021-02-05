@@ -72,6 +72,7 @@ class InstrumentTablePage extends Component {
                         <div className="col-2 text-center">
                             <img src={logo} alt="Logo" />
                             <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+                            <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
@@ -110,13 +111,16 @@ class InstrumentTablePage extends Component {
     }
 
     onAddInstrumentClicked = (e) => {
-        console.log("clicked")
         this.setState({
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,
                 isShown: true
             }
         })
+    }
+
+    onExportClicked = (e) => {
+        console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
     }
 
     onAddInstrumentSubmit(newInstrument) {

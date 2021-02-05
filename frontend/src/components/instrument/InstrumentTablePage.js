@@ -36,7 +36,7 @@ class InstrumentTablePage extends Component {
         //need to bind any event callbacks
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
+        this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
@@ -50,6 +50,7 @@ class InstrumentTablePage extends Component {
     }
 
     render() {
+        console.log(this.state.filters)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -75,7 +76,7 @@ class InstrumentTablePage extends Component {
                         <div className="col-10">
                             <h1>Instrument Table</h1>
                             <FilterBar
-                                onFilterChange={this.onFilterChange}
+                                onSearch={this.onFilteredSearch}
                             />
                             <InstrumentTable
                                 data={this.state.tableData}
@@ -101,12 +102,11 @@ class InstrumentTablePage extends Component {
         console.log(`Certificate requested for instrument: ${e.target.value}`);
     }
 
-    onFilterChange(newFilter) {
+    onFilteredSearch(newFilter) {
         this.setState({
             ...this.state,
             filters: newFilter
         })
-        console.log(this.state)
     }
 
     onAddInstrumentClicked = (e) => {

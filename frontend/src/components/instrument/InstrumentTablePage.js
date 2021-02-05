@@ -29,15 +29,14 @@ class InstrumentTablePage extends Component {
                 description: ''
             },
             addInstrumentPopup: {
-                isShown: true
+                isShown: false
             },
         }
 
         //need to bind any event callbacks
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
-        this.onAddInstrumentClicked = this.onAddInstrumentClicked(this);
+        this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
@@ -51,18 +50,13 @@ class InstrumentTablePage extends Component {
     }
 
     render() {
+        console.log(this.state.filters)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
                 <Redirect to={this.state.redirect} />
             )
         }
-
-        // if (this.state.addInstrumentPopup.isShown) {
-        //     return (
-
-        //     )
-        // }
 
         return (
             <div>
@@ -75,14 +69,15 @@ class InstrumentTablePage extends Component {
                 <div className="background">
                     <div className="row mainContent">
 
-                        <div className="col-2 text-center">
+                        <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+                            <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
                             <FilterBar
-                                onFilterChange={this.onFilterChange}
+                                onSearch={this.onFilteredSearch}
                             />
                             <InstrumentTable
                                 data={this.state.tableData}
@@ -108,21 +103,24 @@ class InstrumentTablePage extends Component {
         console.log(`Certificate requested for instrument: ${e.target.value}`);
     }
 
-    onFilterChange(newFilter) {
+    onFilteredSearch(newFilter) {
         this.setState({
             ...this.state,
             filters: newFilter
         })
-        console.log(this.state)
     }
 
-    onAddInstrumentClicked() {
+    onAddInstrumentClicked = (e) => {
         this.setState({
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,
                 isShown: true
             }
         })
+    }
+
+    onExportClicked = (e) => {
+        console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
     }
 
     onAddInstrumentSubmit(newInstrument) {

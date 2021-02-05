@@ -10,6 +10,8 @@ import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
 import Navigation from './components/Navigation';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import AuthServices from './api/authServices';
 
 const authServices = new AuthServices();
@@ -27,13 +29,13 @@ class App extends Component {
 
   componentDidMount() {
     if (this.state.logged_in) {
-      console.log("Logged in")
+      console.log("Authorized")
       authServices.getCurrentUser(localStorage.getItem('token')).then(json => {
         this.setState({ username: json.username });
       });
     }
     else {
-      console.log("Not logged in")
+      console.log("Not Authorized")
     }
   }
 
@@ -47,7 +49,7 @@ class App extends Component {
         displayed_form: '',
         username: json.username
       });
-    });
+    }).catch(ERROR => console.log("Not Authorized"));
 
   };
 
@@ -60,11 +62,11 @@ class App extends Component {
         <div>
           <Navigation logged_in={this.state.logged_in}/>
           <Switch>
-            <Route path="/models" component={ModelTablePage} exact />
-            <Route path="/models/:pk" component={ModelDetailPage} exact />
-            <Route path="/instruments" component={InstrumentTablePage} exact />
-            <Route path="/user-profile" component={UserProfilePage} exact />
-            <Route path="/admin" component={AdminPage} exact />
+            <ProtectedRoute path="/models" component={ModelTablePage} exact />
+            <ProtectedRoute path="/models/:pk" component={ModelDetailPage} exact />
+            <ProtectedRoute path="/instruments" component={InstrumentTablePage} exact />
+            <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
+            <ProtectedRoute path="/admin" component={AdminPage} exact />
           </Switch>
           {this.state.logged_in ? null : form}
 

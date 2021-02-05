@@ -4,15 +4,23 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
 
+
 export default class AuthServices {
     constructor() { }
 
     async login(data) {
-        console.log(JSON.stringify(data))
+        let body = JSON.stringify(data)
+        console.log(body)
+        console.log(data.username)
 
         let user = {
             "username": "Sara",
             "token": "22"
+        }
+
+        if(data.username != "Sara")
+        {
+          throw Error("Wrong name");
         }
 
         return user;
@@ -38,6 +46,11 @@ export default class AuthServices {
 
         let user = {
             "username": "Sara"
+        }
+
+        if(token != 22)
+        {
+          throw Error("Wrong token");
         }
 
         return user;

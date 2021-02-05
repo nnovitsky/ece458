@@ -14,13 +14,33 @@ const keys = ["display name", "email", "password"];
 const headers = ["Display Name", "Email", "Password", "Remove User"];
 const buttonText = ["Delete"];
 
+let data = userServices.getUsers();
 
-const AdminPage = () => {
 
-    let data = userServices.getUsers();
-    let buttonFunctions = [onUserDeleted]
-    history = useHistory(data);
+class AdminPage extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            logged_in: localStorage.getItem('token') ? true : false,
+            username: ''
+        };
+    }
+
+    componentDidMount() {
+
+        
+    }
+
+    addNewUser = e => {
+        console.log("Add new user");
+    }
+
+    onUserDeleted = e =>  {
+        console.log("Delete user");
+    }
+
+    render() {
         return (
             <div className="column-div">
                 <div className="left-column">
@@ -28,21 +48,14 @@ const AdminPage = () => {
                 </div>
                 <div className="main-div">
                     <h2>Hello, Admin</h2>
-                    <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={buttonFunctions} />
-                    <button onClick={addNewUser}>Add New User</button>
+                    <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onUserDeleted]} />
+                    <button onClick={this.addNewUser}>Add New User</button>
                 </div>
             </div>
 
-
         );
-}
+    }
 
-const onUserDeleted= (e) => {
-    console.log("Delete user");
-}
-
-const addNewUser = (e) => {
-    console.log("Add new user");
 }
 
 export default AdminPage;

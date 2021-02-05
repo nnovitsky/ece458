@@ -14,10 +14,10 @@ let instrumentServices = new InstrumentServices();
 
 const modelName = "model";
 const vendorName = "vendor";
-const serialName = "serial";
+const callibrationName = "callibrationFrequency";
 const descriptionName = "description";
 
-const InstrumentFilterBar = () => {
+const ModelFilterBar = () => {
     return (
         <div>
 
@@ -40,19 +40,21 @@ const InstrumentFilterBar = () => {
                             fieldName="Vendor"
                             name={vendorName}
                         />
+
                     </Col>
                     <Col>
-                        <FilterField
-                            dropdownResults={instrumentServices.getAllSerialNumbers()}
-                            onTextInput={onTextInput}
-                            fieldName="Serial Number"
-                            name={serialName}
-                        />
+
                         <FilterField
                             dropdownResults={modelServices.getAllDescriptions()}
                             onTextInput={onTextInput}
                             fieldName="Description"
                             name={descriptionName}
+                        />
+                        <FilterField
+                            dropdownResults={modelServices.getAllCallibrationFrequencies()}
+                            onTextInput={onTextInput}
+                            fieldName="Callibration Frequency"
+                            name={callibrationName}
                         />
                     </Col>
                     <Col xs={2}>
@@ -74,8 +76,8 @@ const onTextInput = (e) => {
         case vendorName:
             console.log(`Vendor input: ${e.target.value}`);
             return;
-        case serialName:
-            console.log(`Serial input: ${e.target.value}`);
+        case callibrationName:
+            console.log(`Callibration input: ${e.target.value}`);
             return;
         case descriptionName:
             console.log(`Description input: ${e.target.value}`);
@@ -83,4 +85,4 @@ const onTextInput = (e) => {
     }
 }
 
-export default InstrumentFilterBar;
+export default ModelFilterBar;

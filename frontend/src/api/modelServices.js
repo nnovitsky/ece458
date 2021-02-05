@@ -34,5 +34,21 @@ export default class ModelServices {
         })
         return Array.from(result);
     }
+
+    getAllDescriptions() {
+        let result = new Set();
+        modelData.getModels.forEach(el => {
+            result.add(el["description"]);
+        })
+        return Array.from(result);
+    }
+
+    getAllCallibrationFrequencies() {
+        let result = new Set();
+        modelData.getModels.forEach(el => {
+            result.add(el["callibration frequency"]);
+        })
+        return Array.from(result);
+    }
 }
 

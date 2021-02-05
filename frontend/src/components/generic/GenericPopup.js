@@ -11,10 +11,11 @@ import Button from 'react-bootstrap/Button';
 // 'show': true or false depending on if the modal is visible
 // 'body': html to put into the body of the popup
 // 'headerText': string of the text to be displayed in the header
-// 'buttonText': array of strings of for the buttons to be displayed
-//, note: you can enter any number of buttons, the last one will be the primary button
-// 'buttonFunctions': array of functions that corresponds to the button text in the previous prop
-// the button function will be called on a click event
+// 'closeButtonText': text displayed for the popup to close
+// 'submitButtonText': text displayed for the popup to submit
+// 'onClose': handler for the close button being clicked
+// 'onSubmit': handler for the submit button being clicked
+
 const genericPopup = (props) => {
 
     return (
@@ -28,26 +29,19 @@ const genericPopup = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
-                Buttons
-                 
+                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit)}
             </Modal.Footer>
         </Modal>
     )
 }
 
-const buttonArray = (buttonText, buttonFunctions) => {
+const buttonArray = (closeText, submitText, onClose, onSubmit) => {
     let buttons = [];
-    buttonText.forEach((btText, i) => {
-        if (i == (buttonText.length - 1)) {
-            buttons.push(
-                <Button variant="primary" onClick={buttonFunctions[i]}>{btText}</Button>
-            )
-        } else {
-            buttons.push(
-                <Button variant="secondary" onClick={buttonFunctions[i]}>{btText}</Button>
-            )
-        }
-    });
+
+    buttons.push(<Button variant="secondary" onClick={onClose}>{closeText}</Button>)
+    buttons.push(<Button variant="primary" onClick={onSubmit}>{submitText}</Button>)
+
+
     return buttons;
 }
 

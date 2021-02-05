@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import ModelServices from '../../api/modelServices';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
-import GenericPopup from "../generic/GenericPopup";
+
+import AddPopup from "./AddPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import './instrument.css';
 
-import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-
 import { Redirect } from "react-router-dom";
 
 
+
 const instrumentServices = new InstrumentServices();
+const modelServices = new ModelServices();
 
 class InstrumentTablePage extends Component {
     constructor(props) {
@@ -27,7 +29,7 @@ class InstrumentTablePage extends Component {
                 description: ''
             },
             addInstrumentPopup: {
-                isShown: false
+                isShown: true
             },
         }
 
@@ -36,6 +38,9 @@ class InstrumentTablePage extends Component {
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilterChange = this.onFilterChange.bind(this);
         this.onAddInstrumentClicked = this.onAddInstrumentClicked(this);
+        this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
+        this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
+        this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
     }
     //make async calls here
     componentDidMount() {
@@ -61,7 +66,12 @@ class InstrumentTablePage extends Component {
 
         return (
             <div>
-                {this.makeAddInstrumentPopup()}
+                <AddPopup
+                    isShown={this.state.addInstrumentPopup.isShown}
+                    onSubmit={this.onAddInstrumentSubmit}
+                    onClose={this.onAddInstrumentClosed}
+                    getModelSearchResults={this.onGetModelSearchResults}
+                />
                 <div className="background">
                     <div className="row mainContent">
 
@@ -88,18 +98,6 @@ class InstrumentTablePage extends Component {
         );
     }
 
-    makeAddInstrumentPopup() {
-        // let body = (
-            
-        // )
-        return (
-            < GenericPopup show={this.state.addInstrumentPopup.isShown} body={< p > Body</p >} headerText="Add Instrument" buttonText={["Cancel", "Submit"]} />
-        )
-    }
-
-
-
-
     onDetailViewRequested(e) {
         this.setState({
             redirect: `/instruments/${e.target.value}`
@@ -125,6 +123,24 @@ class InstrumentTablePage extends Component {
                 isShown: true
             }
         })
+    }
+
+    onAddInstrumentSubmit(newInstrument) {
+        console.log(`New Instrument Added: ${newInstrument}`);
+        this.onAddInstrumentClosed();
+    }
+
+    onAddInstrumentClosed() {
+        this.setState({
+            addInstrumentPopup: {
+                ...this.state.addInstrumentPopup,
+                isShown: false
+            }
+        })
+    }
+
+    onGetModelSearchResults(search) {
+        return modelServices.getAllModelNumbers();
     }
 }
 export default InstrumentTablePage;

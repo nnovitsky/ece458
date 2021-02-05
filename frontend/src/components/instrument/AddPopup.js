@@ -17,7 +17,7 @@ let newInstrument = {
     model: '',
     serial: '',
     comment: '',
-    callibration: '',
+    callibration: new Date(),
 }
 
 let errorMessages = [];
@@ -41,19 +41,33 @@ const AddPopup = (props) => {
 const makeBody = (getModelSearchResults) => {
     return (
         <Form className="popup">
-            <Form.Label>Model</Form.Label>
-            <FilterField
-                onTextInput={onModelInput}
-                name="model"
-                dropdownResults={getModelSearchResults(newInstrument.model)}
-                fieldName="Enter Model"
-            />
-            <Form.Label>Serial Number</Form.Label>
-            <Form.Control type="text" placeholder="Enter Serial" />
+            <Form.Group>
+                <Form.Label>Model</Form.Label>
+                <FilterField
+                    onTextInput={onModelInput}
+                    name="model"
+                    dropdownResults={getModelSearchResults(newInstrument.model)}
+                    fieldName="Enter Model"
+                />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Serial Number</Form.Label>
+                <Form.Control type="text" placeholder="Enter Serial" onChange={onSerialChange} />
+                <Form.Text muted>
+                    The serial number must be unique to the model.
+  </Form.Text>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Comments</Form.Label>
+                <Form.Control as="textarea" rows={3} onChange={onCommentChange} />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Last Callibration</Form.Label>
+                <DatePicker selected={newInstrument.callibration} onSelect={date => (newInstrument.callibration = date)} />
+            </Form.Group>
 
-            <Form.Label>Comments</Form.Label>
-            <Form.Control as="textarea" rows={3} />
-            <DatePicker />
+
+
         </Form>
     )
 }
@@ -63,11 +77,20 @@ const onModelInput = (e) => {
     newInstrument.model = e.target.value;
 }
 
+const onSerialChange = (e) => {
+    newInstrument.serial = e.target.value;
+}
+
+const onCommentChange = (e) => {
+    newInstrument.comment = e.target.value;
+}
+
 const onClose = (e, parentHandler) => {
     parentHandler(e);
 }
 
 const onSubmit = (e, parentHandler) => {
+    console.log(newInstrument)
     if (isValid) {
         parentHandler(newInstrument);
     }

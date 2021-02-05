@@ -16,3 +16,15 @@ form.popup{
     display: inline-block;
     background-color: rgb(147, 196, 127);
 }
+
+form.popup label {
+    line-height: 1px;
+}
+
+form.popup .input-group {
+margin: 0px;;
+}
+
+form.popup .form-control {
+    margin: 0px;
+}

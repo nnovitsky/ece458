@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FilterField from "../generic/FilterField";
 
 import Container from 'react-bootstrap/Container';
@@ -14,18 +14,10 @@ let instrumentServices = new InstrumentServices();
 
 const modelName = "model";
 const vendorName = "vendor";
-const serialName = "serial";
+const callibrationName = "callibrationFrequency";
 const descriptionName = "description";
 
-let filters = {
-    model: '',
-    vendor: '',
-    serial: '',
-    description: ''
-}
-
-//'onFilterChange' 
-const InstrumentFilterBar = (props) => {
+const ModelFilterBar = () => {
     return (
         <div>
 
@@ -38,29 +30,31 @@ const InstrumentFilterBar = (props) => {
 
                         <FilterField
                             dropdownResults={modelServices.getAllModelNumbers()}
-                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
+                            onTextInput={onTextInput}
                             fieldName="Model Number"
                             name={modelName}
                         />
                         <FilterField
                             dropdownResults={modelServices.getAllVendors()}
-                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
+                            onTextInput={onTextInput}
                             fieldName="Vendor"
                             name={vendorName}
                         />
+
                     </Col>
                     <Col>
-                        <FilterField
-                            dropdownResults={instrumentServices.getAllSerialNumbers()}
-                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
-                            fieldName="Serial Number"
-                            name={serialName}
-                        />
+
                         <FilterField
                             dropdownResults={modelServices.getAllDescriptions()}
-                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
+                            onTextInput={onTextInput}
                             fieldName="Description"
                             name={descriptionName}
+                        />
+                        <FilterField
+                            dropdownResults={modelServices.getAllCallibrationFrequencies()}
+                            onTextInput={onTextInput}
+                            fieldName="Callibration Frequency"
+                            name={callibrationName}
                         />
                     </Col>
                     <Col xs={2}>
@@ -74,23 +68,21 @@ const InstrumentFilterBar = (props) => {
     )
 }
 
-const onTextInput = (e, onFilterChange) => {
+const onTextInput = (e) => {
     switch (e.target.name) {
         case modelName:
-            filters.model = e.target.value;
-            break;
+            console.log(`Model input: ${e.target.value}`);
+            return;
         case vendorName:
-            filters.vendor = e.target.value;
-            break;
-        case serialName:
-            filters.serial = e.target.value;
-            break;
+            console.log(`Vendor input: ${e.target.value}`);
+            return;
+        case callibrationName:
+            console.log(`Callibration input: ${e.target.value}`);
+            return;
         case descriptionName:
-            filters.description = e.target.value;
-            break;
+            console.log(`Description input: ${e.target.value}`);
+            return;
     }
-    console.log(filters)
-    onFilterChange(filters);
 }
 
-export default InstrumentFilterBar;
+export default ModelFilterBar;

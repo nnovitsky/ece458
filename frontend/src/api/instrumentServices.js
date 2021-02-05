@@ -46,15 +46,5 @@ export default class InstrumentServices {
         })
         return Array.from(result);
     }
-
-    getAllDescriptions() {
-        let result = new Set();
-        instrumentData.instruments.forEach(el => {
-            result.add(el["short description"]);
-        })
-        return Array.from(result);
-    }
-
-    // ADD GET ALL DESCRIPTIONS?
 }
 

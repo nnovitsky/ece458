@@ -16,10 +16,10 @@ const ImportPage = () => {
     let buttonFunctions = [onEntryClicked]
 
         return (
-            <div class="margin">
-                <div class="row">
-                    <div class="col-2"><img src={logo} alt="Logo" /></div>
-                    <div class="col-5 leftText"><h2>Import</h2>
+            <div class="background">
+                <div class="row mainContent">
+                    <div class="col-2 text-center"><img src={logo} alt="Logo" /></div>
+                    <div class="col-5"><h2>Import</h2>
                         <button class="bigButton">Choose File</button>
                         <button class="bigButton">Import</button>
                         <div class="instructions">

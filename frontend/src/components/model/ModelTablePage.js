@@ -38,8 +38,8 @@ class ModelTablePage extends Component {
         this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
     }
 
-    componentDidMount() {
-        let data = modelServices.getModels()
+    async componentDidMount() {
+        let data = await modelServices.getModels()
         this.setState({
             redirect: null,
             tableData: data

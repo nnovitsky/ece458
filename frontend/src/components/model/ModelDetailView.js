@@ -24,11 +24,12 @@ const ModelDetailView = () => {
     history = useHistory();
     console.log(instrumentData)
     return (
-        <div className="column-div">
-            <div className="left-column">
+        <div className="background">
+        <div className="row mainContent">
+            <div className="col-2 text-center">
                 <img src={logo} alt="Logo" />
             </div>
-            <div className="main-div">
+            <div className="col-10">
                 <h2>{`Model: ${detailData["model number"]}`}</h2>
                     <Row>
                         <Col>{makeDetailsTable()}</Col>
@@ -37,6 +38,7 @@ const ModelDetailView = () => {
                     </Col>
                     </Row>
             </div>
+        </div>
         </div>
 
     );

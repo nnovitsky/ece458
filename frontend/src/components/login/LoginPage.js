@@ -21,7 +21,7 @@ class login extends React.Component {
     render() {
         return (
             <div style={{textAlign: "center"}}>
-            <form onSubmit={handleLogin}>
+            <form className="login" onSubmit={handleLogin}>
                 <h2>Log In</h2>
                 <label htmlFor="username">Username</label>
                 <input

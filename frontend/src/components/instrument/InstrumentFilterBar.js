@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FilterField from "../generic/FilterField";
 
 import Container from 'react-bootstrap/Container';
@@ -17,7 +17,15 @@ const vendorName = "vendor";
 const serialName = "serial";
 const descriptionName = "description";
 
-const InstrumentFilterBar = () => {
+let filters = {
+    model: '',
+    vendor: '',
+    serial: '',
+    description: ''
+}
+
+//'onFilterChange' 
+const InstrumentFilterBar = (props) => {
     return (
         <div>
 
@@ -30,13 +38,13 @@ const InstrumentFilterBar = () => {
 
                         <FilterField
                             dropdownResults={modelServices.getAllModelNumbers()}
-                            onTextInput={onTextInput}
+                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
                             fieldName="Model Number"
                             name={modelName}
                         />
                         <FilterField
                             dropdownResults={modelServices.getAllVendors()}
-                            onTextInput={onTextInput}
+                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
                             fieldName="Vendor"
                             name={vendorName}
                         />
@@ -44,13 +52,13 @@ const InstrumentFilterBar = () => {
                     <Col>
                         <FilterField
                             dropdownResults={instrumentServices.getAllSerialNumbers()}
-                            onTextInput={onTextInput}
+                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
                             fieldName="Serial Number"
                             name={serialName}
                         />
                         <FilterField
                             dropdownResults={modelServices.getAllDescriptions()}
-                            onTextInput={onTextInput}
+                            onTextInput={(e) => { onTextInput(e, props.onFilterChange) }}
                             fieldName="Description"
                             name={descriptionName}
                         />
@@ -66,21 +74,23 @@ const InstrumentFilterBar = () => {
     )
 }
 
-const onTextInput = (e) => {
+const onTextInput = (e, onFilterChange) => {
     switch (e.target.name) {
         case modelName:
-            console.log(`Model input: ${e.target.value}`);
-            return;
+            filters.model = e.target.value;
+            break;
         case vendorName:
-            console.log(`Vendor input: ${e.target.value}`);
-            return;
+            filters.vendor = e.target.value;
+            break;
         case serialName:
-            console.log(`Serial input: ${e.target.value}`);
-            return;
+            filters.serial = e.target.value;
+            break;
         case descriptionName:
-            console.log(`Description input: ${e.target.value}`);
-            return;
+            filters.description = e.target.value;
+            break;
     }
+    console.log(filters)
+    onFilterChange(filters);
 }
 
 export default InstrumentFilterBar;

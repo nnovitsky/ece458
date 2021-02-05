@@ -22,7 +22,6 @@ const ModelDetailView = () => {
     detailData = modelServices.getModel(pk);
     instrumentData = instrumentServices.getInstrumentSerialByModel(pk);
     history = useHistory();
-    console.log(instrumentData)
     return (
         <div className="background">
         <div className="row mainContent">

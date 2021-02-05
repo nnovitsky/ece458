@@ -1,23 +1,46 @@
-import React from 'react';
-import Table from 'react-bootstrap/Table';
+import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
-import { useHistory } from "react-router-dom";
 import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
+import ModelTable from "./ModelTable";
+import { Redirect } from "react-router-dom";
+
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
-let history;
-let modelData;
 const modelServices = new ModelServices();
 
-const keys = ["model number", "vendor", "description", "callibration frequency"];
-const headerText = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
 
-const ModelTable = () => {
-    modelData = modelServices.getModels();
-    history = useHistory();
-    console.log(modelServices.getAllModelNumbers())
+
+
+class ModelTablePage extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            redirect: null,
+            tableData: [],
+            filters: {
+                vendor: '',
+                model: '',
+                description: ''
+            }
+        }
+
+        //binding
+        this.onDetailClicked = this.onDetailClicked.bind(this);
+    }
+
+    componentDidMount() {
+        let data = modelServices.getModels()
+        this.setState({
+            tableData: data
+        })
+    }
+
+    render() {
+        if (this.state.redirect !== null) {
+            return (<Redirect to={this.state.redirect} />)
+        }
     return (
         <div className="background">
         <div className="row mainContent">
@@ -26,10 +49,11 @@ const ModelTable = () => {
             </div>
                 <div className="col-10">
                 <h1>Models</h1>
-                
-            
-                <h2>Models</h2>
-                {makeTable()}
+                    <ModelFilterBar />
+                    <ModelTable
+                        data={this.state.tableData}
+                        onDetailRequested={this.onDetailClicked}
+                    />
                 </div>
         </div>
         </div>
@@ -37,70 +61,12 @@ const ModelTable = () => {
 }
 
 
-const makeTable = () => {
-    let header = createHeader();
-    let body = createBody();
 
-    return (
-        <Table striped bordered hover>
-            <thead>
-                {header}
-            </thead>
-            {body}
-
-        </Table>)
-}
-
-const createHeader = () => {
-    let header = [];
-    header.push(
-        <th>#</th>
-    )
-    headerText.forEach(h => {
-        header.push(
-            <th>{h}</th>
-        )
-    })
-    return (
-        <tr>
-            {header}
-        </tr>
-    )
-}
-
-const createBody = () => {
-    let rows = [];
-    let count = 1;
-    modelData.forEach(currentData => {
-        let rowElements = []
-        rowElements.push(
-            <td>{count}</td>
-        )
-        count++;
-        keys.forEach(k => {
-            rowElements.push(
-                <td>{currentData[k]}</td>
-            )
+    onDetailClicked(e) {
+        this.setState({
+            redirect: `/models/${e.target.value}`
         })
-        rowElements.push(
-            <td><Button onClick={onDetailClicked} value={currentData.key}>More</Button></td>
-        )
-        let currentRow = (
-            <tr>
-                {rowElements}
-            </tr>
-        )
-        rows.push(currentRow);
-    })
-    return (
-        <tbody>
-            {rows}
-        </tbody>
-    );
+    }
 }
 
-const onDetailClicked = (e) => {
-    history.push(`/models/${e.target.value}`);
-}
-
-export default ModelTable;
+export default ModelTablePage;

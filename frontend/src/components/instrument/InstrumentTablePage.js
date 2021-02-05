@@ -69,7 +69,7 @@ class InstrumentTablePage extends Component {
                 <div className="background">
                     <div className="row mainContent">
 
-                        <div className="col-2 text-center">
+                        <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
                             <Button onClick={this.onExportClicked}>Export</Button>

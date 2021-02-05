@@ -16,7 +16,10 @@
     margin-bottom: 8vh;
 }
 
-div.col-2 button {
+/* apply this css to any logo columns that will have buttons
+add 'button-col' to the classname for the div acting as the column
+*/
+.button-col button {
     padding: 15px;
     margin: 10px;
 }

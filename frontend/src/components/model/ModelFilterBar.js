@@ -17,7 +17,8 @@ let filters = {
     description: '',
 }
 
-const ModelFilterBar = () => {
+// 'onSearch" a prop handler that is called when search is clicked, it will be passed a filters object^
+const ModelFilterBar = (props) => {
     return (
         <div>
 
@@ -38,7 +39,7 @@ const ModelFilterBar = () => {
                         </Form.Group>
                     </Col>
                     <Col xs={2}>
-                        <Button className="search-button">Search</Button>
+                        <Button className="search-button" onClick={(e) => onSearch(props.onSearch)}>Search</Button>
                     </Col>
                 </Row>
 
@@ -51,20 +52,21 @@ const ModelFilterBar = () => {
 const onTextInput = (e) => {
     switch (e.target.name) {
         case modelName:
-            filters.modelName = e.target.value;
-            console.log(`Model input: ${e.target.value}`);
+            filters.model = e.target.value;
             return;
         case vendorName:
-            filters.vendorName = e.target.value;
-            console.log(`Vendor input: ${e.target.value}`);
+            filters.vendor = e.target.value;
             return;
         case descriptionName:
-            filters.descriptionName = e.target.value
-            console.log(`Description input: ${e.target.value}`);
+            filters.description = e.target.value
             return;
         default:
             return;
     }
+}
+
+const onSearch = (parentSearch) => {
+    parentSearch(filters);
 }
 
 export default ModelFilterBar;

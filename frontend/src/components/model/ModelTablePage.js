@@ -20,14 +20,15 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             filters: {
-                vendor: '',
                 model: '',
+                vendor: '',
                 description: ''
             }
         }
 
         //binding
         this.onDetailClicked = this.onDetailClicked.bind(this);
+        this.onFilteredSearch = this.onFilteredSearch.bind(this);
     }
 
     componentDidMount() {
@@ -38,6 +39,7 @@ class ModelTablePage extends Component {
     }
 
     render() {
+        console.log(this.state.filters)
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -49,7 +51,9 @@ class ModelTablePage extends Component {
             </div>
                 <div className="col-10">
                 <h1>Models</h1>
-                    <ModelFilterBar />
+                    <ModelFilterBar
+                        onSearch={this.onFilteredSearch}
+                    />
                     <ModelTable
                         data={this.state.tableData}
                         onDetailRequested={this.onDetailClicked}
@@ -65,6 +69,13 @@ class ModelTablePage extends Component {
     onDetailClicked(e) {
         this.setState({
             redirect: `/models/${e.target.value}`
+        })
+    }
+
+    onFilteredSearch(newFilter) {
+        this.setState({
+            ...this.state,
+            filters: newFilter
         })
     }
 }

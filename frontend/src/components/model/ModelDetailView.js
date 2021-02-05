@@ -92,6 +92,9 @@ const makeInstrumentsTable = () => {
         <Table bordered hover>
             <thead>
                 <tr>
+                    <th colSpan="3" className="text-center">Instances by Serial Number</th>
+                </tr>
+                <tr>
                     <th>#</th>
                     <th>Serial Number</th>
                     <th>More</th>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.tables.models import ItemModel
+from backend.tables.models import ItemModel, Instrument
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 
@@ -9,6 +9,13 @@ class ItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
+
+
+class InstrumentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'model', 'serial_number', 'comment')
 
 
 class UserSerializer(serializers.ModelSerializer):

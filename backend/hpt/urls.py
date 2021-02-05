@@ -25,5 +25,7 @@ urlpatterns = [
     path('tables/', include('tables.urls')),
     url(r'^api/models/$', views.models_list),
     url(r'^api/models/(?P<pk>[0-9]+)$', views.models_detail),
+    url(r'^api/instruments/$', views.instruments_list),
+    url(r'^api/instruments/(?P<pk>[0-9]+)$', views.instruments_detail),
     path('token-auth/', obtain_jwt_token),
 ]

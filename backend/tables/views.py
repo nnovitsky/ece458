@@ -5,13 +5,54 @@ from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from backend.tables.models import ItemModel
+from backend.tables.models import ItemModel, Instrument
 from django.contrib.auth.models import User
 from backend.tables.serializers import *
 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the tables index.")
+
+
+@api_view(['GET'])
+def instruments_list(request):
+    """
+    List instruments.
+    """
+    data = []
+    nextPage = 1
+    previousPage = 1
+    instruments = Instrument.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(instruments, 10)
+    try:
+        data = paginator.page(page)
+    except PageNotAnInteger:
+        data = paginator.page(1)
+    except EmptyPage:
+        data = paginator.page(paginator.num_pages)
+
+    serializer = InstrumentSerializer(data, context={'request': request}, many=True)
+    if data.has_next():
+        nextPage = data.next_page_number()
+    if data.has_previous():
+        previousPage = data.previous_page_number()
+
+    return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/instruments/?page=' + str(nextPage), 'prevlink': '/api/instruments/?page=' + str(previousPage)})
+
+
+@api_view(['GET'])
+def instruments_detail(request, pk):
+    """
+    Retrieve an instrument by id/pk.
+    """
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = InstrumentSerializer(instrument, context={'request': request})
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -42,7 +83,7 @@ class UserList(APIView):
 @api_view(['GET', 'POST'])
 def models_list(request):
     """
-    List  models, or create a new customer.
+    List  models, or create a new model.
     """
     if request.method == 'GET':
         data = []

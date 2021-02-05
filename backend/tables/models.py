@@ -6,6 +6,9 @@ two_line = 200
 
 
 class ItemModel(models.Model):
+    """
+    Equipment model with unique vendor + model number pair.
+    """
     vendor = models.CharField(max_length=one_line)
     model_number = models.CharField(max_length=one_line)
     description = models.CharField(max_length=two_line, blank=True)
@@ -23,6 +26,9 @@ class ItemModel(models.Model):
 
 
 class Instrument(models.Model):
+    """
+    Instance of a model with unique model + serial number pair.
+    """
     model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
     serial_number = models.CharField(max_length=one_line)
     comment = models.CharField(max_length=two_line, blank=True)
@@ -39,6 +45,9 @@ class Instrument(models.Model):
 
 
 class CalibrationEvent(models.Model):
+    """
+    Calibration event for specific instrument.
+    """
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
     date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.PROTECT)

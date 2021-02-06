@@ -39,11 +39,20 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
-        let data = await modelServices.getModels()
-        this.setState({
-            redirect: null,
-            tableData: data
-        })
+        modelServices.getModels().then((result) => {
+            if (result.success) {
+                console.log("success")
+                this.setState({
+                    redirect: null,
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+
+        }
+        )
+
     }
 
     render() {

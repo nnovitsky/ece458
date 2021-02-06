@@ -1,24 +1,43 @@
-import React from 'react';
 import modelData from './modelData.json';
-import axios from 'axios';
 
-const API_URL = 'https://localhost:8000';
+const API_URL = 'http://localhost:8000';
 
 export default class ModelServices {
     constructor() { }
 
-    getModels() {
+    async getModels() {
+        const token = localStorage.getItem('token');
 
-        const url = `${API_URL}/api/models`;
-        // axios.get(url).then(response => response.data).then(response => console.log(response));
-        fetch(url)
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL}/api/models/`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
             .then(res => res.json())
             .then(
-                (result) => {
-                    console.log(`Success: ${result}`)
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    console.log("Direct response:")
+                    console.log(json)
+                    result.data = json.data
+                    console.log(result)
+                    return result
                 },
                 (error) => {
-                    console.log(`Error: ${error}`)
+                    console.log(error)
+                    result.success = false;
+                    return result
                 }
             )
     }

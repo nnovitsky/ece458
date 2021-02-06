@@ -2,15 +2,25 @@ import React from 'react';
 import modelData from './modelData.json';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://localhost:8000';
 
 export default class ModelServices {
     constructor() { }
 
     getModels() {
-        return modelData.getModels;
-        // const url = `${API_URL}/api/models/`;
-        // return axios.get(url).then(response => response.data);
+
+        const url = `${API_URL}/api/models`;
+        // axios.get(url).then(response => response.data).then(response => console.log(response));
+        fetch(url)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(`Success: ${result}`)
+                },
+                (error) => {
+                    console.log(`Error: ${error}`)
+                }
+            )
     }
 
     getModel(pk) {

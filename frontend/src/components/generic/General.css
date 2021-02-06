@@ -1,29 +1,31 @@
-.column-div{
-    display: grid;
-    grid-template-columns: 20% 80%;
-    grid-gap: 20;
-    text-align: center;
+.background{
     background-color: rgb(57, 127, 60);
+    padding: 10px;
 }
 
-img{
+.mainContent{
+    background-color: white;
+    padding: 20px;
+    margin: 30px;
+}
+
+.col-2 img{
     max-width: 90px;
     max-height: 90px;
     margin: 10px;
-
+    margin-bottom: 8vh;
 }
 
-.left-column{
-    margin: 20px;
-    margin-right: 0px;
-    background-color: white;
-    display: inline-block;
+/* apply this css to any logo columns that will have buttons
+add 'button-col' to the classname for the div acting as the column
+*/
+.button-col button {
+    padding: 15px;
+    margin: 10px;
 }
 
-.main-div{
-    margin: 20px;
-    margin-left: 0px;
-    padding: 30px;
-    background-color: white;
-    text-align: left;
+/* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 
+be made to be more specific */
+.input-group {
+    padding: 5px;
 }

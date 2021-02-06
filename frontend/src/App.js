@@ -6,9 +6,11 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
 import UserProfilePage from './components/user/UserProfilePage';
+import ImportPage from './components/import/ImportPage';
 import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
+import InstrumentDetailView from './components/instrument/InstrumentDetailView';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -89,6 +91,7 @@ class App extends Component {
             <ProtectedRoute path="/models" component={ModelTablePage} exact />
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} exact />
+            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <ProtectedRoute path="/admin" component={AdminPage} exact />
             <Route path="/" exact />

@@ -18,6 +18,7 @@ def index(request):
 def instruments_list(request):
     """
     List instruments, or create a new instrument.
+    Returns 200 on successful GET, 201 on successful POST, 400 on invalid POST request data.
     """
     if request.method == 'GET':
         data = []
@@ -58,24 +59,44 @@ def instruments_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def instruments_detail(request, vendor, model_number, serial_number):
     """
-    Retrieve an instrument by id/pk.
+    Retrieve, edit, or delete an instrument by vendor + model + serial number.
+    Returns 404 if instrument or reference model not found, 400 if data to edit instrument is invalid, 200 on successful
+    GET or PUT, 204 on successful DELETE.
     """
     try:
         instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = InstrumentSerializer(instrument, context={'request': request})
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = InstrumentSerializer(instrument, context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        try:
+            model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
+            request.data['model'] = model.pk
+        except Instrument.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = InstrumentSerializer(instrument, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        instrument.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
 def current_user(request):
     """
-    Determine the current user by their token, and return their data
+    Determine the current user by their token, and return their data.
+    Returns 200 on successful GET.
     """
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
@@ -101,6 +122,7 @@ class UserList(APIView):
 def models_list(request):
     """
     List  models, or create a new model.
+    Returns 200 on successful GET, 201 on successful POST, 400 on bad POST request data.
     """
     if request.method == 'GET':
         data = []
@@ -135,7 +157,9 @@ def models_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def models_detail(request, vendor, model_number):
     """
-    Retrieve, update or delete a model by id/pk.
+    Retrieve, update or delete a model by vendor + model number.
+    Returns 404 if model does not exist, 200 on successful GET or PUT, 400 on bad PUT request data,
+    204 on successful DELETE.
     """
     try:
         model = ItemModel.objects.get(vendor=vendor, model_number=model_number)

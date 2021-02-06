@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/models/<str:vendor>/<str:model_number>/', views.models_detail),
     path('api/instruments/', views.instruments_list),
     path('api/instruments/<str:vendor>/<str:model_number>/<str:serial_number>/', views.instruments_detail),
+    path('api/calibration_events/', views.calibration_event_list),
     path('token-auth/', obtain_jwt_token),
 ]

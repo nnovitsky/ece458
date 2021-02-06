@@ -13,86 +13,90 @@ from backend.tables.serializers import *
 def index(request):
     return HttpResponse("Hello, world. You're at the tables index.")
 
-#
-# # CALIBRATION EVENTS
-# @api_view(['GET', 'POST'])
-# def calibration_event_list(request):
-#     """
-#     List calibration events for a single instrument, or create a new calibration event.
-#     Returns 200 on successful GET, 201 on successful POST, 400 on invalid POST request data.
-#     """
-#     if request.method == 'GET':
-#         # TODO: filtering
-#         return None
-#         # data = []
-#         # nextPage = 1
-#         # previousPage = 1
-#         # instruments = CalibrationEvent.objects.all()
-#         # page = request.GET.get('page', 1)
-#         # paginator = Paginator(instruments, 10)
-#         # try:
-#         #     data = paginator.page(page)
-#         # except PageNotAnInteger:
-#         #     data = paginator.page(1)
-#         # except EmptyPage:
-#         #     data = paginator.page(paginator.num_pages)
-#         #
-#         # serializer = InstrumentSerializer(data, context={'request': request}, many=True)
-#         # if data.has_next():
-#         #     nextPage = data.next_page_number()
-#         # if data.has_previous():
-#         #     previousPage = data.previous_page_number()
-#         #
-#         # return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/instruments/?page=' + str(nextPage), 'prevlink': '/api/instruments/?page=' + str(previousPage)})
-#
-#     elif request.method == 'POST':
-#         # get instrument pk from vendor and model number
-#         try:
-#             vendor = request.data['vendor']
-#             model_number = request.data['model_number']
-#             model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-#             request.data['item_model'] = model.pk
-#         except ItemModel.DoesNotExist:
-#             return Response(status=status.HTTP_400_BAD_REQUEST)
-#         # add new instrument using itemmodel
-#         serializer = InstrumentSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def instruments_detail(request, vendor, model_number, serial_number):
+# CALIBRATION EVENTS
+@api_view(['GET', 'POST'])
+def calibration_event_list(request):
     """
-    Retrieve, edit, or delete an instrument by vendor + model + serial number.
-    Returns 404 if instrument or reference model not found, 400 if data to edit instrument is invalid, 200 on successful
-    GET or PUT, 204 on successful DELETE.
+    List all calibration event, or create a new calibration event.
+    Returns 200 on successful GET, 201 on successful POST, 400 on invalid POST request data.
     """
-    try:
-        instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
-    except Instrument.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'GET':
-        serializer = InstrumentSerializer(instrument, context={'request': request})
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
+        data = []
+        nextPage = 1
+        previousPage = 1
+        calibration_events = CalibrationEvent.objects.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(calibration_events, 10)
         try:
-            model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-            request.data['item_model'] = model.pk
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            data = paginator.page(1)
+        except EmptyPage:
+            data = paginator.page(paginator.num_pages)
+
+        serializer = CalibrationEventReadSerializer(data, context={'request': request}, many=True)
+        if data.has_next():
+            nextPage = data.next_page_number()
+        if data.has_previous():
+            previousPage = data.previous_page_number()
+
+        return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/calibration_events/?page=' + str(nextPage), 'prevlink': '/api/calibration_events/?page=' + str(previousPage)})
+
+    elif request.method == 'POST':
+        # get instrument pk from vendor, model number, serial number
+        # get user pk from username
+        try:
+            vendor = request.data['vendor']
+            model_number = request.data['model_number']
+            serial_number = request.data['serial_number']
+            username = request.data['user']
+            instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
+            user = User.objects.get(username=username)
+            request.data['instrument'] = instrument.pk
+            request.data['user'] = user.pk
         except Instrument.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = InstrumentSerializer(instrument, data=request.data, context={'request': request})
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        # add new calibration event using instrument and user
+        serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        instrument.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# # TODO: unique key to grab cal event?
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def calibration_event_detail(request, vendor, model_number, serial_number):
+#     """
+#     Retrieve, edit, or delete an instrument by vendor + model + serial number.
+#     Returns 404 if instrument or reference model not found, 400 if data to edit instrument is invalid, 200 on successful
+#     GET or PUT, 204 on successful DELETE.
+#     """
+#     try:
+#         instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
+#     except Instrument.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+#
+#     if request.method == 'GET':
+#         serializer = InstrumentSerializer(instrument, context={'request': request})
+#         return Response(serializer.data)
+#
+#     elif request.method == 'PUT':
+#         try:
+#             model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
+#             request.data['item_model'] = model.pk
+#         except Instrument.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+#         serializer = InstrumentSerializer(instrument, data=request.data, context={'request': request})
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     elif request.method == 'DELETE':
+#         instrument.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # INSTRUMENTS
@@ -116,7 +120,7 @@ def instruments_list(request):
         except EmptyPage:
             data = paginator.page(paginator.num_pages)
 
-        serializer = InstrumentSerializer(data, context={'request': request}, many=True)
+        serializer = InstrumentReadSerializer(data, context={'request': request}, many=True)
         if data.has_next():
             nextPage = data.next_page_number()
         if data.has_previous():
@@ -134,7 +138,7 @@ def instruments_list(request):
         except ItemModel.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # add new instrument using itemmodel
-        serializer = InstrumentSerializer(data=request.data)
+        serializer = InstrumentWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -154,7 +158,7 @@ def instruments_detail(request, vendor, model_number, serial_number):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = InstrumentSerializer(instrument, context={'request': request})
+        serializer = InstrumentReadSerializer(instrument, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
@@ -163,7 +167,7 @@ def instruments_detail(request, vendor, model_number, serial_number):
             request.data['item_model'] = model.pk
         except Instrument.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = InstrumentSerializer(instrument, data=request.data, context={'request': request})
+        serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

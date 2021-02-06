@@ -39,11 +39,8 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
-        let data = await modelServices.getModels()
-        this.setState({
-            redirect: null,
-            tableData: data
-        })
+        this.updateModelTable();
+
     }
 
     render() {
@@ -85,6 +82,7 @@ class ModelTablePage extends Component {
 
 
     onDetailClicked(e) {
+        console.log(e.target.value)
         this.setState({
             redirect: `/models/${e.target.value}`
         })
@@ -97,10 +95,16 @@ class ModelTablePage extends Component {
         })
     }
 
-    onAddModelSubmit(newModel) {
+    async onAddModelSubmit(newModel) {
         console.log("New model added")
         console.log(newModel);
-        this.onAddModelClosed();
+        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration)
+            .then((res) => {
+                this.updateModelTable();
+                this.onAddModelClosed();
+            }
+        );
+
     }
 
     onAddModelClosed() {
@@ -127,6 +131,21 @@ class ModelTablePage extends Component {
 
     onExportClicked = () => {
         console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
+    }
+
+    async updateModelTable() {
+        modelServices.getModels().then((result) => {
+            if (result.success) {
+                this.setState({
+                    redirect: null,
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+
+        }
+        )
     }
 }
 

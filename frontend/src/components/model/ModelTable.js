@@ -2,8 +2,8 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
-const headerText = ["Model Number", "Vendor", "Description", "Callibration (days)", "More"];
-const keys = ["model_number", "vendor", "description", "callibration_frequency"];
+const headerText = ["Model Number", "Vendor", "Description", "Comments", "Callibration (days)", "More"];
+const keys = ["model_number", "vendor", "description", "comment", "calibration_frequency"];
 
 //props
 let data;   //prop of array of model data to display
@@ -57,7 +57,7 @@ const createBody = (onMoreClicked) => {
             )
         })
         rowElements.push(
-            <td><Button onClick={onMoreClicked} value={currentData.key}>More</Button></td>
+            <td><Button onClick={onMoreClicked} value={currentData.pk}>More</Button></td>
         )
         let currentRow = (
             <tr>

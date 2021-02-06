@@ -9,13 +9,15 @@ import FilterField from '../generic/FilterField';
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'getVendorSearchResults' a handler to be called with part of a vendor searched
+//'existingData' this prop is a json object of the style newModel below, null can be passed if no existing model
 
 let newModel = {
-    model: '',
+    model_number: '',
     vendor: '',
     description: '',
     comment: '',
-    calibration: ''
+    calibration_frequency: '',
+    pk: null
 }
 
 const modelName = "model";
@@ -25,6 +27,9 @@ const commentName = "comment";
 const callibrationName = "callibration";
 
 const addModelPopup = (props) => {
+    if (props.existingData != null) {
+        newModel = props.existingData;
+    }
     let body = makeBody(props.getVendorSearchResults);
     return (
         <GenericPopup
@@ -44,7 +49,7 @@ const makeBody = (getVendorSearchResults) => {
     return (
         <Form className="popup">
             <Form.Label>Model Number</Form.Label>
-            <Form.Control required type="text" name={modelName} onChange={onTextInput} placeholder="Enter Model Number" />
+            <Form.Control required type="text" name={modelName} onChange={onTextInput} placeholder="Enter Model Number" value={newModel.model_number} />
 
             <Form.Label>Vendor</Form.Label>
             <FilterField
@@ -54,13 +59,13 @@ const makeBody = (getVendorSearchResults) => {
                 fieldName="Enter Vendor"
             />
             <Form.Label>Description</Form.Label>
-            <Form.Control required type="text" name={descriptionName} onChange={onTextInput} placeholder="Enter Description" />
+            <Form.Control required type="text" name={descriptionName} onChange={onTextInput} placeholder="Enter Description" value={newModel.description} />
 
             <Form.Label>Comments</Form.Label>
-            <Form.Control as="textarea" rows={3} name={commentName} onChange={onTextInput} />
+            <Form.Control as="textarea" rows={3} name={commentName} onChange={onTextInput} value={newModel.comment} />
 
             <Form.Label>Callibration Frequency (days)</Form.Label>
-            <Form.Control required type="text" name={callibrationName} onChange={onTextInput} placeholder="Enter Callibration Frequency" />
+            <Form.Control required type="text" name={callibrationName} onChange={onTextInput} placeholder="Enter Callibration Frequency" value={newModel.calibration_frequency} />
         </Form>
     )
 }
@@ -69,7 +74,7 @@ const onTextInput = (e) => {
     let val = e.target.value;
     switch (e.target.name) {
         case modelName:
-            newModel.model = val
+            newModel.model_number = val
             return;
         case vendorName:
             newModel.vendor = val;
@@ -81,7 +86,7 @@ const onTextInput = (e) => {
             newModel.comment = val;
             return
         case callibrationName:
-            newModel.calibration = val;
+            newModel.calibration_frequency = val;
             return
         default:
             return;

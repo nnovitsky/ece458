@@ -87,13 +87,11 @@ export default class ModelServices {
                     return result
                 },
                 (error) => {
-                    console.log(error)
+                    console.log(error);
                     result.success = false;
-                    return result
+                    return result;
                 }
-            )
-        // const url = `${API_URL}/api/customers/${pk}`;
-        // return axios.get(url).then(response => response.data);
+        )
     }
 
     getAllModelNumbers() {

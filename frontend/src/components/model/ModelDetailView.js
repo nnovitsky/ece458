@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import EditModelPopup from './AddModelPopup';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -28,10 +29,15 @@ class ModelDetailView extends Component {
                 description: '',
                 comment: '',
                 calibration_frequency: ''
-            }
+            },
+            isEditShown: false,
         }
 
-        this.onMoreClicked = this.onMoreClicked.bind(this)
+        this.onMoreClicked = this.onMoreClicked.bind(this);
+        this.onEditClicked = this.onEditClicked.bind(this);
+        this.onEditSubmit = this.onEditSubmit.bind(this);
+        this.onEditClose = this.onEditClose.bind(this);
+        this.onVendorSearch = this.onVendorSearch.bind(this);
     }
 
     async componentDidMount() {
@@ -43,10 +49,20 @@ class ModelDetailView extends Component {
         //istory = useHistory();
         console.log(this.state.model_info)
         return (
+            <div>
+                <EditModelPopup
+                    isShown={this.state.isEditShown}
+                    onSubmit={this.onEditSubmit}
+                    onClose={this.onEditClose}
+                    getVendorSearchResults={this.onVendorSearch}
+                    existingData={this.state.model_info}
+                />
+
             <div className="background">
                 <div className="row mainContent">
-                    <div className="col-2 text-center">
+                        <div className="col-2 text-center button-col">
                         <img src={logo} alt="Logo" />
+                            <Button onClick={this.onEditClicked}>Edit Model</Button>
                     </div>
                     <div className="col-10">
                         <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
@@ -59,7 +75,7 @@ class ModelDetailView extends Component {
                     </div>
                 </div>
             </div>
-
+            </div >
         );
     }
 
@@ -135,8 +151,30 @@ class ModelDetailView extends Component {
 
     }
 
+    onEditClicked() {
+        this.setState({
+            isEditShown: true
+        })
+    }
+
     onMoreClicked(e) {
         //history.push(`/instruments/${e.target.value}`);
+    }
+
+    onEditSubmit(editedModel) {
+        console.log(editedModel)
+        this.updateInfo();
+        this.onEditClose();
+    }
+
+    onEditClose() {
+        this.setState({
+            isEditShown: false
+        })
+    }
+
+    onVendorSearch(search) {
+        return ([])
     }
 
     async updateInfo() {

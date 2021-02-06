@@ -34,6 +34,7 @@ const AddPopup = (props) => {
             submitButtonText="Create"
             onClose={(e) => onClose(e, props.onClose)}
             onSubmit={(e) => onSubmit(e, props.onSubmit)}
+            submitButtonVariant="primary"
         />
     )
 }

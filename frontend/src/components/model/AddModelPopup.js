@@ -40,7 +40,7 @@ const addModelPopup = (props) => {
             submitButtonText="Create Model"
             onClose={props.onClose}
             onSubmit={(e) => onSubmit(e, props.onSubmit)}
-
+            submitButtonVariant="primary"
         />
     )
 }

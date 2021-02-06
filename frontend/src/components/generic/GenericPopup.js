@@ -15,6 +15,7 @@ import Button from 'react-bootstrap/Button';
 // 'submitButtonText': text displayed for the popup to submit
 // 'onClose': handler for the close button being clicked
 // 'onSubmit': handler for the submit button being clicked
+// 'submitButtonVariant': a string that corresponds to a button variant, eg 'primary' or 'danger'
 
 const genericPopup = (props) => {
 
@@ -29,17 +30,17 @@ const genericPopup = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
-                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit)}
+                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant)}
             </Modal.Footer>
         </Modal>
     )
 }
 
-const buttonArray = (closeText, submitText, onClose, onSubmit) => {
+const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant) => {
     let buttons = [];
 
     buttons.push(<Button variant="secondary" onClick={onClose}>{closeText}</Button>)
-    buttons.push(<Button variant="primary" onClick={onSubmit}>{submitText}</Button>)
+    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit}>{submitText}</Button>)
 
 
     return buttons;

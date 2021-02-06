@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import EditModelPopup from './AddModelPopup';
+import DeletePopup from '../generic/GenericPopup';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -31,12 +32,16 @@ class ModelDetailView extends Component {
                 calibration_frequency: ''
             },
             isEditShown: false,
+            isDeleteShown: false
         }
 
         this.onMoreClicked = this.onMoreClicked.bind(this);
         this.onEditClicked = this.onEditClicked.bind(this);
         this.onEditSubmit = this.onEditSubmit.bind(this);
         this.onEditClose = this.onEditClose.bind(this);
+        this.onDeleteClicked = this.onDeleteClicked.bind(this);
+        this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
+        this.onDeleteClose = this.onDeleteClose.bind(this);
         this.onVendorSearch = this.onVendorSearch.bind(this);
     }
 
@@ -48,8 +53,10 @@ class ModelDetailView extends Component {
         //instrumentData = instrumentServices.getInstrumentSerialByModel(this.state.model_info.pk);
         //istory = useHistory();
         console.log(this.state.model_info)
+        let deletePopup = this.makeDeletePopup();
         return (
             <div>
+                {deletePopup}
                 <EditModelPopup
                     isShown={this.state.isEditShown}
                     onSubmit={this.onEditSubmit}
@@ -57,12 +64,14 @@ class ModelDetailView extends Component {
                     getVendorSearchResults={this.onVendorSearch}
                     existingData={this.state.model_info}
                 />
+                
 
             <div className="background">
                 <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                         <img src={logo} alt="Logo" />
                             <Button onClick={this.onEditClicked}>Edit Model</Button>
+                            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
                     </div>
                     <div className="col-10">
                         <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
@@ -78,7 +87,24 @@ class ModelDetailView extends Component {
             </div >
         );
     }
-
+    
+    makeDeletePopup() {
+        let body = (
+            <p>Are you sure you want to delete Model: {this.state.model_info.model_number}?</p>
+        )
+        return (
+            <DeletePopup
+                show={this.state.isDeleteShown}
+                body={body}
+                headerText="Warning!"
+                closeButtonText="Cancel"
+                submitButtonText="Delete"
+                onClose={this.onDeleteClose}
+                onSubmit={this.onDeleteSubmit}
+                submitButtonVariant="danger"
+            />
+        )
+    }
 
     makeDetailsTable() {
         let modelInfo = this.state.model_info;
@@ -151,14 +177,16 @@ class ModelDetailView extends Component {
 
     }
 
+
+
+    onMoreClicked(e) {
+        //history.push(`/instruments/${e.target.value}`);
+    }
+
     onEditClicked() {
         this.setState({
             isEditShown: true
         })
-    }
-
-    onMoreClicked(e) {
-        //history.push(`/instruments/${e.target.value}`);
     }
 
     onEditSubmit(editedModel) {
@@ -171,6 +199,23 @@ class ModelDetailView extends Component {
         this.setState({
             isEditShown: false
         })
+    }
+
+    onDeleteClicked() {
+        this.setState({
+            isDeleteShown: true
+        })
+    }
+
+    onDeleteClose() {
+        this.setState({
+            isDeleteShown: false
+        })
+    }
+
+    onDeleteSubmit() {
+        console.log("Deleting model");
+        this.onDeleteClose()
     }
 
     onVendorSearch(search) {

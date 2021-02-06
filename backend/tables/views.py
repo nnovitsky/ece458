@@ -29,18 +29,24 @@ def calibration_event_list(request):
         return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
 
     elif request.method == 'POST':
-        # get instrument pk from vendor, model number, serial number
-        # get user pk from username
+        # get item model, instrument, and user from request
         try:
             vendor = request.data['vendor']
             model_number = request.data['model_number']
+            item_model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
+        except ItemModel.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
             serial_number = request.data['serial_number']
-            username = request.data['user']
-            instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
-            user = User.objects.get(username=username)
+            instrument = Instrument.objects.get(item_model=item_model, serial_number=serial_number)
             request.data['instrument'] = instrument.pk
-            request.data['user'] = user.pk
         except Instrument.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            username = request.data['user']
+            user = User.objects.get(username=username)
+            request.data['user'] = user.pk
+        except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # add new calibration event using instrument and user
         serializer = CalibrationEventWriteSerializer(data=request.data)
@@ -139,8 +145,6 @@ def instruments_detail(request, pk):
     elif request.method == 'PUT':
         # fill in immutable fields
         request.data['item_model'] = instrument.item_model.pk
-        request.data['vendor'] = instrument.vendor
-        request.data['model_number'] = instrument.model_number
         request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():

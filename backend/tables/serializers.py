@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name')
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -49,14 +49,14 @@ class InstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'vendor', 'model_number', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'serial_number', 'comment')
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'vendor', 'model_number', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'serial_number', 'comment')
 
 
 class CalibrationEventReadSerializer(serializers.ModelSerializer):

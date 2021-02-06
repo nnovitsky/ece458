@@ -53,3 +53,6 @@ class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
     date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return str(self.instrument) + " " + str(self.date)

@@ -4,14 +4,21 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from django.contrib.auth.models import User
 from backend.tables.serializers import *
+from backend.tables.utils import get_page_response
+from backend.tables.filters import *
 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the tables index.")
+
+
+# def ItemModelSearch(request):
+#     model_list = ItemModel.objects.all()
+#     model_filter = ItemModelFilter(request.GET, queryset=model_list)
+#     return render(request, 'search/user_list.html', {'filter': user_filter})
 
 
 # CALIBRATION EVENTS
@@ -22,26 +29,10 @@ def calibration_event_list(request):
     Returns 200 on successful GET, 201 on successful POST, 400 on invalid POST request data.
     """
     if request.method == 'GET':
-        data = []
         nextPage = 1
         previousPage = 1
         calibration_events = CalibrationEvent.objects.all()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(calibration_events, 10)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            data = paginator.page(1)
-        except EmptyPage:
-            data = paginator.page(paginator.num_pages)
-
-        serializer = CalibrationEventReadSerializer(data, context={'request': request}, many=True)
-        if data.has_next():
-            nextPage = data.next_page_number()
-        if data.has_previous():
-            previousPage = data.previous_page_number()
-
-        return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/calibration_events/?page=' + str(nextPage), 'prevlink': '/api/calibration_events/?page=' + str(previousPage)})
+        return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
 
     elif request.method == 'POST':
         # get instrument pk from vendor, model number, serial number
@@ -107,26 +98,10 @@ def instruments_list(request):
     Returns 200 on successful GET, 201 on successful POST, 400 on invalid POST request data.
     """
     if request.method == 'GET':
-        data = []
         nextPage = 1
         previousPage = 1
         instruments = Instrument.objects.all()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(instruments, 10)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            data = paginator.page(1)
-        except EmptyPage:
-            data = paginator.page(paginator.num_pages)
-
-        serializer = InstrumentReadSerializer(data, context={'request': request}, many=True)
-        if data.has_next():
-            nextPage = data.next_page_number()
-        if data.has_previous():
-            previousPage = data.previous_page_number()
-
-        return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/instruments/?page=' + str(nextPage), 'prevlink': '/api/instruments/?page=' + str(previousPage)})
+        return get_page_response(instruments, request, InstrumentReadSerializer, "instruments", nextPage, previousPage)
 
     elif request.method == 'POST':
         # get model pk from vendor and model number
@@ -186,26 +161,10 @@ def models_list(request):
     Returns 200 on successful GET, 201 on successful POST, 400 on bad POST request data.
     """
     if request.method == 'GET':
-        data = []
         nextPage = 1
         previousPage = 1
         models = ItemModel.objects.all()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(models, 10)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            data = paginator.page(1)
-        except EmptyPage:
-            data = paginator.page(paginator.num_pages)
-
-        serializer = ItemModelSerializer(data, context={'request': request}, many=True)
-        if data.has_next():
-            nextPage = data.next_page_number()
-        if data.has_previous():
-            previousPage = data.previous_page_number()
-
-        return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages, 'nextlink': '/api/models/?page=' + str(nextPage), 'prevlink': '/api/models/?page=' + str(previousPage)})
+        return get_page_response(models, request, ItemModelSerializer, "models", nextPage, previousPage)
 
     elif request.method == 'POST':
         serializer = ItemModelSerializer(data=request.data)

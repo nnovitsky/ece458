@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from backend.tables import views
-from django.conf.urls import url
+from backend.tables import api_views
 from rest_framework_jwt.views import obtain_jwt_token
 
 
@@ -29,4 +29,7 @@ urlpatterns = [
     path('api/instruments/<str:vendor>/<str:model_number>/<str:serial_number>/', views.instruments_detail),
     path('api/calibration_events/', views.calibration_event_list),
     path('token-auth/', obtain_jwt_token),
+    path('api/model_search/', api_views.ItemModelList.as_view()),
+    path('api/instrument_search/', api_views.InstrumentList.as_view()),
+    path('api/calibration_event_search/', api_views.CalibrationEventList.as_view())
 ]

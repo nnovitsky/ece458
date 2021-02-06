@@ -15,7 +15,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'model', 'serial_number', 'comment')
+        fields = ('pk', 'model', 'vendor', 'model_number', 'serial_number', 'comment')
 
 
 class UserSerializer(serializers.ModelSerializer):

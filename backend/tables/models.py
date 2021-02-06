@@ -30,6 +30,8 @@ class Instrument(models.Model):
     Instance of a model with unique model + serial number pair.
     """
     model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
+    vendor = models.CharField(max_length=one_line)
+    model_number = models.CharField(max_length=one_line)
     serial_number = models.CharField(max_length=one_line)
     comment = models.CharField(max_length=two_line, blank=True)
     #most_recent_calibration = models.ForeignKey(CalibrationEvent)

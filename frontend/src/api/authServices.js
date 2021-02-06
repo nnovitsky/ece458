@@ -36,26 +36,10 @@ export default class AuthServices {
 
     async getCurrentUser(token) {
 
-        let user = {
-            "username": "Sara"
+      return fetch('http://localhost:8000/tables/current_user/', {
+        headers: {
+          Authorization: `JWT ${token}`
         }
-
-        if(token != 22)
-        {
-          throw Error("Wrong token");
-        }
-
-        return user;
-
-
-/*         fetch('http://localhost:8000/core/current_user/', {
-            headers: {
-              Authorization: `JWT ${localStorage.getItem('token')}`
-            }
-          })
-            .then(res => res.json())
-            .then(json => {
-              this.setState({ username: json.username });
-            }); */
+      });
     }
 }

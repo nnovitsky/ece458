@@ -21,7 +21,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      displayed_form: '',
       logged_in: localStorage.getItem('token') ? true : false,
       username: '',
       error_message: ''
@@ -30,18 +29,23 @@ class App extends Component {
 
   componentDidMount() {
     if (this.state.logged_in) {
-      fetch('http://localhost:8000/core/current_user/', {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem('token')}`
-        }
-      })
+      authServices.getCurrentUser(localStorage.getItem('token'))
         .then(res => res.json())
         .then(json => {
-          this.setState({ username: json.username });
+          if (typeof json.username === 'undefined') {
+            localStorage.removeItem('token');
+            this.setState({
+              logged_in: false,
+              username: ''
+            });
+          }
+          else {
+            this.setState({ username: json.username })
+          };
         });
     }
     else {
-      console.log("Not Authorized")
+      console.log("Not Logged in")
     }
   }
 
@@ -61,7 +65,6 @@ class App extends Component {
             localStorage.setItem('token', json.token);
             this.setState({
               logged_in: true,
-              displayed_form: '',
               username: json.user.username
             });
           }

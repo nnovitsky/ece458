@@ -39,18 +39,7 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
-        modelServices.getModels().then((result) => {
-            if (result.success) {
-                this.setState({
-                    redirect: null,
-                    tableData: result.data
-                })
-            } else {
-                console.log("error")
-            }
-
-        }
-        )
+        this.updateModelTable();
 
     }
 
@@ -108,8 +97,13 @@ class ModelTablePage extends Component {
     async onAddModelSubmit(newModel) {
         console.log("New model added")
         console.log(newModel);
-        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration);
-        this.onAddModelClosed();
+        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration)
+            .then((res) => {
+                this.updateModelTable();
+                this.onAddModelClosed();
+            }
+        );
+
     }
 
     onAddModelClosed() {
@@ -136,6 +130,21 @@ class ModelTablePage extends Component {
 
     onExportClicked = () => {
         console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
+    }
+
+    async updateModelTable() {
+        modelServices.getModels().then((result) => {
+            if (result.success) {
+                this.setState({
+                    redirect: null,
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+
+        }
+        )
     }
 }
 

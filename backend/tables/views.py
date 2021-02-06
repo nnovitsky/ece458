@@ -11,10 +11,6 @@ from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the tables index.")
-
-
 # CALIBRATION EVENTS
 @api_view(['GET', 'POST'])
 def calibration_event_list(request):
@@ -215,17 +211,28 @@ def current_user(request):
     """
     Determine the current user by their token, and return their data.
     Returns 200 on successful GET.
+    # TODO: allow changing current user's details
     """
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
 
 
-class UserList(APIView):
+@api_view(['GET'])
+def user_list(request):
     """
-    Create a new user. It's called 'UserList' because normally we'd have a get
-    method here too, for retrieving a list of all User objects.
+    Get list of all users. Returns 200 on success.
     """
+    nextPage = 1
+    previousPage = 1
+    users = User.objects.all()
+    return get_page_response(users, request, UserSerializer, "users", nextPage, previousPage)
 
+
+class UserCreate(APIView):
+    """
+    Create a new user.
+    """
+    # allows us to change permissions on who can create a user
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):

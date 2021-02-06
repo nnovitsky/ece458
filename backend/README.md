@@ -1,10 +1,10 @@
-#Django/Backend Guide
+# Django/Backend Guide
 
-##Quick start-up
+## Quick start-up
 This is the crude solution for now 
 (ultimately hoping to have a single script or something that automates this)
 
-####start up:
+#### start up:
 First activate `virtualEnv` (in `ece458/backend`):
 
 `source virtualEnv/bin/Activate` 
@@ -14,7 +14,7 @@ To spin up website on local host:
 `python3 manage.py runserver`
 
 
-####Migrations:
+#### Migrations:
 
 
 Django automates any changes to our data models by writing the 
@@ -36,7 +36,7 @@ To actually apply the changes:
 
  `python3 manage.py migrate`
 
-####Troubleshooting:
+#### Troubleshooting:
 
 If missing python modules (in `ece458/`):
 
@@ -59,7 +59,7 @@ and `PYTHONPATH` environmental variables:
  `export VIRTUAL_ENV=/path/to/your/project/ece458/virtualEnv`
  
  
-##Django Admin Credentials
+## Django Admin Credentials
 Go to: http://127.0.0.1:8000/admin
 
 Username: admin

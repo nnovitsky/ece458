@@ -94,6 +94,40 @@ export default class ModelServices {
         )
     }
 
+    async deleteModel(pk) {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    console.log(result)
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            );
+
+    }
+
     getAllModelNumbers() {
         let result = new Set();
         modelData.getModels.forEach(el => {

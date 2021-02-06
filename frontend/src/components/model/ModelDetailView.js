@@ -5,7 +5,7 @@ import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { useHistory, withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
@@ -23,6 +23,7 @@ class ModelDetailView extends Component {
         super(props);
         console.log(props)
         this.state = {
+            redirect: null,
             model_info: {
                 pk: this.props.match.params.pk,
                 vendor: '',
@@ -54,6 +55,10 @@ class ModelDetailView extends Component {
         //istory = useHistory();
         console.log(this.state.model_info)
         let deletePopup = this.makeDeletePopup();
+
+        if (this.state.redirect != null) {
+            return <Redirect to={this.state.redirect} />
+        }
         return (
             <div>
                 {deletePopup}
@@ -180,7 +185,7 @@ class ModelDetailView extends Component {
 
 
     onMoreClicked(e) {
-        //history.push(`/instruments/${e.target.value}`);
+        this.state.redirect = `/instruments/${e.target.value}`
     }
 
     onEditClicked() {
@@ -213,9 +218,17 @@ class ModelDetailView extends Component {
         })
     }
 
-    onDeleteSubmit() {
+    async onDeleteSubmit() {
         console.log("Deleting model");
-        this.onDeleteClose()
+        await modelServices.deleteModel(this.state.model_info.pk).then(result => {
+            if (result.success) {
+                this.onDeleteClose()
+                this.state.redirect = '/models'
+            } else {
+                console.log('failed to delete');
+            }
+        });
+
     }
 
     onVendorSearch(search) {

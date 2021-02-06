@@ -38,6 +38,7 @@ class login extends React.Component {
                     onChange={this.handle_change}
                 />
                 <input type="submit" />
+                <h5>{this.props.error_message}</h5>
             </form>
             </div>
         );
@@ -47,5 +48,6 @@ class login extends React.Component {
 export default login;
 
 login.propTypes = {
-    handle_login: PropTypes.func.isRequired
+    handle_login: PropTypes.func.isRequired,
+    error_message: PropTypes.string.isRequired,
   };

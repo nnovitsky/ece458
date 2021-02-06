@@ -9,21 +9,13 @@ export default class AuthServices {
     constructor() { }
 
     async login(data) {
-        let body = JSON.stringify(data)
-        console.log(body)
-        console.log(data.username)
-
-        let user = {
-            "username": "Sara",
-            "token": "22"
-        }
-
-        if(data.username != "Sara")
-        {
-          throw Error("Wrong name");
-        }
-
-        return user;
+      return fetch('http://localhost:8000/token-auth/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
         /*fetch('http://localhost:8000/token-auth/', {
             method: 'POST',
             headers: {

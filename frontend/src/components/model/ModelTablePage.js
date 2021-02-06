@@ -82,6 +82,7 @@ class ModelTablePage extends Component {
 
 
     onDetailClicked(e) {
+        console.log(e.target.value)
         this.setState({
             redirect: `/models/${e.target.value}`
         })

@@ -3,8 +3,6 @@ import modelData from './modelData.json';
 const API_URL = 'http://localhost:8000';
 
 export default class ModelServices {
-    constructor() { }
-
     async getModels() {
         const token = localStorage.getItem('token');
 
@@ -63,8 +61,37 @@ export default class ModelServices {
             })
     }
 
-    getModel(pk) {
-        return modelData.modelsByKey[pk];
+    async getModel(pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    return result
+                },
+                (error) => {
+                    console.log(error)
+                    result.success = false;
+                    return result
+                }
+            )
         // const url = `${API_URL}/api/customers/${pk}`;
         // return axios.get(url).then(response => response.data);
     }

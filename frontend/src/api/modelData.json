@@ -1,11 +1,12 @@
 {
   "modelsByKey": {
-    "516": {
+    "1": {
       "model_number": "87V",
       "vendor": "Fluke",
       "description": "Multimeter with temp probe",
       "calibration_frequency": "87",
-      "comment": "This model is retired, need to replace soon"
+      "comment": "This model is retired, need to replace soon",
+      "pk": 1
     },
     "517": {
       "model_number": "5700V",

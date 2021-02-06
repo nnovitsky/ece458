@@ -15,12 +15,6 @@ def index(request):
     return HttpResponse("Hello, world. You're at the tables index.")
 
 
-# def ItemModelSearch(request):
-#     model_list = ItemModel.objects.all()
-#     model_filter = ItemModelFilter(request.GET, queryset=model_list)
-#     return render(request, 'search/user_list.html', {'filter': user_filter})
-
-
 # CALIBRATION EVENTS
 @api_view(['GET', 'POST'])
 def calibration_event_list(request):
@@ -56,38 +50,44 @@ def calibration_event_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# # TODO: unique key to grab cal event?
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def calibration_event_detail(request, vendor, model_number, serial_number):
-#     """
-#     Retrieve, edit, or delete an instrument by vendor + model + serial number.
-#     Returns 404 if instrument or reference model not found, 400 if data to edit instrument is invalid, 200 on successful
-#     GET or PUT, 204 on successful DELETE.
-#     """
-#     try:
-#         instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
-#     except Instrument.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-#
-#     if request.method == 'GET':
-#         serializer = InstrumentSerializer(instrument, context={'request': request})
-#         return Response(serializer.data)
-#
-#     elif request.method == 'PUT':
-#         try:
-#             model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-#             request.data['item_model'] = model.pk
-#         except Instrument.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-#         serializer = InstrumentSerializer(instrument, data=request.data, context={'request': request})
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     elif request.method == 'DELETE':
-#         instrument.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+@api_view(['GET', 'PUT', 'DELETE'])
+def calibration_event_detail(request, pk):
+    """
+    Retrieve, edit, or delete an instrument by primary key.
+    Returns 404 if calibration event not found, 400 if data to edit calibration event is invalid, 200 on successful
+    GET or PUT, 204 on successful DELETE.
+    """
+    try:
+        calibration_event = CalibrationEvent.objects.get(pk=pk)
+    except CalibrationEvent.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CalibrationEventReadSerializer(calibration_event, context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        # fill in immutable fields and grab new user's pk
+        request.data['instrument'] = calibration_event.instrument.pk
+        if 'username' in request.data:
+            try:
+                username = request.data['username']
+                user = User.objects.get(username=username)
+                request.data['user'] = user.pk
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            request.data['user'] = calibration_event.user.pk
+
+        serializer = CalibrationEventWriteSerializer(calibration_event, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        calibration_event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # INSTRUMENTS
@@ -121,14 +121,14 @@ def instruments_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def instruments_detail(request, vendor, model_number, serial_number):
+def instruments_detail(request, pk):
     """
-    Retrieve, edit, or delete an instrument by vendor + model + serial number.
+    Retrieve, edit, or delete an instrument by pk.
     Returns 404 if instrument or reference model not found, 400 if data to edit instrument is invalid, 200 on successful
     GET or PUT, 204 on successful DELETE.
     """
     try:
-        instrument = Instrument.objects.get(vendor=vendor, model_number=model_number, serial_number=serial_number)
+        instrument = Instrument.objects.get(pk=pk)
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -137,11 +137,11 @@ def instruments_detail(request, vendor, model_number, serial_number):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        try:
-            model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-            request.data['item_model'] = model.pk
-        except Instrument.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        # fill in immutable fields
+        request.data['item_model'] = instrument.item_model.pk
+        request.data['vendor'] = instrument.vendor
+        request.data['model_number'] = instrument.model_number
+        request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -175,14 +175,14 @@ def models_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def models_detail(request, vendor, model_number):
+def models_detail(request, pk):
     """
-    Retrieve, update or delete a model by vendor + model number.
+    Retrieve, update or delete a model by pk.
     Returns 404 if model does not exist, 200 on successful GET or PUT, 400 on bad PUT request data,
     204 on successful DELETE.
     """
     try:
-        model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
+        model = ItemModel.objects.get(pk=pk)
     except ItemModel.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -191,6 +191,9 @@ def models_detail(request, vendor, model_number):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
+        # fill in immutable fields
+        request.data['vendor'] = model.vendor
+        request.data['model_number'] = model.model_number
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()

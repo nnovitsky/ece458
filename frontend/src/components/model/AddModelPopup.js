@@ -15,7 +15,7 @@ let newModel = {
     vendor: '',
     description: '',
     comment: '',
-    callibration: ''
+    calibration: ''
 }
 
 const modelName = "model";
@@ -81,7 +81,7 @@ const onTextInput = (e) => {
             newModel.comment = val;
             return
         case callibrationName:
-            newModel.callibration = val;
+            newModel.calibration = val;
             return
         default:
             return;

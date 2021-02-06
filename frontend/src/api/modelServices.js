@@ -28,10 +28,7 @@ export default class ModelServices {
                         console.log("GET NEW TOKEN")
                         result.success = false;
                     }
-                    console.log("Direct response:")
-                    console.log(json)
                     result.data = json.data
-                    console.log(result)
                     return result
                 },
                 (error) => {
@@ -40,6 +37,30 @@ export default class ModelServices {
                     return result
                 }
             )
+    }
+
+    async addModel(vendor, modelNumber, description, comment, calFrequency) {
+        let data = {
+            vendor: vendor,
+            model_number: modelNumber,
+            description: description,
+            comment: comment,
+            calibration_frequency: calFrequency
+        }
+        const token = localStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/models/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+            })
     }
 
     getModel(pk) {

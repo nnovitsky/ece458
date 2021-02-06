@@ -41,7 +41,6 @@ class ModelTablePage extends Component {
     async componentDidMount() {
         modelServices.getModels().then((result) => {
             if (result.success) {
-                console.log("success")
                 this.setState({
                     redirect: null,
                     tableData: result.data
@@ -106,9 +105,10 @@ class ModelTablePage extends Component {
         })
     }
 
-    onAddModelSubmit(newModel) {
+    async onAddModelSubmit(newModel) {
         console.log("New model added")
         console.log(newModel);
+        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration);
         this.onAddModelClosed();
     }
 

@@ -27,9 +27,6 @@ const commentName = "comment";
 const callibrationName = "callibration";
 
 const addModelPopup = (props) => {
-    if (props.existingData != null) {
-        newModel = props.existingData;
-    }
     let body = makeBody(props.getVendorSearchResults);
     return (
         <GenericPopup
@@ -49,7 +46,7 @@ const makeBody = (getVendorSearchResults) => {
     return (
         <Form className="popup">
             <Form.Label>Model Number</Form.Label>
-            <Form.Control required type="text" name={modelName} onChange={onTextInput} placeholder="Enter Model Number" value={newModel.model_number} />
+            <Form.Control required type="text" name={modelName} onChange={onTextInput} placeholder="Enter Model Number" />
 
             <Form.Label>Vendor</Form.Label>
             <FilterField
@@ -59,13 +56,13 @@ const makeBody = (getVendorSearchResults) => {
                 fieldName="Enter Vendor"
             />
             <Form.Label>Description</Form.Label>
-            <Form.Control required type="text" name={descriptionName} onChange={onTextInput} placeholder="Enter Description" value={newModel.description} />
+            <Form.Control required type="text" name={descriptionName} onChange={onTextInput} placeholder="Enter Description" />
 
             <Form.Label>Comments</Form.Label>
-            <Form.Control as="textarea" rows={3} name={commentName} onChange={onTextInput} value={newModel.comment} />
+            <Form.Control as="textarea" rows={3} name={commentName} onChange={onTextInput} />
 
             <Form.Label>Callibration Frequency (days)</Form.Label>
-            <Form.Control required type="text" name={callibrationName} onChange={onTextInput} placeholder="Enter Callibration Frequency" value={newModel.calibration_frequency} />
+            <Form.Control required type="text" name={callibrationName} onChange={onTextInput} placeholder="Enter Callibration Frequency" />
         </Form>
     )
 }

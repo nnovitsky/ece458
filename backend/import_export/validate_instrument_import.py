@@ -11,7 +11,7 @@ column_types = [
     'Comment',
 ]
 
-TEST_CSV = 'sample_CSVs/_Instruments_test1_pass.csv'
+TEST_CSV = 'sample_CSVs/_Instruments_test3_fail.csv'
 
 
 def validate_column_headers(headers):

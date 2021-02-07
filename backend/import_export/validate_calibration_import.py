@@ -13,7 +13,7 @@ column_types = [
     'Calibration Comment',
 ]
 
-TEST_CSV = 'sample_CSVs/_Instruments_test1_pass.csv'
+TEST_CSV = 'sample_CSVs/_Calibrations_test1_pass.csv'
 
 
 def validate_column_headers(headers):

@@ -137,7 +137,6 @@ class ModelTablePage extends Component {
         modelServices.getModels().then((result) => {
             if (result.success) {
                 this.setState({
-                    redirect: null,
                     tableData: result.data
                 })
             } else {

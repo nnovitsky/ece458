@@ -20,7 +20,7 @@ class InstrumentTablePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            redirect: null,   //this will be a url if a redirect is necessary
+            redirect: '/instruments/115',   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
             filters: {
                 model: '',
@@ -42,15 +42,11 @@ class InstrumentTablePage extends Component {
         this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
     }
     //make async calls here
-    componentDidMount() {
-        let data = instrumentServices.getInstruments();
-        this.setState({
-            tableData: data
-        });
+    async componentDidMount() {
+        await this.updateTable();
     }
 
     render() {
-        console.log(this.state.filters)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -91,6 +87,18 @@ class InstrumentTablePage extends Component {
             </div>
 
         );
+    }
+
+    async updateTable() {
+        instrumentServices.getInstruments().then((result) => {
+            if (result.success) {
+                this.setState({
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+        })
     }
 
     onDetailViewRequested(e) {

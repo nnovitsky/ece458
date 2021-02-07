@@ -1,75 +1,97 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import logo from '../../assets/HPT_logo_crop.png';
-import { useParams } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import InstrumentServices from "../../api/instrumentServices";
 
 const instrumentServices = new InstrumentServices();
-let detailData;
-//let history;
 
+class InstrumentDetailView extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            redirect: null,
+            instrument_info: {
+                instrument_pk: this.props.match.params.pk,
+                model_number: 'fluke',
+                model_pk: '1',
+                serial: '785-B45',
+                comment: 'this is a multimeter',
+                calibration_history: []
+            }
+        }
 
-const InstrumentDetailView = () => {
-    let { pk } = useParams();
-    detailData = instrumentServices.getInstrument(pk);
-    //history = useHistory();
-    return (
-        <div className="background">
-            <div className="row mainContent">
-                <div className="col-2 text-center">
+        this.onModelLinkClicked = this.onModelLinkClicked.bind(this);
+    }
+
+    async componentDidMount() {
+
+    }
+
+    render() {
+        return (
+            <div className="background">
+                <div className="row mainContent">
+                    <div className="col-2 text-center">
                         <img src={logo} alt="Logo" />
                     </div>
-                <div className="col-10">
-                        <h1>{`Instrument: ${detailData["serial"]}`}</h1>
-                <Row>
-                    <Col>{makeDetailsTable()}</Col>
-                    <Col xs={6}>
-                        {makeCallibrationTable()}
-                    </Col>
-                </Row>
+                    <div className="col-10">
+                        <h1>{`Instrument: ${this.state.instrument_info.se}`}</h1>
+                        <Row>
+                            <Col>{this.makeDetailsTable()}</Col>
+                            <Col xs={6}>
+                                {this.makeCallibrationTable()}
+                            </Col>
+                        </Row>
                     </div>
                 </div>
-        </div>
+            </div>
 
-    );
+        );
+    }
+
+
+    makeDetailsTable() {
+        let detailData = this.state.instrument_info;
+        return (
+            <Table bordered>
+                <tbody>
+                    <tr>
+                        <td><strong>Serial Number</strong></td>
+                        <td>{detailData.serial}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Model</strong></td>
+                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comment</strong></td>
+                        <td>{detailData.comment}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Last Callibration</strong></td>
+                        <td>{'FIGURE THIS OUT'}</td>
+                    </tr>
+
+                </tbody>
+            </Table>
+        )
+    }
+
+    makeCallibrationTable() {
+        return (
+            <h3>Callibration History will go here</h3>
+        )
+    }
+
+    onModelLinkClicked() {
+        this.setState({
+            redirect: `/models/${this.state.instrument_info.model_pk}`
+        })
+    }
 }
 
-const makeDetailsTable = () => {
-    return (
-        <Table bordered hover>
-            <tbody>
-                <tr>
-                    <td><strong>Vendor</strong></td>
-                    <td>{detailData["vendor"]}</td>
-                </tr>
-                <tr>
-                    <td><strong>Model</strong></td>
-                    <td>{detailData["model number"]}</td>
-                </tr>
-                <tr>
-                    <td><strong>Description</strong></td>
-                    <td>{detailData["short description"]}</td>
-                </tr>
-                <tr>
-                    <td><strong>Last Callibration</strong></td>
-                    <td>{detailData["most recent callibration date"]}</td>
-                </tr>
-                <tr>
-                    <td><strong>Next Callibration</strong></td>
-                    <td>TBD</td>
-                </tr>
-            </tbody>
-        </Table>
-    )
-}
-
-const makeCallibrationTable = () => {
-    return (
-        <h3>Callibration History will go here</h3>
-    )
-}
-
-export default InstrumentDetailView;
+export default withRouter(InstrumentDetailView);

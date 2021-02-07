@@ -17,7 +17,6 @@ let newInstrument = {
     model: '',
     serial: '',
     comment: '',
-    callibration: new Date(),
 }
 
 let errorMessages = [];
@@ -61,10 +60,6 @@ const makeBody = (getModelSearchResults) => {
             <Form.Group>
                 <Form.Label>Comments</Form.Label>
                 <Form.Control as="textarea" rows={3} onChange={onCommentChange} />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Last Callibration</Form.Label>
-                <DatePicker selected={new Date()} onSelect={date => (newInstrument.callibration = date)} />
             </Form.Group>
 
 

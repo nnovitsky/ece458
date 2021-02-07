@@ -129,6 +129,7 @@ export default class ModelServices {
     }
 
     async modelFilterSearch(filters) {
+        console.log(filters)
         const token = localStorage.getItem('token');
 
         let result = {

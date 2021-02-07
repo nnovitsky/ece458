@@ -1,13 +1,14 @@
-#Vendor
-#Model Number
-#Short Description
-#Comment
-#Calibration Frequency
+import datetime
+
 VENDOR_MAX_LENGTH = 30
 MODEL_NUM_MAX_LENGTH = 40
 DESC_MAX_LENGTH = 100
 COMMENT_MAX_LENGTH = 200
 CALIBRATION_FREQUENCY_MAX_LENGTH = 10
+SERIAL_NUM_MAX_LENGTH = 40
+USERNAME_MAX_LENGTH = 50
+EXPECTED_DATE_FORMAT = '%Y-%m-%d'
+
 
 
 def is_valid_vendor(vendor):
@@ -22,13 +23,13 @@ def is_valid_vendor(vendor):
     return True, "Valid Vendor"
 
 
-def is_valid_model_number(model_number):
+def is_valid_model_num(model_num):
 
-    if len(model_number) > MODEL_NUM_MAX_LENGTH:
+    if len(model_num) > MODEL_NUM_MAX_LENGTH:
         return False, f"Model number length too long." \
-                      f"{len(model_number)} chars long, " \
+                      f"{len(model_num)} chars long, " \
                       f"Max: {MODEL_NUM_MAX_LENGTH} chars"
-    elif len(model_number) == 0:
+    elif len(model_num) == 0:
         return False, "Missing model number."
 
     return True, "Valid Model Number"
@@ -64,3 +65,37 @@ def is_valid_calibration_freq(calibration_freq):
                       f"Max: {CALIBRATION_FREQUENCY_MAX_LENGTH} chars"
 
     return True, "Valid calibration freq"
+
+
+def is_valid_serial_num(serial_num):
+    if len(serial_num) > SERIAL_NUM_MAX_LENGTH:
+        return False, f"Serial number length too long." \
+                      f"{len(serial_num)} chars long, " \
+                      f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
+    elif len(serial_num) == 0:
+        return False, "Missing serial number."
+
+    return True, "Valid Serial Number"
+
+
+def is_valid_username(calibration_username):
+    if len(calibration_username) > USERNAME_MAX_LENGTH:
+        return False, f"Username length too long." \
+                      f"{len(calibration_username)} chars long, " \
+                      f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
+    elif len(calibration_username) == 0:
+        return False, "Missing username for calibration event."
+
+    return True, "Valid username"
+
+
+def is_valid_calibration_date(calibration_date):
+    if len(calibration_date) == 0:
+        return False, "Missing calibration date."
+
+    try:
+        datetime.datetime.strptime(calibration_date, EXPECTED_DATE_FORMAT)
+    except ValueError:
+        return False, "Incorrect date format, should be YYYY-MM-DD."
+
+    return True, "Correct date format."

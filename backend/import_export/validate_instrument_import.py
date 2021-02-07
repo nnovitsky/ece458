@@ -7,12 +7,11 @@ from backend.import_export import field_validators
 column_types = [
     'Vendor',
     'Model Number',
-    'Short Description',
+    'Serial Number',
     'Comment',
-    'Calibration Frequency',
 ]
 
-TEST_CSV = 'sample_CSVs/_Models_test2_fail.csv'
+TEST_CSV = 'sample_CSVs/_Instruments_test1_pass.csv'
 
 
 def validate_column_headers(headers):
@@ -41,12 +40,10 @@ def validate_row(current_row):
             valid_cell, info = field_validators.is_valid_vendor(item)
         elif column_type == 'Model Number':
             valid_cell, info = field_validators.is_valid_model_num(item)
-        elif column_type == 'Short Description':
-            valid_cell, info = field_validators.is_valid_description(item)
+        elif column_type == 'Serial Number':
+            valid_cell, info = field_validators.is_valid_serial_num(item)
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
-        elif column_type == 'Calibration Frequency':
-            valid_cell, info = field_validators.is_valid_calibration_freq(item)
 
         if not valid_cell:
             return False, info
@@ -64,7 +61,6 @@ def main():
         if not has_valid_columns:
             logging.error(header_log)
 
-
         row_number = 1
         if has_valid_columns:
             for row in reader:
@@ -74,6 +70,7 @@ def main():
                     sys.exit()
 
                 row_number += 1
+
             logging.info(f"Successfully parsed {row_number} rows.")
 
 

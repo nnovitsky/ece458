@@ -101,7 +101,7 @@ def instruments_list(request):
         nextPage = 1
         previousPage = 1
         instruments = Instrument.objects.all()
-        return get_page_response(instruments, request, InstrumentReadSerializer, "instruments", nextPage, previousPage)
+        return get_page_response(instruments, request, ListInstrumentReadSerializer, "instruments", nextPage, previousPage)
 
     elif request.method == 'POST':
         # get model pk from vendor and model number
@@ -133,12 +133,10 @@ def instruments_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = InstrumentReadSerializer(instrument, context={'request': request})
+        serializer = DetailInstrumentReadSerializer(instrument, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        # fill in immutable fields
-        # TODO: allow editing
         if 'vendor' in request.data or 'model_number' in request.data:
             vendor = request.data['vendor'] if 'vendor' in request.data else instrument.item_model.vendor
             model_number = request.data['model_number'] if 'model_number' in request.data else instrument.item_model.model_number
@@ -195,7 +193,7 @@ def models_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ItemModelSerializer(model, context={'request': request})
+        serializer = DetailItemModelSerializer(model, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':

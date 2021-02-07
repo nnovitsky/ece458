@@ -14,14 +14,14 @@ class ItemModelList(ListAPIView):
 
 class InstrumentList(ListAPIView):
     queryset = Instrument.objects.all()
-    serializer_class = InstrumentReadSerializer
+    serializer_class = ListInstrumentReadSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_class = InstrumentFilter
 
 
 class CalibrationEventList(ListAPIView):
     queryset = CalibrationEvent.objects.order_by('-date')
-    serializer_class = CalibrationEventReadSerializer
+    serializer_class = SimpleCalibrationEventReadSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_class = CalibrationEventFilter
 

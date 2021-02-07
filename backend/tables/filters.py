@@ -5,6 +5,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 class ItemModelFilter(django_filters.rest_framework.FilterSet):
     vendor = django_filters.CharFilter(lookup_expr='icontains')
     model_number = django_filters.CharFilter(lookup_expr='icontains')
+    description = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = ItemModel
@@ -16,10 +17,11 @@ class InstrumentFilter(django_filters.rest_framework.FilterSet):
     model_number = django_filters.CharFilter(field_name='item_model__model_number', lookup_expr='icontains')
     serial_number = django_filters.CharFilter(lookup_expr='icontains')
     model_pk = django_filters.NumberFilter(field_name='item_model__pk', lookup_expr='exact')
+    description = django_filters.CharFilter(field_name='item_model__description', lookup_expr='icontains')
 
     class Meta:
         model = Instrument
-        fields = ['item_model', 'comment', 'serial_number']
+        fields = ['item_model', 'comment', 'serial_number', 'description']
 
 
 class CalibrationEventFilter(django_filters.rest_framework.FilterSet):

@@ -69,6 +69,7 @@ class App extends Component {
               logged_in: true,
               username: json.user.username
             });
+            this.setState({ error_message: '' });
           }
         });
     }

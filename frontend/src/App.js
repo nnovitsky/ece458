@@ -93,6 +93,7 @@ class App extends Component {
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} exact />
             <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} exact />
+            <ProtectedRoute path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <ProtectedRoute path="/admin" component={AdminPage} exact />
             <Route path="/" exact />

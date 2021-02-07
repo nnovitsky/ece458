@@ -1,21 +1,14 @@
 from rest_framework import serializers
-from backend.tables.models import ItemModel
+from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
-
-
-class ItemModelSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name')
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -42,3 +35,41 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('token', 'username', 'password')
+
+
+class ItemModelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemModel
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
+
+
+class InstrumentReadSerializer(serializers.ModelSerializer):
+    item_model = ItemModelSerializer()
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'item_model', 'serial_number', 'comment')
+
+
+class InstrumentWriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'item_model', 'serial_number', 'comment')
+
+
+class CalibrationEventReadSerializer(serializers.ModelSerializer):
+    instrument = InstrumentReadSerializer()
+    user = UserSerializer()
+
+    class Meta:
+        model = CalibrationEvent
+        fields = ('date', 'user', 'instrument')
+
+
+class CalibrationEventWriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CalibrationEvent
+        fields = ('date', 'user', 'instrument')

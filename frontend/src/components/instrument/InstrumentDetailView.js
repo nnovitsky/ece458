@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
 import { withRouter } from "react-router-dom";
+
+import AddCalibrationPopup from './AddCalibrationPopup';
 
 import InstrumentServices from "../../api/instrumentServices";
 
@@ -21,10 +24,13 @@ class InstrumentDetailView extends Component {
                 serial: '785-B45',
                 comment: 'this is a multimeter',
                 calibration_history: []
-            }
+            },
+            isAddCalPopupShown: false,
         }
 
-        this.onModelLinkClicked = this.onModelLinkClicked.bind(this);
+        this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
+        this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
+        this.onAddCalibrationClose = this.onAddCalibrationClose.bind(this);
     }
 
     async componentDidMount() {
@@ -32,23 +38,30 @@ class InstrumentDetailView extends Component {
     }
 
     render() {
+        let addCalibrationPopup = this.makeAddCalibrationPopup();
         return (
-            <div className="background">
-                <div className="row mainContent">
-                    <div className="col-2 text-center">
-                        <img src={logo} alt="Logo" />
-                    </div>
-                    <div className="col-10">
-                        <h1>{`Instrument: ${this.state.instrument_info.se}`}</h1>
-                        <Row>
-                            <Col>{this.makeDetailsTable()}</Col>
-                            <Col xs={6}>
-                                {this.makeCallibrationTable()}
-                            </Col>
-                        </Row>
+            <div>
+                {addCalibrationPopup}
+                <div className="background">
+                    <div className="row mainContent">
+                        <div className="col-2 text-center button-col">
+                            <img src={logo} alt="Logo" />
+                            <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                            <Button>Download Certificate</Button>
+                        </div>
+                        <div className="col-10">
+                            <h1>{`Instrument: ${this.state.instrument_info.se}`}</h1>
+                            <Row>
+                                <Col>{this.makeDetailsTable()}</Col>
+                                <Col xs={6}>
+                                    {this.makeCallibrationTable()}
+                                </Col>
+                            </Row>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
         );
     }
@@ -79,6 +92,33 @@ class InstrumentDetailView extends Component {
                 </tbody>
             </Table>
         )
+    }
+
+    makeAddCalibrationPopup() {
+        return (
+            <AddCalibrationPopup
+                isShown={this.state.isAddCalPopupShown}
+                onClose={this.onAddCalibrationClose}
+                onSubmit={this.onAddCalibrationSubmit}
+            />
+        )
+    }
+
+    onAddCalibrationClicked() {
+        this.setState({
+            isAddCalPopupShown: true,
+        })
+    }
+
+    async onAddCalibrationSubmit(calibrationEvent) {
+        console.log(calibrationEvent)
+        this.onAddCalibrationClose();
+    }
+
+    onAddCalibrationClose() {
+        this.setState({
+            isAddCalPopupShown: false
+        })
     }
 
     makeCallibrationTable() {

@@ -23,7 +23,7 @@ let newInstrument = {
 let errorMessages = [];
 
 
-const AddPopup = (props) => {
+const AddInstrumentPopup = (props) => {
     let body = makeBody(props.getModelSearchResults);
     return (
         <GenericPopup
@@ -64,7 +64,7 @@ const makeBody = (getModelSearchResults) => {
             </Form.Group>
             <Form.Group>
                 <Form.Label>Last Callibration</Form.Label>
-                <DatePicker selected={newInstrument.callibration} onSelect={date => (newInstrument.callibration = date)} />
+                <DatePicker selected={new Date()} onSelect={date => (newInstrument.callibration = date)} />
             </Form.Group>
 
 
@@ -101,4 +101,4 @@ const isValid = () => {
     return true;
 }
 
-export default AddPopup;
+export default AddInstrumentPopup;

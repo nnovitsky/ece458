@@ -4,7 +4,7 @@ import ModelServices from '../../api/modelServices';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
 
-import AddPopup from "./AddPopup";
+import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import './instrument.css';
 

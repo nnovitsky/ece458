@@ -21,7 +21,7 @@ class login extends React.Component {
     render() {
         return (
             <div style={{textAlign: "center"}}>
-            <form className="login" onSubmit={handleLogin}>
+            <form className="login" onSubmit={e => this.props.handle_login(e, this.state)}>
                 <h2>Log In</h2>
                 <label htmlFor="username">Username</label>
                 <input
@@ -38,6 +38,7 @@ class login extends React.Component {
                     onChange={this.handle_change}
                 />
                 <input type="submit" />
+                <h5>{this.props.error_message}</h5>
             </form>
             </div>
         );
@@ -46,6 +47,7 @@ class login extends React.Component {
 
 export default login;
 
-const handleLogin = (e) => {
-    console.log("Login Holder");
-}
+login.propTypes = {
+    handle_login: PropTypes.func.isRequired,
+    error_message: PropTypes.string.isRequired,
+  };

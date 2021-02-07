@@ -1,33 +1,34 @@
 {
   "modelsByKey": {
-    "516": {
-      "model number": "87V",
+    "1": {
+      "model_number": "87V",
       "vendor": "Fluke",
       "description": "Multimeter with temp probe",
-      "callibration frequency": "87",
-      "comment": "This model is retired, need to replace soon"
+      "calibration_frequency": "87",
+      "comment": "This model is retired, need to replace soon",
+      "pk": 1
     },
     "517": {
-      "model number": "5700V",
+      "model_number": "5700V",
       "vendor": "Fluke",
       "description": "Multimeter with temp probe",
-      "callibration frequency": "120",
+      "calibration_frequency": "120",
       "comment": "Brand new, we should get more of these"
     }
   },
   "getModels": [
     {
-      "model number": "87V",
+      "model_number": "87V",
       "vendor": "Fluke",
       "description": "Multimeter with temp probe",
-      "callibration frequency": "87",
+      "callibration_frequency": "87",
       "key": "516"
     },
     {
-      "model number": "5700V",
+      "model_number": "5700V",
       "vendor": "Fluke",
       "description": "Multimeter with temp probe",
-      "callibration frequency": "120",
+      "callibration_frequency": "120",
       "key": "517"
     }
   ]

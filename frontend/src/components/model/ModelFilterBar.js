@@ -1,64 +1,45 @@
 import React from 'react';
-import FilterField from "../generic/FilterField";
 
+import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import ModelServices from '../../api/modelServices';
-import InstrumentServices from '../../api/instrumentServices';
 import Button from 'react-bootstrap/esm/Button';
-
-let modelServices = new ModelServices();
-let instrumentServices = new InstrumentServices();
 
 const modelName = "model";
 const vendorName = "vendor";
-const callibrationName = "callibrationFrequency";
 const descriptionName = "description";
 
-const ModelFilterBar = () => {
+let filters = {
+    model: '',
+    vendor: '',
+    description: '',
+}
+
+// 'onSearch" a prop handler that is called when search is clicked, it will be passed a filters object^
+const ModelFilterBar = (props) => {
     return (
         <div>
 
             <Container>
                 <Row>
-                    <Col xs={2}>
+                    <Col>
                         <h3>Filters</h3>
+                        <Form.Group>
+                            <Form.Control name={modelName} type="text" placeholder="Enter Model" onChange={onTextInput} />
+                        </Form.Group>
                     </Col>
                     <Col>
-
-                        <FilterField
-                            dropdownResults={modelServices.getAllModelNumbers()}
-                            onTextInput={onTextInput}
-                            fieldName="Model Number"
-                            name={modelName}
-                        />
-                        <FilterField
-                            dropdownResults={modelServices.getAllVendors()}
-                            onTextInput={onTextInput}
-                            fieldName="Vendor"
-                            name={vendorName}
-                        />
-
-                    </Col>
-                    <Col>
-
-                        <FilterField
-                            dropdownResults={modelServices.getAllDescriptions()}
-                            onTextInput={onTextInput}
-                            fieldName="Description"
-                            name={descriptionName}
-                        />
-                        <FilterField
-                            dropdownResults={modelServices.getAllCallibrationFrequencies()}
-                            onTextInput={onTextInput}
-                            fieldName="Callibration Frequency"
-                            name={callibrationName}
-                        />
+                        <Form.Group>
+                            <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
+                        </Form.Group>
                     </Col>
                     <Col xs={2}>
-                        <Button className="search-button">Search</Button>
+                        <Button className="search-button" onClick={(e) => onSearch(props.onSearch)}>Search</Button>
                     </Col>
                 </Row>
 
@@ -71,18 +52,21 @@ const ModelFilterBar = () => {
 const onTextInput = (e) => {
     switch (e.target.name) {
         case modelName:
-            console.log(`Model input: ${e.target.value}`);
+            filters.model = e.target.value;
             return;
         case vendorName:
-            console.log(`Vendor input: ${e.target.value}`);
-            return;
-        case callibrationName:
-            console.log(`Callibration input: ${e.target.value}`);
+            filters.vendor = e.target.value;
             return;
         case descriptionName:
-            console.log(`Description input: ${e.target.value}`);
+            filters.description = e.target.value
+            return;
+        default:
             return;
     }
+}
+
+const onSearch = (parentSearch) => {
+    parentSearch(filters);
 }
 
 export default ModelFilterBar;

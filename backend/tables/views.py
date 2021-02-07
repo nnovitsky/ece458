@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
@@ -206,15 +204,27 @@ def models_detail(request, pk):
 
 
 # USERS
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 def current_user(request):
     """
-    Determine the current user by their token, and return their data.
-    Returns 200 on successful GET.
-    # TODO: allow changing current user's details
+    Determine the current user by their token, and return their data or update their profile.
+    Returns 200 on successful GET or PUT.
     """
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        if 'username' not in request.data: request.data['username'] = request.user.username
+        if 'password' in request.data:
+            pw = request.data.pop('password')
+            request.user.set_password(pw)
+            request.user.save()
+        serializer = UserSerializer(request.user, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

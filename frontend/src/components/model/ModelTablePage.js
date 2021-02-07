@@ -39,6 +39,10 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
+        this.setState({
+            redirect: null
+        }
+        )
         this.updateModelTable();
 
     }
@@ -98,7 +102,7 @@ class ModelTablePage extends Component {
     async onAddModelSubmit(newModel) {
         console.log("New model added")
         console.log(newModel);
-        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration)
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 this.updateModelTable();
                 this.onAddModelClosed();

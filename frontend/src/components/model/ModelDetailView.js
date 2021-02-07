@@ -5,7 +5,8 @@ import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { Redirect, withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
+import { withRouter } from 'react-router';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
@@ -18,14 +19,15 @@ let instrumentData = [];
 let history;
 
 
-class ModelDetailView extends Component {
+class ModelDetailView extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props)
+        const arr = props.location.pathname.split('/')
+
         this.state = {
             redirect: null,
             model_info: {
-                pk: this.props.match.params.pk,
+                pk: arr[arr.length - 1],
                 vendor: '',
                 model_number: '',
                 description: '',
@@ -47,13 +49,11 @@ class ModelDetailView extends Component {
     }
 
     async componentDidMount() {
-        this.updateInfo();
+        await this.updateInfo();
     }
 
     render() {
-        //instrumentData = instrumentServices.getInstrumentSerialByModel(this.state.model_info.pk);
-        //istory = useHistory();
-        console.log(this.state.model_info)
+
         let deletePopup = this.makeDeletePopup();
 
         if (this.state.redirect != null) {
@@ -185,7 +185,9 @@ class ModelDetailView extends Component {
 
 
     onMoreClicked(e) {
-        this.state.redirect = `/instruments/${e.target.value}`
+        this.setState({
+            redirect: `/instruments/${e.target.value}`
+        })
     }
 
     onEditClicked() {
@@ -195,7 +197,6 @@ class ModelDetailView extends Component {
     }
 
     onEditSubmit(editedModel) {
-        console.log(editedModel)
         this.updateInfo();
         this.onEditClose();
     }
@@ -223,7 +224,9 @@ class ModelDetailView extends Component {
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
             if (result.success) {
                 this.onDeleteClose()
-                this.state.redirect = '/models'
+                this.setState({
+                    redirect: '/models/'
+                })
             } else {
                 console.log('failed to delete');
             }
@@ -238,6 +241,7 @@ class ModelDetailView extends Component {
     async updateInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
+                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })

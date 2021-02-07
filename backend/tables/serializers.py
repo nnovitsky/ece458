@@ -45,6 +45,22 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
 
 class InstrumentReadSerializer(serializers.ModelSerializer):
+    # use when serializing instrument to include most recent calibration event
+    item_model = ItemModelSerializer()
+    calibration_event = serializers.SerializerMethodField('_get_most_recent_calibration')
+
+    def _get_most_recent_calibration(self, obj):
+        cal_event = obj.calibrationevent_set.order_by('-date')[:1]
+        serializer = CalibrationEventWriteSerializer(cal_event, many=True)
+        return serializer.data
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event')
+
+
+class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
+    # use when serializing calibration event to avoid redundant data
     item_model = ItemModelSerializer()
 
     class Meta:
@@ -53,14 +69,15 @@ class InstrumentReadSerializer(serializers.ModelSerializer):
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):
-
+    # use when writing instrument with serializer
     class Meta:
         model = Instrument
         fields = ('pk', 'item_model', 'serial_number', 'comment')
 
 
 class CalibrationEventReadSerializer(serializers.ModelSerializer):
-    instrument = InstrumentReadSerializer()
+    # use when reading calibration event with serializer
+    instrument = SimpleInstrumentReadSerializer()
     user = UserSerializer()
 
     class Meta:
@@ -69,7 +86,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
-
+    # use when writing calibration event with serializer or reading most recent calibration event for instrument
     class Meta:
         model = CalibrationEvent
         fields = ('date', 'user', 'instrument')

@@ -1,23 +1,28 @@
 import React from 'react';
-import FilterField from "../generic/FilterField";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 
-import ModelServices from '../../api/modelServices';
-import InstrumentServices from '../../api/instrumentServices';
 import Button from 'react-bootstrap/esm/Button';
-
-let modelServices = new ModelServices();
-let instrumentServices = new InstrumentServices();
 
 const modelName = "model";
 const vendorName = "vendor";
 const serialName = "serial";
 const descriptionName = "description";
 
-const InstrumentFilterBar = () => {
+let filters = {
+    model: '',
+    vendor: '',
+    serial: '',
+    description: ''
+}
+
+//'onSearch' prop event handler for when the search button is clicked, will receive a 
+// filters object ^seen above
+
+const InstrumentFilterBar = (props) => {
     return (
         <div>
 
@@ -27,36 +32,25 @@ const InstrumentFilterBar = () => {
                         <h3>Filters</h3>
                     </Col>
                     <Col>
+                        <Form.Group>
+                            <Form.Control name={modelName} type="text" placeholder="Enter Model" onChange={onTextInput} />
+                        </Form.Group>
 
-                        <FilterField
-                            dropdownResults={modelServices.getAllModelNumbers()}
-                            onTextInput={onTextInput}
-                            fieldName="Model Number"
-                            name={modelName}
-                        />
-                        <FilterField
-                            dropdownResults={modelServices.getAllVendors()}
-                            onTextInput={onTextInput}
-                            fieldName="Vendor"
-                            name={vendorName}
-                        />
+                        <Form.Group>
+                            <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
+                        </Form.Group>
+
                     </Col>
                     <Col>
-                        <FilterField
-                            dropdownResults={instrumentServices.getAllSerialNumbers()}
-                            onTextInput={onTextInput}
-                            fieldName="Serial Number"
-                            name={serialName}
-                        />
-                        <FilterField
-                            dropdownResults={instrumentServices.getAllDescriptions()}
-                            onTextInput={onTextInput}
-                            fieldName="Description"
-                            name={descriptionName}
-                        />
+                        <Form.Group>
+                            <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={onTextInput} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={onTextInput} />
+                        </Form.Group>
                     </Col>
                     <Col xs={2}>
-                        <Button className="search-button">Search</Button>
+                        <Button className="search-button" onClick={(e) => onSearch(e, props.onSearch)}>Search</Button>
                     </Col>
                 </Row>
 
@@ -67,20 +61,25 @@ const InstrumentFilterBar = () => {
 }
 
 const onTextInput = (e) => {
+    console.log(e.target.value)
     switch (e.target.name) {
         case modelName:
-            console.log(`Model input: ${e.target.value}`);
-            return;
+            filters.model = e.target.value;
+            break;
         case vendorName:
-            console.log(`Vendor input: ${e.target.value}`);
-            return;
+            filters.vendor = e.target.value;
+            break;
         case serialName:
-            console.log(`Serial input: ${e.target.value}`);
-            return;
+            filters.serial = e.target.value;
+            break;
         case descriptionName:
-            console.log(`Description input: ${e.target.value}`);
-            return;
+            filters.description = e.target.value;
+            break;
     }
+}
+
+const onSearch = (e, parentHandler) => {
+    parentHandler(filters)
 }
 
 export default InstrumentFilterBar;

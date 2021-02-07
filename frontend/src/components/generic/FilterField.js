@@ -31,7 +31,6 @@ const FilterField = (props) => {
                 }
                 }
                 name={props.name}
-                aria-describedby="basic-addon2"
                 value={textValue}
             />
 

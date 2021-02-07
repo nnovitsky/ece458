@@ -29,3 +29,7 @@ be made to be more specific */
 .input-group {
     padding: 5px;
 }
+
+.filter-button {
+    margin: 6px;
+}

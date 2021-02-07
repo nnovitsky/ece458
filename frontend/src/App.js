@@ -7,7 +7,7 @@ import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
 import UserProfilePage from './components/user/UserProfilePage';
 import ImportPage from './components/import/ImportPage';
-import ModelTablePage from './components/model/ModelDetailView';
+import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
 import InstrumentDetailView from './components/instrument/InstrumentDetailView';

@@ -39,6 +39,10 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
+        this.setState({
+            redirect: null
+        }
+        )
         this.updateModelTable();
 
     }

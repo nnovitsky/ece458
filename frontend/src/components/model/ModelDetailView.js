@@ -22,7 +22,6 @@ let history;
 class ModelDetailView extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props)
         const arr = props.location.pathname.split('/')
 
         this.state = {
@@ -50,8 +49,6 @@ class ModelDetailView extends React.Component {
     }
 
     async componentDidMount() {
-        // const { match: { pk } } = this.props;
-        // console.log(this.props.params);
         await this.updateInfo();
     }
 
@@ -188,7 +185,9 @@ class ModelDetailView extends React.Component {
 
 
     onMoreClicked(e) {
-        this.state.redirect = `/instruments/${e.target.value}`
+        this.setState({
+            redirect: `/instruments/${e.target.value}`
+        })
     }
 
     onEditClicked() {
@@ -198,7 +197,6 @@ class ModelDetailView extends React.Component {
     }
 
     onEditSubmit(editedModel) {
-        console.log(editedModel)
         this.updateInfo();
         this.onEditClose();
     }
@@ -226,7 +224,9 @@ class ModelDetailView extends React.Component {
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
             if (result.success) {
                 this.onDeleteClose()
-                this.state.redirect = '/models'
+                this.setState({
+                    redirect: '/models/'
+                })
             } else {
                 console.log('failed to delete');
             }
@@ -239,9 +239,7 @@ class ModelDetailView extends React.Component {
     }
 
     async updateInfo() {
-        console.log(this.state.model_info.pk)
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
-            console.log(result)
             if (result.success) {
                 console.log(result.data)
                 this.setState({

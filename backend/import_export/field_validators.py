@@ -10,6 +10,18 @@ USERNAME_MAX_LENGTH = 50
 EXPECTED_DATE_FORMAT = '%Y-%m-%d'
 
 
+def validate_column_headers(headers, expected_headers):
+
+    if len(headers) != len(expected_headers):
+        return False, "Headers and expected headers quantity mismatch."
+
+    for header, expected_header in zip(headers, expected_headers):
+        if header != expected_header:
+            return False, f"Mismatch between header (\'{header}\') " \
+                          f"and expected header (\'{expected_header}\')"
+
+    return True, "Validated Column headers."
+
 
 def is_valid_vendor(vendor):
 

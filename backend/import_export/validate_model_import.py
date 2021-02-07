@@ -12,21 +12,7 @@ column_types = [
     'Calibration Frequency',
 ]
 
-TEST_CSV = 'sample_CSVs/_Models_test2_fail.csv'
-
-
-def validate_column_headers(headers):
-    expected_headers = column_types
-
-    if len(headers) != len(expected_headers):
-        return False, "Headers and expected headers quantity mismatch."
-
-    for header, expected_header in zip(headers, expected_headers):
-        if header != expected_header:
-            return False, f"Mismatch between header (\'{header}\') " \
-                          f"and expected header (\'{expected_header}\')"
-
-    return True, "Validated Column headers."
+TEST_CSV = 'sample_CSVs/_Models_test1_pass.csv'
 
 
 def validate_row(current_row):
@@ -59,11 +45,11 @@ def main():
         reader = csv.reader(import_file)
         headers = next(reader)
 
-        has_valid_columns, header_log = validate_column_headers(headers)
+        has_valid_columns, header_log = \
+            field_validators.validate_column_headers(headers, column_types)
 
         if not has_valid_columns:
             logging.error(header_log)
-
 
         row_number = 1
         if has_valid_columns:

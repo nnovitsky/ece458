@@ -7,7 +7,7 @@
          "vendor": "Fluke",
          "model number": "87V",
          "short description": "Multimeter with temp probe",
-         "model pk": "516"
+         "model pk": "1"
     },
     {
       "serial": "abc2",
@@ -16,7 +16,7 @@
         "vendor": "Fluke",
         "model number": "87V",
         "short description": "Multimeter with temp probe",
-        "model pk": "516"
+        "model pk": "1"
     },
     {
       "serial": "abc3",

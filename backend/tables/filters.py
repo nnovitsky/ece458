@@ -15,6 +15,7 @@ class InstrumentFilter(django_filters.rest_framework.FilterSet):
     vendor = django_filters.CharFilter(field_name='item_model__vendor',lookup_expr='icontains')
     model_number = django_filters.CharFilter(field_name='item_model__model_number', lookup_expr='icontains')
     serial_number = django_filters.CharFilter(lookup_expr='icontains')
+    model_pk = django_filters.NumberFilter(field_name='item_model__pk', lookup_expr='exact')
 
     class Meta:
         model = Instrument
@@ -28,6 +29,7 @@ class CalibrationEventFilter(django_filters.rest_framework.FilterSet):
     user = django_filters.CharFilter(field_name='user__username', lookup_expr='icontains')
     min_date = django_filters.DateFilter(field_name='date', lookup_expr='gte')
     max_date = django_filters.DateFilter(field_name='date', lookup_expr='lte')
+    instrument_pk = django_filters.NumberFilter(field_name='instrument__pk', lookup_expr='exact')
 
     class Meta:
         model = CalibrationEvent

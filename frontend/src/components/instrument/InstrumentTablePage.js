@@ -20,7 +20,7 @@ class InstrumentTablePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            redirect: '/instruments/115',   //this will be a url if a redirect is necessary
+            redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
             filters: {
                 model: '',
@@ -56,7 +56,7 @@ class InstrumentTablePage extends Component {
 
         return (
             <div>
-                <AddPopup
+                <AddInstrumentPopup
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}

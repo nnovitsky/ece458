@@ -20,10 +20,10 @@ class InstrumentDetailView extends Component {
             redirect: null,
             instrument_info: {
                 instrument_pk: this.props.match.params.pk,
-                model_number: 'fluke',
-                model_pk: '1',
-                serial: '785-B45',
-                comment: 'this is a multimeter',
+                model_number: '',
+                model_pk: '',
+                serial: '',
+                comment: '',
                 calibration_history: []
             },
             isAddCalPopupShown: false,

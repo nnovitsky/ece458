@@ -7,6 +7,7 @@ import logo from '../../assets/HPT_logo_crop.png';
 import { withRouter } from "react-router-dom";
 
 import AddCalibrationPopup from './AddCalibrationPopup';
+import GenericTable from '../generic/GenericTable';
 
 import InstrumentServices from "../../api/instrumentServices";
 
@@ -53,8 +54,8 @@ class InstrumentDetailView extends Component {
                             <h1>{`Instrument: ${this.state.instrument_info.se}`}</h1>
                             <Row>
                                 <Col>{this.makeDetailsTable()}</Col>
-                                <Col xs={6}>
-                                    {this.makeCallibrationTable()}
+                                <Col xs={7}>
+                                    {this.makeCalibrationTable()}
                                 </Col>
                             </Row>
                         </div>
@@ -111,7 +112,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        console.log(calibrationEvent)
+        console.log(calibrationEvent);
         this.onAddCalibrationClose();
     }
 
@@ -121,9 +122,17 @@ class InstrumentDetailView extends Component {
         })
     }
 
-    makeCallibrationTable() {
+    makeCalibrationTable() {
         return (
-            <h3>Callibration History will go here</h3>
+            <GenericTable
+                data={this.state.instrument_info.calibration_history}
+                keys={['user', 'date', 'comment']}
+                headers={["User", "Date", "Comment"]}
+                buttonFunctions={[]}
+                buttonText={[]}
+                tableTitle="Calibration History"
+
+            />
         )
     }
 

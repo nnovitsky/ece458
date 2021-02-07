@@ -9,7 +9,7 @@ export default class AuthServices {
     constructor() { }
 
     async login(data) {
-      return fetch('http://localhost:8000/token-auth/', {
+      return fetch('http://localhost:8000/token_auth/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export default class AuthServices {
 
     async getCurrentUser(token) {
 
-      return fetch('http://localhost:8000/tables/current_user/', {
+      return fetch('http://localhost:8000/current_user/', {
         headers: {
           Authorization: `JWT ${token}`
         }

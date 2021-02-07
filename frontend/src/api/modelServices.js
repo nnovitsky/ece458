@@ -1,22 +1,131 @@
-import React from 'react';
 import modelData from './modelData.json';
-import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
 
 export default class ModelServices {
-    constructor() { }
+    async getModels() {
+        const token = localStorage.getItem('token');
 
-    getModels() {
-        return modelData.getModels;
-        // const url = `${API_URL}/api/models/`;
-        // return axios.get(url).then(response => response.data);
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL}/api/models/`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    return result
+                },
+                (error) => {
+                    console.log(error)
+                    result.success = false;
+                    return result
+                }
+            )
     }
 
-    getModel(pk) {
-        return modelData.modelsByKey[pk];
-        // const url = `${API_URL}/api/customers/${pk}`;
-        // return axios.get(url).then(response => response.data);
+    async addModel(vendor, modelNumber, description, comment, calFrequency) {
+        let data = {
+            vendor: vendor,
+            model_number: modelNumber,
+            description: description,
+            comment: comment,
+            calibration_frequency: calFrequency
+        }
+        const token = localStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/models/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+            })
+    }
+
+    async getModel(pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+        )
+    }
+
+    async deleteModel(pk) {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    console.log(result)
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            );
+
     }
 
     getAllModelNumbers() {

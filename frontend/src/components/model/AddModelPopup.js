@@ -9,13 +9,15 @@ import FilterField from '../generic/FilterField';
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'getVendorSearchResults' a handler to be called with part of a vendor searched
+//'existingData' this prop is a json object of the style newModel below, null can be passed if no existing model
 
 let newModel = {
-    model: '',
+    model_number: '',
     vendor: '',
     description: '',
     comment: '',
-    callibration: ''
+    calibration_frequency: '',
+    pk: null
 }
 
 const modelName = "model";
@@ -35,7 +37,7 @@ const addModelPopup = (props) => {
             submitButtonText="Create Model"
             onClose={props.onClose}
             onSubmit={(e) => onSubmit(e, props.onSubmit)}
-
+            submitButtonVariant="primary"
         />
     )
 }
@@ -69,7 +71,7 @@ const onTextInput = (e) => {
     let val = e.target.value;
     switch (e.target.name) {
         case modelName:
-            newModel.model = val
+            newModel.model_number = val
             return;
         case vendorName:
             newModel.vendor = val;
@@ -81,7 +83,7 @@ const onTextInput = (e) => {
             newModel.comment = val;
             return
         case callibrationName:
-            newModel.callibration = val;
+            newModel.calibration_frequency = val;
             return
         default:
             return;

@@ -83,7 +83,8 @@ export default class ModelServices {
                         console.log("GET NEW TOKEN")
                         result.success = false;
                     }
-                    result.data = json.data
+                    console.log(json)
+                    result.data = json
                     return result
                 },
                 (error) => {

@@ -5,7 +5,8 @@ import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { Redirect, withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
+import { withRouter } from 'react-router';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
@@ -18,14 +19,16 @@ let instrumentData = [];
 let history;
 
 
-class ModelDetailView extends Component {
+class ModelDetailView extends React.Component {
     constructor(props) {
         super(props);
         console.log(props)
+        const arr = props.location.pathname.split('/')
+
         this.state = {
             redirect: null,
             model_info: {
-                pk: this.props.match.params.pk,
+                pk: arr[arr.length - 1],
                 vendor: '',
                 model_number: '',
                 description: '',
@@ -47,13 +50,13 @@ class ModelDetailView extends Component {
     }
 
     async componentDidMount() {
-        this.updateInfo();
+        // const { match: { pk } } = this.props;
+        // console.log(this.props.params);
+        await this.updateInfo();
     }
 
     render() {
-        //instrumentData = instrumentServices.getInstrumentSerialByModel(this.state.model_info.pk);
-        //istory = useHistory();
-        console.log(this.state.model_info)
+
         let deletePopup = this.makeDeletePopup();
 
         if (this.state.redirect != null) {
@@ -236,8 +239,11 @@ class ModelDetailView extends Component {
     }
 
     async updateInfo() {
+        console.log(this.state.model_info.pk)
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
+            console.log(result)
             if (result.success) {
+                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })

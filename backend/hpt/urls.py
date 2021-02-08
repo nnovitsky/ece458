@@ -28,6 +28,7 @@ urlpatterns = [
     path('create_user/', views.UserCreate.as_view()),
     path('api/users/', views.user_list),
     path('api/vendors/', views.vendor_list),
+    path('api/models_by_vendor/<str:vendor>/', views.model_by_vendor_list),
     path('api/models/', views.models_list),
     path('api/models/<int:pk>/', views.models_detail),
     path('api/instruments/', views.instruments_list),

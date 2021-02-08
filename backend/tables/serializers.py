@@ -75,11 +75,12 @@ class DetailItemModelSerializer(serializers.ModelSerializer):
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'instruments')
 
 
-# class ItemModelVendorSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = ItemModel
-#         fields
+class ItemModelByVendorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemModel
+        fields = ('pk', 'model_number')
+
 
 class ListInstrumentReadSerializer(serializers.ModelSerializer):
     # use when serializing instrument to include most recent calibration event

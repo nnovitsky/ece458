@@ -20,6 +20,16 @@ def vendor_list(request):
     return Response({'vendors': vendors}, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def model_by_vendor_list(request, vendor):
+    """
+    List model number and pk for all models by a given vendor.
+    """
+    item_models = ItemModel.objects.filter(vendor=vendor)
+    serializer = ItemModelByVendorSerializer(item_models, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # CALIBRATION EVENTS
 @api_view(['GET', 'POST'])
 def calibration_event_list(request):

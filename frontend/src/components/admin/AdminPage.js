@@ -10,11 +10,8 @@ import logo from '../../assets/HPT_logo_crop.png';
 let history;
 const userServices = new UserServices();
 
-const keys = ["display name", "email", "password"];
-const headers = ["Display Name", "Email", "Password", "Remove User"];
-const buttonText = ["Delete"];
-
-let data = userServices.getUsers();
+const keys = ["username", "first_name", "last_name", "email"];
+const headers = ["Username", "First Name", "Last Name", "Email"];
 
 
 class AdminPage extends React.Component {
@@ -23,21 +20,13 @@ class AdminPage extends React.Component {
         super(props);
         this.state = {
             logged_in: localStorage.getItem('token') ? true : false,
-            username: ''
+            username: '',
+            tableData: [],
         };
     }
 
-    componentDidMount() {
-
-        
-    }
-
-    addNewUser = e => {
-        console.log("Add new user");
-    }
-
-    onUserDeleted = e =>  {
-        console.log("Delete user");
+    async componentDidMount() {
+        this.updateUserTable();
     }
 
     render() {
@@ -49,13 +38,36 @@ class AdminPage extends React.Component {
                 </div>
                 <div className="col-10">
                     <h2>Hello, Admin</h2>
-                    <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onUserDeleted]} />
+                    <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={[]} buttonFunctions={[]} />
                     <button onClick={this.addNewUser}>Add New User</button>
                 </div>
             </div>
             </div>
 
         );
+    }
+
+    async updateUserTable() {
+        userServices.getUsers().then((result) => {
+            if (result.success) {
+                this.setState({
+                    redirect: null,
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+        }
+        )
+    }
+
+    addNewUser = e => {
+        console.log("Add new user");
+    }
+
+
+    onUserDeleted = e =>  {
+        console.log("Delete user");
     }
 
 }

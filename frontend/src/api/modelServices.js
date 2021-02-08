@@ -174,6 +174,78 @@ export default class ModelServices {
             )
     }
 
+    async getVendors() {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/vendors/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    console.log(json)
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            )
+    }
+
+    async getModelByVendor(vendor) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/vendors/${vendor}/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    console.log(json)
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            )
+    }
+
     getAllModelNumbers() {
         let result = new Set();
         modelData.getModels.forEach(el => {

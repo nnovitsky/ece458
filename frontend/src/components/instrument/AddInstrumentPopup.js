@@ -8,16 +8,12 @@ import './instrument.css';
 import GenericPopup from "../generic/GenericPopup";
 import FilterField from "../generic/FilterField";
 
-
-const ex = [{
-    label: "1",
-    value: "2"
-}]
 //props
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'getModelSearchResults' a handler to be called with part of a model searched
+//'vendorsArr' an array of all the vendors
+//'getModelsByVendor' a handler to be passed a vendor that will then give a list of models
 
 let newInstrument = {
     model: '',
@@ -26,10 +22,15 @@ let newInstrument = {
     comment: '',
 }
 
+let vendorsMap = {};
+
 let errorMessages = [];
 
 
 const AddInstrumentPopup = (props) => {
+    console.log(props.vendorsArr)
+    vendorsMap = formatVendorArr(props.vendorsArr);
+
     let body = makeBody(props.getModelSearchResults);
     return (
         <GenericPopup
@@ -51,11 +52,12 @@ const makeBody = (getModelSearchResults) => {
             <Form.Group>
                 <Form.Label>Vendor</Form.Label>
                 <Select
-                    options={ex}
+                    options={vendorsMap}
+                    isSearchable
                 />
                 <Form.Label>Model</Form.Label>
                 <Select
-                    options={ex}
+                    options={vendorsMap}
                 />
             </Form.Group>
             <Form.Group>
@@ -74,6 +76,11 @@ const makeBody = (getModelSearchResults) => {
 
         </Form>
     )
+}
+
+const formatVendorArr = (arr) => {
+    console.log(arr)
+    return arr.map(opt => ({ label: opt, value: opt }));
 }
 
 //called by the filter field

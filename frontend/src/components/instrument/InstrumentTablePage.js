@@ -29,12 +29,14 @@ class InstrumentTablePage extends Component {
                 description: ''
             },
             addInstrumentPopup: {
-                isShown: false
+                isShown: false,
+                vendorsArr: []
             },
         }
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
+        this.getVendorsArr = this.getVendorsArr.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
@@ -45,6 +47,7 @@ class InstrumentTablePage extends Component {
     //make async calls here
     async componentDidMount() {
         await this.updateTable();
+        await this.getVendorsArr();
     }
 
     render() {
@@ -61,6 +64,7 @@ class InstrumentTablePage extends Component {
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
+                    vendorsArr={this.state.addInstrumentPopup.vendorsArr}
                     getModelSearchResults={this.onGetModelSearchResults}
                 />
                 <div className="background">
@@ -99,6 +103,19 @@ class InstrumentTablePage extends Component {
                 })
             } else {
                 console.log("error")
+            }
+        })
+    }
+
+    async getVendorsArr() {
+        modelServices.getVendors().then((result) => {
+            if (result.success) {
+                this.setState({
+                    addInstrumentPopup: {
+                        ...this.state.addInstrumentPopup,
+                        vendorsArr: result.data.vendors
+                    }
+                })
             }
         })
     }

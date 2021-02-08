@@ -75,6 +75,8 @@ const onTextInput = (e) => {
         case descriptionName:
             filters.description = e.target.value;
             break;
+        default:
+            break;
     }
 }
 

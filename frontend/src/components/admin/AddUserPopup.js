@@ -5,10 +5,8 @@ import GenericPopup from '../generic/GenericPopup';
 
 //props
 //'isShown' a boolean if the popup is visible
-//'onSubmit' a handler that will be passed the new instrument information
+//'onSubmit' a handler that will be passed the new user information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'getVendorSearchResults' a handler to be called with part of a vendor searched
-//'existingData' this prop is a json object of the style newModel below, null can be passed if no existing model
 
 let newUser = {
     username: '',

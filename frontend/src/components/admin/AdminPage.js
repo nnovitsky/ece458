@@ -71,7 +71,6 @@ class AdminPage extends React.Component {
                 this.onAddUserClosed();
             }
             );
-
     }
 
     onAddUserClosed() {
@@ -91,9 +90,6 @@ class AdminPage extends React.Component {
             }
         })
     }
-
-
-
 
 
     onUserDeleted = e => {

@@ -121,8 +121,6 @@ export default class InstrumentServices {
             serial_number: serial_number,
             comment: comment
         }
-
-        console.log(data)
         const token = localStorage.getItem('token');
 
         return fetch(`${API_URL}/api/instruments/`, {
@@ -135,7 +133,7 @@ export default class InstrumentServices {
         })
             .then(res => res.json())
             .then(json => {
-                console.log(json)
+
             })
     }
 

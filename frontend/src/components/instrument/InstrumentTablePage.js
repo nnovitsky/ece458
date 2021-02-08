@@ -4,7 +4,7 @@ import ModelServices from '../../api/modelServices';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
 
-import AddPopup from "./AddPopup";
+import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import './instrument.css';
 
@@ -34,6 +34,7 @@ class InstrumentTablePage extends Component {
         }
 
         //need to bind any event callbacks
+        this.updateTable = this.updateTable.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
@@ -42,15 +43,11 @@ class InstrumentTablePage extends Component {
         this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
     }
     //make async calls here
-    componentDidMount() {
-        let data = instrumentServices.getInstruments();
-        this.setState({
-            tableData: data
-        });
+    async componentDidMount() {
+        await this.updateTable();
     }
 
     render() {
-        console.log(this.state.filters)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -60,7 +57,7 @@ class InstrumentTablePage extends Component {
 
         return (
             <div>
-                <AddPopup
+                <AddInstrumentPopup
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
@@ -78,6 +75,7 @@ class InstrumentTablePage extends Component {
                             <h1>Instrument Table</h1>
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
+                                onRemoveFilters={this.updateTable}
                             />
                             <InstrumentTable
                                 data={this.state.tableData}
@@ -93,6 +91,18 @@ class InstrumentTablePage extends Component {
         );
     }
 
+    async updateTable() {
+        instrumentServices.getInstruments().then((result) => {
+            if (result.success) {
+                this.setState({
+                    tableData: result.data
+                })
+            } else {
+                console.log("error")
+            }
+        })
+    }
+
     onDetailViewRequested(e) {
         this.setState({
             redirect: `/instruments/${e.target.value}`
@@ -103,11 +113,22 @@ class InstrumentTablePage extends Component {
         console.log(`Certificate requested for instrument: ${e.target.value}`);
     }
 
-    onFilteredSearch(newFilter) {
-        this.setState({
-            ...this.state,
-            filters: newFilter
-        })
+    async onFilteredSearch(newFilter) {
+        console.log(newFilter)
+        await instrumentServices.instrumentFilterSearch(newFilter).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        tableData: result.data
+                    })
+                } else {
+                    console.log("Error with filter search")
+                }
+
+            }
+        )
+
+
     }
 
     onAddInstrumentClicked = (e) => {

@@ -1,26 +1,118 @@
-import React from 'react';
 import instrumentData from './instrumentData.json';
-import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
 
 export default class InstrumentServices {
     constructor() { }
 
-    getInstruments() {
-        return instrumentData.instruments;
-        // const url = `${API_URL}/api/models/`;
-        // return axios.get(url).then(response => response.data);
+    async getInstruments() {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL}/api/instruments/`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    return result
+                },
+                (error) => {
+                    console.log(error)
+                    result.success = false;
+                    return result
+                }
+            )
     }
 
-    getInstrument(instrumentPk) {
-        let result;
-        instrumentData.instruments.forEach(el => {
-            if (el["instrument pk"] === instrumentPk) {
-                result = el;
+    async getInstrument(instrumentPk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+        )
+    }
+
+    async instrumentFilterSearch(filters) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/instrument_search/?`;
+        let count = 0;
+        for (var key in filters) {
+            if (count > 0) {
+                url += '&';
             }
-        });
-        return result;
+            url += (key + `=${filters[key]}`);
+            count++;
+        }
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            )
     }
 
     getInstrumentSerialByModel(modelPk) {

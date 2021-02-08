@@ -8,8 +8,6 @@ class ProtectedRoute extends React.Component {
         const Component = this.props.component;
         //probably change
         const isAuthenticated = localStorage.getItem('token');
-
-        console.log("About to figure out redirect");
        
         return isAuthenticated && typeof(isAuthenticated)!== 'undefined' ? (
             <Component />

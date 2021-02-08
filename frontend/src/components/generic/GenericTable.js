@@ -4,16 +4,18 @@ import Button from 'react-bootstrap/Button';
 
 let data;   //array of data objects to display
 let keys;   //array of keys for the data objects, should be in order desired
-let headerTextArr;    //array of strings that will be displayed as the header, should be in order desired (should include headers for the button columns)
+let headers;    //array of strings that will be displayed as the header, should be in order desired (should include headers for the button columns)
 let buttonFunctions; //array of button functions, each button will get its own column
 let buttonText; //array of text, each element will be the text in a button
+let tableTitle; //optional prop, this would be the title of the table and will be displayed in the top row
 
 const GenericTable = (props) => {
     data = props.data;
     keys = props.keys;
-    headerTextArr = props.headers;
+    headers = props.headers;
     buttonFunctions = props.buttonFunctions;
     buttonText = props.buttonText;
+    tableTitle = props.tableTitle
 
     return (
         <div>
@@ -28,9 +30,7 @@ const makeTable = () => {
 
     return (
         <Table striped bordered hover>
-            <thead>
-                {header}
-            </thead>
+            {header}
             {body}
 
         </Table>)
@@ -41,15 +41,27 @@ const createHeader = () => {
     header.push(
         <th>#</th>
     )
-    headerTextArr.forEach(h => {
+    headers.forEach(h => {
         header.push(
             <th>{h}</th>
         )
     })
+
+    let title = null;
+    if (tableTitle != null) {
+        title = (
+            <tr>
+                <th colSpan={headers.length + 1} className="text-center">{tableTitle}</th>
+            </tr>
+        )
+    }
     return (
-        <tr>
-            {header}
-        </tr>
+        <thead>
+            {title}
+            <tr>
+                {header}
+            </tr>
+        </thead>
     )
 }
 

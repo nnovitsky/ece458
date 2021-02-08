@@ -1,5 +1,6 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
+import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,6 +8,11 @@ import './instrument.css';
 import GenericPopup from "../generic/GenericPopup";
 import FilterField from "../generic/FilterField";
 
+
+const ex = [{
+    label: "1",
+    value: "2"
+}]
 //props
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
@@ -15,6 +21,7 @@ import FilterField from "../generic/FilterField";
 
 let newInstrument = {
     model: '',
+    vendor: '',
     serial: '',
     comment: '',
 }
@@ -42,12 +49,13 @@ const makeBody = (getModelSearchResults) => {
     return (
         <Form className="popup">
             <Form.Group>
+                <Form.Label>Vendor</Form.Label>
+                <Select
+                    options={ex}
+                />
                 <Form.Label>Model</Form.Label>
-                <FilterField
-                    onTextInput={onModelInput}
-                    name="model"
-                    dropdownResults={getModelSearchResults(newInstrument.model)}
-                    fieldName="Enter Model"
+                <Select
+                    options={ex}
                 />
             </Form.Group>
             <Form.Group>
@@ -71,6 +79,10 @@ const makeBody = (getModelSearchResults) => {
 //called by the filter field
 const onModelInput = (e) => {
     newInstrument.model = e.target.value;
+}
+
+const onVendorInput = (e) => {
+    newInstrument.vendor = e.target.value;
 }
 
 const onSerialChange = (e) => {

@@ -62,6 +62,29 @@ export default class UserServices {
             })
     }
 
+    async editUser(username, password, first_name, last_name) {
+        let data = {
+            username: username,
+            password: password,
+            first_name: first_name,
+            last_name: last_name,
+        }
+        const token = localStorage.getItem('token');
+
+        return fetch(`${API_URL}/current_user/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+            })
+    }
+
 
     getUser(pk) {
         return userData.usersByKey[pk];

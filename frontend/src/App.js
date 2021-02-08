@@ -33,24 +33,23 @@ class App extends Component {
 
   componentDidMount() {
     if (this.state.logged_in) {
-      authServices.getCurrentUser(localStorage.getItem('token'))
-        .then(res => res.json())
-        .then(json => {
-          if (typeof json.username === 'undefined') {
-            localStorage.removeItem('token');
-            this.setState({
-              logged_in: false,
-              username: '',
-              admin: false
-            });
-          }
-          else {
-            this.setState({ 
-              username: json.username,
-              admin: json.is_staff,
-            })
-          };
-        });
+
+      authServices.getCurrentUser().then((result) => {
+        if (result.success) {
+          this.setState({ 
+            username: result.data.username,
+            admin: result.data.is_staff,
+          })
+        } else {
+          localStorage.removeItem('token');
+          this.setState({
+            logged_in: false,
+            username: '',
+            admin: false
+          });
+        }
+    }
+    )
     }
     else {
       console.log("Not Logged in")

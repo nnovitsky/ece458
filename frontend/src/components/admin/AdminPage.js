@@ -1,13 +1,12 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
 import UserServices from "../../api/userServices";
 import GenericTable from '../generic/GenericTable';
+import AddUserPopup from "./AddUserPopup";
 
 import './Admin.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 
-let history;
 const userServices = new UserServices();
 
 const keys = ["username", "first_name", "last_name", "email"];
@@ -22,8 +21,16 @@ class AdminPage extends React.Component {
             logged_in: localStorage.getItem('token') ? true : false,
             username: '',
             tableData: [],
+            addUserPopup: {
+                isShown: false,
+            },
         };
+
+        this.onAddUserClosed = this.onAddUserClosed.bind(this);
+        this.onAddUserSubmit = this.onAddUserSubmit.bind(this);
     }
+
+    
 
     async componentDidMount() {
         this.updateUserTable();
@@ -31,20 +38,66 @@ class AdminPage extends React.Component {
 
     render() {
         return (
-            <div className="background">
-            <div className="row mainContent">
-                <div className="col-2 text-center">
-                    <img src={logo} alt="Logo" />
+            <div>
+                <AddUserPopup
+                    isShown={this.state.addUserPopup.isShown}
+                    onSubmit={this.onAddUserSubmit}
+                    onClose={this.onAddUserClosed}
+                />
+
+                <div className="background">
+                    <div className="row mainContent">
+                        <div className="col-2 text-center">
+                            <img src={logo} alt="Logo" />
+                        </div>
+                        <div className="col-10">
+                            <h2>Hello, Admin</h2>
+                            <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={[]} buttonFunctions={[]} />
+                            <button onClick={this.onAddUserClicked}>Add New User</button>
+                        </div>
+                    </div>
                 </div>
-                <div className="col-10">
-                    <h2>Hello, Admin</h2>
-                    <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={[]} buttonFunctions={[]} />
-                    <button onClick={this.addNewUser}>Add New User</button>
-                </div>
-            </div>
             </div>
 
         );
+    }
+
+    async onAddUserSubmit(newUser) {
+        console.log("New user added")
+        console.log(newUser);
+        userServices.addUser(newUser.username, newUser.password, newUser.first_name, newUser.last_name, newUser.email)
+            .then((res) => {
+                this.updateUserTable();
+                this.onAddUserClosed();
+            }
+            );
+
+    }
+
+    onAddUserClosed() {
+        this.setState({
+            addUserPopup: {
+                ...this.state.addUserPopup,
+                isShown: false
+            }
+        })
+    }
+
+    onAddUserClicked = () => {
+        this.setState({
+            addUserPopup: {
+                ...this.state.addUserPopup,
+                isShown: true
+            }
+        })
+    }
+
+
+
+
+
+    onUserDeleted = e => {
+        console.log("Delete user");
     }
 
     async updateUserTable() {
@@ -59,15 +112,6 @@ class AdminPage extends React.Component {
             }
         }
         )
-    }
-
-    addNewUser = e => {
-        console.log("Add new user");
-    }
-
-
-    onUserDeleted = e =>  {
-        console.log("Delete user");
     }
 
 }

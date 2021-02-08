@@ -83,7 +83,7 @@ export default class ModelServices {
                         console.log("GET NEW TOKEN")
                         result.success = false;
                     }
-                    result.data = json.data
+                    result.data = json
                     return result
                 },
                 (error) => {
@@ -126,6 +126,52 @@ export default class ModelServices {
                 }
             );
 
+    }
+
+    async modelFilterSearch(filters) {
+        console.log(filters)
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/model_search/?`;
+        let count = 0;
+        for (var key in filters) {
+            if (count > 0) {
+                url += '&';
+            }
+            url += (key + `=${filters[key]}`);
+            count++;
+        }
+        console.log(url)
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    console.log(json)
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+            )
     }
 
     getAllModelNumbers() {

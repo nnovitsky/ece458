@@ -1,45 +1,53 @@
-import React from 'react';
-import userData from './userData.json';
-import axios from 'axios';
-
 const API_URL = 'http://localhost:8000';
 
 
 export default class AuthServices {
-    constructor() { }
+  constructor() { }
 
-    async login(data) {
-      return fetch('http://localhost:8000/token-auth/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+  async login(data) {
+
+    const url = `${API_URL}/token_auth/`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+  }
+
+  async getCurrentUser() {
+
+    const token = localStorage.getItem('token');
+
+    let result = {
+      success: true,
+      data: [],
+    }
+
+    const url = `${API_URL}/current_user/`;
+
+    return fetch(url, {
+      headers: {
+        Authorization: `JWT ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(
+        (json) => {
+          if (json.detail === 'Signature has expired.') {
+            console.log("GET NEW TOKEN")
+            result.success = false;
+          }
+          result.data = json
+          return result
         },
-        body: JSON.stringify(data)
-      });
-        /*fetch('http://localhost:8000/token-auth/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          })
-            .then(res => res.json())
-            .then(json => {
-              localStorage.setItem('token', json.token);
-              this.setState({
-                logged_in: true,
-                displayed_form: '',
-                username: json.user.username
-              });
-            });*/
-    }
-
-    async getCurrentUser(token) {
-
-      return fetch('http://localhost:8000/tables/current_user/', {
-        headers: {
-          Authorization: `JWT ${token}`
+        (error) => {
+          console.log(error)
+          result.success = false;
+          return result
         }
-      });
-    }
+      )
+  }
 }

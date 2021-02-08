@@ -1,7 +1,12 @@
+input[type=file]{
+    padding: 20px;
+    padding-bottom: 50px;
+}
+
 .bigButton{
-    height: 200px;
-    width: 50%;
-    margin-top: 10px;
+    height: 100px;
+    width: 100%;
+    margin-top: 20px;
 }
 
 .instructions{

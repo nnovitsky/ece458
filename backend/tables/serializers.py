@@ -33,6 +33,16 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    def validate(self, data):
+        if 'first_name' not in data or data['first_name'] == '':
+            raise serializers.ValidationError("First name is required.")
+        if 'last_name' not in data or data['last_name'] == '':
+            raise serializers.ValidationError("Last name is required.")
+        if 'email' not in data or data['email'] == '':
+            # check email format?
+            raise serializers.ValidationError("Email is required.")
+        return data
+
     class Meta:
         model = User
         fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
@@ -49,6 +59,16 @@ class UserEditSerializer(serializers.ModelSerializer):
         payload = jwt_payload_handler(obj)
         token = jwt_encode_handler(payload)
         return token
+
+    def validate(self, data):
+        if 'first_name' in data and data['first_name'] == '':
+            raise serializers.ValidationError("First name is required.")
+        if 'last_name' in data and data['last_name'] == '':
+            raise serializers.ValidationError("Last name is required.")
+        if 'email' in data and data['email'] == '':
+            # check email format?
+            raise serializers.ValidationError("Email is required.")
+        return data
 
     class Meta:
         model = User

@@ -12,12 +12,13 @@ const vendorName = "vendor";
 const descriptionName = "description";
 
 let filters = {
-    model: '',
+    model_number: '',
     vendor: '',
     description: '',
 }
 
 // 'onSearch" a prop handler that is called when search is clicked, it will be passed a filters object^
+// 'onRemoveFilters' a prop that will be called when user wants to remove filters
 const ModelFilterBar = (props) => {
     return (
         <div>
@@ -38,8 +39,9 @@ const ModelFilterBar = (props) => {
                             <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
                         </Form.Group>
                     </Col>
-                    <Col xs={2}>
-                        <Button className="search-button" onClick={(e) => onSearch(props.onSearch)}>Search</Button>
+                    <Col xs={3}>
+                        <Button className="filter-button" onClick={(e) => onSearch(props.onSearch)}>Apply Filters</Button>
+                        <Button className="filter-button" onClick={props.onRemoveFilters}>Remove Filters</Button>
                     </Col>
                 </Row>
 
@@ -52,7 +54,7 @@ const ModelFilterBar = (props) => {
 const onTextInput = (e) => {
     switch (e.target.name) {
         case modelName:
-            filters.model = e.target.value;
+            filters.model_number = e.target.value;
             return;
         case vendorName:
             filters.vendor = e.target.value;

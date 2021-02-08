@@ -9,6 +9,17 @@ from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 
 
+@api_view(['GET'])
+def vendor_list(request):
+    """
+    List all vendors in DB.
+    """
+    vendors = set()
+    for item_model in ItemModel.objects.all():
+        vendors.add(item_model.vendor)
+    return Response({'vendors': vendors}, status=status.HTTP_200_OK)
+
+
 # CALIBRATION EVENTS
 @api_view(['GET', 'POST'])
 def calibration_event_list(request):

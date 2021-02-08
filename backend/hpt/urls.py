@@ -27,6 +27,7 @@ urlpatterns = [
     path('token_refresh/', refresh_jwt_token),
     path('create_user/', views.UserCreate.as_view()),
     path('api/users/', views.user_list),
+    path('api/vendors/', views.vendor_list),
     path('api/models/', views.models_list),
     path('api/models/<int:pk>/', views.models_detail),
     path('api/instruments/', views.instruments_list),

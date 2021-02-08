@@ -64,6 +64,9 @@ const makeBody = (getModelsByVendor) => {
                     options={modelMap}
                     isSearchable={true}
                 />
+                <Form.Text muted>
+                    The vendor needs to be entered first.
+                </Form.Text>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Serial Number</Form.Label>

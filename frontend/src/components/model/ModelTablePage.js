@@ -36,9 +36,14 @@ class ModelTablePage extends Component {
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
+        this.updateModelTable = this.updateModelTable.bind(this);
     }
 
     async componentDidMount() {
+        this.setState({
+            redirect: null
+        }
+        )
         this.updateModelTable();
 
     }
@@ -67,6 +72,7 @@ class ModelTablePage extends Component {
                             <h1>Models</h1>
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
+                                onRemoveFilters={this.updateModelTable}
                             />
                             <ModelTable
                                 data={this.state.tableData}
@@ -82,23 +88,32 @@ class ModelTablePage extends Component {
 
 
     onDetailClicked(e) {
-        console.log(e.target.value)
         this.setState({
             redirect: `/models/${e.target.value}`
         })
     }
 
-    onFilteredSearch(newFilter) {
-        this.setState({
-            ...this.state,
-            filters: newFilter
-        })
+    async onFilteredSearch(newFilter) {
+        // this.setState({
+        //     ...this.state,
+        //     filters: newFilter
+        // }).then(
+        await modelServices.modelFilterSearch(newFilter).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        tableData: result.data
+                    })
+                } else {
+                    //TODO: 
+                }
+            }
+        )
+
     }
 
     async onAddModelSubmit(newModel) {
-        console.log("New model added")
-        console.log(newModel);
-        modelServices.addModel(newModel.vendor, newModel.model, newModel.description, newModel.comment, newModel.calibration)
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 this.updateModelTable();
                 this.onAddModelClosed();

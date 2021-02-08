@@ -16,6 +16,8 @@ import { Redirect } from "react-router-dom";
 const instrumentServices = new InstrumentServices();
 const modelServices = new ModelServices();
 
+let vendorsArr = [];
+
 class InstrumentTablePage extends Component {
     constructor(props) {
         super(props);
@@ -30,19 +32,21 @@ class InstrumentTablePage extends Component {
             },
             addInstrumentPopup: {
                 isShown: false,
-                vendorsArr: []
+                vendorSelected: '',
+                modelsByVendor: []
             },
         }
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.getVendorsArr = this.getVendorsArr.bind(this);
+        this.getModelsByVendor = this.getModelsByVendor.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
-        this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
+
     }
     //make async calls here
     async componentDidMount() {
@@ -64,8 +68,9 @@ class InstrumentTablePage extends Component {
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
-                    vendorsArr={this.state.addInstrumentPopup.vendorsArr}
-                    getModelSearchResults={this.onGetModelSearchResults}
+                    vendorsArr={vendorsArr}
+                    getModelsByVendor={this.getModelsByVendor}
+                    modelsArr={this.state.addInstrumentPopup.modelsByVendor}
                 />
                 <div className="background">
                     <div className="row mainContent">
@@ -110,12 +115,23 @@ class InstrumentTablePage extends Component {
     async getVendorsArr() {
         modelServices.getVendors().then((result) => {
             if (result.success) {
+                vendorsArr = result.data.vendors;
+            }
+        })
+    }
+
+    async getModelsByVendor(vendor) {
+        await modelServices.getModelByVendor(vendor).then((result) => {
+            if (result.success) {
                 this.setState({
                     addInstrumentPopup: {
                         ...this.state.addInstrumentPopup,
-                        vendorsArr: result.data.vendors
+                        modelsByVendor: result.data
                     }
                 })
+                return;
+            } else {
+                return [];
             }
         })
     }
@@ -173,10 +189,6 @@ class InstrumentTablePage extends Component {
                 isShown: false
             }
         })
-    }
-
-    onGetModelSearchResults(search) {
-        return modelServices.getAllModelNumbers();
     }
 }
 export default InstrumentTablePage;

@@ -14,6 +14,7 @@ import FilterField from "../generic/FilterField";
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'vendorsArr' an array of all the vendors
 //'getModelsByVendor' a handler to be passed a vendor that will then give a list of models
+//'modelsArr' an array of models that should update as the prvious prop is called
 
 let newInstrument = {
     model: '',
@@ -22,16 +23,17 @@ let newInstrument = {
     comment: '',
 }
 
-let vendorsMap = {};
+let vendorsMap = [];
+let modelMap = [];
 
 let errorMessages = [];
 
 
 const AddInstrumentPopup = (props) => {
-    console.log(props.vendorsArr)
     vendorsMap = formatVendorArr(props.vendorsArr);
+    modelMap = formatModelMap(props.modelsArr);
 
-    let body = makeBody(props.getModelSearchResults);
+    let body = makeBody(props.getModelsByVendor);
     return (
         <GenericPopup
             show={props.isShown}
@@ -46,18 +48,21 @@ const AddInstrumentPopup = (props) => {
     )
 }
 
-const makeBody = (getModelSearchResults) => {
+const makeBody = (getModelsByVendor) => {
     return (
         <Form className="popup">
             <Form.Group>
                 <Form.Label>Vendor</Form.Label>
                 <Select
                     options={vendorsMap}
+                    onChange={(e) => onVendorInput(e, getModelsByVendor)}
                     isSearchable
+
                 />
                 <Form.Label>Model</Form.Label>
                 <Select
-                    options={vendorsMap}
+                    options={modelMap}
+                    isSearchable={true}
                 />
             </Form.Group>
             <Form.Group>
@@ -79,8 +84,11 @@ const makeBody = (getModelSearchResults) => {
 }
 
 const formatVendorArr = (arr) => {
-    console.log(arr)
     return arr.map(opt => ({ label: opt, value: opt }));
+}
+
+const formatModelMap = (input) => {
+    return input.map(opt => ({ label: opt.model_number, value: opt.value }));
 }
 
 //called by the filter field
@@ -88,8 +96,10 @@ const onModelInput = (e) => {
     newInstrument.model = e.target.value;
 }
 
-const onVendorInput = (e) => {
-    newInstrument.vendor = e.target.value;
+const onVendorInput = (e, getModelsByVendor) => {
+
+    newInstrument.vendor = e.value;
+    getModelsByVendor(newInstrument.vendor)
 }
 
 const onSerialChange = (e) => {
@@ -105,7 +115,6 @@ const onClose = (e, parentHandler) => {
 }
 
 const onSubmit = (e, parentHandler) => {
-    console.log(newInstrument)
     if (isValid) {
         parentHandler(newInstrument);
     }

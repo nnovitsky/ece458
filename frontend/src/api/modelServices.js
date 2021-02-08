@@ -218,7 +218,7 @@ export default class ModelServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/vendors/${vendor}/`;
+        let url = `${API_URL}/api/models_by_vendor/${vendor}/`;
 
         return fetch(url, {
             method: 'GET',

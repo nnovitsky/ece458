@@ -17,9 +17,9 @@ import FilterField from "../generic/FilterField";
 //'modelsArr' an array of models that should update as the prvious prop is called
 
 let newInstrument = {
-    model: '',
+    model_pk: '',
     vendor: '',
-    serial: '',
+    serial_number: '',
     comment: '',
 }
 
@@ -63,6 +63,7 @@ const makeBody = (getModelsByVendor) => {
                 <Select
                     options={modelMap}
                     isSearchable={true}
+                    onChange={onModelInput}
                 />
                 <Form.Text muted>
                     The vendor needs to be entered first.
@@ -91,12 +92,12 @@ const formatVendorArr = (arr) => {
 }
 
 const formatModelMap = (input) => {
-    return input.map(opt => ({ label: opt.model_number, value: opt.value }));
+    return input.map(opt => ({ label: opt.model_number, value: opt.pk }));
 }
 
 //called by the filter field
 const onModelInput = (e) => {
-    newInstrument.model = e.target.value;
+    newInstrument.model_pk = e.value;
 }
 
 const onVendorInput = (e, getModelsByVendor) => {
@@ -106,7 +107,7 @@ const onVendorInput = (e, getModelsByVendor) => {
 }
 
 const onSerialChange = (e) => {
-    newInstrument.serial = e.target.value;
+    newInstrument.serial_number = e.target.value;
 }
 
 const onCommentChange = (e) => {

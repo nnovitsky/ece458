@@ -147,7 +147,6 @@ class InstrumentTablePage extends Component {
     }
 
     async onFilteredSearch(newFilter) {
-        console.log(newFilter)
         await instrumentServices.instrumentFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
@@ -177,9 +176,10 @@ class InstrumentTablePage extends Component {
         console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
     }
 
-    onAddInstrumentSubmit(newInstrument) {
-        console.log(`New Instrument Added: ${newInstrument}`);
+    async onAddInstrumentSubmit(newInstrument) {
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment);
         this.onAddInstrumentClosed();
+        this.updateTable()
     }
 
     onAddInstrumentClosed() {

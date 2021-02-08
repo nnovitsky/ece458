@@ -23,8 +23,6 @@ def calibration_event_list(request):
         return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
         # get item model, instrument, and user from request
         try:
             vendor = request.data['vendor']
@@ -38,12 +36,16 @@ def calibration_event_list(request):
             request.data['instrument'] = instrument.pk
         except Instrument.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            username = request.data['user']
-            user = User.objects.get(username=username)
-            request.data['user'] = user.pk
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        # validate or autofill user
+        if 'user' in request.data:
+            try:
+                username = request.data['user']
+                user = User.objects.get(username=username)
+                request.data['user'] = user.pk
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            request.data['user'] = request.user.pk
         # add new calibration event using instrument and user
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():
@@ -248,7 +250,7 @@ def current_user(request):
             pw = request.data.pop('password')
             request.user.set_password(pw)
             request.user.save()
-        serializer = UserSerializer(request.user, data=request.data, context={'request': request})
+        serializer = UserEditSerializer(request.user, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+import datetime
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,7 +35,24 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('token', 'username', 'password')
+        fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
+
+
+class UserEditSerializer(serializers.ModelSerializer):
+
+    token = serializers.SerializerMethodField()
+
+    def get_token(self, obj):
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(obj)
+        token = jwt_encode_handler(payload)
+        return token
+
+    class Meta:
+        model = User
+        fields = ('token', 'username', 'first_name', 'last_name', 'email')
 
 
 class ItemModelSerializer(serializers.ModelSerializer):
@@ -110,7 +128,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('date', 'user', 'instrument')
+        fields = ('pk', 'date', 'user', 'instrument')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -119,11 +137,16 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('date', 'user')
+        fields = ('pk', 'date', 'user')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
     class Meta:
         model = CalibrationEvent
-        fields = ('date', 'user', 'instrument')
+        fields = ('pk', 'date', 'user', 'instrument')
+
+    def validate(self, data):
+        if data['date'] > datetime.date.today():
+            raise serializers.ValidationError("Cannot set future date.")
+        return data

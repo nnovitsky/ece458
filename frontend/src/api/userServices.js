@@ -1,7 +1,4 @@
-import React from 'react';
 import userData from './userData.json';
-import axios from 'axios';
-
 const API_URL = 'http://localhost:8000';
 
 export default class UserServices {

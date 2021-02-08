@@ -1,7 +1,3 @@
-import React from 'react';
-import userData from './userData.json';
-import axios from 'axios';
-
 const API_URL = 'http://localhost:8000';
 
 
@@ -9,7 +5,10 @@ export default class AuthServices {
     constructor() { }
 
     async login(data) {
-      return fetch('http://localhost:8000/token_auth/', {
+
+      const url = `${API_URL}/token_auth/`;
+
+      return fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -20,7 +19,9 @@ export default class AuthServices {
 
     async getCurrentUser(token) {
 
-      return fetch('http://localhost:8000/current_user/', {
+      const url = `${API_URL}/current_user/`;
+
+      return fetch(url, {
         headers: {
           Authorization: `JWT ${token}`
         }

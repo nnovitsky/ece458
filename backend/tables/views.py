@@ -250,7 +250,7 @@ def current_user(request):
             pw = request.data.pop('password')
             request.user.set_password(pw)
             request.user.save()
-        serializer = UserSerializer(request.user, data=request.data, context={'request': request})
+        serializer = UserEditSerializer(request.user, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

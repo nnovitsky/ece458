@@ -11,7 +11,7 @@ function Navigation(props) {
                 <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
                 <li><NavLink to="/import">Import&nbsp;</NavLink></li>
                 <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
-                <li><NavLink to="/admin">Admin&nbsp;</NavLink></li>
+                { props.is_admin ? <li><NavLink to="/admin">Admin&nbsp;</NavLink></li> : null }
                 <li><NavLink onClick={props.handle_logout} to="/">Logout&nbsp;</NavLink></li>
             </ul>
         </nav>
@@ -33,5 +33,6 @@ export default Navigation;
 
 Navigation.propTypes = {
     logged_in: PropTypes.bool.isRequired,
-    handle_logout: PropTypes.func.isRequired
+    handle_logout: PropTypes.func.isRequired,
+    is_admin: PropTypes.bool.isRequired
 }

@@ -13,6 +13,7 @@ import InstrumentTablePage from './components/instrument/InstrumentTablePage';
 import InstrumentDetailView from './components/instrument/InstrumentDetailView';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 
 import AuthServices from './api/authServices';
 
@@ -25,26 +26,30 @@ class App extends Component {
     this.state = {
       logged_in: localStorage.getItem('token') ? true : false,
       username: '',
-      error_message: ''
+      error_message: '',
+      admin: false
     };
   }
 
   componentDidMount() {
     if (this.state.logged_in) {
-      authServices.getCurrentUser(localStorage.getItem('token'))
-        .then(res => res.json())
-        .then(json => {
-          if (typeof json.username === 'undefined') {
-            localStorage.removeItem('token');
-            this.setState({
-              logged_in: false,
-              username: ''
-            });
-          }
-          else {
-            this.setState({ username: json.username })
-          };
-        });
+
+      authServices.getCurrentUser().then((result) => {
+        if (result.success) {
+          this.setState({ 
+            username: result.data.username,
+            admin: result.data.is_staff,
+          })
+        } else {
+          localStorage.removeItem('token');
+          this.setState({
+            logged_in: false,
+            username: '',
+            admin: false
+          });
+        }
+    }
+    )
     }
     else {
       console.log("Not Logged in")
@@ -67,7 +72,8 @@ class App extends Component {
             localStorage.setItem('token', json.token);
             this.setState({
               logged_in: true,
-              username: json.user.username
+              username: json.user.username,
+              admin: json.user.is_staff
             });
             this.setState({ error_message: '' });
           }
@@ -77,7 +83,11 @@ class App extends Component {
 
   handle_logout = () => {
     localStorage.removeItem('token');
-    this.setState({ logged_in: false, username: '' });
+    this.setState({ 
+      logged_in: false, 
+      username: '',
+      admin: false,
+   });
   };
 
 
@@ -87,7 +97,7 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div>
-          <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} />
+          <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin}/>
           <Switch>
             <ProtectedRoute path="/models" component={ModelTablePage} exact />
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} exact />
@@ -95,7 +105,7 @@ class App extends Component {
             <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} exact />
             <ProtectedRoute path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
-            <ProtectedRoute path="/admin" component={AdminPage} exact />
+            <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />
             <Route path="/" exact />
           </Switch>
           {this.state.logged_in ? null : form}

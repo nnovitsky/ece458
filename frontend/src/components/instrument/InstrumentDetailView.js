@@ -24,7 +24,7 @@ class InstrumentDetailView extends Component {
                 pk: arr[arr.length - 1],
                 model_number: '',
                 model_pk: '',
-                serial: '',
+                serial_number: '',
                 comment: '',
                 calibration_history: [],
             },
@@ -43,6 +43,7 @@ class InstrumentDetailView extends Component {
     }
 
     render() {
+        console.log(this.state.instrument_info)
         let addCalibrationPopup = this.makeAddCalibrationPopup();
         return (
             <div>
@@ -55,7 +56,7 @@ class InstrumentDetailView extends Component {
                             <Button>Download Certificate</Button>
                         </div>
                         <div className="col-10">
-                            <h1>{`Instrument: ${this.state.instrument_info.se}`}</h1>
+                            <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
                             <Row>
                                 <Col>{this.makeDetailsTable()}</Col>
                                 <Col xs={7}>
@@ -74,19 +75,23 @@ class InstrumentDetailView extends Component {
     async getInstrumentInfo() {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
-                let data = result.data
-                console.log(data)
-                this.setState({
-                    instrument_info: {
-                        ...this.state.instrument_info,
-                        model_number: data.item_model.model_number,
-                        model_pk: data.item_model.pk,
-                        serial: data.serial_number,
-                        comment: data.comment,
-                        calibration_history: data.calibration_event,
+                if (result.success) {
+                    let data = result.data;
+                    console.log(data)
+                    this.setState({
+                        ...this.state,
+                        instrument_info: {
+                            ...this.state.instrument_info,
+                            model_number: data.item_model.model_number,
+                            model_pk: data.item_model.pk,
+                            serial_number: data.serial_number,
+                            comment: data.comment,
+                            calibration_history: data.calibration_events,
 
-                    }
-                })
+                        }
+                    })
+                }
+
             }
         )
     }
@@ -99,7 +104,7 @@ class InstrumentDetailView extends Component {
                 <tbody>
                     <tr>
                         <td><strong>Serial Number</strong></td>
-                        <td>{detailData.serial}</td>
+                        <td>{detailData.serial_number}</td>
                     </tr>
                     <tr>
                         <td><strong>Model</strong></td>

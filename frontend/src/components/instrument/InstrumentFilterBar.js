@@ -19,8 +19,8 @@ let filters = {
     description: ''
 }
 
-//'onSearch' prop event handler for when the search button is clicked, will receive a 
-// filters object ^seen above
+//'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
+// 'onRemoveFilters' prop event handler for when the filters should be removed
 
 const InstrumentFilterBar = (props) => {
     return (
@@ -50,7 +50,8 @@ const InstrumentFilterBar = (props) => {
                         </Form.Group>
                     </Col>
                     <Col xs={2}>
-                        <Button className="search-button" onClick={(e) => onSearch(e, props.onSearch)}>Search</Button>
+                        <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply Filters</Button>
+                        <Button className="filter-button" onClick={props.onRemoveFilters}>Remove Filters</Button>
                     </Col>
                 </Row>
 

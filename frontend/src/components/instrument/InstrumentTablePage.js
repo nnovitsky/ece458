@@ -34,6 +34,7 @@ class InstrumentTablePage extends Component {
         }
 
         //need to bind any event callbacks
+        this.updateTable = this.updateTable.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
@@ -74,6 +75,7 @@ class InstrumentTablePage extends Component {
                             <h1>Instrument Table</h1>
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
+                                onRemoveFilters={this.updateTable}
                             />
                             <InstrumentTable
                                 data={this.state.tableData}
@@ -115,7 +117,14 @@ class InstrumentTablePage extends Component {
         console.log(newFilter)
         await instrumentServices.instrumentFilterSearch(newFilter).then(
             (result) => {
-                console.log(result)
+                if (result.success) {
+                    this.setState({
+                        tableData: result.data
+                    })
+                } else {
+                    console.log("Error with filter search")
+                }
+
             }
         )
 

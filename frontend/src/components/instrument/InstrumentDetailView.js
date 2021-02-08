@@ -16,18 +16,22 @@ const instrumentServices = new InstrumentServices();
 class InstrumentDetailView extends Component {
     constructor(props) {
         super(props);
+        const arr = props.location.pathname.split('/')
+
         this.state = {
             redirect: null,
             instrument_info: {
-                instrument_pk: this.props.match.params.pk,
+                pk: arr[arr.length - 1],
                 model_number: '',
                 model_pk: '',
                 serial: '',
                 comment: '',
-                calibration_history: []
+                calibration_history: [],
             },
             isAddCalPopupShown: false,
         }
+
+        console.log(this.state.instrument_info.pk)
 
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
@@ -35,7 +39,7 @@ class InstrumentDetailView extends Component {
     }
 
     async componentDidMount() {
-
+        await this.getInstrumentInfo();
     }
 
     render() {
@@ -65,6 +69,26 @@ class InstrumentDetailView extends Component {
 
 
         );
+    }
+
+    async getInstrumentInfo() {
+        await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
+            (result) => {
+                let data = result.data
+                console.log(data)
+                this.setState({
+                    instrument_info: {
+                        ...this.state.instrument_info,
+                        model_number: data.item_model.model_number,
+                        model_pk: data.item_model.pk,
+                        serial: data.serial_number,
+                        comment: data.comment,
+                        calibration_history: data.calibration_event,
+
+                    }
+                })
+            }
+        )
     }
 
 

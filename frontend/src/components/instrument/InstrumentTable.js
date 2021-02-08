@@ -12,7 +12,7 @@ let data;   //prop array of data to display
 
 const instrumentTable = (props) => {
     data = props.data;
-
+    console.log(data);
     let header = createHeader();
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
@@ -52,20 +52,20 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             <td>{count}</td>
         )
         count++;
-        keys.forEach(k => {
-            rowElements.push(
-                <td>{currentData[k]}</td>
-            )
-        })
+        rowElements.push(<td>{currentData.item_model.vendor}</td>);
+        rowElements.push(<td>{currentData.item_model.model_number}</td>)
+        rowElements.push(<td>{currentData.serial_number}</td>)
+        rowElements.push(<td>{currentData.item_model.description}</td>)
+        rowElements.push(<td>FIGURE ME OUT</td>)
 
         rowElements.push(
             <td>TBD</td>
         )
         rowElements.push(
-            <td><Button value={currentData["instrument pk"]} onClick={onDetailRequested}>More</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
         )
         rowElements.push(
-            <td><Button value={currentData["instrument pk"]} onClick={onCertificateRequested}>Download</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onCertificateRequested}>Download</Button></td>
         )
         let currentRow = (
             <tr>

@@ -41,14 +41,37 @@ export default class InstrumentServices {
             )
     }
 
-    getInstrument(instrumentPk) {
-        let result = {};
-        instrumentData.instruments.forEach(el => {
-            if (el["instrument pk"] === instrumentPk) {
-                result = el;
-            }
-        });
-        return result;
+    async getInstrument(instrumentPk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json
+                    return result
+                },
+                (error) => {
+                    console.log(error);
+                    result.success = false;
+                    return result;
+                }
+        )
     }
 
     getInstrumentSerialByModel(modelPk) {

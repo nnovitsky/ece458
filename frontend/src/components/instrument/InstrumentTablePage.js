@@ -111,11 +111,15 @@ class InstrumentTablePage extends Component {
         console.log(`Certificate requested for instrument: ${e.target.value}`);
     }
 
-    onFilteredSearch(newFilter) {
-        this.setState({
-            ...this.state,
-            filters: newFilter
-        })
+    async onFilteredSearch(newFilter) {
+        console.log(newFilter)
+        await instrumentServices.instrumentFilterSearch(newFilter).then(
+            (result) => {
+                console.log(result)
+            }
+        )
+
+
     }
 
     onAddInstrumentClicked = (e) => {

@@ -13,9 +13,9 @@ const serialName = "serial";
 const descriptionName = "description";
 
 let filters = {
-    model: '',
+    model_number: '',
     vendor: '',
-    serial: '',
+    serial_number: '',
     description: ''
 }
 
@@ -64,13 +64,13 @@ const onTextInput = (e) => {
     console.log(e.target.value)
     switch (e.target.name) {
         case modelName:
-            filters.model = e.target.value;
+            filters.model_number = e.target.value;
             break;
         case vendorName:
             filters.vendor = e.target.value;
             break;
         case serialName:
-            filters.serial = e.target.value;
+            filters.serial_number = e.target.value;
             break;
         case descriptionName:
             filters.description = e.target.value;

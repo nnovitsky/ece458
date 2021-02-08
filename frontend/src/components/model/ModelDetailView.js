@@ -32,7 +32,8 @@ class ModelDetailView extends React.Component {
                 model_number: '',
                 description: '',
                 comment: '',
-                calibration_frequency: ''
+                calibration_frequency: '',
+                instruments: []
             },
             isEditShown: false,
             isDeleteShown: false
@@ -53,7 +54,7 @@ class ModelDetailView extends React.Component {
     }
 
     render() {
-
+        console.log(this.state.model_info);
         let deletePopup = this.makeDeletePopup();
 
         if (this.state.redirect != null) {
@@ -144,13 +145,13 @@ class ModelDetailView extends React.Component {
     makeInstrumentsTable() {
         let rows = [];
         let count = 1;
-        instrumentData.forEach((element) => {
+        this.state.model_info.instruments.forEach((element) => {
             let currentRow = [];
             currentRow.push(
                 <td>{count}</td>
             )
             currentRow.push(
-                <td>{element["serial"]}</td>
+                <td>{element["serial_number"]}</td>
             )
             currentRow.push(
                 <td><Button onClick={this.onMoreClicked} value={element["pk"]}>More</Button></td>

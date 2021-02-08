@@ -88,6 +88,7 @@ class UserPage extends React.Component {
     async onEditUserSubmit(updatedUser) {
         userServices.editUser(updatedUser.username, updatedUser.password, updatedUser.first_name, updatedUser.last_name)
                     .then((res) => {
+                        localStorage.setItem('token', res.token)
                         this.updateUserInfo();
                         this.onEditUserClosed();
                     }
@@ -105,6 +106,23 @@ class UserPage extends React.Component {
             }
         }
         )
+    }
+
+    async logInNewCredentials(data)
+    {
+        authServices.login(data)
+        .then(res => res.json())
+        .then(json => {
+          if (typeof json.user === 'undefined') {
+            console.log("error");
+          }
+          else {
+            localStorage.setItem('token', json.token);
+            this.setState({
+              logged_in: true,
+            });
+          }
+        });
     }
 
     makeDetailsTable() {

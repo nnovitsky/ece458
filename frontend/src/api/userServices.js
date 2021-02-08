@@ -81,7 +81,7 @@ export default class UserServices {
         })
             .then(res => res.json())
             .then(json => {
-                console.log(json)
+                return json;
             })
     }
 

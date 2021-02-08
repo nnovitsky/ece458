@@ -5,4 +5,11 @@ const dateToString = (date) => {
     return (`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`)
 }
 
-export { dateToString };
+// 
+const sortArray = (dataArr, keyToSortBy) => {
+    console.log("sort called")
+    console.log(dataArr)
+    return dataArr.sort((a, b) => (a[keyToSortBy] > b[keyToSortBy]) ? 1 : -1)
+}
+
+export { dateToString, sortArray };

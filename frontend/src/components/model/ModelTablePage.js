@@ -88,7 +88,6 @@ class ModelTablePage extends Component {
 
 
     onDetailClicked(e) {
-        console.log(e.target.value)
         this.setState({
             redirect: `/models/${e.target.value}`
         })
@@ -114,8 +113,6 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        console.log("New model added")
-        console.log(newModel);
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 this.updateModelTable();

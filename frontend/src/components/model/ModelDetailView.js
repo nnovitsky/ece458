@@ -241,7 +241,6 @@ class ModelDetailView extends React.Component {
     async updateInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
-                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })

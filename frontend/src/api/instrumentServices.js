@@ -115,6 +115,28 @@ export default class InstrumentServices {
             )
     }
 
+    async addInstrument(model_pk, serial_number, comment) {
+        let data = {
+            item_model: model_pk,
+            serial_number: serial_number,
+            comment: comment
+        }
+        const token = localStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/instruments/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+
+            })
+    }
+
     getInstrumentSerialByModel(modelPk) {
         let result = [];
         instrumentData.instruments.forEach(el => {

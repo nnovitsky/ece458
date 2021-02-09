@@ -16,7 +16,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 
 import AuthServices from './api/authServices';
-
 const authServices = new AuthServices();
 
 class App extends Component {
@@ -33,7 +32,6 @@ class App extends Component {
 
   componentDidMount() {
     if (this.state.logged_in) {
-
       authServices.getCurrentUser().then((result) => {
         if (result.success) {
           this.setState({ 
@@ -81,6 +79,7 @@ class App extends Component {
     }
   };
 
+
   handle_logout = () => {
     localStorage.removeItem('token');
     this.setState({ 
@@ -99,9 +98,9 @@ class App extends Component {
         <div>
           <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin}/>
           <Switch>
-            <ProtectedRoute path="/models" component={ModelTablePage} exact />
-            <ProtectedRoute path="/models/:pk" component={ModelDetailPage} exact />
-            <ProtectedRoute path="/instruments" component={InstrumentTablePage} exact />
+            <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
+            <ProtectedRoute path="/models/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
+            <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} exact />
             <ProtectedRoute path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />

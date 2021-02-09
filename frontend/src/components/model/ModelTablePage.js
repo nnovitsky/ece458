@@ -5,6 +5,7 @@ import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
 import { Redirect } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -48,7 +49,9 @@ class ModelTablePage extends Component {
 
     }
 
-    render() {
+    render(
+        adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
+    ) {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -65,7 +68,7 @@ class ModelTablePage extends Component {
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            <Button onClick={this.onAddModelClicked}>Add Model</Button>
+                            {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
@@ -164,3 +167,7 @@ class ModelTablePage extends Component {
 }
 
 export default ModelTablePage;
+
+ModelTablePage.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

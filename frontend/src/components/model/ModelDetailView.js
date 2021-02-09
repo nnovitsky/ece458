@@ -9,6 +9,7 @@ import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
@@ -53,7 +54,12 @@ class ModelDetailView extends React.Component {
         await this.updateInfo();
     }
 
-    render() {
+    render(
+        adminButtons = <div>
+                        <Button onClick={this.onEditClicked}>Edit Model</Button>
+                        <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+                    </div>
+    ) {
         console.log(this.state.model_info);
         let deletePopup = this.makeDeletePopup();
 
@@ -76,8 +82,7 @@ class ModelDetailView extends React.Component {
                 <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                         <img src={logo} alt="Logo" />
-                            <Button onClick={this.onEditClicked}>Edit Model</Button>
-                            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+                            {this.props.is_admin ? adminButtons : null}
                     </div>
                     <div className="col-10">
                         <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
@@ -252,3 +257,7 @@ class ModelDetailView extends React.Component {
     }
 }
 export default withRouter(ModelDetailView);
+
+ModelDetailView.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

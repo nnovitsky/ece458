@@ -192,7 +192,6 @@ class InstrumentTablePage extends Component {
                 ...this.state.addInstrumentPopup,
                 isShown: false,
                 vendorSelected: '',
-                vendorsArr: [],
                 modelsByVendor: []
             }
         })

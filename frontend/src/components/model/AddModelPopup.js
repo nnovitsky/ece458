@@ -107,6 +107,7 @@ class AddModelPopup extends Component {
                     options={this.state.vendorsArr}
                     isSearchable={true}
                     onChange={this.onVendorInput}
+                    defaultInputValue={''}
                 />
                 <Form.Label>Description</Form.Label>
                 <Form.Control required type="text" name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />

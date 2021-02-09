@@ -136,6 +136,28 @@ export default class InstrumentServices {
 
             })
     }
+    async editInstrument(instrumentPk, model_pk, serial_number, comment) {
+        let data = {
+            item_model: model_pk,
+            serial_number: serial_number,
+            comment: comment
+        }
+        const token = localStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+                console.log("success")
+            })
+    }
 
     // Note: the date needs to be a string
     async addCalibrationEvent(instrument_pk, date, comment) {

@@ -7,6 +7,7 @@ import logo from '../../assets/HPT_logo_crop.png';
 import { withRouter } from "react-router-dom";
 
 import AddCalibrationPopup from './AddCalibrationPopup';
+import EditInstrumentPopop from './AddInstrumentPopup';
 import GenericTable from '../generic/GenericTable';
 
 import InstrumentServices from "../../api/instrumentServices";
@@ -24,16 +25,21 @@ class InstrumentDetailView extends Component {
                 pk: arr[arr.length - 1],
                 model_number: '',
                 model_pk: '',
+                vendor: '',
                 serial_number: '',
                 comment: '',
                 calibration_history: [],
             },
             isAddCalPopupShown: false,
+            isEditInstrumentShown: false,
             currentUser: ''
         }
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
         this.onAddCalibrationClose = this.onAddCalibrationClose.bind(this);
+        this.onEditInstrumentClicked = this.onEditInstrumentClicked.bind(this);
+        this.onEditInstrumentSubmit = this.onEditInstrumentSubmit.bind(this);
+        this.onEditInstrumentClosed = this.onEditInstrumentClosed.bind(this);
     }
 
     async componentDidMount() {
@@ -41,15 +47,17 @@ class InstrumentDetailView extends Component {
     }
 
     render() {
-        console.log(this.state.instrument_info)
         let addCalibrationPopup = this.makeAddCalibrationPopup();
+        let editInstrumentPopup = this.makeEditInstrumentPopup();
         return (
             <div>
                 {addCalibrationPopup}
+                {editInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
+                            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
                             <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
@@ -81,6 +89,7 @@ class InstrumentDetailView extends Component {
                             ...this.state.instrument_info,
                             model_number: data.item_model.model_number,
                             model_pk: data.item_model.pk,
+                            vendor: data.item_model.vendor,
                             serial_number: data.serial_number,
                             comment: data.comment,
                             calibration_history: data.calibration_events,
@@ -131,6 +140,24 @@ class InstrumentDetailView extends Component {
         )
     }
 
+    makeEditInstrumentPopup() {
+        let currentInstrument = {
+            model_pk: this.state.instrument_info.model_pk,
+            model_number: this.state.instrument_info.model_number,
+            vendor: this.state.instrument_info.vendor,
+            serial_number: this.state.instrument_info.serial_number,
+            comment: this.state.instrument_info.comment
+        }
+        return (
+            <EditInstrumentPopop
+                isShown={this.state.isEditInstrumentShown}
+                onSubmit={this.onEditInstrumentSubmit}
+                onClose={this.onEditInstrumentClosed}
+                currentInstrument={currentInstrument}
+            />
+        )
+    }
+
     onAddCalibrationClicked() {
         this.setState({
             isAddCalPopupShown: true,
@@ -140,6 +167,7 @@ class InstrumentDetailView extends Component {
     async onAddCalibrationSubmit(calibrationEvent) {
         console.log(calibrationEvent);
         await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
+        await this.getInstrumentInfo();
         this.onAddCalibrationClose();
     }
 
@@ -154,8 +182,8 @@ class InstrumentDetailView extends Component {
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['user username', 'date', 'comment']}
-                headers={["User", "Date", "Comment"]}
+                keys={['date', 'comment']}
+                headers={["Date", "Comment"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"
@@ -167,6 +195,30 @@ class InstrumentDetailView extends Component {
     onModelLinkClicked() {
         this.setState({
             redirect: `/models/${this.state.instrument_info.model_pk}`
+        })
+    }
+
+    onEditInstrumentClicked() {
+        this.setState({
+            isEditInstrumentShown: true,
+        })
+
+    }
+
+    async onEditInstrumentSubmit(newInstrument) {
+        console.log('Submitted')
+        console.log(newInstrument)
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
+            (result) => {
+                this.getInstrumentInfo();
+            }
+        )
+        this.onEditInstrumentClosed();
+    }
+
+    onEditInstrumentClosed() {
+        this.setState({
+            isEditInstrumentShown: false,
         })
     }
 }

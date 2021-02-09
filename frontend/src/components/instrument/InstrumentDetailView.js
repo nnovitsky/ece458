@@ -244,8 +244,8 @@ class InstrumentDetailView extends Component {
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['date', 'comment']}
-                headers={["Date", "Comment"]}
+                keys={['$.date', '$.comment', '$.user.username']}
+                headers={["Date", "Comment", "User"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"

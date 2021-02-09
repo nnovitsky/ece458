@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import DatePicker from 'react-datepicker';
@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'isShown': boolean if popup is shown
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
+//'currentUserName': a string of the current user
 
 let newCalibration = {
     user: 'connect me!',
@@ -15,11 +16,13 @@ let newCalibration = {
     comment: '',
 }
 
-const addCalibrationPopup = (props) => {
+const AddCalibrationPopup = (props) => {
+    const [calDate, setCalDate] = useState(new Date());
+
     return (
         <GenericPopup
             show={props.isShown}
-            body={makeBody()}
+            body={makeBody(calDate, setCalDate)}
             headerText="Add Calibration"
             closeButtonText="Cancel"
             submitButtonText="Submit Calibration"
@@ -30,7 +33,7 @@ const addCalibrationPopup = (props) => {
     )
 }
 
-const makeBody = () => {
+const makeBody = (calDate, setCalDate) => {
     return (
         <div>
             <Form className="popup">
@@ -40,7 +43,7 @@ const makeBody = () => {
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Calibration Date</Form.Label>
-                    <DatePicker onSelect={onDateChange} selected={new Date(newCalibration.date)} />
+                    <DatePicker onSelect={(e) => onDateChange(e, setCalDate)} selected={calDate} />
                     <Form.Text muted>
                         Cannot be in the future
                     </Form.Text>
@@ -58,8 +61,10 @@ const onCommentChange = (e) => {
     newCalibration.comment = e.target.value;
 }
 
-const onDateChange = (date) => {
+const onDateChange = (date, setCalDate) => {
     console.log(dateToString(date));
+    newCalibration.date = dateToString(date)
+    setCalDate(date);
 }
 
-export default addCalibrationPopup;
+export default AddCalibrationPopup;

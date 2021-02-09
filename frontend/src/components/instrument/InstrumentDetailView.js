@@ -29,6 +29,7 @@ class InstrumentDetailView extends Component {
                 calibration_history: [],
             },
             isAddCalPopupShown: false,
+            currentUser: ''
         }
 
         console.log(this.state.instrument_info.pk)

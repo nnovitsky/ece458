@@ -228,14 +228,11 @@ class ModelDetailView extends React.Component {
     async onDeleteSubmit() {
         console.log("Deleting model");
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
-            if (result.success) {
+            // if (result.success) {
                 this.onDeleteClose()
                 this.setState({
                     redirect: '/models/'
                 })
-            } else {
-                console.log('failed to delete');
-            }
         });
 
     }

@@ -4,10 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
+import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
 
 import InstrumentServices from "../../api/instrumentServices";
@@ -32,6 +33,7 @@ class InstrumentDetailView extends Component {
             },
             isAddCalPopupShown: false,
             isEditInstrumentShown: false,
+            isDeleteShown: false,
             currentUser: ''
         }
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
@@ -40,6 +42,9 @@ class InstrumentDetailView extends Component {
         this.onEditInstrumentClicked = this.onEditInstrumentClicked.bind(this);
         this.onEditInstrumentSubmit = this.onEditInstrumentSubmit.bind(this);
         this.onEditInstrumentClosed = this.onEditInstrumentClosed.bind(this);
+        this.onDeleteClicked = this.onDeleteClicked.bind(this);
+        this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
+        this.onDeleteClose = this.onDeleteClose.bind(this);
     }
 
     async componentDidMount() {
@@ -49,15 +54,21 @@ class InstrumentDetailView extends Component {
     render() {
         let addCalibrationPopup = this.makeAddCalibrationPopup();
         let editInstrumentPopup = this.makeEditInstrumentPopup();
+        let deleteInstrumentPopup = this.makeDeletePopup();
+        if (this.state.redirect != null) {
+            return <Redirect to={this.state.redirect} />
+        }
         return (
             <div>
                 {addCalibrationPopup}
                 {editInstrumentPopup}
+                {deleteInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
+                            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
                             <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
@@ -139,6 +150,7 @@ class InstrumentDetailView extends Component {
             />
         )
     }
+    
 
     makeEditInstrumentPopup() {
         let currentInstrument = {
@@ -154,6 +166,24 @@ class InstrumentDetailView extends Component {
                 onSubmit={this.onEditInstrumentSubmit}
                 onClose={this.onEditInstrumentClosed}
                 currentInstrument={currentInstrument}
+            />
+        )
+    }
+
+    makeDeletePopup() {
+        let body = (
+            <p>Are you sure you want to delete Instrument: {this.state.instrument_info.serial_number}?</p>
+        )
+        return (
+            <DeletePopup
+                show={this.state.isDeleteShown}
+                body={body}
+                headerText="Warning!"
+                closeButtonText="Cancel"
+                submitButtonText="Delete"
+                onClose={this.onDeleteClose}
+                onSubmit={this.onDeleteSubmit}
+                submitButtonVariant="danger"
             />
         )
     }
@@ -220,6 +250,28 @@ class InstrumentDetailView extends Component {
         this.setState({
             isEditInstrumentShown: false,
         })
+    }
+
+    onDeleteClicked() {
+        this.setState({
+            isDeleteShown: true
+        })
+    }
+
+    onDeleteClose() {
+        this.setState({
+            isDeleteShown: false
+        })
+    }
+
+    async onDeleteSubmit() {
+        console.log("Deleting instrument");
+        await instrumentServices.deleteInstrument(this.state.instrument_info.pk).then(result => {
+            this.onDeleteClose();
+            this.setState({
+                redirect: '/instruments/'
+            })
+        });
     }
 }
 

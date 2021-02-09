@@ -34,7 +34,6 @@ class AddInstrumentPopup extends Component {
 
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
-            console.log("not null")
             this.state = {
                 isEdit: true,
                 newInstrument: {

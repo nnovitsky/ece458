@@ -229,7 +229,6 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        console.log(calibrationEvent);
         await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
         await this.getInstrumentInfo();
         this.onAddCalibrationClose();
@@ -242,7 +241,6 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
-        console.log(this.state.instrument_info.calibration_history)
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}

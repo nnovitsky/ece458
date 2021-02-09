@@ -132,28 +132,32 @@ class AddInstrumentPopup extends Component {
     }
 
     makeBody = () => {
-        return (
-            <Form className="popup">
-                <Form.Group>
-                    <Form.Label>Vendor</Form.Label>
-                    <Select
-                        value={this.state.newInstrument.vendor}
-                        options={this.state.vendorsArr}
-                        onChange={this.onVendorInput}
-                        isSearchable
+        let vendorModel = (this.state.isEdit) ? null : (
+            <Form.Group>
+                <Form.Label>Vendor</Form.Label>
+                <Select
+                    value={this.state.newInstrument.vendor}
+                    options={this.state.vendorsArr}
+                    onChange={this.onVendorInput}
+                    isSearchable
 
-                    />
-                    <Form.Label>Model</Form.Label>
-                    <Select
-                        value={this.state.newInstrument.model}
-                        options={this.state.modelsFromVendorArr}
-                        isSearchable={true}
-                        onChange={this.onModelInput}
-                    />
-                    <Form.Text muted>
-                        The vendor needs to be entered first.
+                />
+                <Form.Label>Model</Form.Label>
+                <Select
+                    value={this.state.newInstrument.model}
+                    options={this.state.modelsFromVendorArr}
+                    isSearchable={true}
+                    onChange={this.onModelInput}
+                />
+                <Form.Text muted>
+                    The vendor needs to be entered first.
                 </Form.Text>
                 </Form.Group>
+        );
+
+        return (
+            <Form className="popup">
+                {vendorModel}
                 <Form.Group>
                     <Form.Label>Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
@@ -266,7 +270,7 @@ class AddInstrumentPopup extends Component {
                 serial_number: this.state.newInstrument.serial_number
 
             }
-            this.props.onSubmit(this.state.newInstrument);
+            this.props.onSubmit(returnedInstrument);
             this.onClose();
         }
     }

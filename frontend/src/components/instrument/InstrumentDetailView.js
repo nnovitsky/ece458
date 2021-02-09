@@ -31,9 +31,6 @@ class InstrumentDetailView extends Component {
             isAddCalPopupShown: false,
             currentUser: ''
         }
-
-        console.log(this.state.instrument_info.pk)
-
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
         this.onAddCalibrationClose = this.onAddCalibrationClose.bind(this);
@@ -78,7 +75,6 @@ class InstrumentDetailView extends Component {
             (result) => {
                 if (result.success) {
                     let data = result.data;
-                    console.log(data)
                     this.setState({
                         ...this.state,
                         instrument_info: {
@@ -143,6 +139,7 @@ class InstrumentDetailView extends Component {
 
     async onAddCalibrationSubmit(calibrationEvent) {
         console.log(calibrationEvent);
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
         this.onAddCalibrationClose();
     }
 
@@ -153,10 +150,11 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
+        console.log(this.state.instrument_info.calibration_history)
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['user', 'date', 'comment']}
+                keys={['user username', 'date', 'comment']}
                 headers={["User", "Date", "Comment"]}
                 buttonFunctions={[]}
                 buttonText={[]}

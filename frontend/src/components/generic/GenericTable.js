@@ -77,8 +77,15 @@ const createBody = () => {
         )
         count++;
         keys.forEach(k => {
+            let kArray = k.split(' ');
+            console.log(kArray);
+            let displayed = currentData;
+            for (let i = 0; i < kArray.length; k++) {
+                displayed = currentData[kArray[i]]
+            }
+            console.log(displayed)
             rowElements.push(
-                <td>{currentData[k]}</td>
+                <td>{displayed}</td>
             )
         })
         buttonText.forEach((bt, i) => {

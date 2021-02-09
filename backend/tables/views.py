@@ -110,8 +110,9 @@ def calibration_event_pdf(request, pk):
     (vendor, model #, description, and serial #) as well as the most recent calibration
     event (date of latest calibration, expiration date, user, comment)
     """
+
     try:
-        calibration_event = CalibrationEvent.objects.get(pk=pk)
+        calibration_event = CalibrationEvent.objects.get(pk=pk) #change to instrument
     except CalibrationEvent.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 

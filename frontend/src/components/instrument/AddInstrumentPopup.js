@@ -54,7 +54,6 @@ class AddInstrumentPopup extends Component {
                 modelsFromVendorArr: []
             }
         } else {
-            console.log('null')
             this.state = {
                 isEdit: false,
                 newInstrument: {
@@ -74,10 +73,6 @@ class AddInstrumentPopup extends Component {
                 modelsFromVendorArr: []
             }
         }
-
-        console.log(props.currentInstrument)
-
-
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onModelInput = this.onModelInput.bind(this);
         this.onSerialChange = this.onSerialChange.bind(this);

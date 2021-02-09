@@ -115,6 +115,8 @@ const onCommentChange = (e) => {
 }
 
 const onClose = (e, parentHandler) => {
+    vendorsMap = [];
+    modelMap = [];
     parentHandler(e);
 }
 

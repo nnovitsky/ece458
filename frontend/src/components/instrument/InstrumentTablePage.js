@@ -16,8 +16,6 @@ import { Redirect } from "react-router-dom";
 const instrumentServices = new InstrumentServices();
 const modelServices = new ModelServices();
 
-let vendorsArr = [];
-
 class InstrumentTablePage extends Component {
     constructor(props) {
         super(props);
@@ -33,6 +31,7 @@ class InstrumentTablePage extends Component {
             addInstrumentPopup: {
                 isShown: false,
                 vendorSelected: '',
+                vendorsArr: [],
                 modelsByVendor: []
             },
         }
@@ -68,7 +67,7 @@ class InstrumentTablePage extends Component {
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
-                    vendorsArr={vendorsArr}
+                    vendorsArr={this.state.addInstrumentPopup.vendorsArr}
                     getModelsByVendor={this.getModelsByVendor}
                     modelsArr={this.state.addInstrumentPopup.modelsByVendor}
                 />
@@ -115,7 +114,12 @@ class InstrumentTablePage extends Component {
     async getVendorsArr() {
         modelServices.getVendors().then((result) => {
             if (result.success) {
-                vendorsArr = result.data.vendors;
+                this.setState({
+                    addInstrumentPopup: {
+                        ...this.state.addInstrumentPopup,
+                        vendorsArr: result.data.vendors
+                    }
+                })
             }
         })
     }
@@ -186,7 +190,10 @@ class InstrumentTablePage extends Component {
         this.setState({
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,
-                isShown: false
+                isShown: false,
+                vendorSelected: '',
+                vendorsArr: [],
+                modelsByVendor: []
             }
         })
     }

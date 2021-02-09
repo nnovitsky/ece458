@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
 import { Redirect, withRouter } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
@@ -51,7 +52,12 @@ class InstrumentDetailView extends Component {
         await this.getInstrumentInfo();
     }
 
-    render() {
+    render(
+        adminButtons = <div>
+                        <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
+                        <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
+                    </div>
+    ) {
         let addCalibrationPopup = this.makeAddCalibrationPopup();
         let editInstrumentPopup = this.makeEditInstrumentPopup();
         let deleteInstrumentPopup = this.makeDeletePopup();
@@ -67,8 +73,7 @@ class InstrumentDetailView extends Component {
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
-                            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
+                            {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
@@ -276,3 +281,7 @@ class InstrumentDetailView extends Component {
 }
 
 export default withRouter(InstrumentDetailView);
+
+InstrumentDetailView.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

@@ -26,26 +26,26 @@ class ImportPage extends Component {
     }
 
     render() {return (
-            <div class="background">
-                <div class="row mainContent">
-                    <div class="col-2 text-center"><img src={logo} alt="Logo" /></div>
-                    <div class="col-5"><h2>Import</h2>
-                    <form class="text-center" method="post" action="#" id="#">
-                    <div class="form-group files">
+            <div className="background">
+                <div className="row mainContent">
+                    <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
+                    <div className="col-5"><h2>Import</h2>
+                    <form className="text-center" method="post" action="#" id="#">
+                    <div className="form-group files">
                         <label>Upload Your File</label>
-                        <input type="file" class="form-control" multiple="" onChange={this.onUpload}></input>
+                        <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
                     </div>
                     </form>
-                        <h5 class="text-center">{this.state.error_message}</h5>
-                        <button class="bigButton" onClick={this.importClicked}>Import</button>
-                        <div class="instructions">
+                        <h5 className="text-center">{this.state.error_message}</h5>
+                        <button className="bigButton" onClick={this.importClicked}>Import</button>
+                        <div className="instructions">
                             <h3>How to Import</h3>
                             <p>{importInstructions}</p>
                         </div>
                     </div>
-                    <div class="col-4 leftText">
+                    <div className="col-4 leftText">
                     <h2>Summary</h2>
-                    <div class="summary overflow-auto">
+                    <div className="summary overflow-auto">
                             <p>
                                 Status: In Progress/Success/Errors
                                 <br></br>

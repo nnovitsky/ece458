@@ -9,7 +9,7 @@ import GenericPopup from '../generic/GenericPopup';
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'currenModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
+//'currentModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
 
 // let newModel = {
 //     model_number: '',

@@ -85,9 +85,6 @@ class AddInstrumentPopup extends Component {
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
-        if (props.currentInstrument !== null) {
-            this.setCurrentInstrumentState();
-        }
     }
 
     async componentDidMount() {
@@ -111,24 +108,6 @@ class AddInstrumentPopup extends Component {
                 submitButtonVariant="primary"
             />
         )
-    }
-
-    setCurrentInstrumentState() {
-        this.setState({
-            newInstrument: {
-                model_pk: this.props.currentInstrument.model_pk,
-                vendor: {
-                    label: this.props.currentInstrument.vendor,
-                    value: this.props.currentInstrument.vendor
-                },
-                model: {
-                    label: this.props.currentInstrument.model_number,
-                    value: this.props.currentInstrument.model_pk
-                },
-                serial_number: this.props.currentInstrument.serial_number,
-                comment: this.props.currentInstrument.comment,
-            }
-        })
     }
 
     makeBody = () => {

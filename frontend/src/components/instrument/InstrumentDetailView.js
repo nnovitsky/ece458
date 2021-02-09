@@ -64,9 +64,13 @@ class InstrumentDetailView extends Component {
         let editInstrumentPopup = this.makeEditInstrumentPopup();
         let deleteInstrumentPopup = this.makeDeletePopup();
 
-        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? (<Col xs={7}>
-            {this.makeCalibrationTable()}
-        </Col>) : null;
+        let calibrationCol = (
+            <Col xs={7}>
+                {this.makeCalibrationTable()}
+            </Col>
+        )
+
+        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationCol : null;
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }

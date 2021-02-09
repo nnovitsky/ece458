@@ -1,24 +1,24 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
+import Select from 'react-select';
+import ModelServices from '../../api/modelServices';
 
 import GenericPopup from '../generic/GenericPopup';
-import FilterField from '../generic/FilterField';
 
 //props
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'getVendorSearchResults' a handler to be called with part of a vendor searched
-//'existingData' this prop is a json object of the style newModel below, null can be passed if no existing model
+//'currenModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
 
-let newModel = {
-    model_number: '',
-    vendor: '',
-    description: '',
-    comment: '',
-    calibration_frequency: '',
-    pk: null
-}
+// let newModel = {
+//     model_number: '',
+//     vendor: '',
+//     description: '',
+//     comment: '',
+//     calibration_frequency: '',
+//     pk: null
+// }
 
 const modelName = "model";
 const vendorName = "vendor";
@@ -26,78 +26,195 @@ const descriptionName = "description";
 const commentName = "comment";
 const callibrationName = "callibration";
 
-const addModelPopup = (props) => {
-    let body = makeBody(props.getVendorSearchResults);
-    return (
-        <GenericPopup
-            show={props.isShown}
-            body={body}
-            headerText="Add Model"
-            closeButtonText="Cancel"
-            submitButtonText="Create Model"
-            onClose={props.onClose}
-            onSubmit={(e) => onSubmit(e, props.onSubmit)}
-            submitButtonVariant="primary"
-        />
-    )
-}
+const modelServices = new ModelServices();
 
-const makeBody = (getVendorSearchResults) => {
-    return (
-        <Form className="popup">
-            <Form.Label>Model Number</Form.Label>
-            <Form.Control required type="text" name={modelName} onChange={onTextInput} placeholder="Enter Model Number" />
+class AddModelPopup extends Component {
+    constructor(props) {
+        super(props);
 
-            <Form.Label>Vendor</Form.Label>
-            <FilterField
-                onTextInput={onTextInput}
-                name={vendorName}
-                dropdownResults={getVendorSearchResults(newModel.vendor)}
-                fieldName="Enter Vendor"
+        //for whatever reason the select compne
+        if (props.currentModel !== null) {
+            console.log("not null")
+            this.state = {
+                isEdit: true,
+                newModel: {
+                    model_pk: props.currentModel.model_pk,
+                    model_number: props.currentModel.model_number,
+                    vendor: {
+                        label: props.currentModel.vendor,
+                        value: props.currentModel.vendor
+                    },
+                    description: props.currentModel.description,
+                    comment: props.currentModel.comment,
+                    calibration_frequency: props.currentModel.calibration_frequency,
+                },
+                vendorsArr: []
+            }
+        } else {
+            console.log('null')
+            this.state = {
+                isEdit: false,
+                newModel: {
+                    model_pk: '',
+                    model_number: '',
+                    vendor: {
+                        label: '',
+                        value: ''
+                    },
+                    description: '',
+                    comment: '',
+                    calibration_frequency: '',
+
+                },
+                vendorsArr: [],
+            }
+        }
+
+        this.onSubmit = this.onSubmit.bind(this);
+        this.onTextInput = this.onTextInput.bind(this);
+        this.onVendorInput = this.onVendorInput.bind(this);
+    }
+
+    async componentDidMount() {
+        await this.getVendorsArr();
+    }
+
+    render() {
+        let body = this.makeBody();
+        return (
+            <GenericPopup
+                show={this.props.isShown}
+                body={body}
+                headerText="Add Model"
+                closeButtonText="Cancel"
+                submitButtonText="Create Model"
+                onClose={this.props.onClose}
+                onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
+                submitButtonVariant="primary"
             />
-            <Form.Label>Description</Form.Label>
-            <Form.Control required type="text" name={descriptionName} onChange={onTextInput} placeholder="Enter Description" />
+        )
+    }
 
-            <Form.Label>Comments</Form.Label>
-            <Form.Control as="textarea" rows={3} name={commentName} onChange={onTextInput} />
+    makeBody() {
+        return (
+            <Form className="popup">
+                <Form.Label>Model Number</Form.Label>
+                <Form.Control required type="text" name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
-            <Form.Label>Callibration Frequency (days)</Form.Label>
-            <Form.Control required type="text" name={callibrationName} onChange={onTextInput} placeholder="Enter Callibration Frequency" />
-        </Form>
-    )
-}
+                <Form.Label>Vendor</Form.Label>
+                <Select
+                    value={this.state.newModel.vendor}
+                    options={this.state.vendorsArr}
+                    isSearchable={true}
+                    onChange={this.onVendorInput}
+                />
+                <Form.Label>Description</Form.Label>
+                <Form.Control required type="text" name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
-const onTextInput = (e) => {
-    let val = e.target.value;
-    switch (e.target.name) {
-        case modelName:
-            newModel.model_number = val
-            return;
-        case vendorName:
-            newModel.vendor = val;
-            return;
-        case descriptionName:
-            newModel.description = val;
-            return;
-        case commentName:
-            newModel.comment = val;
-            return
-        case callibrationName:
-            newModel.calibration_frequency = val;
-            return
-        default:
-            return;
+                <Form.Label>Comments</Form.Label>
+                <Form.Control as="textarea" rows={3} name={commentName} onChange={this.onTextInput} />
+
+                <Form.Label>Callibration Frequency (days)</Form.Label>
+                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
+                <Form.Text muted>If not calibratable, leave empty</Form.Text>
+            </Form>
+        )
+    }
+
+    async getVendorsArr() {
+        modelServices.getVendors().then((result) => {
+            if (result.success) {
+                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
+                this.setState({
+                    vendorsArr: formatted
+                })
+            } else {
+                this.setState({
+                    vendorsArr: []
+                })
+            }
+        })
+    }
+
+    onVendorInput(e) {
+        this.setState({
+            newModel: {
+                ...this.state.newModel,
+                vendor: {
+                    label: e.label,
+                    value: e.value
+                }
+            }
+        })
+    }
+
+    onTextInput(e) {
+        let val = e.target.value;
+        switch (e.target.name) {
+            case modelName:
+                this.setState({
+                    newModel: {
+                        ...this.state.newModel,
+                        model_number: val
+                    }
+                })
+                return;
+            case vendorName:
+                this.setState({
+                    newModel: {
+                        ...this.state.newModel,
+                        vendor: {
+                            value: val,
+                            label: val
+                        }
+                    }
+                })
+                return;
+            case descriptionName:
+                this.setState({
+                    newModel: {
+                        ...this.state.newModel,
+                        description: val
+                    }
+                })
+                return;
+            case commentName:
+                this.setState({
+                    newModel: {
+                        ...this.state.newModel,
+                        comment: val
+                    }
+                })
+                return
+            case callibrationName:
+                this.setState({
+                    newModel: {
+                        ...this.state.newModel,
+                        calibration_frequency: val
+                    }
+                })
+                return;
+            default:
+                return;
+        }
+    }
+
+    onSubmit = (e, parentHandler) => {
+        if (this.isValid()) {
+            let newModel = {
+                model_number: this.state.newModel.model_number,
+                vendor: this.state.newModel.vendor.label,
+                calibration_frequency: this.state.newModel.calibration_frequency,
+                comment: this.state.newModel.comment,
+                description: this.state.newModel.description
+            }
+            parentHandler(newModel);
+        }
+    }
+
+    isValid = () => {
+        return true;
     }
 }
 
-const onSubmit = (e, parentHandler) => {
-    if (isValid) {
-        parentHandler(newModel);
-    }
-}
-
-const isValid = () => {
-    return true;
-}
-
-export default addModelPopup;
+export default AddModelPopup;

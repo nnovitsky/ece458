@@ -56,13 +56,17 @@ class InstrumentDetailView extends Component {
     render(
 
         adminButtons = <div>
-                        <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
-                        <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
-                    </div>
+            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
+            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
+        </div>
     ) {
         let addCalibrationPopup = this.makeAddCalibrationPopup();
         let editInstrumentPopup = this.makeEditInstrumentPopup();
         let deleteInstrumentPopup = this.makeDeletePopup();
+
+        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? (<Col xs={7}>
+            {this.makeCalibrationTable()}
+        </Col>) : null;
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }
@@ -83,9 +87,7 @@ class InstrumentDetailView extends Component {
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
                             <Row>
                                 <Col>{this.makeDetailsTable()}</Col>
-                                <Col xs={7}>
-                                    {this.makeCalibrationTable()}
-                                </Col>
+                                {displayedCalibrationData}
                             </Row>
                         </div>
                     </div>
@@ -124,6 +126,29 @@ class InstrumentDetailView extends Component {
 
     makeDetailsTable() {
         let detailData = this.state.instrument_info;
+
+        let calibrationData = (
+            <>
+                <tr>
+                    <td><strong>Next Calibration</strong></td>
+                    <td>{'FIGURE THIS OUT'}</td>
+                </tr>
+                <tr>
+                    <td><strong>Calibration Frequency</strong></td>
+                    <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
+                </tr>
+            </>
+        )
+
+        let noCalibrationData = (
+            <tr>
+                <td><strong>Calibration</strong></td>
+                <td>This model isn't calibratable</td>
+            </tr>
+        )
+
+        let calibrationIncluded = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationData : noCalibrationData;
+
         return (
             <Table bordered>
                 <tbody>
@@ -139,10 +164,7 @@ class InstrumentDetailView extends Component {
                         <td><strong>Comment</strong></td>
                         <td>{detailData.comment}</td>
                     </tr>
-                    <tr>
-                        <td><strong>Last Callibration</strong></td>
-                        <td>{'FIGURE THIS OUT'}</td>
-                    </tr>
+                    {calibrationIncluded}
 
                 </tbody>
             </Table>
@@ -158,7 +180,7 @@ class InstrumentDetailView extends Component {
             />
         )
     }
-    
+
 
     makeEditInstrumentPopup() {
         let currentInstrument = {

@@ -199,7 +199,7 @@ class AddModelPopup extends Component {
         }
     }
 
-    onSubmit = (e, parentHandler) => {
+    onSubmit = (e) => {
         if (this.isValid()) {
             let newModel = {
                 model_number: this.state.newModel.model_number,
@@ -208,8 +208,29 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description
             }
-            parentHandler(newModel);
+            this.props.onSubmit(newModel);
+            this.onClose();
         }
+    }
+
+    onClose() {
+        this.setState = ({
+            isEdit: false,
+            newModel: {
+                model_pk: '',
+                model_number: '',
+                vendor: {
+                    label: '',
+                    value: ''
+                },
+                description: '',
+                comment: '',
+                calibration_frequency: '',
+
+            },
+            vendorsArr: [],
+        })
+        this.props.onClose();
     }
 
     isValid = () => {

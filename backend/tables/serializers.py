@@ -155,7 +155,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -171,7 +171,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():

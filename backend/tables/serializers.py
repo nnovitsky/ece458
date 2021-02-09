@@ -176,4 +176,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['date'] > datetime.date.today():
             raise serializers.ValidationError("Cannot set future date.")
+        item_model = data['instrument'].item_model
+        if item_model.calibration_frequency <= 0:
+            raise serializers.ValidationError("Non-calibratable instrument.")
         return data

@@ -30,6 +30,7 @@ class InstrumentDetailView extends Component {
                 vendor: '',
                 serial_number: '',
                 comment: '',
+                calibration_frequency: '',
                 calibration_history: [],
             },
             isAddCalPopupShown: false,
@@ -53,6 +54,7 @@ class InstrumentDetailView extends Component {
     }
 
     render(
+
         adminButtons = <div>
                         <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
                         <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
@@ -74,7 +76,7 @@ class InstrumentDetailView extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                            <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
                         <div className="col-10">
@@ -108,6 +110,7 @@ class InstrumentDetailView extends Component {
                             vendor: data.item_model.vendor,
                             serial_number: data.serial_number,
                             comment: data.comment,
+                            calibration_frequency: data.item_model.calibration_frequency,
                             calibration_history: data.calibration_events,
 
                         }

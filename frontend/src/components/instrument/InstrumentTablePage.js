@@ -9,6 +9,7 @@ import './instrument.css';
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 
 
@@ -48,7 +49,9 @@ class InstrumentTablePage extends Component {
         await this.updateTable();
     }
 
-    render() {
+    render(
+        adminButtons = <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+    ) {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -69,7 +72,7 @@ class InstrumentTablePage extends Component {
 
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+                            {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
@@ -165,3 +168,7 @@ class InstrumentTablePage extends Component {
     }
 }
 export default InstrumentTablePage;
+
+InstrumentTablePage.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

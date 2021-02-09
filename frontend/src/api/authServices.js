@@ -36,8 +36,13 @@ export default class AuthServices {
       .then(res => res.json())
       .then(
         (json) => {
+          console.log(json);
           if (json.detail === 'Signature has expired.') {
             console.log("GET NEW TOKEN")
+            result.success = false;
+          }
+          if(json.detail === 'Error decoding signature.')
+          {
             result.success = false;
           }
           result.data = json

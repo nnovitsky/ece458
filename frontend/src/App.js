@@ -1,7 +1,7 @@
 import './App.css';
 
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
@@ -26,7 +26,8 @@ class App extends Component {
       logged_in: localStorage.getItem('token') ? true : false,
       username: '',
       error_message: '',
-      admin: false
+      admin: false,
+      redirect: null
     };
   }
 
@@ -71,7 +72,8 @@ class App extends Component {
             this.setState({
               logged_in: true,
               username: json.user.username,
-              admin: json.user.is_staff
+              admin: json.user.is_staff,
+              redirect: true
             });
             this.setState({ error_message: '' });
           }
@@ -86,12 +88,14 @@ class App extends Component {
       logged_in: false, 
       username: '',
       admin: false,
+      redirect: false
    });
   };
 
 
+
   render(
-    form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} />
+    form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in}/>,
   ) {
     return (
       <BrowserRouter>
@@ -105,9 +109,9 @@ class App extends Component {
             <ProtectedRoute path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />
-            <Route path="/" exact />
           </Switch>
           {this.state.logged_in ? null : form}
+          {this.state.redirect ? (<Redirect to="/user-profile"/>) : null}
         </div>
       </BrowserRouter>
     );

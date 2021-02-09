@@ -1,12 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import "./Login.css";
+import AuthServices from '../../api/authServices';
+import { Redirect } from "react-router-dom";
+const authServices = new AuthServices();
 
 class login extends React.Component {
     state = {
         username: '',
-        password: ''
+        password: '',
+        redirect: null
     };
+
+    async componentDidMount() {
+        this.setState({
+            redirect: null
+        })
+    }
 
     handle_change = e => {
         const name = e.target.name;
@@ -50,4 +60,5 @@ export default login;
 login.propTypes = {
     handle_login: PropTypes.func.isRequired,
     error_message: PropTypes.string.isRequired,
+    isLoggedIn: PropTypes.bool
   };

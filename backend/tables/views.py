@@ -92,6 +92,7 @@ def calibration_event_detail(request, pk):
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             request.data['user'] = calibration_event.user.pk
+        if 'date' not in request.data: request.data['date'] = calibration_event.date
 
         serializer = CalibrationEventWriteSerializer(calibration_event, data=request.data, context={'request': request})
         if serializer.is_valid():

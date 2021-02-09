@@ -29,22 +29,28 @@ class InstrumentTablePage extends Component {
                 description: ''
             },
             addInstrumentPopup: {
-                isShown: false
+                isShown: false,
+                vendorSelected: '',
+                vendorsArr: [],
+                modelsByVendor: []
             },
         }
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
+        this.getVendorsArr = this.getVendorsArr.bind(this);
+        this.getModelsByVendor = this.getModelsByVendor.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
-        this.onGetModelSearchResults = this.onGetModelSearchResults.bind(this);
+
     }
     //make async calls here
     async componentDidMount() {
         await this.updateTable();
+        await this.getVendorsArr();
     }
 
     render() {
@@ -61,7 +67,9 @@ class InstrumentTablePage extends Component {
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
-                    getModelSearchResults={this.onGetModelSearchResults}
+                    vendorsArr={this.state.addInstrumentPopup.vendorsArr}
+                    getModelsByVendor={this.getModelsByVendor}
+                    modelsArr={this.state.addInstrumentPopup.modelsByVendor}
                 />
                 <div className="background">
                     <div className="row mainContent">
@@ -103,6 +111,35 @@ class InstrumentTablePage extends Component {
         })
     }
 
+    async getVendorsArr() {
+        modelServices.getVendors().then((result) => {
+            if (result.success) {
+                this.setState({
+                    addInstrumentPopup: {
+                        ...this.state.addInstrumentPopup,
+                        vendorsArr: result.data.vendors
+                    }
+                })
+            }
+        })
+    }
+
+    async getModelsByVendor(vendor) {
+        await modelServices.getModelByVendor(vendor).then((result) => {
+            if (result.success) {
+                this.setState({
+                    addInstrumentPopup: {
+                        ...this.state.addInstrumentPopup,
+                        modelsByVendor: result.data
+                    }
+                })
+                return;
+            } else {
+                return [];
+            }
+        })
+    }
+
     onDetailViewRequested(e) {
         this.setState({
             redirect: `/instruments/${e.target.value}`
@@ -114,7 +151,6 @@ class InstrumentTablePage extends Component {
     }
 
     async onFilteredSearch(newFilter) {
-        console.log(newFilter)
         await instrumentServices.instrumentFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
@@ -144,22 +180,21 @@ class InstrumentTablePage extends Component {
         console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
     }
 
-    onAddInstrumentSubmit(newInstrument) {
-        console.log(`New Instrument Added: ${newInstrument}`);
+    async onAddInstrumentSubmit(newInstrument) {
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment);
         this.onAddInstrumentClosed();
+        this.updateTable()
     }
 
     onAddInstrumentClosed() {
         this.setState({
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,
-                isShown: false
+                isShown: false,
+                vendorSelected: '',
+                modelsByVendor: []
             }
         })
-    }
-
-    onGetModelSearchResults(search) {
-        return modelServices.getAllModelNumbers();
     }
 }
 export default InstrumentTablePage;

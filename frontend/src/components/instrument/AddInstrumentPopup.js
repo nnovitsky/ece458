@@ -1,5 +1,6 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
+import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,19 +12,28 @@ import FilterField from "../generic/FilterField";
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'getModelSearchResults' a handler to be called with part of a model searched
+//'vendorsArr' an array of all the vendors
+//'getModelsByVendor' a handler to be passed a vendor that will then give a list of models
+//'modelsArr' an array of models that should update as the prvious prop is called
 
 let newInstrument = {
-    model: '',
-    serial: '',
+    model_pk: '',
+    vendor: '',
+    serial_number: '',
     comment: '',
 }
+
+let vendorsMap = [];
+let modelMap = [];
 
 let errorMessages = [];
 
 
 const AddInstrumentPopup = (props) => {
-    let body = makeBody(props.getModelSearchResults);
+    vendorsMap = formatVendorArr(props.vendorsArr);
+    modelMap = formatModelMap(props.modelsArr);
+
+    let body = makeBody(props.getModelsByVendor);
     return (
         <GenericPopup
             show={props.isShown}
@@ -38,17 +48,26 @@ const AddInstrumentPopup = (props) => {
     )
 }
 
-const makeBody = (getModelSearchResults) => {
+const makeBody = (getModelsByVendor) => {
     return (
         <Form className="popup">
             <Form.Group>
-                <Form.Label>Model</Form.Label>
-                <FilterField
-                    onTextInput={onModelInput}
-                    name="model"
-                    dropdownResults={getModelSearchResults(newInstrument.model)}
-                    fieldName="Enter Model"
+                <Form.Label>Vendor</Form.Label>
+                <Select
+                    options={vendorsMap}
+                    onChange={(e) => onVendorInput(e, getModelsByVendor)}
+                    isSearchable
+
                 />
+                <Form.Label>Model</Form.Label>
+                <Select
+                    options={modelMap}
+                    isSearchable={true}
+                    onChange={onModelInput}
+                />
+                <Form.Text muted>
+                    The vendor needs to be entered first.
+                </Form.Text>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Serial Number</Form.Label>
@@ -68,13 +87,27 @@ const makeBody = (getModelSearchResults) => {
     )
 }
 
+const formatVendorArr = (arr) => {
+    return arr.map(opt => ({ label: opt, value: opt }));
+}
+
+const formatModelMap = (input) => {
+    return input.map(opt => ({ label: opt.model_number, value: opt.pk }));
+}
+
 //called by the filter field
 const onModelInput = (e) => {
-    newInstrument.model = e.target.value;
+    newInstrument.model_pk = e.value;
+}
+
+const onVendorInput = (e, getModelsByVendor) => {
+
+    newInstrument.vendor = e.value;
+    getModelsByVendor(newInstrument.vendor)
 }
 
 const onSerialChange = (e) => {
-    newInstrument.serial = e.target.value;
+    newInstrument.serial_number = e.target.value;
 }
 
 const onCommentChange = (e) => {
@@ -82,11 +115,12 @@ const onCommentChange = (e) => {
 }
 
 const onClose = (e, parentHandler) => {
+    vendorsMap = [];
+    modelMap = [];
     parentHandler(e);
 }
 
 const onSubmit = (e, parentHandler) => {
-    console.log(newInstrument)
     if (isValid) {
         parentHandler(newInstrument);
     }

@@ -69,15 +69,6 @@ class ModelDetailView extends React.Component {
         return (
             <div>
                 {deletePopup}
-                <EditModelPopup
-                    isShown={this.state.isEditShown}
-                    onSubmit={this.onEditSubmit}
-                    onClose={this.onEditClose}
-                    getVendorSearchResults={this.onVendorSearch}
-                    existingData={this.state.model_info}
-                />
-                
-
             <div className="background">
                 <div className="row mainContent">
                         <div className="col-2 text-center button-col">

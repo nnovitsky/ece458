@@ -108,24 +108,7 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
-                        result.success = false;
-                    }
-                    result.data = json.data
-                    console.log(result)
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
-                }
-            );
-
+            
     }
 
     async modelFilterSearch(filters) {

@@ -46,7 +46,6 @@ class ModelTablePage extends Component {
         }
         )
         this.updateModelTable();
-
     }
 
     render(

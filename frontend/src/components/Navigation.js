@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 import { NavLink } from 'react-router-dom';
 
+
 function Navigation(props) {
+
     const logged_in_nav = (
         <nav>
             <ul>
@@ -25,7 +27,10 @@ function Navigation(props) {
     );
 
     return (
-        <div>{props.logged_in ? logged_in_nav : logged_out_nav}</div>
+        
+        <div>
+            {props.logged_in ? logged_in_nav : logged_out_nav}
+        </div>
     );
 }
 

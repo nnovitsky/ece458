@@ -119,7 +119,7 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
             return "Uncalibratable"
         last_cal = obj.calibrationevent_set.order_by('-date')[:1]
         if len(last_cal) < 1:
-            return "No recorded calibration event."
+            return datetime.date.today()
         else:
             last_cal = last_cal[0]
             exp_date = last_cal.date + datetime.timedelta(cal_frequency)

@@ -1,133 +1,300 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Form from "react-bootstrap/Form";
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 
+import ModelServices from '../../api/modelServices';
 import "react-datepicker/dist/react-datepicker.css";
 import './instrument.css';
 import GenericPopup from "../generic/GenericPopup";
-import FilterField from "../generic/FilterField";
 
 //props
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-//'vendorsArr' an array of all the vendors
-//'getModelsByVendor' a handler to be passed a vendor that will then give a list of models
-//'modelsArr' an array of models that should update as the prvious prop is called
+//'currentInstrument' an object formatted exactly like newInstrument below, can also pass null if no pre-existing
 
-let newInstrument = {
-    model_pk: '',
-    vendor: '',
-    serial_number: '',
-    comment: '',
-}
+// let newInstrument = {
+//     model_pk: '',
+//      model_number,
+//     vendor: '',
+//     serial_number: '',
+//     comment: '',
+//}
 
-let vendorsMap = [];
-let modelMap = [];
-
-let errorMessages = [];
-
-
-const AddInstrumentPopup = (props) => {
-    vendorsMap = formatVendorArr(props.vendorsArr);
-    modelMap = formatModelMap(props.modelsArr);
-
-    let body = makeBody(props.getModelsByVendor);
-    return (
-        <GenericPopup
-            show={props.isShown}
-            body={body}
-            headerText="Add Instrument"
-            closeButtonText="Cancel"
-            submitButtonText="Create"
-            onClose={(e) => onClose(e, props.onClose)}
-            onSubmit={(e) => onSubmit(e, props.onSubmit)}
-            submitButtonVariant="primary"
-        />
-    )
-}
-
-const makeBody = (getModelsByVendor) => {
-    return (
-        <Form className="popup">
-            <Form.Group>
-                <Form.Label>Vendor</Form.Label>
-                <Select
-                    options={vendorsMap}
-                    onChange={(e) => onVendorInput(e, getModelsByVendor)}
-                    isSearchable
-
-                />
-                <Form.Label>Model</Form.Label>
-                <Select
-                    options={modelMap}
-                    isSearchable={true}
-                    onChange={onModelInput}
-                />
-                <Form.Text muted>
-                    The vendor needs to be entered first.
-                </Form.Text>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Serial Number</Form.Label>
-                <Form.Control type="text" placeholder="Enter Serial" onChange={onSerialChange} />
-                <Form.Text muted>
-                    The serial number must be unique to the model.
-  </Form.Text>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Comments</Form.Label>
-                <Form.Control as="textarea" rows={3} onChange={onCommentChange} />
-            </Form.Group>
+const modelServices = new ModelServices();
 
 
 
-        </Form>
-    )
-}
+class AddInstrumentPopup extends Component {
 
-const formatVendorArr = (arr) => {
-    return arr.map(opt => ({ label: opt, value: opt }));
-}
+    constructor(props) {
+        super(props);
 
-const formatModelMap = (input) => {
-    return input.map(opt => ({ label: opt.model_number, value: opt.pk }));
-}
 
-//called by the filter field
-const onModelInput = (e) => {
-    newInstrument.model_pk = e.value;
-}
 
-const onVendorInput = (e, getModelsByVendor) => {
+        //for whatever reason the select compne
+        if (props.currentInstrument !== null) {
+            console.log("not null")
+            this.state = {
+                isEdit: true,
+                newInstrument: {
+                    model_pk: props.currentInstrument.model_pk,
+                    model: {
+                        label: props.currentInstrument.model_number,
+                        number: props.currentInstrument.model_pk
+                    },
+                    vendor: {
+                        label: props.currentInstrument.vendor,
+                        value: props.currentInstrument.vendor
+                    },
+                    serial_number: props.currentInstrument.serial_number,
+                    comment: props.currentInstrument.comment,
+                },
+                vendorsArr: [],
+                modelsFromVendorArr: []
+            }
+        } else {
+            console.log('null')
+            this.state = {
+                isEdit: false,
+                newInstrument: {
+                    model_pk: '',
+                    model: {
+                        label: '',
+                        number: ''
+                    },
+                    vendor: {
+                        label: '',
+                        value: ''
+                    },
+                    serial_number: '',
+                    comment: '',
+                },
+                vendorsArr: [],
+                modelsFromVendorArr: []
+            }
+        }
 
-    newInstrument.vendor = e.value;
-    getModelsByVendor(newInstrument.vendor)
-}
+        console.log(props.currentInstrument)
 
-const onSerialChange = (e) => {
-    newInstrument.serial_number = e.target.value;
-}
 
-const onCommentChange = (e) => {
-    newInstrument.comment = e.target.value;
-}
+        this.onVendorInput = this.onVendorInput.bind(this);
+        this.onModelInput = this.onModelInput.bind(this);
+        this.onSerialChange = this.onSerialChange.bind(this);
+        this.onCommentChange = this.onCommentChange.bind(this);
+        this.onClose = this.onClose.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
 
-const onClose = (e, parentHandler) => {
-    vendorsMap = [];
-    modelMap = [];
-    parentHandler(e);
-}
-
-const onSubmit = (e, parentHandler) => {
-    if (isValid) {
-        parentHandler(newInstrument);
+        if (props.currentInstrument !== null) {
+            this.setCurrentInstrumentState();
+        }
     }
-}
 
-const isValid = () => {
-    return true;
+    async componentDidMount() {
+        await this.getVendorsArr();
+    }
+
+    render() {
+        let body = this.makeBody();
+
+        let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
+        let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Instrument";
+        return (
+            <GenericPopup
+                show={this.props.isShown}
+                body={body}
+                headerText={headerText}
+                closeButtonText="Cancel"
+                submitButtonText={submitText}
+                onClose={this.onClose}
+                onSubmit={this.onSubmit}
+                submitButtonVariant="primary"
+            />
+        )
+    }
+
+    setCurrentInstrumentState() {
+        this.setState({
+            newInstrument: {
+                model_pk: this.props.currentInstrument.model_pk,
+                vendor: {
+                    label: this.props.currentInstrument.vendor,
+                    value: this.props.currentInstrument.vendor
+                },
+                model: {
+                    label: this.props.currentInstrument.model_number,
+                    value: this.props.currentInstrument.model_pk
+                },
+                serial_number: this.props.currentInstrument.serial_number,
+                comment: this.props.currentInstrument.comment,
+            }
+        })
+    }
+
+    makeBody = () => {
+        return (
+            <Form className="popup">
+                <Form.Group>
+                    <Form.Label>Vendor</Form.Label>
+                    <Select
+                        value={this.state.newInstrument.vendor}
+                        options={this.state.vendorsArr}
+                        onChange={this.onVendorInput}
+                        isSearchable
+
+                    />
+                    <Form.Label>Model</Form.Label>
+                    <Select
+                        value={this.state.newInstrument.model}
+                        options={this.state.modelsFromVendorArr}
+                        isSearchable={true}
+                        onChange={this.onModelInput}
+                    />
+                    <Form.Text muted>
+                        The vendor needs to be entered first.
+                </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Serial Number</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
+                    <Form.Text muted>
+                        The serial number must be unique to the model.
+  </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Comments</Form.Label>
+                    <Form.Control as="textarea" rows={3} value={this.state.newInstrument.comment} onChange={this.onCommentChange} />
+                </Form.Group>
+
+
+
+            </Form>
+        )
+    }
+
+
+    async getVendorsArr() {
+        modelServices.getVendors().then((result) => {
+            if (result.success) {
+                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
+                this.setState({
+                    vendorsArr: formatted
+                })
+            } else {
+                this.setState({
+                    vendorsArr: []
+                })
+            }
+        })
+    }
+
+    //called by the filter field
+    async onModelInput(e) {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                model_pk: e.value,
+                model: {
+                    label: e.label,
+                    value: e.value,
+                }
+            }
+        })
+    }
+
+    async onVendorInput(e) {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                vendor: {
+                    label: e.value,
+                    value: e.label
+                },
+                model: {
+                    label: '',
+                    value: ''
+                },
+                model_pk: ''
+            }
+        })
+        await modelServices.getModelByVendor(e.value).then((result) => {
+            if (result.success) {
+                let formatted = result.data.map(opt => ({ label: opt.model_number, value: opt.pk }));
+                this.setState({
+                    modelsFromVendorArr: formatted
+                })
+                return;
+            } else {
+                this.setState({
+                    modelsFromVendorArr: []
+                })
+            }
+        })
+    }
+
+    onSerialChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                serial_number: e.target.value
+            }
+        })
+    }
+
+    onCommentChange = (e, setInstrumentState) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                comment: e.target.value
+            }
+        })
+    }
+
+    onClose = (e) => {
+        this.props.onClose(e);
+        if (!this.state.isEdit) {
+            this.resetState();
+        }
+    }
+
+    onSubmit = (e) => {
+        if (this.isValid()) {
+            let returnedInstrument = {
+                model_pk: this.state.newInstrument.model_pk,
+                vendor: this.state.newInstrument.vendor.value,
+                comment: this.state.newInstrument.comment,
+                serial_number: this.state.newInstrument.serial_number
+
+            }
+            this.props.onSubmit(this.state.newInstrument);
+            this.onClose();
+        }
+    }
+
+    resetState() {
+        this.setState({
+            isEdit: false,
+            newInstrument: {
+                model_pk: '',
+                model: {
+                    label: '',
+                    number: ''
+                },
+                vendor: {
+                    label: '',
+                    value: ''
+                },
+                serial_number: '',
+                comment: '',
+            },
+            vendorsArr: [],
+            modelsFromVendorArr: []
+        })
+    }
+
+    isValid = () => {
+        return true;
+    }
 }
 
 export default AddInstrumentPopup;

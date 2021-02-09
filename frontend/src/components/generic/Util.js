@@ -2,7 +2,8 @@
 // takes in a js date object and returns a string in the formatting
 // the backend has agreed upon
 const dateToString = (date) => {
-    return (`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`)
+    return (date.getFullYear() + '-'
+        + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + (('0' + date.getDate()).slice(-2)));
 }
 
 // 

@@ -4,9 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
 import AddCalibrationPopup from './AddCalibrationPopup';
+import EditInstrumentPopop from './AddInstrumentPopup';
+import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
 
 import InstrumentServices from "../../api/instrumentServices";
@@ -24,18 +26,25 @@ class InstrumentDetailView extends Component {
                 pk: arr[arr.length - 1],
                 model_number: '',
                 model_pk: '',
+                vendor: '',
                 serial_number: '',
                 comment: '',
                 calibration_history: [],
             },
             isAddCalPopupShown: false,
+            isEditInstrumentShown: false,
+            isDeleteShown: false,
+            currentUser: ''
         }
-
-        console.log(this.state.instrument_info.pk)
-
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
         this.onAddCalibrationClose = this.onAddCalibrationClose.bind(this);
+        this.onEditInstrumentClicked = this.onEditInstrumentClicked.bind(this);
+        this.onEditInstrumentSubmit = this.onEditInstrumentSubmit.bind(this);
+        this.onEditInstrumentClosed = this.onEditInstrumentClosed.bind(this);
+        this.onDeleteClicked = this.onDeleteClicked.bind(this);
+        this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
+        this.onDeleteClose = this.onDeleteClose.bind(this);
     }
 
     async componentDidMount() {
@@ -43,15 +52,23 @@ class InstrumentDetailView extends Component {
     }
 
     render() {
-        console.log(this.state.instrument_info)
         let addCalibrationPopup = this.makeAddCalibrationPopup();
+        let editInstrumentPopup = this.makeEditInstrumentPopup();
+        let deleteInstrumentPopup = this.makeDeletePopup();
+        if (this.state.redirect != null) {
+            return <Redirect to={this.state.redirect} />
+        }
         return (
             <div>
                 {addCalibrationPopup}
+                {editInstrumentPopup}
+                {deleteInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
+                            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
+                            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
                             <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
@@ -77,13 +94,13 @@ class InstrumentDetailView extends Component {
             (result) => {
                 if (result.success) {
                     let data = result.data;
-                    console.log(data)
                     this.setState({
                         ...this.state,
                         instrument_info: {
                             ...this.state.instrument_info,
                             model_number: data.item_model.model_number,
                             model_pk: data.item_model.pk,
+                            vendor: data.item_model.vendor,
                             serial_number: data.serial_number,
                             comment: data.comment,
                             calibration_history: data.calibration_events,
@@ -133,6 +150,43 @@ class InstrumentDetailView extends Component {
             />
         )
     }
+    
+
+    makeEditInstrumentPopup() {
+        let currentInstrument = {
+            model_pk: this.state.instrument_info.model_pk,
+            model_number: this.state.instrument_info.model_number,
+            vendor: this.state.instrument_info.vendor,
+            serial_number: this.state.instrument_info.serial_number,
+            comment: this.state.instrument_info.comment
+        }
+        return (
+            <EditInstrumentPopop
+                isShown={this.state.isEditInstrumentShown}
+                onSubmit={this.onEditInstrumentSubmit}
+                onClose={this.onEditInstrumentClosed}
+                currentInstrument={currentInstrument}
+            />
+        )
+    }
+
+    makeDeletePopup() {
+        let body = (
+            <p>Are you sure you want to delete Instrument: {this.state.instrument_info.serial_number}?</p>
+        )
+        return (
+            <DeletePopup
+                show={this.state.isDeleteShown}
+                body={body}
+                headerText="Warning!"
+                closeButtonText="Cancel"
+                submitButtonText="Delete"
+                onClose={this.onDeleteClose}
+                onSubmit={this.onDeleteSubmit}
+                submitButtonVariant="danger"
+            />
+        )
+    }
 
     onAddCalibrationClicked() {
         this.setState({
@@ -142,6 +196,8 @@ class InstrumentDetailView extends Component {
 
     async onAddCalibrationSubmit(calibrationEvent) {
         console.log(calibrationEvent);
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
+        await this.getInstrumentInfo();
         this.onAddCalibrationClose();
     }
 
@@ -152,11 +208,12 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
+        console.log(this.state.instrument_info.calibration_history)
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['user', 'date', 'comment']}
-                headers={["User", "Date", "Comment"]}
+                keys={['date', 'comment']}
+                headers={["Date", "Comment"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"
@@ -169,6 +226,52 @@ class InstrumentDetailView extends Component {
         this.setState({
             redirect: `/models/${this.state.instrument_info.model_pk}`
         })
+    }
+
+    onEditInstrumentClicked() {
+        this.setState({
+            isEditInstrumentShown: true,
+        })
+
+    }
+
+    async onEditInstrumentSubmit(newInstrument) {
+        console.log('Submitted')
+        console.log(newInstrument)
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
+            (result) => {
+                this.getInstrumentInfo();
+            }
+        )
+        this.onEditInstrumentClosed();
+    }
+
+    onEditInstrumentClosed() {
+        this.setState({
+            isEditInstrumentShown: false,
+        })
+    }
+
+    onDeleteClicked() {
+        this.setState({
+            isDeleteShown: true
+        })
+    }
+
+    onDeleteClose() {
+        this.setState({
+            isDeleteShown: false
+        })
+    }
+
+    async onDeleteSubmit() {
+        console.log("Deleting instrument");
+        await instrumentServices.deleteInstrument(this.state.instrument_info.pk).then(result => {
+            this.onDeleteClose();
+            this.setState({
+                redirect: '/instruments/'
+            })
+        });
     }
 }
 

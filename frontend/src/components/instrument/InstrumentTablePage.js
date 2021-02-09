@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
-import ModelServices from '../../api/modelServices';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
 
@@ -15,7 +14,6 @@ import PropTypes from 'prop-types';
 
 
 const instrumentServices = new InstrumentServices();
-const modelServices = new ModelServices();
 
 class InstrumentTablePage extends Component {
     constructor(props) {
@@ -39,8 +37,6 @@ class InstrumentTablePage extends Component {
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
-        this.getVendorsArr = this.getVendorsArr.bind(this);
-        this.getModelsByVendor = this.getModelsByVendor.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
@@ -51,7 +47,6 @@ class InstrumentTablePage extends Component {
     //make async calls here
     async componentDidMount() {
         await this.updateTable();
-        await this.getVendorsArr();
     }
 
     render(
@@ -70,9 +65,7 @@ class InstrumentTablePage extends Component {
                     isShown={this.state.addInstrumentPopup.isShown}
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
-                    vendorsArr={this.state.addInstrumentPopup.vendorsArr}
-                    getModelsByVendor={this.getModelsByVendor}
-                    modelsArr={this.state.addInstrumentPopup.modelsByVendor}
+                    currentInstrument={null}
                 />
                 <div className="background">
                     <div className="row mainContent">
@@ -114,34 +107,8 @@ class InstrumentTablePage extends Component {
         })
     }
 
-    async getVendorsArr() {
-        modelServices.getVendors().then((result) => {
-            if (result.success) {
-                this.setState({
-                    addInstrumentPopup: {
-                        ...this.state.addInstrumentPopup,
-                        vendorsArr: result.data.vendors
-                    }
-                })
-            }
-        })
-    }
 
-    async getModelsByVendor(vendor) {
-        await modelServices.getModelByVendor(vendor).then((result) => {
-            if (result.success) {
-                this.setState({
-                    addInstrumentPopup: {
-                        ...this.state.addInstrumentPopup,
-                        modelsByVendor: result.data
-                    }
-                })
-                return;
-            } else {
-                return [];
-            }
-        })
-    }
+
 
     onDetailViewRequested(e) {
         this.setState({

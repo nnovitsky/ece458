@@ -69,7 +69,7 @@ export default class InstrumentServices {
                     result.success = false;
                     return result;
                 }
-        )
+            )
     }
 
     async instrumentFilterSearch(filters) {
@@ -136,29 +136,93 @@ export default class InstrumentServices {
 
             })
     }
+    async editInstrument(instrumentPk, model_pk, serial_number, comment) {
+        let data = {
+            item_model: model_pk,
+            serial_number: serial_number,
+            comment: comment
+        }
+        const token = localStorage.getItem('token');
 
-    getInstrumentSerialByModel(modelPk) {
-        let result = [];
-        instrumentData.instruments.forEach(el => {
-            if (el["model pk"] === modelPk) {
-                let temp = {
-                    "serial": el["serial"],
-                    "pk": el["instrument pk"]
-                }
-                result.push(temp);
-            }
-        });
-        return result;
-        // const url = `${API_URL}/api/customers/${pk}`;
-        // return axios.get(url).then(response => response.data);
-    }
-
-    getAllSerialNumbers() {
-        let result = new Set();
-        instrumentData.instruments.forEach(el => {
-            result.add(el["serial"]);
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
         })
-        return Array.from(result);
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+                console.log("success")
+            })
     }
+
+    async deleteInstrument(instrumentPk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: []
+        }
+
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+    }
+
+
+// Note: the date needs to be a string
+async addCalibrationEvent(instrument_pk, date, comment) {
+    let data = {
+        instrument: instrument_pk,
+        date: date,
+        comment: comment
+    }
+
+    const token = localStorage.getItem('token');
+
+    return fetch(`${API_URL}/api/calibration_events/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `JWT ${token}`
+        },
+        body: JSON.stringify(data)
+    })
+        .then(res => res.json())
+        .then(json => {
+
+        })
+}
+
+getInstrumentSerialByModel(modelPk) {
+    let result = [];
+    instrumentData.instruments.forEach(el => {
+        if (el["model pk"] === modelPk) {
+            let temp = {
+                "serial": el["serial"],
+                "pk": el["instrument pk"]
+            }
+            result.push(temp);
+        }
+    });
+    return result;
+    // const url = `${API_URL}/api/customers/${pk}`;
+    // return axios.get(url).then(response => response.data);
+}
+
+getAllSerialNumbers() {
+    let result = new Set();
+    instrumentData.instruments.forEach(el => {
+        result.add(el["serial"]);
+    })
+    return Array.from(result);
+}
 }
 

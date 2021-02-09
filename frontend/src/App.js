@@ -105,7 +105,7 @@ class App extends Component {
             <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
-            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} exact />
+            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />

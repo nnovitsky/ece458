@@ -44,16 +44,8 @@ def calibration_event_list(request):
         return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
 
     elif request.method == 'POST':
-        # validate or autofill user
-        if 'user' in request.data:
-            try:
-                username = request.data['user']
-                user = User.objects.get(username=username)
-                request.data['user'] = user.pk
-            except User.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            request.data['user'] = request.user.pk
+        # set user to current user
+        request.data['user'] = request.user.pk
         # add new calibration event using instrument and user
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():

@@ -60,7 +60,7 @@ class ModelTablePage extends Component {
                     isShown={this.state.addModelPopup.isShown}
                     onSubmit={this.onAddModelSubmit}
                     onClose={this.onAddModelClosed}
-                    getVendorSearchResults={this.onGetVendorSearchResults}
+                    currentModel={null}
                 />
 
                 <div className="background">

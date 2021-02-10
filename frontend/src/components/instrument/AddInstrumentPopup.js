@@ -123,6 +123,7 @@ class AddInstrumentPopup extends Component {
                     options={this.state.modelsFromVendorArr}
                     isSearchable={true}
                     onChange={this.onModelInput}
+                    noOptionsMessage={() => "Select a Vendor"}
                 />
                 <Form.Text muted>
                     The vendor needs to be entered first.

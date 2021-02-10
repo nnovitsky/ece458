@@ -10,6 +10,7 @@ import GenericPopup from '../generic/GenericPopup';
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'currentModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
+//'errors' an optional field for an array of errors to be displayed
 
 // let newModel = {
 //     model_number: '',
@@ -51,7 +52,6 @@ class AddModelPopup extends Component {
                 vendorsArr: []
             }
         } else {
-            console.log('null')
             this.state = {
                 isEdit: false,
                 newModel: {
@@ -91,6 +91,7 @@ class AddModelPopup extends Component {
                 onClose={this.props.onClose}
                 onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
                 submitButtonVariant="primary"
+                errors={this.props.errors}
             />
         )
     }
@@ -115,8 +116,8 @@ class AddModelPopup extends Component {
                 <Form.Label>Comments</Form.Label>
                 <Form.Control as="textarea" rows={3} name={commentName} onChange={this.onTextInput} />
 
-                <Form.Label>Callibration Frequency (days)</Form.Label>
-                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
+                <Form.Label>Calibration Frequency (days)</Form.Label>
+                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
             </Form>
         )
@@ -214,7 +215,6 @@ class AddModelPopup extends Component {
                 newModel.calibration_frequency = 0;
             }
             this.props.onSubmit(newModel);
-            this.onClose();
         }
     }
 
@@ -241,6 +241,10 @@ class AddModelPopup extends Component {
     isValid = () => {
         return true;
     }
+}
+
+AddModelPopup.defaultProps = {
+    errors: []
 }
 
 export default AddModelPopup;

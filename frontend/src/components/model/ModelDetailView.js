@@ -60,7 +60,6 @@ class ModelDetailView extends React.Component {
                         <Button onClick={this.onDeleteClicked}>Delete Model</Button>
                     </div>
     ) {
-        console.log(this.state.model_info);
         let deletePopup = this.makeDeletePopup();
 
         if (this.state.redirect != null) {

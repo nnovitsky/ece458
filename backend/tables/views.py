@@ -260,6 +260,7 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+        # TODO: add permissions
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

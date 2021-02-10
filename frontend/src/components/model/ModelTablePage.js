@@ -21,6 +21,7 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
+            sortingIndicator: null,
             filters: {
                 model: '',
                 vendor: '',
@@ -29,6 +30,7 @@ class ModelTablePage extends Component {
             addModelPopup: {
                 isShown: false,
             }
+
         }
 
         //binding
@@ -76,6 +78,7 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.updateModelTable}
                             />
+                            <h4>{this.state.sortingIndicator}</h4>
                             <ModelTable
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
@@ -166,22 +169,29 @@ class ModelTablePage extends Component {
     }
 
     getURLKey = (sortingHeader) => {
+
         let sortingKey = null
+        this.setState({
+            sortingIndicator: 'Sorted By: ' + sortingHeader
+        })
 
         switch (sortingHeader) {
             case "Model Number":
-                sortingKey = "model_number"
+                sortingKey = "model_number_lower"
                 return sortingKey;
             case "Vendor":
-                sortingKey = "vendor"
+                sortingKey = "vendor_lower"
                 return sortingKey;
             case "Description":
-                sortingKey = "description"
+                sortingKey = "description_lower"
                 return sortingKey;
             case "Callibration (days)":
                 sortingKey = "calibration_frequency"
                 return sortingKey;
             default:
+                this.setState({
+                    sortingIndicator: null
+                })
                 return null;
         }
     }
@@ -196,7 +206,6 @@ class ModelTablePage extends Component {
                 this.setState({
                     tableData: res.data
                 })
-                console.log(res.data);
             } else {
                 console.log("error")
             }

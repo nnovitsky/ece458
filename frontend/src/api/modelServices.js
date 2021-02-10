@@ -258,5 +258,45 @@ export default class ModelServices {
         })
         return Array.from(result);
     }
+
+    async getSortedModels(sortingKey) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let data = {
+            sorted_by: sortingKey,
+        }
+
+        const url = `${API_URL}/api/model_search/`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    console.log(json)
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    return result
+                },
+                (error) => {
+                    console.log(error)
+                    result.success = false;
+                    return result
+                }
+            )
+    }
 }
 

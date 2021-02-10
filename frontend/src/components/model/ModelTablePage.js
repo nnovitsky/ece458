@@ -79,6 +79,7 @@ class ModelTablePage extends Component {
                             <ModelTable
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
+                                sortData={this.onModelSort}
                             />
                         </div>
                     </div>
@@ -162,6 +163,39 @@ class ModelTablePage extends Component {
 
         }
         )
+    }
+
+    getURLKey = (sortingHeader) => {
+        let sortingKey = null
+
+        switch (sortingHeader) {
+            case "Model Number":
+                sortingKey = "model_number"
+                return sortingKey;
+            case "Vendor":
+                sortingKey = "vendor"
+                return sortingKey;
+            case "Description":
+                sortingKey = "description"
+                return sortingKey;
+            case "Callibration (days)":
+                sortingKey = "calibration_frequency"
+                return sortingKey;
+            default:
+                return null;
+        }
+    }
+
+    onModelSort = (sortingHeader) => {
+
+        var urlSortingKey = this.getURLKey(sortingHeader);
+        console.log(urlSortingKey);
+        modelServices.getSortedModels(urlSortingKey)
+        .then((res) => {
+            console.log(res);
+        }
+    );
+
     }
 }
 

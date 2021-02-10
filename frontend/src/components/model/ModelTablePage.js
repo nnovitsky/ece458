@@ -189,7 +189,7 @@ class ModelTablePage extends Component {
     onModelSort = (sortingHeader) => {
 
         var urlSortingKey = this.getURLKey(sortingHeader);
-        console.log(urlSortingKey);
+        if(urlSortingKey === null) return;
         modelServices.getSortedModels(urlSortingKey)
         .then((res) => {
             if (res.success) {

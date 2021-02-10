@@ -269,15 +269,12 @@ export default class ModelServices {
             data: [],
         }
 
-        const url = `${API_URL}/api/model_search/`;
+        const url = `${API_URL}/api/model_search/?sort_by=${sortingKey}`;
         return fetch(url, {
             method: 'GET',
             headers: {
                 Authorization: `JWT ${token}`
-            },
-            params: {
-                sort_by: sortingKey
-            },
+            }
         })
             .then(res => res.json())
             .then(

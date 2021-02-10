@@ -6,9 +6,9 @@ from django.core.exceptions import FieldError
 
 def list_override(list_view, request, name):
     queryset = list_view.filter_queryset(list_view.get_queryset())
-    if "sort_by" in request.data:
+    if "sort_by" in request.GET:
         try:
-            queryset = queryset.order_by(request.data["sort_by"])
+            queryset = queryset.order_by(request.GET["sort_by"])
         except FieldError:
             return Response("Invalid sorting parameter.", status=status.HTTP_400_BAD_REQUEST)
     nextPage = 1

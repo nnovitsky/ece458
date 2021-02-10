@@ -12,6 +12,7 @@ import GenericPopup from "../generic/GenericPopup";
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'currentInstrument' an object formatted exactly like newInstrument below, can also pass null if no pre-existing
+//'errors' an array of strings of errors to display
 
 // let newInstrument = {
 //     model_pk: '',
@@ -34,7 +35,6 @@ class AddInstrumentPopup extends Component {
 
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
-            console.log("not null")
             this.state = {
                 isEdit: true,
                 newInstrument: {
@@ -54,7 +54,6 @@ class AddInstrumentPopup extends Component {
                 modelsFromVendorArr: []
             }
         } else {
-            console.log('null')
             this.state = {
                 isEdit: false,
                 newInstrument: {
@@ -74,10 +73,6 @@ class AddInstrumentPopup extends Component {
                 modelsFromVendorArr: []
             }
         }
-
-        console.log(props.currentInstrument)
-
-
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onModelInput = this.onModelInput.bind(this);
         this.onSerialChange = this.onSerialChange.bind(this);
@@ -85,9 +80,6 @@ class AddInstrumentPopup extends Component {
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
-        if (props.currentInstrument !== null) {
-            this.setCurrentInstrumentState();
-        }
     }
 
     async componentDidMount() {
@@ -109,51 +101,38 @@ class AddInstrumentPopup extends Component {
                 onClose={this.onClose}
                 onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
+                errors={this.props.errors}
             />
         )
     }
 
-    setCurrentInstrumentState() {
-        this.setState({
-            newInstrument: {
-                model_pk: this.props.currentInstrument.model_pk,
-                vendor: {
-                    label: this.props.currentInstrument.vendor,
-                    value: this.props.currentInstrument.vendor
-                },
-                model: {
-                    label: this.props.currentInstrument.model_number,
-                    value: this.props.currentInstrument.model_pk
-                },
-                serial_number: this.props.currentInstrument.serial_number,
-                comment: this.props.currentInstrument.comment,
-            }
-        })
-    }
-
     makeBody = () => {
-        return (
-            <Form className="popup">
-                <Form.Group>
-                    <Form.Label>Vendor</Form.Label>
-                    <Select
-                        value={this.state.newInstrument.vendor}
-                        options={this.state.vendorsArr}
-                        onChange={this.onVendorInput}
-                        isSearchable
+        let vendorModel = (this.state.isEdit) ? null : (
+            <Form.Group>
+                <Form.Label>Vendor</Form.Label>
+                <Select
+                    value={this.state.newInstrument.vendor}
+                    options={this.state.vendorsArr}
+                    onChange={this.onVendorInput}
+                    isSearchable
 
-                    />
-                    <Form.Label>Model</Form.Label>
-                    <Select
-                        value={this.state.newInstrument.model}
-                        options={this.state.modelsFromVendorArr}
-                        isSearchable={true}
-                        onChange={this.onModelInput}
-                    />
-                    <Form.Text muted>
-                        The vendor needs to be entered first.
+                />
+                <Form.Label>Model</Form.Label>
+                <Select
+                    value={this.state.newInstrument.model}
+                    options={this.state.modelsFromVendorArr}
+                    isSearchable={true}
+                    onChange={this.onModelInput}
+                />
+                <Form.Text muted>
+                    The vendor needs to be entered first.
                 </Form.Text>
                 </Form.Group>
+        );
+
+        return (
+            <Form className="popup">
+                {vendorModel}
                 <Form.Group>
                     <Form.Label>Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
@@ -266,8 +245,7 @@ class AddInstrumentPopup extends Component {
                 serial_number: this.state.newInstrument.serial_number
 
             }
-            this.props.onSubmit(this.state.newInstrument);
-            this.onClose();
+            this.props.onSubmit(returnedInstrument);
         }
     }
 
@@ -295,6 +273,10 @@ class AddInstrumentPopup extends Component {
     isValid = () => {
         return true;
     }
+}
+
+AddInstrumentPopup.defaultProps = {
+    errors: []
 }
 
 export default AddInstrumentPopup;

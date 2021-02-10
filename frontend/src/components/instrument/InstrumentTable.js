@@ -80,4 +80,8 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
     );
 }
 
+instrumentTable.defaultProps = {
+    data: []
+}
+
 export default instrumentTable;

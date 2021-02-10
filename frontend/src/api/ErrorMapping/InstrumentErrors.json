@@ -1,0 +1,18 @@
+{
+  "add_instrument": {
+    "serial_number": {
+      "This field may not be blank.": "A serial number is a required field."
+    },
+    "item_model": {
+      "This field may not be null.": "Both the vendor and the model number are required fields"
+    },
+    "non_field_errors": {
+      "The fields item_model, serial_number must make a unique set.": "An instrument already exists with this model number and serial number pair. Serial numbers must be unique."
+    }
+  },
+  "add_calibration": {
+    "non_field_errors": {
+      "Cannot set future date.": "Please select a date on or earlier than today."
+    }
+  }
+}

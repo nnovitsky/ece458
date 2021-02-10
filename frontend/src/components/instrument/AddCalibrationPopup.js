@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'isShown': boolean if popup is shown
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
-//'currentUserName': a string of the current user
+//'errors': an array of errors to display
 
 let newCalibration = {
     user: 'connect me!',
@@ -29,6 +29,7 @@ const AddCalibrationPopup = (props) => {
             onClose={props.onClose}
             onSubmit={() => props.onSubmit(newCalibration)}
             submitButtonVariant="primary"
+            errors={props.errors}
         />
     )
 }

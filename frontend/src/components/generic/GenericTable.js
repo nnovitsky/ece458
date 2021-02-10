@@ -2,8 +2,10 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
+var jsonpath = require('jsonpath');
+
 let data;   //array of data objects to display
-let keys;   //array of keys for the data objects, should be in order desired
+let keys;   //array of json paths for the desired value, this should be from the current element in the arr (ask carrie if questions)
 let headers;    //array of strings that will be displayed as the header, should be in order desired (should include headers for the button columns)
 let buttonFunctions; //array of button functions, each button will get its own column
 let buttonText; //array of text, each element will be the text in a button
@@ -78,7 +80,7 @@ const createBody = () => {
         count++;
         keys.forEach(k => {
             rowElements.push(
-                <td>{currentData[k]}</td>
+                <td>{jsonpath.query(currentData, k)}</td>
             )
         })
         buttonText.forEach((bt, i) => {

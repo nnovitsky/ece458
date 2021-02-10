@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
+import './instrument.css';
 import { Redirect, withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -11,6 +12,8 @@ import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
+import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 
@@ -30,9 +33,13 @@ class InstrumentDetailView extends Component {
                 vendor: '',
                 serial_number: '',
                 comment: '',
+                calibration_frequency: '',
                 calibration_history: [],
             },
-            isAddCalPopupShown: false,
+            addCalPopup: {
+                isShown: false,
+                errors: [],
+            },
             isEditInstrumentShown: false,
             isDeleteShown: false,
             currentUser: ''
@@ -53,14 +60,23 @@ class InstrumentDetailView extends Component {
     }
 
     render(
+
         adminButtons = <div>
-                        <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
-                        <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
-                    </div>
+            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
+            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
+        </div>
     ) {
         let addCalibrationPopup = this.makeAddCalibrationPopup();
         let editInstrumentPopup = this.makeEditInstrumentPopup();
         let deleteInstrumentPopup = this.makeDeletePopup();
+
+        let calibrationCol = (
+            <Col xs={7}>
+                {this.makeCalibrationTable()}
+            </Col>
+        )
+
+        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationCol : null;
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }
@@ -74,16 +90,14 @@ class InstrumentDetailView extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                            <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                             <Button>Download Certificate</Button>
                         </div>
                         <div className="col-10">
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
                             <Row>
                                 <Col>{this.makeDetailsTable()}</Col>
-                                <Col xs={7}>
-                                    {this.makeCalibrationTable()}
-                                </Col>
+                                {displayedCalibrationData}
                             </Row>
                         </div>
                     </div>
@@ -108,6 +122,7 @@ class InstrumentDetailView extends Component {
                             vendor: data.item_model.vendor,
                             serial_number: data.serial_number,
                             comment: data.comment,
+                            calibration_frequency: data.item_model.calibration_frequency,
                             calibration_history: data.calibration_events,
 
                         }
@@ -121,6 +136,29 @@ class InstrumentDetailView extends Component {
 
     makeDetailsTable() {
         let detailData = this.state.instrument_info;
+
+        let calibrationData = (
+            <>
+                <tr>
+                    <td><strong>Next Calibration</strong></td>
+                    <td>{'FIGURE THIS OUT'}</td>
+                </tr>
+                <tr>
+                    <td><strong>Calibration Frequency</strong></td>
+                    <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
+                </tr>
+            </>
+        )
+
+        let noCalibrationData = (
+            <tr>
+                <td><strong>Calibration</strong></td>
+                <td>This model isn't calibratable</td>
+            </tr>
+        )
+
+        let calibrationIncluded = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationData : noCalibrationData;
+
         return (
             <Table bordered>
                 <tbody>
@@ -136,10 +174,7 @@ class InstrumentDetailView extends Component {
                         <td><strong>Comment</strong></td>
                         <td>{detailData.comment}</td>
                     </tr>
-                    <tr>
-                        <td><strong>Last Callibration</strong></td>
-                        <td>{'FIGURE THIS OUT'}</td>
-                    </tr>
+                    {calibrationIncluded}
 
                 </tbody>
             </Table>
@@ -149,13 +184,14 @@ class InstrumentDetailView extends Component {
     makeAddCalibrationPopup() {
         return (
             <AddCalibrationPopup
-                isShown={this.state.isAddCalPopupShown}
+                isShown={this.state.addCalPopup.isShown}
                 onClose={this.onAddCalibrationClose}
                 onSubmit={this.onAddCalibrationSubmit}
+                errors={this.state.addCalPopup.errors}
             />
         )
     }
-    
+
 
     makeEditInstrumentPopup() {
         let currentInstrument = {
@@ -195,30 +231,49 @@ class InstrumentDetailView extends Component {
 
     onAddCalibrationClicked() {
         this.setState({
-            isAddCalPopupShown: true,
+            addCalPopup: {
+                ...this.state.addCalPopup,
+                isShown: true
+            }
         })
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        console.log(calibrationEvent);
-        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
-        await this.getInstrumentInfo();
-        this.onAddCalibrationClose();
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment)
+            .then((result) => {
+                if (result.success) {
+                    this.getInstrumentInfo();
+                    this.onAddCalibrationClose();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                    console.log(formattedErrors);
+                    this.setState({
+                        addCalPopup: {
+                            ...this.state.addCalPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+            });
+
     }
 
     onAddCalibrationClose() {
         this.setState({
-            isAddCalPopupShown: false
+            addCalPopup: {
+                ...this.state.addCalPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 
     makeCalibrationTable() {
-        console.log(this.state.instrument_info.calibration_history)
         return (
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['date', 'comment']}
-                headers={["Date", "Comment"]}
+                keys={['$.date', '$.comment', '$.user.username']}
+                headers={["Date", "Comment", "User"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"

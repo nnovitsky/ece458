@@ -209,6 +209,10 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description
             }
+
+            if (newModel.calibration_frequency === '') {
+                newModel.calibration_frequency = 0;
+            }
             this.props.onSubmit(newModel);
             this.onClose();
         }

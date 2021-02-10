@@ -6,6 +6,8 @@ import InstrumentTable from "./InstrumentTable";
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import './instrument.css';
+import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
@@ -29,9 +31,7 @@ class InstrumentTablePage extends Component {
             },
             addInstrumentPopup: {
                 isShown: false,
-                vendorSelected: '',
-                vendorsArr: [],
-                modelsByVendor: []
+                errors: []
             },
         }
 
@@ -66,6 +66,7 @@ class InstrumentTablePage extends Component {
                     onSubmit={this.onAddInstrumentSubmit}
                     onClose={this.onAddInstrumentClosed}
                     currentInstrument={null}
+                    errors={this.state.addInstrumentPopup.errors}
                 />
                 <div className="background">
                     <div className="row mainContent">
@@ -124,8 +125,10 @@ class InstrumentTablePage extends Component {
         await instrumentServices.instrumentFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
+                    console.log("success")
+                    console.log(result.data)
                     this.setState({
-                        tableData: result.data
+                        tableData: result.data.data
                     })
                 } else {
                     console.log("Error with filter search")
@@ -151,9 +154,31 @@ class InstrumentTablePage extends Component {
     }
 
     async onAddInstrumentSubmit(newInstrument) {
-        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment);
-        this.onAddInstrumentClosed();
-        this.updateTable()
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
+            (result) => {
+                if (result.success) {
+                    console.log("Added!");
+                    this.onAddInstrumentClosed();
+                    this.updateTable();
+                    this.setState({
+                        addInstrumentPopup: {
+                            ...this.state.addInstrumentPopup,
+                            errors: []
+                        }
+                    })
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_instrument']);
+                    console.log(formattedErrors);
+                    this.setState({
+                        addInstrumentPopup: {
+                            ...this.state.addInstrumentPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+            }
+        );
+
     }
 
     onAddInstrumentClosed() {
@@ -161,8 +186,7 @@ class InstrumentTablePage extends Component {
             addInstrumentPopup: {
                 ...this.state.addInstrumentPopup,
                 isShown: false,
-                vendorSelected: '',
-                modelsByVendor: []
+                errors: [],
             }
         })
     }

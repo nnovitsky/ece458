@@ -60,9 +60,6 @@ class ModelDetailView extends React.Component {
         </div>
     ) {
 
-        console.log("State below")
-        console.log(this.state)
-
         let deletePopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.isEditShown) ? this.makeEditPopup() : null;
 
@@ -209,7 +206,6 @@ class ModelDetailView extends React.Component {
     }
 
     onEditSubmit(editedModel) {
-        console.log(editedModel);
         modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(
             (result) => {
                 if (result.success) {
@@ -242,7 +238,6 @@ class ModelDetailView extends React.Component {
     }
 
     async onDeleteSubmit() {
-        console.log("Deleting model");
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
             // if (result.success) {
             this.onDeleteClose()
@@ -256,9 +251,6 @@ class ModelDetailView extends React.Component {
     async updateInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
-                console.log("Updated model info"
-                )
-                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })

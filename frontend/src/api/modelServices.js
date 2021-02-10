@@ -88,7 +88,6 @@ export default class ModelServices {
         })
             .then(res => res.json())
             .then(json => {
-                console.log(json)
                 return result;
             })
     }

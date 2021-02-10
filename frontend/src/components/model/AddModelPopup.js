@@ -31,13 +31,9 @@ const modelServices = new ModelServices();
 class AddModelPopup extends Component {
     constructor(props) {
         super(props);
-        console.log("CONSTRUCTOR")
-        console.log("Props current model below")
-        console.log(props.currentModel)
 
         //for whatever reason the select compne
         if (props.currentModel != null) {
-            console.log("not null")
             this.state = {
                 isEdit: true,
                 newModel: {
@@ -54,7 +50,6 @@ class AddModelPopup extends Component {
                 vendorsArr: []
             }
         } else {
-            console.log('null')
             this.state = {
                 isEdit: false,
                 newModel: {
@@ -83,7 +78,6 @@ class AddModelPopup extends Component {
     }
 
     render() {
-        console.log(this.state.newModel);
         let body = this.makeBody();
         let headerText = (this.state.isEdit) ? "Edit Model" : "Create Model";
         let submitButtonText = (this.state.isEdit) ? "Submit Changes" : "Add Model";
@@ -226,7 +220,6 @@ class AddModelPopup extends Component {
     }
 
     onClose() {
-        console.log("close")
         this.setState = ({
             isEdit: false,
             newModel: {

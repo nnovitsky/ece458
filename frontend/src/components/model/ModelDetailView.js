@@ -13,6 +13,8 @@ import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
+import { rawErrorsToDisplayed } from '../generic/Util';
+import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
@@ -37,7 +39,11 @@ class ModelDetailView extends React.Component {
                 instruments: []
             },
             isEditShown: false,
-            isDeleteShown: false
+            deletePopup: {
+                isShown: false,
+                errors: []
+            }
+
         }
 
         this.onMoreClicked = this.onMoreClicked.bind(this);
@@ -60,7 +66,7 @@ class ModelDetailView extends React.Component {
                         <Button onClick={this.onDeleteClicked}>Delete Model</Button>
                     </div>
     ) {
-        let deletePopup = this.makeDeletePopup();
+        let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
@@ -95,7 +101,7 @@ class ModelDetailView extends React.Component {
         )
         return (
             <DeletePopup
-                show={this.state.isDeleteShown}
+                show={this.state.deletePopup.isShown}
                 body={body}
                 headerText="Warning!"
                 closeButtonText="Cancel"
@@ -103,6 +109,7 @@ class ModelDetailView extends React.Component {
                 onClose={this.onDeleteClose}
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
+                errors={this.state.deletePopup.errors}
             />
         )
     }
@@ -205,26 +212,45 @@ class ModelDetailView extends React.Component {
 
     onDeleteClicked() {
         this.setState({
-            isDeleteShown: true
+            deletePopup: {
+                ...this.state.deletePopup,
+                isShown: true,
+            }
         })
     }
 
     onDeleteClose() {
         this.setState({
-            isDeleteShown: false
+            deletePopup: {
+                ...this.state.deletePopup,
+                errors: [],
+                isShown: false,
+            }
         })
     }
 
     async onDeleteSubmit() {
         console.log("Deleting model");
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
-            // if (result.success) {
-                this.onDeleteClose()
+            if (result.success) {
+                this.onDeleteClose();
                 this.setState({
-                    redirect: '/models/'
+                    redirect: '/models/',
+                    deletePopup: {
+                        ...this.state.deletePopup,
+                        isShown: false
+                    }
                 })
-        });
-
+            } else {
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["delete_model"]);
+                this.setState({
+                    deletePopup: {
+                        ...this.state.deletePopup,
+                        errors: formattedErrors
+                    }
+                })
+            }
+        })
     }
 
     onVendorSearch(search) {

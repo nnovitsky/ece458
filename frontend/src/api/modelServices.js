@@ -163,8 +163,6 @@ export default class ModelServices {
                     }
                     result.success = false;
                     result.errors = json;
-                    console.log("failed to delete");
-                    console.log(json)
                     return result;
                 })
             }

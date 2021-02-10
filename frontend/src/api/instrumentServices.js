@@ -115,11 +115,17 @@ export default class InstrumentServices {
             )
     }
 
+    // Error handling in place for bad input
     async addInstrument(model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment
+        }
+
+        let result = {
+            success: true,
+            errors: {}
         }
         const token = localStorage.getItem('token');
 
@@ -131,11 +137,19 @@ export default class InstrumentServices {
             },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
-            .then(json => {
-
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
             })
     }
+
     async editInstrument(instrumentPk, model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -178,11 +192,17 @@ export default class InstrumentServices {
 
 
 // Note: the date needs to be a string
+// Error handling in place for future dates
 async addCalibrationEvent(instrument_pk, date, comment) {
     let data = {
         instrument: instrument_pk,
         date: date,
         comment: comment
+    }
+
+    let result = {
+        success: true,
+        errors: []
     }
 
     const token = localStorage.getItem('token');
@@ -195,34 +215,18 @@ async addCalibrationEvent(instrument_pk, date, comment) {
         },
         body: JSON.stringify(data)
     })
-        .then(res => res.json())
-        .then(json => {
-
-        })
-}
-
-getInstrumentSerialByModel(modelPk) {
-    let result = [];
-    instrumentData.instruments.forEach(el => {
-        if (el["model pk"] === modelPk) {
-            let temp = {
-                "serial": el["serial"],
-                "pk": el["instrument pk"]
+        .then(res => {
+            if (res.ok) {
+                return result;
+            } else {
+                return res.json().then(json => {
+                    result.success = false;
+                    result.errors = json;
+                    console.log(result.errors)
+                    return result;
+                })
             }
-            result.push(temp);
-        }
-    });
-    return result;
-    // const url = `${API_URL}/api/customers/${pk}`;
-    // return axios.get(url).then(response => response.data);
-}
-
-getAllSerialNumbers() {
-    let result = new Set();
-    instrumentData.instruments.forEach(el => {
-        result.add(el["serial"]);
-    })
-    return Array.from(result);
+        })
 }
 }
 

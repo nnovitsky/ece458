@@ -45,6 +45,8 @@ export default class ModelServices {
             comment: comment,
             calibration_frequency: calFrequency
         }
+
+        console.log(data);
         const token = localStorage.getItem('token');
 
         return fetch(`${API_URL}/api/models/`, {

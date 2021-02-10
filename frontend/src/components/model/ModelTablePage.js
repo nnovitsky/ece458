@@ -192,7 +192,14 @@ class ModelTablePage extends Component {
         console.log(urlSortingKey);
         modelServices.getSortedModels(urlSortingKey)
         .then((res) => {
-            console.log(res);
+            if (res.success) {
+                this.setState({
+                    tableData: res.data
+                })
+                console.log(res.data);
+            } else {
+                console.log("error")
+            }
         }
     );
 

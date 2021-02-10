@@ -269,23 +269,19 @@ export default class ModelServices {
             data: [],
         }
 
-        let data = {
-            sorted_by: sortingKey,
-        }
-
         const url = `${API_URL}/api/model_search/`;
         return fetch(url, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-            body: JSON.stringify(data)
+            params: {
+                sort_by: sortingKey
+            },
         })
             .then(res => res.json())
             .then(
                 (json) => {
-                    console.log(json)
                     if (json.detail === 'Signature has expired.') {
                         console.log("GET NEW TOKEN")
                         result.success = false;

@@ -269,11 +269,13 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
+        console.log(this.state.instrument_info.calibration_history)
         return (
+
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
-                keys={['$.date', '$.comment', '$.user.username']}
-                headers={["Date", "Comment", "User"]}
+                keys={['$.date', '$.comment', '$.user.first_name', '$.user.last_name', '$.user.username']}
+                headers={["Date", "Comment", "First Name", 'Last Name', "Username"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"

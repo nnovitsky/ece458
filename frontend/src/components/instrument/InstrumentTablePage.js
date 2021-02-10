@@ -22,6 +22,7 @@ class InstrumentTablePage extends Component {
         super(props);
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
+            sortingIndicator: null,
             tableData: [],     //displayed data
             filters: {
                 model: '',
@@ -82,10 +83,12 @@ class InstrumentTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.updateTable}
                             />
+                            <h4>{this.state.sortingIndicator}</h4>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailViewRequested}
                                 onCertificateRequested={this.onCertificateRequested}
+                                sortData={this.onInstrumentSort}
                             />
                         </div>
 
@@ -189,6 +192,58 @@ class InstrumentTablePage extends Component {
                 errors: [],
             }
         })
+    }
+    
+    getURLKey = (sortingHeader) => {
+        let sortingKey = null
+        this.setState({
+            sortingIndicator: 'Sorted By: ' + sortingHeader
+        })
+
+        switch (sortingHeader) {
+            case "Serial":
+                sortingKey = "serial_number_lower"
+                return sortingKey;
+            case "Vendor":
+                sortingKey = "vendor_lower"
+                return sortingKey;
+            case "Model":
+                sortingKey = "model_number_lower"
+                return sortingKey;
+            case "Description":
+                sortingKey = "description_lower"
+                return sortingKey;
+            case "Latest Callibration":
+                    sortingKey = "-most_recent_calibration"
+                    return sortingKey; 
+            case "Callibration Expiration":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey; 
+            default:
+                this.setState({
+                    sortingIndicator: null
+                })
+                return null;
+        }
+    }
+
+    onInstrumentSort = (sortingHeader) => {
+
+        var urlSortingKey = this.getURLKey(sortingHeader);
+        if(urlSortingKey === null) return;
+        console.log(urlSortingKey);
+        instrumentServices.getSortedInstruments(urlSortingKey)
+        .then((res) => {
+            if (res.success) {
+                this.setState({
+                    tableData: res.data
+                })
+            } else {
+                console.log("error")
+            }
+        }
+    ); 
+
     }
 }
 export default InstrumentTablePage;

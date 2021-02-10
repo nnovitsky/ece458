@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Callibration", "Callibration Expiration", "More", "Callibration Certificate"];
 
 //Props
 let data;   //prop array of data to display
@@ -12,7 +12,8 @@ let data;   //prop array of data to display
 
 const instrumentTable = (props) => {
     data = props.data;
-    let header = createHeader();
+    console.log(data)
+    let header = createHeader(props.sortData);
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
     return (
@@ -25,14 +26,14 @@ const instrumentTable = (props) => {
         </Table>)
 }
 
-const createHeader = () => {
+const createHeader = (onSortData) => {
     let header = [];
     header.push(
         <th>#</th>
     )
     headerTextArr.forEach(h => {
         header.push(
-            <th>{h}</th>
+            <th onClick={() => onSortData(h)}>{h}</th>
         )
     })
     return (

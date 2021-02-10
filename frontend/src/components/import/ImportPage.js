@@ -7,7 +7,7 @@ import instramentData from "./import_holder_data.json";
 import myInstructions from './ImportInstructions.js';
 
 
-const keys = ["type", "model number", "serial"];
+const keys = ["$.type", "$.model_number", "$.serial"];
 const headers = ["Type", "Model Number", "Serial Number", "More"];
 const buttonText = ["More"];
 const importInstructions = myInstructions;

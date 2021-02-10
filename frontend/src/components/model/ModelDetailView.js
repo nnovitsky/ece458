@@ -47,7 +47,6 @@ class ModelDetailView extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
-        this.onVendorSearch = this.onVendorSearch.bind(this);
     }
 
     async componentDidMount() {
@@ -56,12 +55,16 @@ class ModelDetailView extends React.Component {
 
     render(
         adminButtons = <div>
-                        <Button onClick={this.onEditClicked}>Edit Model</Button>
-                        <Button onClick={this.onDeleteClicked}>Delete Model</Button>
-                    </div>
+            <Button onClick={this.onEditClicked}>Edit Model</Button>
+            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+        </div>
     ) {
-        console.log(this.state.model_info);
-        let deletePopup = this.makeDeletePopup();
+
+        console.log("State below")
+        console.log(this.state)
+
+        let deletePopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
+        let editPopup = (this.state.isEditShown) ? this.makeEditPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
@@ -69,27 +72,28 @@ class ModelDetailView extends React.Component {
         return (
             <div>
                 {deletePopup}
-            <div className="background">
-                <div className="row mainContent">
+                {editPopup}
+                <div className="background">
+                    <div className="row mainContent">
                         <div className="col-2 text-center button-col">
-                        <img src={logo} alt="Logo" />
+                            <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                    </div>
-                    <div className="col-10">
-                        <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
-                        <Row>
-                            <Col>{this.makeDetailsTable()}</Col>
-                            <Col xs={6}>
-                                {this.makeInstrumentsTable()}
-                            </Col>
-                        </Row>
+                        </div>
+                        <div className="col-10">
+                            <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
+                            <Row>
+                                <Col>{this.makeDetailsTable()}</Col>
+                                <Col xs={6}>
+                                    {this.makeInstrumentsTable()}
+                                </Col>
+                            </Row>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div >
         );
     }
-    
+
     makeDeletePopup() {
         let body = (
             <p>Are you sure you want to delete Model: {this.state.model_info.model_number}?</p>
@@ -104,6 +108,17 @@ class ModelDetailView extends React.Component {
                 onClose={this.onDeleteClose}
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
+            />
+        )
+    }
+
+    makeEditPopup() {
+        return (
+            <EditModelPopup
+                isShown={this.state.isEditShown}
+                onSubmit={this.onEditSubmit}
+                onClose={this.onEditClose}
+                currentModel={this.state.model_info}
             />
         )
     }
@@ -194,8 +209,18 @@ class ModelDetailView extends React.Component {
     }
 
     onEditSubmit(editedModel) {
-        this.updateInfo();
-        this.onEditClose();
+        console.log(editedModel);
+        modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(
+            (result) => {
+                if (result.success) {
+                    this.updateInfo();
+                    this.onEditClose();
+                } else {
+                    console.log("Edit failed")
+                }
+            }
+        )
+
     }
 
     onEditClose() {
@@ -220,21 +245,20 @@ class ModelDetailView extends React.Component {
         console.log("Deleting model");
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
             // if (result.success) {
-                this.onDeleteClose()
-                this.setState({
-                    redirect: '/models/'
-                })
+            this.onDeleteClose()
+            this.setState({
+                redirect: '/models/'
+            })
         });
 
-    }
-
-    onVendorSearch(search) {
-        return ([])
     }
 
     async updateInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
+                console.log("Updated model info"
+                )
+                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })

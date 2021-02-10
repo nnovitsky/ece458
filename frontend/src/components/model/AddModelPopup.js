@@ -31,14 +31,17 @@ const modelServices = new ModelServices();
 class AddModelPopup extends Component {
     constructor(props) {
         super(props);
+        console.log("CONSTRUCTOR")
+        console.log("Props current model below")
+        console.log(props.currentModel)
 
         //for whatever reason the select compne
-        if (props.currentModel !== null) {
+        if (props.currentModel != null) {
             console.log("not null")
             this.state = {
                 isEdit: true,
                 newModel: {
-                    model_pk: props.currentModel.model_pk,
+                    model_pk: props.currentModel.pk,
                     model_number: props.currentModel.model_number,
                     vendor: {
                         label: props.currentModel.vendor,
@@ -80,12 +83,16 @@ class AddModelPopup extends Component {
     }
 
     render() {
+        console.log(this.state.newModel);
         let body = this.makeBody();
+        let headerText = (this.state.isEdit) ? "Edit Model" : "Create Model";
+        let submitButtonText = (this.state.isEdit) ? "Submit Changes" : "Add Model";
+
         return (
             <GenericPopup
                 show={this.props.isShown}
                 body={body}
-                headerText="Add Model"
+                headerText={headerText}
                 closeButtonText="Cancel"
                 submitButtonText="Create Model"
                 onClose={this.props.onClose}
@@ -99,7 +106,7 @@ class AddModelPopup extends Component {
         return (
             <Form className="popup">
                 <Form.Label>Model Number</Form.Label>
-                <Form.Control required type="text" name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
+                <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
                 <Form.Label>Vendor</Form.Label>
                 <Select
@@ -110,13 +117,13 @@ class AddModelPopup extends Component {
                     defaultInputValue={''}
                 />
                 <Form.Label>Description</Form.Label>
-                <Form.Control required type="text" name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
+                <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
                 <Form.Label>Comments</Form.Label>
-                <Form.Control as="textarea" rows={3} name={commentName} onChange={this.onTextInput} />
+                <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
 
                 <Form.Label>Callibration Frequency (days)</Form.Label>
-                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
+                <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
             </Form>
         )
@@ -207,7 +214,8 @@ class AddModelPopup extends Component {
                 vendor: this.state.newModel.vendor.label,
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
-                description: this.state.newModel.description
+                description: this.state.newModel.description,
+                pk: this.state.newModel.model_pk
             }
 
             if (newModel.calibration_frequency === '') {
@@ -218,6 +226,7 @@ class AddModelPopup extends Component {
     }
 
     onClose() {
+        console.log("close")
         this.setState = ({
             isEdit: false,
             newModel: {

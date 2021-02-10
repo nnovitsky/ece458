@@ -38,6 +38,7 @@ export default class ModelServices {
     }
 
     async addModel(vendor, modelNumber, description, comment, calFrequency) {
+        const token = localStorage.getItem('token');
         let data = {
             vendor: vendor,
             model_number: modelNumber,
@@ -46,8 +47,6 @@ export default class ModelServices {
             calibration_frequency: calFrequency
         }
 
-        console.log(data);
-        const token = localStorage.getItem('token');
 
         return fetch(`${API_URL}/api/models/`, {
             method: 'POST',
@@ -60,6 +59,37 @@ export default class ModelServices {
             .then(res => res.json())
             .then(json => {
                 console.log(json)
+            })
+    }
+
+    async editModel(model_pk, vendor, modelNumber, description, comment, calFrequency) {
+        const token = localStorage.getItem('token');
+        let data = {
+            pk: model_pk,
+            vendor: vendor,
+            model_number: modelNumber,
+            description: description,
+            comment: comment,
+            calibration_frequency: calFrequency
+        }
+
+        let result = {
+            success: true,
+            errors: []
+        }
+
+        return fetch(`${API_URL}/api/models/${model_pk}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+                return result;
             })
     }
 

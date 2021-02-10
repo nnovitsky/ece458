@@ -20,8 +20,6 @@ import Alert from 'react-bootstrap/Alert'
 // 'errors': an array of strings that are warnings, note an empty array means no errors are displayed, this is an optional field
 
 const genericPopup = (props) => {
-    console.log("Errors:")
-    console.log(props.errors)
     return (
         <Modal show={props.show}>
             <Modal.Header>

@@ -115,7 +115,7 @@ export default class InstrumentServices {
             )
     }
 
-    // Error handling in place
+    // Error handling in place for bad input
     async addInstrument(model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -192,6 +192,7 @@ export default class InstrumentServices {
 
 
 // Note: the date needs to be a string
+// Error handling in place for future dates
 async addCalibrationEvent(instrument_pk, date, comment) {
     let data = {
         instrument: instrument_pk,

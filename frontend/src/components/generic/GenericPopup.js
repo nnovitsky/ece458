@@ -34,7 +34,7 @@ const genericPopup = (props) => {
 
             <Modal.Footer>
                 <Alert variant={'danger'} show={props.errors.length > 0}>
-                    {props.errors}
+                    {makeErrorsParagraphs(props.errors)}
                 </Alert>
                 {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant)}
 
@@ -51,6 +51,14 @@ const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVaria
 
 
     return buttons;
+}
+
+const makeErrorsParagraphs = (errorsArr) => {
+    let result = [];
+    errorsArr.forEach(e => {
+        result.push(<p>{e}</p>)
+    })
+    return result;
 }
 
 genericPopup.defaultProps = {

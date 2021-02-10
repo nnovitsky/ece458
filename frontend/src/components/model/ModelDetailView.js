@@ -9,6 +9,7 @@ import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
@@ -32,7 +33,8 @@ class ModelDetailView extends React.Component {
                 model_number: '',
                 description: '',
                 comment: '',
-                calibration_frequency: ''
+                calibration_frequency: '',
+                instruments: []
             },
             isEditShown: false,
             isDeleteShown: false
@@ -52,8 +54,13 @@ class ModelDetailView extends React.Component {
         await this.updateInfo();
     }
 
-    render() {
-
+    render(
+        adminButtons = <div>
+                        <Button onClick={this.onEditClicked}>Edit Model</Button>
+                        <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+                    </div>
+    ) {
+        console.log(this.state.model_info);
         let deletePopup = this.makeDeletePopup();
 
         if (this.state.redirect != null) {
@@ -62,21 +69,11 @@ class ModelDetailView extends React.Component {
         return (
             <div>
                 {deletePopup}
-                <EditModelPopup
-                    isShown={this.state.isEditShown}
-                    onSubmit={this.onEditSubmit}
-                    onClose={this.onEditClose}
-                    getVendorSearchResults={this.onVendorSearch}
-                    existingData={this.state.model_info}
-                />
-                
-
             <div className="background">
                 <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                         <img src={logo} alt="Logo" />
-                            <Button onClick={this.onEditClicked}>Edit Model</Button>
-                            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+                            {this.props.is_admin ? adminButtons : null}
                     </div>
                     <div className="col-10">
                         <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
@@ -144,13 +141,13 @@ class ModelDetailView extends React.Component {
     makeInstrumentsTable() {
         let rows = [];
         let count = 1;
-        instrumentData.forEach((element) => {
+        this.state.model_info.instruments.forEach((element) => {
             let currentRow = [];
             currentRow.push(
                 <td>{count}</td>
             )
             currentRow.push(
-                <td>{element["serial"]}</td>
+                <td>{element["serial_number"]}</td>
             )
             currentRow.push(
                 <td><Button onClick={this.onMoreClicked} value={element["pk"]}>More</Button></td>
@@ -222,14 +219,11 @@ class ModelDetailView extends React.Component {
     async onDeleteSubmit() {
         console.log("Deleting model");
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
-            if (result.success) {
+            // if (result.success) {
                 this.onDeleteClose()
                 this.setState({
                     redirect: '/models/'
                 })
-            } else {
-                console.log('failed to delete');
-            }
         });
 
     }
@@ -241,7 +235,6 @@ class ModelDetailView extends React.Component {
     async updateInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
-                console.log(result.data)
                 this.setState({
                     model_info: result.data
                 })
@@ -252,3 +245,7 @@ class ModelDetailView extends React.Component {
     }
 }
 export default withRouter(ModelDetailView);
+
+ModelDetailView.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

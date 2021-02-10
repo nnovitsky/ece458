@@ -1,41 +1,51 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './ImportPage.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import GenericTable from '../generic/GenericTable';
 import instramentData from "./import_holder_data.json";
+import myInstructions from './ImportInstructions.js';
 
 
-const keys = ["type", "model number", "serial"];
+const keys = ["$.type", "$.model_number", "$.serial"];
 const headers = ["Type", "Model Number", "Serial Number", "More"];
 const buttonText = ["More"];
+const importInstructions = myInstructions;
+let data = instramentData.tools;
 
 
-const ImportPage = () => {
-    let data = instramentData.tools;
-    let buttonFunctions = [onEntryClicked]
+class ImportPage extends Component {
 
-        return (
-            <div class="background">
-                <div class="row mainContent">
-                    <div class="col-2 text-center"><img src={logo} alt="Logo" /></div>
-                    <div class="col-5"><h2>Import</h2>
-                        <button class="bigButton">Choose File</button>
-                        <button class="bigButton">Import</button>
-                        <div class="instructions">
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedFile: null,
+            error_message: ''
+          }
+
+    }
+
+    render() {return (
+            <div className="background">
+                <div className="row mainContent">
+                    <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
+                    <div className="col-5"><h2>Import</h2>
+                    <form className="text-center" method="post" action="#" id="#">
+                    <div className="form-group files">
+                        <label>Upload Your File</label>
+                        <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                    </div>
+                    </form>
+                        <h5 className="text-center">{this.state.error_message}</h5>
+                        <button className="bigButton" onClick={this.importClicked}>Import</button>
+                        <div className="instructions">
                             <h3>How to Import</h3>
-                            <p>
-                                A bunch of text describing how to import a file.
-                                Right now this text is living in the html but 
-                                it should really be read from a document in the backend.
-                                This <a href="https://social.msdn.microsoft.com/Forums/en-US/64ea2d16-7594-400b-8b25-8b3b9a078eab/read-external-text-file-with-javascript?forum=sidebargadfetdevelopment">link </a> 
-                                should help us be able to parse words from a doc into html.
-                            </p>
+                            <p>{importInstructions}</p>
                         </div>
                     </div>
-                    <div class="col-4 leftText">
+                    <div className="col-4 leftText">
                     <h2>Summary</h2>
-                    <div class="summary overflow-auto">
+                    <div className="summary overflow-auto">
                             <p>
                                 Status: In Progress/Success/Errors
                                 <br></br>
@@ -46,17 +56,42 @@ const ImportPage = () => {
                                 will need to parse a JSON describing this event.
                             </p>
                         </div>
-                        <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={buttonFunctions} />
+                        <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />
                     </div>
                 </div>
             </div>
 
-
         );
     }
 
-    const onEntryClicked= (e) => {
+    onUpload = (e) => {
+        console.log(e.target.files[0])
+        this.setState({
+            selectedFile: e.target.files[0],
+            error_message: ''
+        })
+    }
+
+    importClicked = (e) => {
+        if(this.state.selectedFile !== null && typeof(this.state.selectedFile) !== 'undefined')
+        {
+            console.log(this.state.selectedFile.name)
+            console.log(this.state.selectedFile.type)
+            this.setState({
+                error_message: 'Uploding File...'
+            })
+        }
+        else
+        {
+            this.setState({
+                error_message: "Error: No file chosen"
+            })
+        }
+    }
+
+    onEntryClicked= (e) => {
         console.log("Clicked Entry");
     }
+}
 
 export default ImportPage;

@@ -13,14 +13,14 @@ const serialName = "serial";
 const descriptionName = "description";
 
 let filters = {
-    model: '',
+    model_number: '',
     vendor: '',
-    serial: '',
+    serial_number: '',
     description: ''
 }
 
-//'onSearch' prop event handler for when the search button is clicked, will receive a 
-// filters object ^seen above
+//'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
+// 'onRemoveFilters' prop event handler for when the filters should be removed
 
 const InstrumentFilterBar = (props) => {
     return (
@@ -50,7 +50,8 @@ const InstrumentFilterBar = (props) => {
                         </Form.Group>
                     </Col>
                     <Col xs={2}>
-                        <Button className="search-button" onClick={(e) => onSearch(e, props.onSearch)}>Search</Button>
+                        <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply Filters</Button>
+                        <Button className="filter-button" onClick={props.onRemoveFilters}>Remove Filters</Button>
                     </Col>
                 </Row>
 
@@ -64,16 +65,18 @@ const onTextInput = (e) => {
     console.log(e.target.value)
     switch (e.target.name) {
         case modelName:
-            filters.model = e.target.value;
+            filters.model_number = e.target.value;
             break;
         case vendorName:
             filters.vendor = e.target.value;
             break;
         case serialName:
-            filters.serial = e.target.value;
+            filters.serial_number = e.target.value;
             break;
         case descriptionName:
             filters.description = e.target.value;
+            break;
+        default:
             break;
     }
 }

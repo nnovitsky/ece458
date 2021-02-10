@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Last Callibration", "Next Callibration", "More", "Callibration Certificate"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Callibration", "Callibration Expiration", "More", "Callibration Certificate"];
 
 //Props
 let data;   //prop array of data to display
@@ -12,8 +12,8 @@ let data;   //prop array of data to display
 
 const instrumentTable = (props) => {
     data = props.data;
-
-    let header = createHeader();
+    console.log(data)
+    let header = createHeader(props.sortData);
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
     return (
@@ -26,14 +26,14 @@ const instrumentTable = (props) => {
         </Table>)
 }
 
-const createHeader = () => {
+const createHeader = (onSortData) => {
     let header = [];
     header.push(
         <th>#</th>
     )
     headerTextArr.forEach(h => {
         header.push(
-            <th>{h}</th>
+            <th onClick={() => onSortData(h)}>{h}</th>
         )
     })
     return (
@@ -52,20 +52,20 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             <td>{count}</td>
         )
         count++;
-        keys.forEach(k => {
-            rowElements.push(
-                <td>{currentData[k]}</td>
-            )
-        })
+        rowElements.push(<td>{currentData.item_model.vendor}</td>);
+        rowElements.push(<td>{currentData.item_model.model_number}</td>)
+        rowElements.push(<td>{currentData.serial_number}</td>)
+        rowElements.push(<td>{currentData.item_model.description}</td>)
+        rowElements.push(<td>FIGURE ME OUT</td>)
 
         rowElements.push(
             <td>TBD</td>
         )
         rowElements.push(
-            <td><Button value={currentData["instrument pk"]} onClick={onDetailRequested}>More</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
         )
         rowElements.push(
-            <td><Button value={currentData["instrument pk"]} onClick={onCertificateRequested}>Download</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onCertificateRequested}>Download</Button></td>
         )
         let currentRow = (
             <tr>
@@ -79,6 +79,10 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             {rows}
         </tbody>
     );
+}
+
+instrumentTable.defaultProps = {
+    data: []
 }
 
 export default instrumentTable;

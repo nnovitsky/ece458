@@ -5,6 +5,7 @@ import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
 import { Redirect } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -20,6 +21,7 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
+            sortingIndicator: null,
             filters: {
                 model: '',
                 vendor: '',
@@ -28,6 +30,7 @@ class ModelTablePage extends Component {
             addModelPopup: {
                 isShown: false,
             }
+
         }
 
         //binding
@@ -36,6 +39,7 @@ class ModelTablePage extends Component {
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
+        this.updateModelTable = this.updateModelTable.bind(this);
     }
 
     async componentDidMount() {
@@ -44,10 +48,11 @@ class ModelTablePage extends Component {
         }
         )
         this.updateModelTable();
-
     }
 
-    render() {
+    render(
+        adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
+    ) {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -57,24 +62,27 @@ class ModelTablePage extends Component {
                     isShown={this.state.addModelPopup.isShown}
                     onSubmit={this.onAddModelSubmit}
                     onClose={this.onAddModelClosed}
-                    getVendorSearchResults={this.onGetVendorSearchResults}
+                    currentModel={null}
                 />
 
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            <Button onClick={this.onAddModelClicked}>Add Model</Button>
+                            {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
+                                onRemoveFilters={this.updateModelTable}
                             />
+                            <h4>{this.state.sortingIndicator}</h4>
                             <ModelTable
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
+                                sortData={this.onModelSort}
                             />
                         </div>
                     </div>
@@ -86,22 +94,31 @@ class ModelTablePage extends Component {
 
 
     onDetailClicked(e) {
-        console.log(e.target.value)
         this.setState({
             redirect: `/models/${e.target.value}`
         })
     }
 
-    onFilteredSearch(newFilter) {
-        this.setState({
-            ...this.state,
-            filters: newFilter
-        })
+    async onFilteredSearch(newFilter) {
+        // this.setState({
+        //     ...this.state,
+        //     filters: newFilter
+        // }).then(
+        await modelServices.modelFilterSearch(newFilter).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        tableData: result.data
+                    })
+                } else {
+                    //TODO: 
+                }
+            }
+        )
+
     }
 
     async onAddModelSubmit(newModel) {
-        console.log("New model added")
-        console.log(newModel);
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 this.updateModelTable();
@@ -141,7 +158,6 @@ class ModelTablePage extends Component {
         modelServices.getModels().then((result) => {
             if (result.success) {
                 this.setState({
-                    redirect: null,
                     tableData: result.data
                 })
             } else {
@@ -151,6 +167,56 @@ class ModelTablePage extends Component {
         }
         )
     }
+
+    getURLKey = (sortingHeader) => {
+
+        let sortingKey = null
+        this.setState({
+            sortingIndicator: 'Sorted By: ' + sortingHeader
+        })
+
+        switch (sortingHeader) {
+            case "Model Number":
+                sortingKey = "model_number_lower"
+                return sortingKey;
+            case "Vendor":
+                sortingKey = "vendor_lower"
+                return sortingKey;
+            case "Description":
+                sortingKey = "description_lower"
+                return sortingKey;
+            case "Callibration (days)":
+                sortingKey = "calibration_frequency"
+                return sortingKey;
+            default:
+                this.setState({
+                    sortingIndicator: null
+                })
+                return null;
+        }
+    }
+
+    onModelSort = (sortingHeader) => {
+
+        var urlSortingKey = this.getURLKey(sortingHeader);
+        if(urlSortingKey === null) return;
+        modelServices.getSortedModels(urlSortingKey)
+        .then((res) => {
+            if (res.success) {
+                this.setState({
+                    tableData: res.data
+                })
+            } else {
+                console.log("error")
+            }
+        }
+    );
+
+    }
 }
 
 export default ModelTablePage;
+
+ModelTablePage.propTypes = {
+    is_admin: PropTypes.bool.isRequired
+}

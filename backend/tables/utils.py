@@ -1,5 +1,19 @@
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from rest_framework import status
+from django.core.exceptions import FieldError
+
+
+def list_override(list_view, request, name):
+    queryset = list_view.filter_queryset(list_view.get_queryset())
+    if "sort_by" in request.GET:
+        try:
+            queryset = queryset.order_by(request.GET["sort_by"])
+        except FieldError:
+            return Response("Invalid sorting parameter.", status=status.HTTP_400_BAD_REQUEST)
+    nextPage = 1
+    previousPage = 1
+    return get_page_response(queryset, request, list_view.serializer_class, name, nextPage, previousPage)
 
 
 def get_page_response(objects, request, serializerType, name, nextPage, previousPage):

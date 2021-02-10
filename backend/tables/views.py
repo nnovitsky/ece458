@@ -9,6 +9,27 @@ from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 
 
+@api_view(['GET'])
+def vendor_list(request):
+    """
+    List all vendors in DB.
+    """
+    vendors = set()
+    for item_model in ItemModel.objects.all():
+        vendors.add(item_model.vendor)
+    return Response({'vendors': vendors}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def model_by_vendor_list(request, vendor):
+    """
+    List model number and pk for all models by a given vendor.
+    """
+    item_models = ItemModel.objects.filter(vendor=vendor)
+    serializer = ItemModelByVendorSerializer(item_models, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # CALIBRATION EVENTS
 @api_view(['GET', 'POST'])
 def calibration_event_list(request):
@@ -23,27 +44,8 @@ def calibration_event_list(request):
         return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
-        # get item model, instrument, and user from request
-        try:
-            vendor = request.data['vendor']
-            model_number = request.data['model_number']
-            item_model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-        except ItemModel.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            serial_number = request.data['serial_number']
-            instrument = Instrument.objects.get(item_model=item_model, serial_number=serial_number)
-            request.data['instrument'] = instrument.pk
-        except Instrument.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            username = request.data['user']
-            user = User.objects.get(username=username)
-            request.data['user'] = user.pk
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        # set user to current user
+        request.data['user'] = request.user.pk
         # add new calibration event using instrument and user
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,6 +84,7 @@ def calibration_event_detail(request, pk):
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             request.data['user'] = calibration_event.user.pk
+        if 'date' not in request.data: request.data['date'] = calibration_event.date
 
         serializer = CalibrationEventWriteSerializer(calibration_event, data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -112,15 +115,6 @@ def instruments_list(request):
     elif request.method == 'POST':
         if not request.user.is_staff:
             return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
-        # get model pk from vendor and model number
-        try:
-            vendor = request.data['vendor']
-            model_number = request.data['model_number']
-            model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-            request.data['item_model'] = model.pk
-        except ItemModel.DoesNotExist:
-            return Response("Vendor/model number does not exist.", status=status.HTTP_400_BAD_REQUEST)
-        # add new instrument using itemmodel
         serializer = InstrumentWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -147,15 +141,7 @@ def instruments_detail(request, pk):
     elif request.method == 'PUT':
         if not request.user.is_staff:
             return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
-        if 'vendor' in request.data or 'model_number' in request.data:
-            vendor = request.data['vendor'] if 'vendor' in request.data else instrument.item_model.vendor
-            model_number = request.data['model_number'] if 'model_number' in request.data else instrument.item_model.model_number
-            try:
-                item_model = ItemModel.objects.get(vendor=vendor, model_number=model_number)
-                request.data['item_model'] = item_model.pk
-            except ItemModel.DoesNotExist:
-                return Response("Vendor/model number does not exist.", status=status.HTTP_400_BAD_REQUEST)
-        else:
+        if 'item_model' not in request.data:
             request.data['item_model'] = instrument.item_model.pk
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
@@ -248,7 +234,7 @@ def current_user(request):
             pw = request.data.pop('password')
             request.user.set_password(pw)
             request.user.save()
-        serializer = UserSerializer(request.user, data=request.data, context={'request': request})
+        serializer = UserEditSerializer(request.user, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -274,6 +260,7 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+        # TODO: add permissions
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

@@ -1,6 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import './ModelTable.css'
 
 const headerText = ["Model Number", "Vendor", "Description", "Comments", "Callibration (days)", "More"];
 const keys = ["model_number", "vendor", "description", "comment", "calibration_frequency"];
@@ -11,8 +12,8 @@ let data;   //prop of array of model data to display
 
 const modelTable = (props) => {
     data = props.data;
-    let header = createHeader();
-    let body = createBody(props.onDetailRequested);
+    let header = createHeader(props.sortData);
+    let body = createBody(props.onDetailRequested); 
 
     return (
         <Table striped bordered hover>
@@ -24,15 +25,20 @@ const modelTable = (props) => {
         </Table>)
 }
 
+const onClickTableHeader = (onSortData, h) => {
+    onSortData(h);
 
-const createHeader = () => {
+}
+
+
+const createHeader = (onSortData) => {
     let header = [];
     header.push(
         <th>#</th>
     )
     headerText.forEach(h => {
         header.push(
-            <th>{h}</th>
+            <th onClick={() => onClickTableHeader(onSortData, h)}>{h}</th>
         )
     })
     return (

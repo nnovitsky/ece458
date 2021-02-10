@@ -114,8 +114,8 @@ def calibration_event_pdf(request, pk):
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    return pdf_generator(request, instrument)
-
+    # return pdf_generator.handler(request, instrument)
+    return pdf_generator.buffer_write()
 
 # INSTRUMENTS
 @api_view(['GET', 'POST'])

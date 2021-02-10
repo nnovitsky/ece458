@@ -164,7 +164,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):

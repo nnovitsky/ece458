@@ -115,6 +115,7 @@ export default class InstrumentServices {
             )
     }
 
+    // Error handling in place
     async addInstrument(model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -143,12 +144,12 @@ export default class InstrumentServices {
                     return res.json().then(json => {
                         result.success = false;
                         result.errors = json;
-                        console.log("about to return")
                         return result;
                     })
                 }
             })
     }
+
     async editInstrument(instrumentPk, model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -198,6 +199,11 @@ async addCalibrationEvent(instrument_pk, date, comment) {
         comment: comment
     }
 
+    let result = {
+        success: true,
+        errors: []
+    }
+
     const token = localStorage.getItem('token');
 
     return fetch(`${API_URL}/api/calibration_events/`, {
@@ -208,34 +214,18 @@ async addCalibrationEvent(instrument_pk, date, comment) {
         },
         body: JSON.stringify(data)
     })
-        .then(res => res.json())
-        .then(json => {
-
-        })
-}
-
-getInstrumentSerialByModel(modelPk) {
-    let result = [];
-    instrumentData.instruments.forEach(el => {
-        if (el["model pk"] === modelPk) {
-            let temp = {
-                "serial": el["serial"],
-                "pk": el["instrument pk"]
+        .then(res => {
+            if (res.ok) {
+                return result;
+            } else {
+                return res.json().then(json => {
+                    result.success = false;
+                    result.errors = json;
+                    console.log(result.errors)
+                    return result;
+                })
             }
-            result.push(temp);
-        }
-    });
-    return result;
-    // const url = `${API_URL}/api/customers/${pk}`;
-    // return axios.get(url).then(response => response.data);
-}
-
-getAllSerialNumbers() {
-    let result = new Set();
-    instrumentData.instruments.forEach(el => {
-        result.add(el["serial"]);
-    })
-    return Array.from(result);
+        })
 }
 }
 

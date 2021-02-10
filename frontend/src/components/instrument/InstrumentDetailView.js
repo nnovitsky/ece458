@@ -11,6 +11,8 @@ import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
+import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 
@@ -33,7 +35,10 @@ class InstrumentDetailView extends Component {
                 calibration_frequency: '',
                 calibration_history: [],
             },
-            isAddCalPopupShown: false,
+            addCalPopup: {
+                isShown: false,
+                errors: [],
+            },
             isEditInstrumentShown: false,
             isDeleteShown: false,
             currentUser: ''
@@ -178,9 +183,10 @@ class InstrumentDetailView extends Component {
     makeAddCalibrationPopup() {
         return (
             <AddCalibrationPopup
-                isShown={this.state.isAddCalPopupShown}
+                isShown={this.state.addCalPopup.isShown}
                 onClose={this.onAddCalibrationClose}
                 onSubmit={this.onAddCalibrationSubmit}
+                errors={this.state.addCalPopup.errors}
             />
         )
     }
@@ -224,19 +230,40 @@ class InstrumentDetailView extends Component {
 
     onAddCalibrationClicked() {
         this.setState({
-            isAddCalPopupShown: true,
+            addCalPopup: {
+                ...this.state.addCalPopup,
+                isShown: true
+            }
         })
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment);
-        await this.getInstrumentInfo();
-        this.onAddCalibrationClose();
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment)
+            .then((result) => {
+                if (result.success) {
+                    this.getInstrumentInfo();
+                    this.onAddCalibrationClose();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                    console.log(formattedErrors);
+                    this.setState({
+                        addCalPopup: {
+                            ...this.state.addCalPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+            });
+
     }
 
     onAddCalibrationClose() {
         this.setState({
-            isAddCalPopupShown: false
+            addCalPopup: {
+                ...this.state.addCalPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 

@@ -106,15 +106,28 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
     # use when serializing instrument to include most recent calibration event
     item_model = ItemModelSerializer()
     calibration_event = serializers.SerializerMethodField('_get_most_recent_calibration')
+    calibration_expiration = serializers.SerializerMethodField('_get_calibration_expiration')
 
     def _get_most_recent_calibration(self, obj):
         cal_event = obj.calibrationevent_set.order_by('-date')[:1]
         serializer = CalibrationEventWriteSerializer(cal_event, many=True)
         return serializer.data
 
+    def _get_calibration_expiration(self, obj):
+        cal_frequency = obj.item_model.calibration_frequency
+        if cal_frequency < 1:
+            return "Uncalibratable"
+        last_cal = obj.calibrationevent_set.order_by('-date')[:1]
+        if len(last_cal) < 1:
+            return datetime.date.today()
+        else:
+            last_cal = last_cal[0]
+            exp_date = last_cal.date + datetime.timedelta(cal_frequency)
+            return exp_date
+
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration')
 
 
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):

@@ -12,6 +12,7 @@ let data;   //prop array of data to display
 
 const instrumentTable = (props) => {
     data = props.data;
+    console.log(data)
     let header = createHeader();
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 

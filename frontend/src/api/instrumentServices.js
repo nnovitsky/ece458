@@ -191,42 +191,77 @@ export default class InstrumentServices {
     }
 
 
-// Note: the date needs to be a string
-// Error handling in place for future dates
-async addCalibrationEvent(instrument_pk, date, comment) {
-    let data = {
-        instrument: instrument_pk,
-        date: date,
-        comment: comment
-    }
+    // Note: the date needs to be a string
+    // Error handling in place for future dates
+    async addCalibrationEvent(instrument_pk, date, comment) {
+        let data = {
+            instrument: instrument_pk,
+            date: date,
+            comment: comment
+        }
 
-    let result = {
-        success: true,
-        errors: []
-    }
+        let result = {
+            success: true,
+            errors: []
+        }
 
-    const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
 
-    return fetch(`${API_URL}/api/calibration_events/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `JWT ${token}`
-        },
-        body: JSON.stringify(data)
-    })
-        .then(res => {
-            if (res.ok) {
-                return result;
-            } else {
-                return res.json().then(json => {
-                    result.success = false;
-                    result.errors = json;
-                    console.log(result.errors)
+        return fetch(`${API_URL}/api/calibration_events/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
                     return result;
-                })
+                } else {
+                    return res.json().then(json => {
+                        result.success = false;
+                        result.errors = json;
+                        console.log(result.errors)
+                        return result;
+                    })
+                }
+            })
+    }
+
+    async getSortedInstruments(sortingKey) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL}/api/instrument_search/?sort_by=${sortingKey}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
             }
         })
-}
+            .then(res => res.json())
+            .then(
+                (json) => {
+                    if (json.detail === 'Signature has expired.') {
+                        console.log("GET NEW TOKEN")
+                        result.success = false;
+                    }
+                    result.data = json.data
+                    return result
+                },
+                (error) => {
+                    console.log(error)
+                    result.success = false;
+                    return result
+                }
+            )
+    }
+
+
 }
 

@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import LETTER #8.5x11
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import FileResponse
+from backend.tables.serializers import ListInstrumentReadSerializer
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 
@@ -41,6 +42,17 @@ def get_fields(instrument):
         'jwood',
         'Battery charger taking time. May need to replace soon.'
     ]
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    print(serializer.data)
+    print(str(serializer.data['calibration_expiration']))
+    # {'pk': 1,
+    # 'item_model': OrderedDict(
+    #     [('pk', 2), ('vendor', 'V5'), ('model_number', 'm1'), ('description', 'item 1'), ('comment', 'updated comment'),
+    #      ('calibration_frequency', 180)]), 'serial_number': '12345', 'comment': 'updated comment 2',
+    #  'calibration_event': [
+    #      OrderedDict([('pk', 6), ('date', '2040-01-01'), ('user', 1), ('instrument', 1), ('comment', '')])],
+    #  'calibration_expiration': datetime.date(2040, 6, 29)}
 
     #vendor = instrument.item_model_id
     return fields

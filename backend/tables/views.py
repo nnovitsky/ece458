@@ -115,7 +115,11 @@ def calibration_event_pdf(request, pk):
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+
     return pdf_generator.handler(instrument)
+
 
 # INSTRUMENTS
 @api_view(['GET', 'POST'])

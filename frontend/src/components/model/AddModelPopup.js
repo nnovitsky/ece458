@@ -94,7 +94,7 @@ class AddModelPopup extends Component {
                 body={body}
                 headerText={headerText}
                 closeButtonText="Cancel"
-                submitButtonText="Create Model"
+                submitButtonText={submitButtonText}
                 onClose={this.props.onClose}
                 onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
                 submitButtonVariant="primary"

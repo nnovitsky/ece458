@@ -1,0 +1,13 @@
+{
+  "add_instrument": {
+    "vendor": {
+      "This field is required.": "Vendor is a required field."
+    },
+    "model_number": {
+      "This field is required.": "Model Number is a required field."
+    },
+    "non_field_errors": {
+      "The fields vendor, model_number must make a unique set.": "A Model of this Vendor already exists. Model Number and Vendor must be a unique pair."
+    }
+  }
+}

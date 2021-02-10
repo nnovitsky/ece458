@@ -13,7 +13,7 @@ class ItemModel(models.Model):
     """
     vendor = models.CharField(max_length=one_line)
     model_number = models.CharField(max_length=one_line)
-    description = models.CharField(max_length=two_line, blank=True)
+    description = models.CharField(max_length=two_line)
     comment = models.CharField(max_length=two_line, blank=True)
     calibration_frequency = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 

@@ -125,8 +125,10 @@ class InstrumentTablePage extends Component {
         await instrumentServices.instrumentFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
+                    console.log("success")
+                    console.log(result.data)
                     this.setState({
-                        tableData: result.data
+                        tableData: result.data.data
                     })
                 } else {
                     console.log("Error with filter search")

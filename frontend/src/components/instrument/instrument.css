@@ -26,3 +26,8 @@ form.popup input[type=text] {
     width: 100%;
     margin: 0px;
 }
+
+.detail-table {
+    height: 60vh;
+    color: red;
+}

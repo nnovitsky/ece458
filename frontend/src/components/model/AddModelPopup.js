@@ -214,7 +214,6 @@ class AddModelPopup extends Component {
                 newModel.calibration_frequency = 0;
             }
             this.props.onSubmit(newModel);
-            this.onClose();
         }
     }
 

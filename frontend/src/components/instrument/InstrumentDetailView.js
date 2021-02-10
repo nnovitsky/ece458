@@ -66,9 +66,11 @@ class InstrumentDetailView extends Component {
             <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
         </div>
     ) {
-        let addCalibrationPopup = this.makeAddCalibrationPopup();
-        let editInstrumentPopup = this.makeEditInstrumentPopup();
-        let deleteInstrumentPopup = this.makeDeletePopup();
+
+
+        let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
+        let editInstrumentPopup = (this.state.isEditInstrumentShown) ? this.makeEditInstrumentPopup() : null;
+        let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
         let calibrationCol = (
             <Col xs={7}>

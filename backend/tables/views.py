@@ -108,14 +108,12 @@ def calibration_event_pdf(request, pk):
     (vendor, model #, description, and serial #) as well as the most recent calibration
     event (date of latest calibration, expiration date, user, comment)
     """
-
     try:
         instrument = Instrument.objects.get(pk=pk)
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # return pdf_generator.handler(request, instrument)
-    return pdf_generator.buffer_write()
+    return pdf_generator.handler(instrument)
 
 # INSTRUMENTS
 @api_view(['GET', 'POST'])

@@ -74,7 +74,8 @@ def calibration_event_detail(request, pk):
 
     elif request.method == 'PUT':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         # fill in immutable fields and grab new user's pk
         request.data['instrument'] = calibration_event.instrument.pk
         if 'username' in request.data:
@@ -96,7 +97,8 @@ def calibration_event_detail(request, pk):
 
     elif request.method == 'DELETE':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         calibration_event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -130,7 +132,8 @@ def instruments_list(request):
 
     elif request.method == 'POST':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = InstrumentWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -156,7 +159,8 @@ def instruments_detail(request, pk):
 
     elif request.method == 'PUT':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'item_model' not in request.data:
             request.data['item_model'] = instrument.item_model.pk
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
@@ -168,7 +172,8 @@ def instruments_detail(request, pk):
 
     elif request.method == 'DELETE':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         instrument.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -188,7 +193,8 @@ def models_list(request):
 
     elif request.method == 'POST':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -214,7 +220,8 @@ def models_detail(request, pk):
 
     elif request.method == 'PUT':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'vendor' not in request.data: request.data['vendor'] = model.vendor
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
@@ -225,9 +232,11 @@ def models_detail(request, pk):
 
     elif request.method == 'DELETE':
         if not request.user.is_staff:
-            return Response("User does not have permission.", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if len(model.instrument_set.all()) > 0:
-            return Response("Cannot delete model with instrument instances.", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"delete_error": ["Cannot delete model with instrument instances."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             model.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -276,6 +285,7 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+        # TODO: add permissions
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

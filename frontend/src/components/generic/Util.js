@@ -6,11 +6,18 @@ const dateToString = (date) => {
         + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + (('0' + date.getDate()).slice(-2)));
 }
 
-// 
-const sortArray = (dataArr, keyToSortBy) => {
-    console.log("sort called")
-    console.log(dataArr)
-    return dataArr.sort((a, b) => (a[keyToSortBy] > b[keyToSortBy]) ? 1 : -1)
+// 'errorsArr' Takes in an array of errors that can be gotten from the api fetch
+// 'errorBlock' the portion of json to try to match errors, this will likely be from one of the files in ErrorMapping
+const rawErrorsToDisplayed = (errorArr, errorBlock) => {
+    let formattedErrors = [];
+    for (var key in errorArr) {
+        let currentJson = errorBlock[key];
+        errorArr[key].forEach(currentErrorKey => {
+            formattedErrors.push(currentJson[currentErrorKey]);
+        })
+    }
+    return formattedErrors;
 }
 
-export { dateToString, sortArray };
+
+export { dateToString, rawErrorsToDisplayed };

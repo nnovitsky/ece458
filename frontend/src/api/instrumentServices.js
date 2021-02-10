@@ -121,6 +121,11 @@ export default class InstrumentServices {
             serial_number: serial_number,
             comment: comment
         }
+
+        let result = {
+            success: true,
+            errors: {}
+        }
         const token = localStorage.getItem('token');
 
         return fetch(`${API_URL}/api/instruments/`, {
@@ -131,9 +136,17 @@ export default class InstrumentServices {
             },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
-            .then(json => {
-
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        result.success = false;
+                        result.errors = json;
+                        console.log("about to return")
+                        return result;
+                    })
+                }
             })
     }
     async editInstrument(instrumentPk, model_pk, serial_number, comment) {

@@ -12,6 +12,7 @@ import GenericPopup from "../generic/GenericPopup";
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'currentInstrument' an object formatted exactly like newInstrument below, can also pass null if no pre-existing
+//'errors' an array of strings of errors to display
 
 // let newInstrument = {
 //     model_pk: '',
@@ -100,6 +101,7 @@ class AddInstrumentPopup extends Component {
                 onClose={this.onClose}
                 onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
+                errors={this.props.errors}
             />
         )
     }
@@ -244,7 +246,6 @@ class AddInstrumentPopup extends Component {
 
             }
             this.props.onSubmit(returnedInstrument);
-            this.onClose();
         }
     }
 
@@ -272,6 +273,10 @@ class AddInstrumentPopup extends Component {
     isValid = () => {
         return true;
     }
+}
+
+AddInstrumentPopup.defaultProps = {
+    errors: []
 }
 
 export default AddInstrumentPopup;

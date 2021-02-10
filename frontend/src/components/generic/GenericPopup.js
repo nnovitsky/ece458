@@ -2,6 +2,7 @@ import React from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert'
 
 // This popup will make a generic dialog that will appear, it'll have a header, a body that is passed in as a prop,
 // and then a row of buttons based on props passed in
@@ -16,9 +17,11 @@ import Button from 'react-bootstrap/Button';
 // 'onClose': handler for the close button being clicked
 // 'onSubmit': handler for the submit button being clicked
 // 'submitButtonVariant': a string that corresponds to a button variant, eg 'primary' or 'danger'
+// 'errors': an array of strings that are warnings, note an empty array means no errors are displayed, this is an optional field
 
 const genericPopup = (props) => {
-
+    console.log("Errors:")
+    console.log(props.errors)
     return (
         <Modal show={props.show}>
             <Modal.Header>
@@ -30,7 +33,11 @@ const genericPopup = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
+                <Alert variant={'danger'} show={props.errors.length > 0}>
+                    {props.errors}
+                </Alert>
                 {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant)}
+
             </Modal.Footer>
         </Modal>
     )
@@ -44,6 +51,10 @@ const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVaria
 
 
     return buttons;
+}
+
+genericPopup.defaultProps = {
+    errors: []
 }
 
 export default genericPopup;

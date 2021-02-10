@@ -1,16 +1,14 @@
-from io import BytesIO
-
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
-from reportlab.pdfgen import canvas
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
+from backend.tables import pdf_generator
 
 
 @api_view(['GET'])
@@ -112,25 +110,11 @@ def calibration_event_pdf(request, pk):
     """
 
     try:
-        calibration_event = CalibrationEvent.objects.get(pk=pk) #change to instrument
-    except CalibrationEvent.DoesNotExist:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    response = Response(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename=mypdf.pdf'
-
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer)
-    p.drawString(100,100,"Hello world.")
-
-    p.showPage()
-    p.save()
-
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
-    return response
-
+    return pdf_generator(request, instrument)
 
 
 # INSTRUMENTS

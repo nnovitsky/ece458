@@ -6,6 +6,9 @@
     "model_number": {
       "This field may not be blank.": "Please enter a model number"
     },
+    "description": {
+        "This field may not be blank.": "Please enter a description"
+    },
     "non_field_errors": {
       "The fields vendor, model_number must make a unique set.": "This model already exists"
     }

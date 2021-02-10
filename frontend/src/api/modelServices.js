@@ -264,6 +264,7 @@ export default class ModelServices {
             })
     }
 
+       // has handling if the token is modified/expired
     async getModelByVendor(vendor) {
         const token = localStorage.getItem('token');
 
@@ -281,24 +282,34 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
 
+
+       // has handling if the token is modified/expired
     async getSortedModels(sortingKey) {
         const token = localStorage.getItem('token');
 
@@ -314,22 +325,30 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             }
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json.data;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
-                    result.success = false;
-                    return result
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
 }
 

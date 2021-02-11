@@ -10,6 +10,11 @@
       "The fields item_model, serial_number must make a unique set.": "An instrument already exists with this model number and serial number pair. Serial numbers must be unique."
     }
   },
+  "edit_instrument": {
+    "serial_number": {
+      "This field may not be blank.": "A serial number is a required field."
+    }
+  },
   "add_calibration": {
     "non_field_errors": {
       "Cannot set future date.": "Please select a date on or earlier than today."

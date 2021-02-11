@@ -39,7 +39,10 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 errors: [],
             },
-            isEditInstrumentShown: false,
+            editInstrumentPopup: {
+                isShown: false,
+                errors: []
+            },
             isDeleteShown: false,
             currentUser: ''
         }
@@ -68,7 +71,7 @@ class InstrumentDetailView extends Component {
 
 
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
-        let editInstrumentPopup = (this.state.isEditInstrumentShown) ? this.makeEditInstrumentPopup() : null;
+        let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
         let calibrationCol = (
@@ -207,10 +210,11 @@ class InstrumentDetailView extends Component {
         }
         return (
             <EditInstrumentPopop
-                isShown={this.state.isEditInstrumentShown}
+                isShown={this.state.editInstrumentPopup.isShown}
                 onSubmit={this.onEditInstrumentSubmit}
                 onClose={this.onEditInstrumentClosed}
                 currentInstrument={currentInstrument}
+                errors={this.state.editInstrumentPopup.errors}
             />
         )
     }
@@ -294,25 +298,40 @@ class InstrumentDetailView extends Component {
 
     onEditInstrumentClicked() {
         this.setState({
-            isEditInstrumentShown: true,
+            editInstrumentPopup: {
+                ...this.state.editInstrumentPopup,
+                isShown: true
+            }
         })
-
     }
 
     async onEditInstrumentSubmit(newInstrument) {
         console.log('Submitted')
         console.log(newInstrument)
-        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
-            (result) => {
-                this.getInstrumentInfo();
-            }
-        )
-        this.onEditInstrumentClosed();
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment)
+            .then((result) => {
+                if (result.success) {
+                    this.getInstrumentInfo();
+                    this.onEditInstrumentClosed();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["edit_instrument"]);
+                    this.setState({
+                        editInstrumentPopup: {
+                            ...this.state.editInstrumentPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+            });
     }
 
     onEditInstrumentClosed() {
         this.setState({
-            isEditInstrumentShown: false,
+            editInstrumentPopup: {
+                ...this.state.editInstrumentPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 

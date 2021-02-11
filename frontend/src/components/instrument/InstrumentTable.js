@@ -109,7 +109,6 @@ const getCalStatus = (currentData) => {
             let lasCalDate = new Date(currentData.calibration_event[0].date);
             let timeDifference = expireDate.getTime() - lasCalDate.getTime();
             let daysDifference = timeDifference / (1000 * 3600 * 24);
-            console.log(`${currentData.item_model.model_number} has ${daysDifference} days difference`);
             if (daysDifference > 30) {
                 icon = GoodIcon;
             }

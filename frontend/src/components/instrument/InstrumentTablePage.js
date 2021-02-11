@@ -103,7 +103,7 @@ class InstrumentTablePage extends Component {
             console.log(result.data)
             if (result.success) {
                 this.setState({
-                    tableData: result.data
+                    tableData: result.data.data
                 })
             } else {
                 console.log("error")

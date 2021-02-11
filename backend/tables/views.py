@@ -170,8 +170,8 @@ def instruments_detail(request, pk):
         if not request.user.is_staff:
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-        if 'item_model' not in request.data:
-            request.data['item_model'] = instrument.item_model.pk
+        # disable changing instrument's model
+        request.data['item_model'] = instrument.item_model.pk
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():

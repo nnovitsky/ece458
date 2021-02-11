@@ -4609,7 +4609,7 @@
   "resolved" "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
   "version" "2.0.0"
 
-"escodegen@^1.14.1":
+"escodegen@^1.14.1", "escodegen@^1.8.1":
   "integrity" "sha512-qFcX0XJkdg+PB3xjZZG/wKSuT1PnQWx57+TVSjIMmILd2yC/6ByYElPwJnslDsuWuSAp4AwJGumarAAmJch5Kw=="
   "resolved" "https://registry.npmjs.org/escodegen/-/escodegen-1.14.3.tgz"
   "version" "1.14.3"
@@ -4833,6 +4833,11 @@
   "integrity" "sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A=="
   "resolved" "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz"
   "version" "4.0.1"
+
+"esprima@1.2.2":
+  "integrity" "sha1-dqD9Zvz+FU/SkmZ9wmQBl1CxZXs="
+  "resolved" "https://registry.npmjs.org/esprima/-/esprima-1.2.2.tgz"
+  "version" "1.2.2"
 
 "esquery@^1.2.0":
   "integrity" "sha512-olpvt9QG0vniUBZspVRN6lwB7hOZoTRtT+jzR+tS4ffYx2mzbw+z0XCOk44aaLYKApNX5nMm+E+P6o25ip/DHQ=="
@@ -6981,6 +6986,15 @@
   dependencies:
     "graceful-fs" "^4.1.6"
     "universalify" "^2.0.0"
+
+"jsonpath@^1.1.0":
+  "integrity" "sha512-CZHwa1sZOf42qkIyK7evwToFXeTB4iplbl6Z9CVwU0wmBQPffL6gtYJXCoeciJoZENMuzaidPjhp2iOLRei4wQ=="
+  "resolved" "https://registry.npmjs.org/jsonpath/-/jsonpath-1.1.0.tgz"
+  "version" "1.1.0"
+  dependencies:
+    "esprima" "1.2.2"
+    "static-eval" "2.0.2"
+    "underscore" "1.7.0"
 
 "jsprim@^1.2.2":
   "integrity" "sha1-MT5mvB5cwG5Di8G3SZwuXFastqI="
@@ -10678,6 +10692,13 @@
   "resolved" "https://registry.npmjs.org/stackframe/-/stackframe-1.2.0.tgz"
   "version" "1.2.0"
 
+"static-eval@2.0.2":
+  "integrity" "sha512-N/D219Hcr2bPjLxPiV+TQE++Tsmrady7TqAJugLy7Xk1EumfDWS/f5dtBbkRCGE7wKKXuYockQoj8Rm2/pVKyg=="
+  "resolved" "https://registry.npmjs.org/static-eval/-/static-eval-2.0.2.tgz"
+  "version" "2.0.2"
+  dependencies:
+    "escodegen" "^1.8.1"
+
 "static-extend@^0.1.1":
   "integrity" "sha1-YICcOcv/VTNyJv1eC1IPNB8ftcY="
   "resolved" "https://registry.npmjs.org/static-extend/-/static-extend-0.1.2.tgz"
@@ -11364,6 +11385,11 @@
     "@types/react" ">=16.9.11"
     "invariant" "^2.2.4"
     "react-lifecycles-compat" "^3.0.4"
+
+"underscore@1.7.0":
+  "integrity" "sha1-a7rwh3UA02vjTsqlhODbn+8DUgk="
+  "resolved" "https://registry.npmjs.org/underscore/-/underscore-1.7.0.tgz"
+  "version" "1.7.0"
 
 "unicode-canonical-property-names-ecmascript@^1.0.4":
   "integrity" "sha512-jDrNnXWHd4oHiTZnx/ZG7gtUTVp+gCcTTKr8L0HjlwphROEW3+Him+IpvC+xcJEFegapiMZyZe02CyuOnRmbnQ=="

@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import './ModelTable.css'
 
-const headerText = ["Model Number", "Vendor", "Description", "Comments", "Callibration (days)", "More"];
+const headerText = ["Model Number", "Vendor", "Description", "Comments", "Calibration (days)", "More"];
 const keys = ["model_number", "vendor", "description", "comment", "calibration_frequency"];
 
 //props
@@ -16,13 +16,17 @@ const modelTable = (props) => {
     let body = createBody(props.onDetailRequested); 
 
     return (
-        <Table striped bordered hover>
+        <div className="model-table">
+
+            <Table striped bordered>
             <thead>
                 {header}
             </thead>
             {body}
 
-        </Table>)
+            </Table>
+        </div>
+    )
 }
 
 const onClickTableHeader = (onSortData, h) => {
@@ -58,9 +62,15 @@ const createBody = (onMoreClicked) => {
         )
         count++;
         keys.forEach(k => {
+            if ((k === "calibration_frequency") && (currentData[k] == 0)) {
+                rowElements.push(
+                    <td>N/A</td>)
+            } else {
             rowElements.push(
                 <td>{currentData[k]}</td>
             )
+            }
+
         })
         rowElements.push(
             <td><Button onClick={onMoreClicked} value={currentData.pk}>More</Button></td>

@@ -4,11 +4,14 @@ import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
+import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import { rawErrorsToDisplayed } from '../generic/Util';
+import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
 
@@ -22,6 +25,11 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             sortingIndicator: null,
+            pagination: {
+                next: '',
+                previous: '',
+                numPages: ''
+            },
             filters: {
                 model: '',
                 vendor: '',
@@ -29,6 +37,7 @@ class ModelTablePage extends Component {
             },
             addModelPopup: {
                 isShown: false,
+                errors: []
             }
 
         }
@@ -38,8 +47,8 @@ class ModelTablePage extends Component {
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
-        this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
     }
 
     async componentDidMount() {
@@ -63,6 +72,7 @@ class ModelTablePage extends Component {
                     onSubmit={this.onAddModelSubmit}
                     onClose={this.onAddModelClosed}
                     currentModel={null}
+                    errors={this.state.addModelPopup.errors}
                 />
 
                 <div className="background">
@@ -83,6 +93,11 @@ class ModelTablePage extends Component {
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
+                            />
+                            <Pagination
+                                currentPageNum={1}
+                                numPages={this.state.pagination.numPages}
+                                onClick={this.onPaginationClick}
                             />
                         </div>
                     </div>
@@ -107,9 +122,7 @@ class ModelTablePage extends Component {
         await modelServices.modelFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
-                    this.setState({
-                        tableData: result.data
-                    })
+                    this.updateData(result.data);
                 } else {
                     //TODO: 
                 }
@@ -121,8 +134,19 @@ class ModelTablePage extends Component {
     async onAddModelSubmit(newModel) {
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
-                this.updateModelTable();
-                this.onAddModelClosed();
+                if (res.success) {
+                    this.updateModelTable();
+                    this.onAddModelClosed();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_model']);
+                    this.setState({
+                        addModelPopup: {
+                            ...this.state.addModelPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+
             }
         );
 
@@ -132,13 +156,10 @@ class ModelTablePage extends Component {
         this.setState({
             addModelPopup: {
                 ...this.state.addModelPopup,
-                isShown: false
+                isShown: false,
+                errors: []
             }
         })
-    }
-
-    onGetVendorSearchResults(search) {
-        return [];
     }
 
     onAddModelClicked = () => {
@@ -157,15 +178,36 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         modelServices.getModels().then((result) => {
             if (result.success) {
-                this.setState({
-                    tableData: result.data
-                })
+                console.log(result.data)
+                this.updateData(result.data)
             } else {
-                console.log("error")
+                console.log("error loading model table data")
             }
 
         }
         )
+    }
+
+    async onPaginationClick(num) {
+        await modelServices.getNewModelPage(this.state.pagination.next).then(result => {
+            if (result.success) {
+                this.updateData(result.data)
+            }
+        })
+    }
+
+    // method called with the data from a successful api hit for getting the model table,
+    // sorting the data, filtering the data, or pagination
+    updateData(data) {
+        this.setState({
+            pagination: {
+                ...this.state.pagination,
+                next: data.nextlink,
+                previous: data.prevlink,
+                numPages: data.numpages
+            },
+            tableData: data.data
+        })
     }
 
     getURLKey = (sortingHeader) => {

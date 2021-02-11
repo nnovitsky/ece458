@@ -13,6 +13,8 @@ import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
+import { rawErrorsToDisplayed } from '../generic/Util';
+import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
@@ -36,8 +38,15 @@ class ModelDetailView extends React.Component {
                 calibration_frequency: '',
                 instruments: []
             },
-            isEditShown: false,
-            isDeleteShown: false
+            editPopup: {
+                isShown: false,
+                errors: []
+            },
+            deletePopup: {
+                isShown: false,
+                errors: []
+            }
+
         }
 
         this.onMoreClicked = this.onMoreClicked.bind(this);
@@ -59,9 +68,8 @@ class ModelDetailView extends React.Component {
             <Button onClick={this.onDeleteClicked}>Delete Model</Button>
         </div>
     ) {
-
-        let deletePopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
-        let editPopup = (this.state.isEditShown) ? this.makeEditPopup() : null;
+        let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
+        let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
@@ -70,8 +78,8 @@ class ModelDetailView extends React.Component {
             <div>
                 {deletePopup}
                 {editPopup}
-                <div className="background">
-                    <div className="row mainContent">
+            <div className="background">
+                <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
@@ -97,7 +105,7 @@ class ModelDetailView extends React.Component {
         )
         return (
             <DeletePopup
-                show={this.state.isDeleteShown}
+                show={this.state.deletePopup.isShown}
                 body={body}
                 headerText="Warning!"
                 closeButtonText="Cancel"
@@ -105,6 +113,19 @@ class ModelDetailView extends React.Component {
                 onClose={this.onDeleteClose}
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
+                errors={this.state.deletePopup.errors}
+            />
+        )
+    }
+
+    makeEditPopup() {
+        return (
+            <EditModelPopup
+                isShown={this.state.editPopup.isShown}
+                onSubmit={this.onEditSubmit}
+                onClose={this.onEditClose}
+                currentModel={this.state.model_info}
+                errors={this.state.editPopup.errors}
             />
         )
     }
@@ -201,51 +222,88 @@ class ModelDetailView extends React.Component {
 
     onEditClicked() {
         this.setState({
-            isEditShown: true
+            editPopup: {
+                ...this.state.editPopup,
+                isShown: true
+            }
         })
     }
 
-    onEditSubmit(editedModel) {
-        modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(
-            (result) => {
-                if (result.success) {
-                    this.updateInfo();
-                    this.onEditClose();
-                } else {
-                    console.log("Edit failed")
-                }
+    async onEditSubmit(editedModel) {
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(result => {
+            if (result.success) {
+                this.setState({
+                    deletePopup: {
+                        ...this.state.deletePopup,
+                        isShown: false
+                    }
+                })
+
+                this.updateInfo();
+                this.onEditClose();
+            } else {
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_model"]);
+                this.setState({
+                    editPopup: {
+                        ...this.state.editPopup,
+                        errors: formattedErrors
+                    }
+                })
             }
-        )
+        })
 
     }
 
     onEditClose() {
         this.setState({
-            isEditShown: false
+            editPopup: {
+                ...this.state.editPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 
     onDeleteClicked() {
         this.setState({
-            isDeleteShown: true
+            deletePopup: {
+                ...this.state.deletePopup,
+                isShown: true,
+            }
         })
     }
 
     onDeleteClose() {
         this.setState({
-            isDeleteShown: false
+            deletePopup: {
+                ...this.state.deletePopup,
+                errors: [],
+                isShown: false,
+            }
         })
     }
 
     async onDeleteSubmit() {
         await modelServices.deleteModel(this.state.model_info.pk).then(result => {
-            // if (result.success) {
-            this.onDeleteClose()
-            this.setState({
-                redirect: '/models/'
-            })
-        });
-
+            if (result.success) {
+                this.onDeleteClose();
+                this.setState({
+                    redirect: '/models/',
+                    deletePopup: {
+                        ...this.state.deletePopup,
+                        isShown: false
+                    }
+                })
+            } else {
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["delete_model"]);
+                this.setState({
+                    deletePopup: {
+                        ...this.state.deletePopup,
+                        errors: formattedErrors
+                    }
+                })
+            }
+        })
     }
 
     async updateInfo() {

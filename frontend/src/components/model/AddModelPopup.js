@@ -10,6 +10,7 @@ import GenericPopup from '../generic/GenericPopup';
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'currentModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
+//'errors' an optional field for an array of errors to be displayed
 
 // let newModel = {
 //     model_number: '',
@@ -79,19 +80,19 @@ class AddModelPopup extends Component {
 
     render() {
         let body = this.makeBody();
-        let headerText = (this.state.isEdit) ? "Edit Model" : "Create Model";
-        let submitButtonText = (this.state.isEdit) ? "Submit Changes" : "Add Model";
-
+        let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
+        let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
         return (
             <GenericPopup
                 show={this.props.isShown}
                 body={body}
-                headerText={headerText}
+                headerText={bodyText}
                 closeButtonText="Cancel"
-                submitButtonText={submitButtonText}
+                submitButtonText={submitText}
                 onClose={this.props.onClose}
-                onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
+                onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
+                errors={this.props.errors}
             />
         )
     }
@@ -116,8 +117,8 @@ class AddModelPopup extends Component {
                 <Form.Label>Comments</Form.Label>
                 <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
 
-                <Form.Label>Callibration Frequency (days)</Form.Label>
-                <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
+                <Form.Label>Calibration Frequency (days)</Form.Label>
+                <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
             </Form>
         )
@@ -201,9 +202,10 @@ class AddModelPopup extends Component {
         }
     }
 
-    onSubmit = (e) => {
+    onSubmit() {
         if (this.isValid()) {
             let newModel = {
+                pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
                 vendor: this.state.newModel.vendor.label,
                 calibration_frequency: this.state.newModel.calibration_frequency,
@@ -242,6 +244,10 @@ class AddModelPopup extends Component {
     isValid = () => {
         return true;
     }
+}
+
+AddModelPopup.defaultProps = {
+    errors: []
 }
 
 export default AddModelPopup;

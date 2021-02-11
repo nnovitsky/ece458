@@ -39,6 +39,7 @@
   "devDependencies": {
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "jsonpath": "^1.1.0",
     "prop-types": "^15.7.2",
     "react-bootstrap": "^1.4.3",
     "react-datepicker": "^3.4.1",

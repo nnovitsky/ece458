@@ -33,3 +33,65 @@ be made to be more specific */
 .filter-button {
     margin: 6px;
 }
+
+/* popup is a classname that is used for some of the body's of the popups */
+
+form.popup{
+    margin: 0px;
+    border-radius: 10px;
+    padding: 20px;
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: left;
+    display: inline-block;
+    background-color: rgb(147, 196, 127);
+}
+
+form.popup {
+    width: 100%;
+}
+
+form.popup label {
+    line-height: 1px;
+}
+
+form.popup .input-group {
+margin: 0px;
+
+}
+
+form.popup .form-control {
+    margin: 0px;
+}
+
+form.popup input[type=text] {
+    width: 100%;
+    margin: 0px;
+}
+
+/* The Generic popup has alerts, this is where they are formatted */
+
+.popup-alert{
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.popup-alert p {
+    margin: 6px;
+    text-align: center;
+}
+
+/* The generic popup has a button row, this is where that is formatted */
+.popup-button-row {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.popup-button-row button {
+    margin: 5px;
+    padding: 15px;
+}

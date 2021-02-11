@@ -13,19 +13,25 @@ def list_override(list_view, request, name):
             return Response("Invalid sorting parameter.", status=status.HTTP_400_BAD_REQUEST)
     nextPage = 1
     previousPage = 1
-    return get_page_response(queryset, request, list_view.serializer_class, name, nextPage, previousPage)
+    return get_page_response(queryset, request, list_view.serializer_class, nextPage, previousPage)
 
 
-def get_page_response(objects, request, serializerType, name, nextPage, previousPage):
+def get_page_response(objects, request, serializerType, nextPage, previousPage):
     # reusable pagination function
+    if 'get_all' in request.GET:
+        serializer = serializerType(objects, context={'request': request}, many=True)
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+
     page = request.GET.get('page', 1)
     paginator = Paginator(objects, 10)
     try:
         data = paginator.page(page)
     except PageNotAnInteger:
         data = paginator.page(1)
+        page = 1
     except EmptyPage:
         data = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
 
     serializer = serializerType(data, context={'request': request}, many=True)
     if data.has_next():
@@ -34,5 +40,4 @@ def get_page_response(objects, request, serializerType, name, nextPage, previous
         previousPage = data.previous_page_number()
 
     return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages,
-                     'nextlink': '/api/' + name + '/?page=' + str(nextPage),
-                     'prevlink': '/api/' + name + '/?page=' + str(previousPage)})
+                     'currentpage': page, 'nextpage': nextPage, 'previouspage': previousPage})

@@ -43,7 +43,7 @@ def calibration_event_list(request):
         nextPage = 1
         previousPage = 1
         calibration_events = CalibrationEvent.objects.all()
-        return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
+        return get_page_response(calibration_events, request, CalibrationEventReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         # set user to current user
@@ -137,7 +137,7 @@ def instruments_list(request):
         nextPage = 1
         previousPage = 1
         instruments = Instrument.objects.all()
-        return get_page_response(instruments, request, ListInstrumentReadSerializer, "instruments", nextPage, previousPage)
+        return get_page_response(instruments, request, ListInstrumentReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not request.user.is_staff:
@@ -198,7 +198,7 @@ def models_list(request):
         nextPage = 1
         previousPage = 1
         models = ItemModel.objects.all()
-        return get_page_response(models, request, ItemModelSerializer, "models", nextPage, previousPage)
+        return get_page_response(models, request, ItemModelSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not request.user.is_staff:
@@ -283,7 +283,7 @@ def user_list(request):
     nextPage = 1
     previousPage = 1
     users = User.objects.all()
-    return get_page_response(users, request, UserSerializer, "users", nextPage, previousPage)
+    return get_page_response(users, request, UserSerializer, nextPage, previousPage)
 
 
 class UserCreate(APIView):

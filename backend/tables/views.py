@@ -294,7 +294,9 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        # TODO: add permissions
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

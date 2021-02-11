@@ -23,7 +23,50 @@ export default class ModelServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
-                    result.data = json.data;
+                    result.data = json;
+                    return result;
+                });
+            } else {
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.errors = json;
+                    return result;
+                })
+            }
+        }
+        )
+    }
+
+    async getNewModelPage(pageUrl) {
+
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL + pageUrl}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.data = json;
                     return result;
                 });
             } else {

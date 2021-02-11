@@ -4,6 +4,7 @@ import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
+import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -24,6 +25,11 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             sortingIndicator: null,
+            pagination: {
+                next: '',
+                previous: '',
+                numPages: ''
+            },
             filters: {
                 model: '',
                 vendor: '',
@@ -43,6 +49,7 @@ class ModelTablePage extends Component {
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
     }
 
     async componentDidMount() {
@@ -87,6 +94,11 @@ class ModelTablePage extends Component {
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
+                            />
+                            <Pagination
+                                currentPageNum={1}
+                                numPages={this.state.pagination.numPages}
+                                onClick={this.onPaginationClick}
                             />
                         </div>
                     </div>
@@ -173,15 +185,36 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         modelServices.getModels().then((result) => {
             if (result.success) {
-                this.setState({
-                    tableData: result.data
-                })
+                console.log(result.data)
+                this.updateData(result.data)
             } else {
                 console.log("error loading model table data")
             }
 
         }
         )
+    }
+
+    async onPaginationClick(num) {
+        await modelServices.getNewModelPage(this.state.pagination.next).then(result => {
+            if (result.success) {
+                this.updateData(result.data)
+            }
+        })
+    }
+
+    // method called with the data from a successful api hit for getting the model table,
+    // sorting the data, or 
+    updateData(data) {
+        this.setState({
+            pagination: {
+                ...this.state.pagination,
+                next: data.nextlink,
+                previous: data.prevlink,
+                numPages: data.numpages
+            },
+            tableData: data.data
+        })
     }
 
     getURLKey = (sortingHeader) => {

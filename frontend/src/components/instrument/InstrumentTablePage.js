@@ -5,7 +5,6 @@ import InstrumentTable from "./InstrumentTable";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
-import './instrument.css';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed } from '../generic/Util';
 

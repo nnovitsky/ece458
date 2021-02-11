@@ -94,9 +94,56 @@ export default class ModelServices {
             })
     }
 
+
+    // Catches errors from the backend and has 
+
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency) {
+        const token = localStorage.getItem('token');
+
+        let data = {
+            vendor: vendor,
+            model_number: modelNumber,
+            description: description,
+            comment: comment,
+            calibration_frequency: calFrequency
+        }
+
+        let result = {
+            success: true,
+            errors: []
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
     // handling bad auth token
     async getModel(pk) {
-        console.log("called get model");
         const token = localStorage.getItem('token');
 
         let result = {

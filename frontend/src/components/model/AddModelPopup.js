@@ -39,7 +39,7 @@ class AddModelPopup extends Component {
             this.state = {
                 isEdit: true,
                 newModel: {
-                    model_pk: props.currentModel.model_pk,
+                    model_pk: props.currentModel.pk,
                     model_number: props.currentModel.model_number,
                     vendor: {
                         label: props.currentModel.vendor,
@@ -81,15 +81,17 @@ class AddModelPopup extends Component {
 
     render() {
         let body = this.makeBody();
+        let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
+        let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
         return (
             <GenericPopup
                 show={this.props.isShown}
                 body={body}
-                headerText="Add Model"
+                headerText={bodyText}
                 closeButtonText="Cancel"
-                submitButtonText="Create Model"
+                submitButtonText={submitText}
                 onClose={this.props.onClose}
-                onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
+                onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
                 errors={this.props.errors}
             />
@@ -100,7 +102,7 @@ class AddModelPopup extends Component {
         return (
             <Form className="popup">
                 <Form.Label>Model Number</Form.Label>
-                <Form.Control required type="text" name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
+                <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
                 <Form.Label>Vendor</Form.Label>
                 <Select
@@ -111,13 +113,13 @@ class AddModelPopup extends Component {
                     defaultInputValue={''}
                 />
                 <Form.Label>Description</Form.Label>
-                <Form.Control required type="text" name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
+                <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
                 <Form.Label>Comments</Form.Label>
-                <Form.Control as="textarea" rows={3} name={commentName} onChange={this.onTextInput} />
+                <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
 
                 <Form.Label>Calibration Frequency (days)</Form.Label>
-                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
+                <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
             </Form>
         )
@@ -201,9 +203,10 @@ class AddModelPopup extends Component {
         }
     }
 
-    onSubmit = (e) => {
+    onSubmit() {
         if (this.isValid()) {
             let newModel = {
+                pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
                 vendor: this.state.newModel.vendor.label,
                 calibration_frequency: this.state.newModel.calibration_frequency,

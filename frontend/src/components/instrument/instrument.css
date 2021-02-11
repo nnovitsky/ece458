@@ -2,7 +2,6 @@ form.popup{
     margin: 0px;
     border-radius: 10px;
     padding: 20px;
-    padding-bottom: 50px;
     padding-left: 20%;
     padding-right: 20%;
     text-align: left;
@@ -10,12 +9,17 @@ form.popup{
     background-color: rgb(147, 196, 127);
 }
 
+form.popup {
+    width: 100%;
+}
+
 form.popup label {
     line-height: 1px;
 }
 
 form.popup .input-group {
-margin: 0px;;
+margin: 0px;
+
 }
 
 form.popup .form-control {
@@ -25,6 +29,19 @@ form.popup .form-control {
 form.popup input[type=text] {
     width: 100%;
     margin: 0px;
+}
+
+.popup-alert{
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.popup-alert p {
+    margin: 6px;
+    text-align: center;
 }
 
 .detail-table {

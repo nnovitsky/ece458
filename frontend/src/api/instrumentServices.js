@@ -144,6 +144,7 @@ export default class InstrumentServices {
     }
 
     // Error handling in place for bad input
+    // handled modified/expired tokens
     async addInstrument(model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -313,6 +314,7 @@ export default class InstrumentServices {
             })
     }
 
+    // handles modified/expired tokens
     async getSortedInstruments(sortingKey) {
         const token = localStorage.getItem('token');
 
@@ -328,24 +330,30 @@ export default class InstrumentServices {
                 Authorization: `JWT ${token}`
             }
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json.data;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
-                    result.success = false;
-                    return result
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
-
-
 }
 

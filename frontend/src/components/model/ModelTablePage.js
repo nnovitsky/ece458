@@ -47,7 +47,6 @@ class ModelTablePage extends Component {
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
-        this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
     }
@@ -163,10 +162,6 @@ class ModelTablePage extends Component {
         })
     }
 
-    onGetVendorSearchResults(search) {
-        return [];
-    }
-
     onAddModelClicked = () => {
         this.setState({
             addModelPopup: {
@@ -202,7 +197,7 @@ class ModelTablePage extends Component {
     }
 
     // method called with the data from a successful api hit for getting the model table,
-    // sorting the data, or 
+    // sorting the data, filtering the data, or pagination
     updateData(data) {
         this.setState({
             pagination: {

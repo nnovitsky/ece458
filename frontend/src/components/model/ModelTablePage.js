@@ -123,9 +123,7 @@ class ModelTablePage extends Component {
         await modelServices.modelFilterSearch(newFilter).then(
             (result) => {
                 if (result.success) {
-                    this.setState({
-                        tableData: result.data
-                    })
+                    this.updateData(result.data);
                 } else {
                     //TODO: 
                 }

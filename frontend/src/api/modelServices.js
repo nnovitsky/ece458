@@ -287,7 +287,10 @@ export default class ModelServices {
             },
         }).then(res => {
             if (res.ok) {
-                return result;
+                return res.json().then(json => {
+                    result.data = json;
+                    return result;
+                });
             } else {
                 return res.json().then(json => {
                     if (json.detail === 'Signature has expired.') {

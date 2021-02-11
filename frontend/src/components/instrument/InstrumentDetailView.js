@@ -4,7 +4,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import logo from '../../assets/HPT_logo_crop.png';
-import './instrument.css';
 import { Redirect, withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 

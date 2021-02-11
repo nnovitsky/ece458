@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import { rawErrorsToDisplayed } from '../generic/Util';
+import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
 
@@ -29,6 +31,7 @@ class ModelTablePage extends Component {
             },
             addModelPopup: {
                 isShown: false,
+                errors: []
             }
 
         }
@@ -63,6 +66,7 @@ class ModelTablePage extends Component {
                     onSubmit={this.onAddModelSubmit}
                     onClose={this.onAddModelClosed}
                     currentModel={null}
+                    errors={this.state.addModelPopup.errors}
                 />
 
                 <div className="background">
@@ -121,8 +125,19 @@ class ModelTablePage extends Component {
     async onAddModelSubmit(newModel) {
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
-                this.updateModelTable();
-                this.onAddModelClosed();
+                if (res.success) {
+                    this.updateModelTable();
+                    this.onAddModelClosed();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_model']);
+                    this.setState({
+                        addModelPopup: {
+                            ...this.state.addModelPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+
             }
         );
 
@@ -132,7 +147,8 @@ class ModelTablePage extends Component {
         this.setState({
             addModelPopup: {
                 ...this.state.addModelPopup,
-                isShown: false
+                isShown: false,
+                errors: []
             }
         })
     }
@@ -161,7 +177,7 @@ class ModelTablePage extends Component {
                     tableData: result.data
                 })
             } else {
-                console.log("error")
+                console.log("error loading model table data")
             }
 
         }

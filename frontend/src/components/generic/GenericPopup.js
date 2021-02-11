@@ -21,7 +21,7 @@ import Alert from 'react-bootstrap/Alert'
 
 const genericPopup = (props) => {
     return (
-        <Modal show={props.show}>
+        <Modal className="popup" show={props.show} onHide={props.onClose}>
             <Modal.Header>
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
@@ -31,7 +31,7 @@ const genericPopup = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
-                <Alert variant={'danger'} show={props.errors.length > 0}>
+                <Alert className={"popup-alert"} variant={'danger'} show={props.errors.length > 0}>
                     {makeErrorsParagraphs(props.errors)}
                 </Alert>
                 {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant)}
@@ -47,8 +47,13 @@ const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVaria
     buttons.push(<Button variant="secondary" onClick={onClose}>{closeText}</Button>)
     buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit}>{submitText}</Button>)
 
+    let buttonDiv = (
+        <div className="popup-button-row">
+            {buttons}
+        </div>
+    )
 
-    return buttons;
+    return buttonDiv;
 }
 
 const makeErrorsParagraphs = (errorsArr) => {

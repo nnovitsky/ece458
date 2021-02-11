@@ -4,7 +4,6 @@ import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
 import "react-datepicker/dist/react-datepicker.css";
-import './instrument.css';
 import GenericPopup from "../generic/GenericPopup";
 
 //props
@@ -123,6 +122,7 @@ class AddInstrumentPopup extends Component {
                     options={this.state.modelsFromVendorArr}
                     isSearchable={true}
                     onChange={this.onModelInput}
+                    noOptionsMessage={() => "Select a Vendor"}
                 />
                 <Form.Text muted>
                     The vendor needs to be entered first.

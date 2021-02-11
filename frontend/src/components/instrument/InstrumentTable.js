@@ -2,8 +2,13 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
+import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
+import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
+import GoodIcon from "../../assets/CalibrationIcons/Good.png";
+import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
+
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Callibration", "Callibration Expiration", "More", "Callibration Certificate"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Callibration", "Callibration Expiration", "Status", "More", "Callibration Certificate"];
 
 //Props
 let data;   //prop array of data to display
@@ -55,10 +60,13 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
         rowElements.push(<td>{currentData.item_model.model_number}</td>)
         rowElements.push(<td>{currentData.serial_number}</td>)
         rowElements.push(<td>{currentData.item_model.description}</td>)
-        rowElements.push(<td>FIGURE ME OUT</td>)
+        rowElements.push(<td>{getLatestCalibration(currentData)}</td>)
 
         rowElements.push(
-            <td>TBD</td>
+            <td>{currentData.calibration_expiration}</td>
+        )
+        rowElements.push(
+            <td>{getCalStatus(currentData)}</td>
         )
         rowElements.push(
             <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
@@ -78,6 +86,45 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             {rows}
         </tbody>
     );
+}
+
+const getLatestCalibration = (currentData) => {
+    if (currentData.item_model.calibration_frequency > 0) {
+        if (currentData.calibration_event.length > 0) {
+            return currentData.calibration_event[0].date;
+        } else {
+            return "No History";
+        }
+    } else {
+        return "Non-Calibratable";
+    }
+}
+
+const getCalStatus = (currentData) => {
+    let icon;
+    if (currentData.item_model.calibration_frequency > 0) {
+        let expireDateString = currentData.calibration_expiration;
+        if (currentData.calibration_event.length > 0) {
+            let expireDate = new Date(expireDateString);
+            let lasCalDate = new Date(currentData.calibration_event[0].date);
+            let timeDifference = expireDate.getTime() - lasCalDate.getTime();
+            let daysDifference = timeDifference / (1000 * 3600 * 24);
+            console.log(`${currentData.item_model.model_number} has ${daysDifference} days difference`);
+            if (daysDifference > 30) {
+                icon = GoodIcon;
+            }
+            else if (daysDifference <= 30) {
+                icon = WarningIcon;
+            } else {
+                icon = ExpiredIcon;
+            }
+        } else {
+            icon = ExpiredIcon;
+        }
+    } else {
+        icon = NonCalibratableIcon;
+    }
+    return (<img src={icon} className='calibration-status-icon' />)
 }
 
 instrumentTable.defaultProps = {

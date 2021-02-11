@@ -100,6 +100,7 @@ class InstrumentTablePage extends Component {
 
     async updateTable() {
         instrumentServices.getInstruments().then((result) => {
+            console.log(result.data)
             if (result.success) {
                 this.setState({
                     tableData: result.data

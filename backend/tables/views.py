@@ -113,10 +113,15 @@ def calibration_event_pdf(request, pk):
     try:
         instrument = Instrument.objects.get(pk=pk)
     except Instrument.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
     if instrument.item_model.calibration_frequency <= 0:
         return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     return pdf_generator.handler(instrument)
 

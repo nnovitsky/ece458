@@ -32,7 +32,7 @@ NEW_LINE = 35
 HEADER_TEXT = "HPT Calibration Certificate"
 
 def get_fields(instrument):
-    fields = [
+    sample_fields = [
         'Duracell',
         'AAA',
         'Rechargable AAA battery set',
@@ -43,18 +43,22 @@ def get_fields(instrument):
         'Battery charger taking time. May need to replace soon.'
     ]
 
+    fields = []
     serializer = ListInstrumentReadSerializer(instrument)
-    print(serializer.data)
-    print(str(serializer.data['calibration_expiration']))
-    # {'pk': 1,
-    # 'item_model': OrderedDict(
-    #     [('pk', 2), ('vendor', 'V5'), ('model_number', 'm1'), ('description', 'item 1'), ('comment', 'updated comment'),
-    #      ('calibration_frequency', 180)]), 'serial_number': '12345', 'comment': 'updated comment 2',
-    #  'calibration_event': [
-    #      OrderedDict([('pk', 6), ('date', '2040-01-01'), ('user', 1), ('instrument', 1), ('comment', '')])],
-    #  'calibration_expiration': datetime.date(2040, 6, 29)}
 
-    #vendor = instrument.item_model_id
+
+    model_data = serializer.data['item_model']
+    fields.append(model_data.get('vendor'))
+    fields.append(model_data.get('model_number'))
+    fields.append(model_data.get('description'))
+    fields.append(str(model_data.get('serial_number')))
+
+    calibration_event_data = serializer.data['calibration_event'][0]
+    fields.append(calibration_event_data.get('date'))
+    fields.append(str(serializer.data['calibration_expiration']))
+    fields.append(str(calibration_event_data.get('user'))) #Returns the user's PK???
+    fields.append(calibration_event_data.get('comment'))
+
     return fields
 
 #TODO: handle longer text as a second line (e.g. long comments)

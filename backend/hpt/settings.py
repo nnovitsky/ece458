@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
        'http://localhost:3000',
-       'http://vcm-18807.vm.duke.edu:3000'
+       'http://vcm-18278.vm.duke.edu:3000'
 )
 
 JWT_AUTH = {

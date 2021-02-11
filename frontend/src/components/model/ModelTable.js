@@ -16,13 +16,17 @@ const modelTable = (props) => {
     let body = createBody(props.onDetailRequested); 
 
     return (
-        <Table striped bordered hover>
+        <div className="model-table">
+
+            <Table striped bordered>
             <thead>
                 {header}
             </thead>
             {body}
 
-        </Table>)
+            </Table>
+        </div>
+    )
 }
 
 const onClickTableHeader = (onSortData, h) => {

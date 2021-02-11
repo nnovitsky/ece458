@@ -235,7 +235,6 @@ export default class ModelServices {
             url += (key + `=${filters[key]}`);
             count++;
         }
-        console.log(url)
 
         return fetch(url, {
             method: 'GET',

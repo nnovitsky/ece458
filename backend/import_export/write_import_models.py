@@ -1,9 +1,17 @@
-from backend.tables.serializers import ItemModelSerializer
+import csv
+import io
 
+from backend.tables.serializers import ItemModelSerializer
+from backend.config.csv_column_headers import model_column_types
 
 def get_model_list(file):
+    file.seek(0)
+    reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
+    headers = next(reader)
+    for row in reader:
+        print(row)
 
-
+    return None
 
 
 

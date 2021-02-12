@@ -96,7 +96,7 @@ class InstrumentDetailView extends Component {
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                             <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
-                            <Button onClick={this.onCertificateRequested}>Download Certificate</Button>
+                            <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                         </div>
                         <div className="col-10">
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>

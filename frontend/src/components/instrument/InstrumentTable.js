@@ -79,7 +79,7 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
         )
         rowElements.push(
-            <td><Button value={currentData["pk"]} onClick={onCertificateRequested}>Download</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onCertificateRequested} disabled={currentData.calibration_event.length === 0}>Download</Button></td>
         )
         let currentRow = (
             <tr>

@@ -318,8 +318,6 @@ class InstrumentDetailView extends Component {
     }
 
     async onEditInstrumentSubmit(newInstrument) {
-        console.log('Submitted')
-        console.log(newInstrument)
         await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment)
             .then((result) => {
                 if (result.success) {

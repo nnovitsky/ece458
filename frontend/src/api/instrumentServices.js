@@ -274,7 +274,6 @@ export default class InstrumentServices {
                     return res.json().then(json => {
                         result.success = false;
                         result.errors = json;
-                        console.log(result.errors)
                         return result;
                     })
                 }

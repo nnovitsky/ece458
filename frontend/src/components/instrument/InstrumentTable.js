@@ -9,6 +9,7 @@ import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.
 
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
 const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Calibration", "Calibration Expiration", "Status", "More", "Calibration Certificate"];
+let lastSortedId = null;
 
 //Props
 let data;   //prop array of data to display
@@ -37,6 +38,15 @@ const instrumentTable = (props) => {
 
 }
 
+const onSortCalled = (e, parentHandler, h) => {
+    if (lastSortedId !== null) {
+        document.getElementById(lastSortedId).style.backgroundColor = "white";
+    }
+    document.getElementById(e.target.id).style.backgroundColor = "rgb(147, 196, 127)";
+    lastSortedId = e.target.id;
+    parentHandler(h);
+}
+
 const createHeader = (onSortData) => {
     let header = [];
     header.push(
@@ -44,7 +54,7 @@ const createHeader = (onSortData) => {
     )
     headerTextArr.forEach(h => {
         header.push(
-            <th onClick={() => onSortData(h)}>{h}</th>
+            <th onClick={(e) => onSortCalled(e, onSortData, h)} id={h}>{h}</th>
         )
     })
     return (
@@ -79,7 +89,7 @@ const createBody = (onDetailRequested, onCertificateRequested) => {
             <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
         )
         rowElements.push(
-            <td><Button value={currentData["pk"]} onClick={onCertificateRequested}>Download</Button></td>
+            <td><Button value={currentData["pk"]} onClick={onCertificateRequested} disabled={currentData.calibration_event.length === 0}>Download</Button></td>
         )
         let currentRow = (
             <tr>

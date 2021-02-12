@@ -48,6 +48,9 @@ const makeBody = (calDate, setCalDate) => {
                 <Form.Group>
                     <Form.Label>Comment</Form.Label>
                     <Form.Control as="textarea" rows={3} onChange={onCommentChange} />
+                    <Form.Text muted>
+                        Max 2000 characters
+                    </Form.Text>
                 </Form.Group>
             </Form>
         </div>

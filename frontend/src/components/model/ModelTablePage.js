@@ -93,6 +93,7 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
                             <h4>{this.state.sortingIndicator}</h4>
+                            <p>Click on a table header to sort by the data by that field</p>
                             <ModelTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
@@ -158,7 +159,7 @@ class ModelTablePage extends Component {
                     this.updateModelTable();
                     this.onAddModelClosed();
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_model']);
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
                     this.setState({
                         addModelPopup: {
                             ...this.state.addModelPopup,
@@ -198,7 +199,6 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
             if (result.success) {
-                console.log(result.data)
                 this.updateData(result.data)
             } else {
                 console.log("error loading model table data")
@@ -235,7 +235,6 @@ class ModelTablePage extends Component {
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
-        console.log(data);
         this.setState({
             tableData: data.data
         })

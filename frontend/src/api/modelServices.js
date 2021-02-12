@@ -1,4 +1,3 @@
-import modelData from './modelData.json';
 
 const API_URL = 'http://localhost:8000';
 
@@ -45,7 +44,6 @@ export default class ModelServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
-                    console.log(json)
                     result.data = json;
                     return result;
                 });

@@ -11,13 +11,18 @@ const dateToString = (date) => {
 const rawErrorsToDisplayed = (errorArr, errorBlock) => {
     let formattedErrors = [];
     for (var key in errorArr) {
-        let currentJson = errorBlock[key];
-        errorArr[key].forEach(currentErrorKey => {
-            if (currentJson[currentErrorKey] === undefined) {
-                console.log(`No catch for the following error: ${currentErrorKey}`);
-            }
-            formattedErrors.push(currentJson[currentErrorKey]);
-        })
+        if (errorBlock[key] === undefined) {
+            console.log(`No catch for the following key: ${key}`);
+        } else {
+            let currentJson = errorBlock[key];
+            errorArr[key].forEach(currentErrorKey => {
+                if (currentJson[currentErrorKey] === undefined) {
+                    console.log(`No catch for the following error: ${currentErrorKey}`);
+                }
+                formattedErrors.push(currentJson[currentErrorKey]);
+            })
+        }
+
     }
     return formattedErrors;
 }

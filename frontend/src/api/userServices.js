@@ -1,4 +1,3 @@
-import userData from './userData.json';
 //const API_URL = 'http://localhost:8000';
 const API_URL = 'http://vcm-18278.vm.duke.edu:8000';
 
@@ -86,10 +85,4 @@ export default class UserServices {
             })
     }
 
-
-    getUser(pk) {
-        return userData.usersByKey[pk];
-        // const url = `${API_URL}/api/users/${pk}`;
-        // return axios.get(url).then(response => response.data);
-    }
 }

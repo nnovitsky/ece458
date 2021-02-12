@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:8000';
 export default class ModelServices {
 
     // catches if the token is modified, good for error catching
-    async getModels() {
+    async getModels(filters, sort_by, show_all) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -13,7 +13,27 @@ export default class ModelServices {
             data: [],
         }
 
-        const url = `${API_URL}/api/models/`;
+        let url = `${API_URL}/api/model_search/?`;
+        let count = 0;
+        for (var key in filters) {
+            if (count > 0) {
+                url += '&';
+            }
+            url += (key + `= ${filters[key]}`);
+            count++;
+        }
+
+        if (sort_by !== '') {
+            url = `${url}&sort_by=${sort_by}`;
+        }
+
+
+        if (show_all) {
+            url = `${url}?get_all`
+        }
+
+        console.log(url)
+
         return fetch(url, {
             method: 'GET',
             headers: {

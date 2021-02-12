@@ -24,16 +24,19 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
-            sortingIndicator: null,
             pagination: {
                 next: '',
                 previous: '',
                 numPages: ''
             },
-            filters: {
-                model: '',
-                vendor: '',
-                description: ''
+            modelSearchParams: {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: ''
+                },
+                sortingIndicator: '',
+                showAll: true
             },
             addModelPopup: {
                 isShown: false,
@@ -176,7 +179,7 @@ class ModelTablePage extends Component {
     }
 
     async updateModelTable() {
-        modelServices.getModels().then((result) => {
+        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll).then((result) => {
             if (result.success) {
                 console.log(result.data)
                 this.updateData(result.data)

@@ -38,6 +38,7 @@ class InstrumentTablePage extends Component {
             pagination: {
                 resultCount: '',
                 numPages: '',
+                resultsPerPage: 10,
                 currentPageNum: ''
             },
             addInstrumentPopup: {
@@ -99,15 +100,16 @@ class InstrumentTablePage extends Component {
                             <h4>{this.state.sortingIndicator}</h4>
                             <InstrumentTable
                                 data={this.state.tableData}
+                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
                                 onDetailRequested={this.onDetailViewRequested}
                                 onCertificateRequested={this.onCertificateRequested}
                                 sortData={this.onInstrumentSort}
-                                downloadUrl={this.setState.url}
                             />
                             <GenericPagination
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
                                 numResults={this.state.pagination.resultCount}
+                                resultsPerPage={this.state.pagination.resultsPerPage}
                                 onPageClicked={this.onPaginationClick}
                                 onShowAllToggle={this.onToggleShowAll}
                                 isShown={!this.state.instrumentSearchParams.showAll}

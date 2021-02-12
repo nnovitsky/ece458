@@ -12,11 +12,14 @@ const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Calib
 
 //Props
 let data;   //prop array of data to display
+let countStart; //prop int of the starting number to list for the first data point
 //'onDetailRequested': function passed in prop that will be called on a more details button click
 //'onCertificateRequested': function passed in prop that will be called on certificate button clicked
+//'sortData' handler to call when a header is clicked for sorting
 
 const instrumentTable = (props) => {
     data = props.data;
+    countStart = props.countStart;
     let header = createHeader(props.sortData);
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
@@ -49,7 +52,7 @@ const createHeader = (onSortData) => {
 
 const createBody = (onDetailRequested, onCertificateRequested) => {
     let rows = [];
-    let count = 1;
+    let count = countStart + 1;
     data.forEach(currentData => {
         let rowElements = []
         rowElements.push(

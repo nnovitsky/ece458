@@ -1,0 +1,97 @@
+.background{
+    background-color: rgb(57, 127, 60);
+    padding: 10px;
+}
+
+.mainContent{
+    background-color: white;
+    padding: 20px;
+    margin: 30px;
+}
+
+.col-2 img{
+    max-width: 90px;
+    max-height: 90px;
+    margin: 10px;
+    margin-bottom: 8vh;
+}
+
+/* apply this css to any logo columns that will have buttons
+add 'button-col' to the classname for the div acting as the column
+*/
+.button-col button {
+    padding: 15px;
+    margin: 10px;
+}
+
+/* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 
+be made to be more specific */
+.input-group {
+    padding: 5px;
+}
+
+.filter-button {
+    margin: 6px;
+}
+
+/* popup is a classname that is used for some of the body's of the popups */
+
+form.popup{
+    margin: 0px;
+    border-radius: 10px;
+    padding: 20px;
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: left;
+    display: inline-block;
+    background-color: rgb(147, 196, 127);
+}
+
+form.popup {
+    width: 100%;
+}
+
+form.popup label {
+    line-height: 1px;
+}
+
+form.popup .input-group {
+margin: 0px;
+
+}
+
+form.popup .form-control {
+    margin: 0px;
+}
+
+form.popup input[type=text] {
+    width: 100%;
+    margin: 0px;
+}
+
+/* The Generic popup has alerts, this is where they are formatted */
+
+.popup-alert{
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.popup-alert p {
+    margin: 6px;
+    text-align: center;
+}
+
+/* The generic popup has a button row, this is where that is formatted */
+.popup-button-row {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.popup-button-row button {
+    margin: 5px;
+    padding: 15px;
+}

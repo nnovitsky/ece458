@@ -158,7 +158,7 @@ class ModelTablePage extends Component {
                     this.updateModelTable();
                     this.onAddModelClosed();
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_model']);
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
                     this.setState({
                         addModelPopup: {
                             ...this.state.addModelPopup,

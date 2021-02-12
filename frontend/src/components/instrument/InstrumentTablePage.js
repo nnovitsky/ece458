@@ -98,6 +98,7 @@ class InstrumentTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFilters}
                             />
                             <h4>{this.state.sortingIndicator}</h4>
+                            <p>Click on a table header to sort by the data by that field</p>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}

@@ -42,6 +42,8 @@ def validate_row(current_row):
 
 def check_duplicates(current_row):
 
+
+
     return True, "No Duplicates!"
 
 

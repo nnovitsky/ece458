@@ -29,7 +29,10 @@ class InstrumentList(ListAPIView):
     duration_expression = F('item_model__calibration_frequency') * 86400000000
     duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
     expiration_expression = F('most_recent_calibration') + F('cal_freq')
-    queryset = queryset.annotate(most_recent_calibration=Max('calibrationevent__date')).annotate(
+    queryset = queryset.annotate(most_recent_calibration=Case(
+        When(item_model__calibration_frequency__lte=0, then=max_date),
+        default=Max('calibrationevent__date'),
+        )).annotate(
         cal_freq=duration_wrapped_expression).annotate(
         calibration_expiration_date=Case(When(item_model__calibration_frequency__lte=0, then=max_date),
                                          When(most_recent_calibration__isnull=False, then=expiration_expression),

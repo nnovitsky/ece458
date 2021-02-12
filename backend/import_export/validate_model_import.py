@@ -1,6 +1,4 @@
-import sys
 import csv
-import logging
 import io
 
 from backend.import_export import field_validators
@@ -46,10 +44,8 @@ def validate_row(current_row):
 
 def contains_duplicates():
 
-    print('sheet_models: ', sheet_models)
-    print('set sheet_models: ', set(sheet_models))
     if len(sheet_models) != len(set(sheet_models)):
-        return True, "Duplicate Models contained within the imported sheet."
+        return True, "Duplicate models contained within the imported sheet."
 
     db_models = ItemModel.objects.all()
     for db_model in db_models:

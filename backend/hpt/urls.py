@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/instrument_search/', api_views.InstrumentList.as_view()),
     path('api/calibration_event_search/', api_views.CalibrationEventList.as_view()),
     path('api/export_calibration_event_pdf/<int:pk>/', views.export_calibration_event_pdf),
-    path('api/import_models_csv/', views.import_models_csv)
+    path('api/import_models_csv/', views.import_models_csv),
+    path('api/import_instruments_csv/', views.import_instruments_csv)
 
 ]

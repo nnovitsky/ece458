@@ -1,8 +1,8 @@
-import sys
 import csv
-import logging
+import io
 
 from backend.import_export import field_validators
+from backend.tables.models import Instrument
 
 column_types = [
     'Vendor',
@@ -13,7 +13,7 @@ column_types = [
     'Calibration-Comment',
 ]
 
-TEST_CSV = 'sample_CSVs/_Instruments_test1_pass.csv'
+sheet_instruments = []
 
 
 def validate_row(current_row):
@@ -21,6 +21,8 @@ def validate_row(current_row):
     if len(current_row) != len(column_types):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
+
+    sheet_instruments.append(current_row[0] + " " + current_row[1] + " " + current_row[2])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -43,32 +45,41 @@ def validate_row(current_row):
     return True, "Valid Row"
 
 
-def main():
-    with open(TEST_CSV, 'r') as import_file:
-        reader = csv.reader(import_file)
-        headers = next(reader)
+def contains_duplicates():
 
-        has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
+    print('sheet_instruments: ', sheet_instruments)
+    print('set sheet_instruments: ', set(sheet_instruments))
+    if len(sheet_instruments) != len(set(sheet_instruments)):
+        return True, "Duplicate instruments contained within the imported sheet."
 
-        if not has_valid_columns:
-            logging.error(header_log)
+    db_instruments = Instrument.objects.all()
+    for db_instrument in db_instruments:
+        print("\tdb_instrument: " + str(db_instrument))
+        if str(db_instrument) in sheet_instruments:
+            return True, f"Duplicate instrument ({db_instrument}) already exists in database"
 
-        row_number = 1
-        if has_valid_columns:
-            for row in reader:
-                valid_row, row_info = validate_row(row)
-                if not valid_row:
-                    logging.error(f"Row {row_number}: {row_info}")
-                    sys.exit()
-
-                row_number += 1
-
-            logging.info(f"Successfully parsed {row_number} rows.")
+    return False, "No Duplicates!"
 
 
-        sys.exit()
+def handler(uploaded_file):
+    uploaded_file.seek(0)
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 
+    headers = next(reader)
+    has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
+    if not has_valid_columns:
+        return False, header_log
 
-if __name__ == '__main__':
-    logging.basicConfig(filename='import.log', level=logging.INFO)
-    main()
+    row_number = 1
+    for row in reader:
+        valid_row, row_info = validate_row(row)
+        if not valid_row:
+            return False, f"Row {row_number} malformed input: {row_info}"
+
+        row_number += 1
+
+    duplicate_error, duplicate_info = contains_duplicates()
+    if duplicate_error:
+        return False, f"Duplicate input: " + duplicate_info
+
+    return True, "Correct formatting."

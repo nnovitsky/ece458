@@ -51,6 +51,7 @@ class ModelTablePage extends Component {
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
 
     async componentDidMount() {
@@ -96,11 +97,15 @@ class ModelTablePage extends Component {
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
                             />
+                            <hr />
                             <Pagination
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
-                                onClick={this.onPaginationClick}
-                                isShown={this.state.modelSearchParams.showAll}
+                                numResults={this.state.pagination.resultCount}
+                                onPageClicked={this.onPaginationClick}
+                                onShowAllToggle={this.onToggleShowAll}
+                                isShown={!this.state.modelSearchParams.showAll}
+                                buttonText={(this.state.modelSearchParams.showAll) ? "Limit Results" : "Show All"}
                             />
                         </div>
                     </div>
@@ -211,6 +216,19 @@ class ModelTablePage extends Component {
         })
     }
 
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                modelSearchParams: {
+                    ...this.state.modelSearchParams,
+                    showAll: !prevState.modelSearchParams.showAll
+                }
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
@@ -272,21 +290,6 @@ class ModelTablePage extends Component {
         }, () => {
             this.updateModelTable();
         })
-
-        //     if(urlSortingKey === null) return;
-        //     modelServices.getSortedModels(urlSortingKey)
-        //     .then((res) => {
-        //         if (res.success) {
-        //             this.setState({
-        //                 tableData: res.data
-        //             })
-        //         } else {
-        //             console.log("error")
-        //         }
-        //     }
-        // );
-
-        // }
     }
 }
 

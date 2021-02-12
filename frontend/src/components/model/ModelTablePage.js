@@ -4,6 +4,7 @@ import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
+import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -14,20 +15,26 @@ import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
 
-
-
-
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             redirect: null,
             tableData: [],
-            sortingIndicator: null,
-            filters: {
-                model: '',
-                vendor: '',
-                description: ''
+            pagination: {
+                resultCount: '',
+                numPages: '',
+                currentPageNum: 1,
+            },
+            modelSearchParams: {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: ''
+                },
+                sortingIndicator: '',
+                desiredPage: 1,
+                showAll: false
             },
             addModelPopup: {
                 isShown: false,
@@ -39,10 +46,12 @@ class ModelTablePage extends Component {
         //binding
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
-        this.onGetVendorSearchResults = this.onGetVendorSearchResults.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
 
     async componentDidMount() {
@@ -80,13 +89,23 @@ class ModelTablePage extends Component {
                             <h1>Models</h1>
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.updateModelTable}
+                                onRemoveFilters={this.onRemoveFiltersClicked}
                             />
                             <h4>{this.state.sortingIndicator}</h4>
                             <ModelTable
                                 data={this.state.tableData}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
+                            />
+                            <hr />
+                            <Pagination
+                                currentPageNum={this.state.pagination.currentPageNum}
+                                numPages={this.state.pagination.numPages}
+                                numResults={this.state.pagination.resultCount}
+                                onPageClicked={this.onPaginationClick}
+                                onShowAllToggle={this.onToggleShowAll}
+                                isShown={!this.state.modelSearchParams.showAll}
+                                buttonText={(this.state.modelSearchParams.showAll) ? "Limit Results" : "Show All"}
                             />
                         </div>
                     </div>
@@ -104,22 +123,29 @@ class ModelTablePage extends Component {
     }
 
     async onFilteredSearch(newFilter) {
-        // this.setState({
-        //     ...this.state,
-        //     filters: newFilter
-        // }).then(
-        await modelServices.modelFilterSearch(newFilter).then(
-            (result) => {
-                if (result.success) {
-                    this.setState({
-                        tableData: result.data
-                    })
-                } else {
-                    //TODO: 
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: newFilter
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
+    async onRemoveFiltersClicked() {
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: ''
                 }
             }
-        )
-
+        }, () => {
+            this.updateModelTable();
+        })
     }
 
     async onAddModelSubmit(newModel) {
@@ -139,7 +165,7 @@ class ModelTablePage extends Component {
                 }
 
             }
-        );
+            );
 
     }
 
@@ -151,10 +177,6 @@ class ModelTablePage extends Component {
                 errors: []
             }
         })
-    }
-
-    onGetVendorSearchResults(search) {
-        return [];
     }
 
     onAddModelClicked = () => {
@@ -171,17 +193,62 @@ class ModelTablePage extends Component {
     }
 
     async updateModelTable() {
-        modelServices.getModels().then((result) => {
+        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
             if (result.success) {
-                this.setState({
-                    tableData: result.data
-                })
+                console.log(result.data)
+                this.updateData(result.data)
             } else {
                 console.log("error loading model table data")
             }
 
         }
         )
+    }
+
+    async onPaginationClick(num) {
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                desiredPage: num
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                modelSearchParams: {
+                    ...this.state.modelSearchParams,
+                    showAll: !prevState.modelSearchParams.showAll
+                }
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
+    // method called with the data from a successful api hit for getting the model table,
+    // sorting the data, filtering the data, or pagination
+    updateData(data) {
+        console.log(data);
+        this.setState({
+            tableData: data.data
+        })
+
+        if (!this.state.modelSearchParams.showAll) {
+            this.setState({
+                pagination: {
+                    ...this.state.pagination,
+                    resultCount: data.count,
+                    numPages: data.numpages,
+                    currentPageNum: data.currentpage
+                },
+
+            })
+        }
+
     }
 
     getURLKey = (sortingHeader) => {
@@ -215,19 +282,14 @@ class ModelTablePage extends Component {
     onModelSort = (sortingHeader) => {
 
         var urlSortingKey = this.getURLKey(sortingHeader);
-        if(urlSortingKey === null) return;
-        modelServices.getSortedModels(urlSortingKey)
-        .then((res) => {
-            if (res.success) {
-                this.setState({
-                    tableData: res.data
-                })
-            } else {
-                console.log("error")
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                sortingIndicator: urlSortingKey
             }
-        }
-    );
-
+        }, () => {
+            this.updateModelTable();
+        })
     }
 }
 

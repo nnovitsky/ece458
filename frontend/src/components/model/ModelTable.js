@@ -8,10 +8,12 @@ const keys = ["model_number", "vendor", "description", "comment", "calibration_f
 
 //props
 let data;   //prop of array of model data to display
+let countStart; //prop of int of data count to start at
 //'onDetailRequested': function passed in prop that will be called when detail view is requested, will be passed model pk
-
+//'sortData' event handler to call when header is clicked
 const modelTable = (props) => {
     data = props.data;
+    countStart = props.countStart;
     let header = createHeader(props.sortData);
     let body = createBody(props.onDetailRequested); 
 
@@ -54,7 +56,7 @@ const createHeader = (onSortData) => {
 
 const createBody = (onMoreClicked) => {
     let rows = [];
-    let count = 1;
+    let count = countStart + 1;
     data.forEach(currentData => {
         let rowElements = []
         rowElements.push(

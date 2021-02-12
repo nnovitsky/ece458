@@ -1,12 +1,14 @@
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
-from django.contrib.auth.models import User
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
+from backend.tables import pdf_generator
 
 
 @api_view(['GET'])
@@ -99,6 +101,29 @@ def calibration_event_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         calibration_event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def calibration_event_pdf(request, pk):
+    """
+    Generates a pdf that contains the basic information of the instrument at hand
+    (vendor, model #, description, and serial #) as well as the most recent calibration
+    event (date of latest calibration, expiration date, user, comment)
+    """
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return pdf_generator.handler(instrument)
 
 
 # INSTRUMENTS

@@ -26,7 +26,10 @@ SECRET_KEY = 'n$w5mg7@5cd8d%_a0x+*2-_0n_%71y$$a2&-wt_kbat6huljox'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'vcm-18278.vm.duke.edu',
+    'localhost'
+]
 
 
 # Application definition
@@ -140,6 +143,7 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
        'http://localhost:3000',
+       'http://vcm-18807.vm.duke.edu:3000'
 )
 
 JWT_AUTH = {

@@ -1,12 +1,14 @@
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
-from django.contrib.auth.models import User
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
+from backend.tables import pdf_generator
 
 
 @api_view(['GET'])
@@ -41,7 +43,7 @@ def calibration_event_list(request):
         nextPage = 1
         previousPage = 1
         calibration_events = CalibrationEvent.objects.all()
-        return get_page_response(calibration_events, request, CalibrationEventReadSerializer, "calibration_events", nextPage, previousPage)
+        return get_page_response(calibration_events, request, CalibrationEventReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         # set user to current user
@@ -101,6 +103,29 @@ def calibration_event_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET'])
+def calibration_event_pdf(request, pk):
+    """
+    Generates a pdf that contains the basic information of the instrument at hand
+    (vendor, model #, description, and serial #) as well as the most recent calibration
+    event (date of latest calibration, expiration date, user, comment)
+    """
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return pdf_generator.handler(instrument)
+
+
 # INSTRUMENTS
 @api_view(['GET', 'POST'])
 def instruments_list(request):
@@ -112,7 +137,7 @@ def instruments_list(request):
         nextPage = 1
         previousPage = 1
         instruments = Instrument.objects.all()
-        return get_page_response(instruments, request, ListInstrumentReadSerializer, "instruments", nextPage, previousPage)
+        return get_page_response(instruments, request, ListInstrumentReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not request.user.is_staff:
@@ -145,8 +170,8 @@ def instruments_detail(request, pk):
         if not request.user.is_staff:
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-        if 'item_model' not in request.data:
-            request.data['item_model'] = instrument.item_model.pk
+        # disable changing instrument's model
+        request.data['item_model'] = instrument.item_model.pk
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -173,7 +198,7 @@ def models_list(request):
         nextPage = 1
         previousPage = 1
         models = ItemModel.objects.all()
-        return get_page_response(models, request, ItemModelSerializer, "models", nextPage, previousPage)
+        return get_page_response(models, request, ItemModelSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not request.user.is_staff:
@@ -258,7 +283,7 @@ def user_list(request):
     nextPage = 1
     previousPage = 1
     users = User.objects.all()
-    return get_page_response(users, request, UserSerializer, "users", nextPage, previousPage)
+    return get_page_response(users, request, UserSerializer, nextPage, previousPage)
 
 
 class UserCreate(APIView):
@@ -269,7 +294,9 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        # TODO: add permissions
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

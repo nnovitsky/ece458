@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'vcm-18278.vm.duke.edu',
-    'localhost'
+    'localhost',
+    '127.0.0.1'
 ]
 
 

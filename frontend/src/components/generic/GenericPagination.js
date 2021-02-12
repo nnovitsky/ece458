@@ -17,7 +17,6 @@ import Row from 'react-bootstrap/Row';
 let lowerBound = 0;
 let upperBound = 0;
 const genericPagination = (props) => {
-    console.log(props)
     setBounds(props.currentPageNum, props.numResults);
     return (
         <Row className="pagination">
@@ -26,7 +25,7 @@ const genericPagination = (props) => {
                 {/* <Pagination.First /> */}
                 <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === "1"} />
                 <Pagination.Item>{props.currentPageNum}</Pagination.Item>
-                <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={props.currentPageNum === props.numPages} />
+                <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={parseInt(props.currentPageNum) === props.numPages} />
                 {/* <Pagination.Last /> */}
             </Pagination>
             <p>{(props.isShown) ? `${lowerBound} - ${upperBound} of ${props.numResults}` : `1-${props.numResults} of ${props.numResults}`}</p>

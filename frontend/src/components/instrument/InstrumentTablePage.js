@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
+import GenericPagination from "../generic/GenericPagination";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
@@ -21,7 +22,6 @@ class InstrumentTablePage extends Component {
         super(props);
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
-
             tableData: [],     //displayed data
             url: '',
             instrumentSearchParams: {
@@ -32,7 +32,7 @@ class InstrumentTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: 1,
+                desiredPage: '1',
                 showAll: false
             },
             pagination: {
@@ -102,6 +102,15 @@ class InstrumentTablePage extends Component {
                                 sortData={this.onInstrumentSort}
                                 downloadUrl={this.setState.url}
                             />
+                            <GenericPagination
+                                currentPageNum={this.state.pagination.currentPageNum}
+                                numPages={this.state.pagination.numPages}
+                                numResults={this.state.pagination.resultCount}
+                                onPageClicked={this.onPaginationClick}
+                                onShowAllToggle={this.onToggleShowAll}
+                                isShown={!this.state.instrumentSearchParams.showAll}
+                                buttonText={(this.state.instrumentSearchParams.showAll) ? "Limit Results" : "Show All"}
+                            />
                         </div>
 
                     </div>
@@ -144,13 +153,12 @@ class InstrumentTablePage extends Component {
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
-        .then(res => {
-            if(res.success)
-            {
-                window.open(res.url, '_blank')
-                URL.revokeObjectURL(res.url)
-            }
-        })
+            .then(res => {
+                if (res.success) {
+                    window.open(res.url, '_blank')
+                    URL.revokeObjectURL(res.url)
+                }
+            })
     }
 
     async onFilteredSearch(newFilter) {
@@ -230,7 +238,31 @@ class InstrumentTablePage extends Component {
             }
         })
     }
-    
+
+    async onPaginationClick(num) {
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                desiredPage: num
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                instrumentSearchParams: {
+                    ...this.state.instrumentSearchParams,
+                    showAll: !prevState.instrumentSearchParams.showAll
+                }
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
     getURLKey = (sortingHeader) => {
         let sortingKey = null
         this.setState({
@@ -251,11 +283,11 @@ class InstrumentTablePage extends Component {
                 sortingKey = "description_lower"
                 return sortingKey;
             case "Latest Calibration":
-                    sortingKey = "-most_recent_calibration"
-                    return sortingKey; 
+                sortingKey = "-most_recent_calibration"
+                return sortingKey;
             case "Calibration Expiration":
                 sortingKey = "calibration_expiration_date"
-                return sortingKey; 
+                return sortingKey;
             default:
                 this.setState({
                     sortingIndicator: ''

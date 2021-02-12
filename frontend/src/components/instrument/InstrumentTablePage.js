@@ -55,6 +55,8 @@ class InstrumentTablePage extends Component {
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onInstrumentSort = this.onInstrumentSort.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -246,7 +248,7 @@ class InstrumentTablePage extends Component {
                 desiredPage: num
             }
         }, () => {
-            this.updateModelTable();
+                this.updateTable();
         })
     }
 
@@ -259,7 +261,7 @@ class InstrumentTablePage extends Component {
                 }
             }
         }, () => {
-            this.updateModelTable();
+                this.updateTable();
         })
     }
 

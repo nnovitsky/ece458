@@ -93,7 +93,7 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
                             <h4>{this.state.sortingIndicator}</h4>
-                            <p>Click on a table header to sort by the data by that field</p>
+                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <ModelTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
@@ -275,15 +275,20 @@ class ModelTablePage extends Component {
                 return sortingKey;
             default:
                 this.setState({
-                    sortingIndicator: null
+                    sortingIndicator: ''
                 })
-                return null;
+                return '';
         }
     }
 
     onModelSort = (sortingHeader) => {
-
         var urlSortingKey = this.getURLKey(sortingHeader);
+        //this handles ascending/descending, it toggles between
+        if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
+            if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
+                urlSortingKey = `-${urlSortingKey}`;
+            }
+        }
         this.setState({
             modelSearchParams: {
                 ...this.state.modelSearchParams,

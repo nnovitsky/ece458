@@ -1,7 +1,11 @@
 {
-  "add_instrument": {
+  "add_edit_instrument": {
     "serial_number": {
-      "This field may not be blank.": "A serial number is a required field."
+      "This field may not be blank.": "A serial number is a required field.",
+      "Ensure this field has no more than 40 characters.": "Please enter a Serial Number less than 40 characters"
+    },
+    "comment": {
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
     },
     "item_model": {
       "This field may not be null.": "Both the vendor and the model number are required fields"
@@ -10,14 +14,12 @@
       "The fields item_model, serial_number must make a unique set.": "An instrument already exists with this model number and serial number pair. Serial numbers must be unique."
     }
   },
-  "edit_instrument": {
-    "serial_number": {
-      "This field may not be blank.": "A serial number is a required field."
-    }
-  },
   "add_calibration": {
     "non_field_errors": {
       "Cannot set future date.": "Please select a date on or earlier than today."
+    },
+    "comment": {
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
     }
   }
 }

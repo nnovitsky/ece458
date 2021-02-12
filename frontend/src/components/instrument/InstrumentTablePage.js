@@ -97,7 +97,7 @@ class InstrumentTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
                             />
-                            <h4>{this.state.sortingIndicator}</h4>
+                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
@@ -127,7 +127,6 @@ class InstrumentTablePage extends Component {
     async updateTable() {
         let params = this.state.instrumentSearchParams;
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
-            console.log(result.data)
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -219,7 +218,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_instrument']);
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
                     console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {
@@ -302,7 +301,14 @@ class InstrumentTablePage extends Component {
 
     onInstrumentSort = (sortingHeader) => {
 
-        const urlSortingKey = this.getURLKey(sortingHeader);
+        let urlSortingKey = this.getURLKey(sortingHeader);
+
+        //this handles ascending/descending, it toggles between
+        if (this.state.instrumentSearchParams.sortingIndicator.includes(urlSortingKey)) {
+            if (this.state.instrumentSearchParams.sortingIndicator.charAt(0) !== '-') {
+                urlSortingKey = `-${urlSortingKey}`;
+            }
+        }
         this.setState({
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,

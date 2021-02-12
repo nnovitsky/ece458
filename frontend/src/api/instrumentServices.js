@@ -274,13 +274,13 @@ export default class InstrumentServices {
                     return res.json().then(json => {
                         result.success = false;
                         result.errors = json;
-                        console.log(result.errors)
                         return result;
                     })
                 }
             })
     }
 
+    // safely handled modified/expired tokens
     async getCalibrationPDF(pk) {
         const token = localStorage.getItem('token');
 
@@ -296,20 +296,33 @@ export default class InstrumentServices {
                 Authorization: `JWT ${token}`
             }
         })
-            .then(response => {
-                if (response.ok) {
-                    result.success = true
+            .then(res => {
+                if (res.ok) {
+                    return res.blob().then(blob => {
+                        return URL.createObjectURL(blob)
+                    })
+                        .then(url => {
+                            result.url = url;
+                            return result;
+                        })
                 } else {
-                    result.success = false
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
                 }
-                return response.blob()
             })
-            .then(blob => URL.createObjectURL(blob))
-            .then(url => {
-                result.url = url;
-                return result;
-            });
-
     }
 
 

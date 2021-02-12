@@ -9,6 +9,7 @@ from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 from backend.tables import pdf_generator
+from backend.import_export import validate_model_import, validate_instrument_import
 
 
 @api_view(['GET'])
@@ -271,6 +272,11 @@ def import_models_csv(request):
     if uploaded_file.content_type != 'text/csv':
         return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
                         status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    correct_format, format_response = validate_model_import.handler(uploaded_file)
+    if not correct_format:
+        return Response({"Upload error": [f"{format_response}"]},
+                        status=status.HTTP_412_PRECONDITION_FAILED)
 
     return Response(status=status.HTTP_200_OK)
 

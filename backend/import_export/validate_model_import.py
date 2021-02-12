@@ -12,8 +12,6 @@ column_types = [
     'Calibration-Frequency',
 ]
 
-TEST_CSV = 'sample_CSVs/_Models_test1_pass.csv'
-
 
 def validate_row(current_row):
 
@@ -41,14 +39,11 @@ def validate_row(current_row):
 
 
 def check_duplicates(current_row):
-
-
-
     return True, "No Duplicates!"
 
 
-def main():
-    with open(TEST_CSV, 'r') as import_file:
+def handler(uploaded_file):
+    with open(uploaded_file, 'r') as import_file:
         reader = csv.reader(import_file)
         headers = next(reader)
 
@@ -56,23 +51,17 @@ def main():
             field_validators.validate_column_headers(headers, column_types)
 
         if not has_valid_columns:
-            logging.error(header_log)
+            return False, header_log
 
         row_number = 1
         if has_valid_columns:
             for row in reader:
                 valid_row, row_info = validate_row(row)
                 if not valid_row:
-                    logging.error(f"Row {row_number}: {row_info}")
-                    sys.exit()
+                    return False, row_info
 
                 row_number += 1
-            logging.info(f"Successfully parsed {row_number} rows.")
+
+    return True, "Correct formatting."
 
 
-        sys.exit()
-
-
-if __name__ == '__main__':
-    logging.basicConfig(filename='import.log', level=logging.INFO)
-    main()

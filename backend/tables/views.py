@@ -103,29 +103,6 @@ def calibration_event_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-def calibration_event_pdf(request, pk):
-    """
-    Generates a pdf that contains the basic information of the instrument at hand
-    (vendor, model #, description, and serial #) as well as the most recent calibration
-    event (date of latest calibration, expiration date, user, comment)
-    """
-    try:
-        instrument = Instrument.objects.get(pk=pk)
-    except Instrument.DoesNotExist:
-        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
-
-    if instrument.item_model.calibration_frequency <= 0:
-        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer = ListInstrumentReadSerializer(instrument)
-    if len(serializer.data['calibration_event']) == 0:
-        return Response({"description": ["Instrument has no associated calibration events"]},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    return pdf_generator.handler(instrument)
-
-
 # INSTRUMENTS
 @api_view(['GET', 'POST'])
 def instruments_list(request):
@@ -249,6 +226,43 @@ def models_detail(request, pk):
         else:
             model.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# IMPORT/EXPORT
+@api_view(['GET'])
+def export_calibration_event_pdf(request, pk):
+    """
+    Generates a pdf that contains the basic information of the instrument at hand
+    (vendor, model #, description, and serial #) as well as the most recent calibration
+    event (date of latest calibration, expiration date, user, comment)
+    """
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return pdf_generator.handler(instrument)
+
+
+@api_view(['PUT'])
+def import_models_csv(request):
+    """
+    Imports a .csv file that contains model information based on requirements
+    and uploads the data to the db.
+    """
+    if not request.user.is_staff:
+        return Response({"permission_error": ["User does not have permission."]},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 
 # USERS

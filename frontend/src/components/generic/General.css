@@ -95,3 +95,24 @@ form.popup input[type=text] {
     margin: 5px;
     padding: 15px;
 }
+
+/* pagination */
+.pagination.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+} 
+
+.pagination button {
+    width: 150px;
+    padding: 6px;
+    margin: 5px;
+}
+
+.pagination p {
+    margin: 5px 15px 5px 15px;
+}
+
+.pagination ul {
+    margin: 5px 20px 5px 20px;
+}

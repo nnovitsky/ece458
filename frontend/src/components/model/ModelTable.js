@@ -16,7 +16,7 @@ const modelTable = (props) => {
     let body = createBody(props.onDetailRequested); 
 
     return (
-        <div className="model-table">
+        <div className="data-table">
 
             <Table striped bordered>
             <thead>

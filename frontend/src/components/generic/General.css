@@ -106,7 +106,7 @@ form.popup input[type=text] {
   height: auto;
 }
 
-/* pagination */
+/* generic pagination element styling */
 .pagination.row {
     display: flex;
     flex-direction: row;
@@ -125,4 +125,26 @@ form.popup input[type=text] {
 
 .pagination ul {
     margin: 5px 20px 5px 20px;
+}
+
+/* model/instrument table formatting */
+.data-table {
+    overflow-y: scroll;
+
+    max-height: 50vh;
+    
+}
+
+.data-table::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.data-table::-webkit-scrollbar:vertical {
+    width: 15px;
+}
+
+.data-table::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, .5);
 }

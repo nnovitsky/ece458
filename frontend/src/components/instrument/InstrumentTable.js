@@ -24,13 +24,17 @@ const instrumentTable = (props) => {
     let body = createBody(props.onDetailRequested, props.onCertificateRequested);
 
     return (
-        <Table striped bordered hover>
-            <thead>
-                {header}
-            </thead>
-            {body}
+        <div className="data-table">
+            <Table striped bordered hover>
+                <thead>
+                    {header}
+                </thead>
+                {body}
 
-        </Table>)
+            </Table>)
+        </div>
+    )
+
 }
 
 const createHeader = (onSortData) => {

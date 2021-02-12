@@ -15,9 +15,6 @@ import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
 
-
-
-
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
@@ -25,9 +22,9 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             pagination: {
-                next: '',
-                previous: '',
-                numPages: ''
+                resultCount: '',
+                numPages: '',
+                currentPageNum: 1,
             },
             modelSearchParams: {
                 filters: {
@@ -36,7 +33,8 @@ class ModelTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                showAll: true
+                desiredPage: 1,
+                showAll: false
             },
             addModelPopup: {
                 isShown: false,
@@ -48,6 +46,7 @@ class ModelTablePage extends Component {
         //binding
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
@@ -89,7 +88,7 @@ class ModelTablePage extends Component {
                             <h1>Models</h1>
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.updateModelTable}
+                                onRemoveFilters={this.onRemoveFiltersClicked}
                             />
                             <h4>{this.state.sortingIndicator}</h4>
                             <ModelTable
@@ -98,9 +97,10 @@ class ModelTablePage extends Component {
                                 sortData={this.onModelSort}
                             />
                             <Pagination
-                                currentPageNum={1}
+                                currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
                                 onClick={this.onPaginationClick}
+                                isShown={this.state.modelSearchParams.showAll}
                             />
                         </div>
                     </div>
@@ -118,20 +118,29 @@ class ModelTablePage extends Component {
     }
 
     async onFilteredSearch(newFilter) {
-        // this.setState({
-        //     ...this.state,
-        //     filters: newFilter
-        // }).then(
-        await modelServices.modelFilterSearch(newFilter).then(
-            (result) => {
-                if (result.success) {
-                    this.updateData(result.data);
-                } else {
-                    //TODO: 
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: newFilter
+            }
+        }, () => {
+            this.updateModelTable();
+        })
+    }
+
+    async onRemoveFiltersClicked() {
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: ''
                 }
             }
-        )
-
+        }, () => {
+            this.updateModelTable();
+        })
     }
 
     async onAddModelSubmit(newModel) {
@@ -151,7 +160,7 @@ class ModelTablePage extends Component {
                 }
 
             }
-        );
+            );
 
     }
 
@@ -179,7 +188,7 @@ class ModelTablePage extends Component {
     }
 
     async updateModelTable() {
-        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll).then((result) => {
+        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
             if (result.success) {
                 console.log(result.data)
                 this.updateData(result.data)
@@ -192,25 +201,36 @@ class ModelTablePage extends Component {
     }
 
     async onPaginationClick(num) {
-        await modelServices.getNewModelPage(this.state.pagination.next).then(result => {
-            if (result.success) {
-                this.updateData(result.data)
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                desiredPage: num
             }
+        }, () => {
+            this.updateModelTable();
         })
     }
 
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
+        console.log(data);
         this.setState({
-            pagination: {
-                ...this.state.pagination,
-                next: data.nextlink,
-                previous: data.prevlink,
-                numPages: data.numpages
-            },
             tableData: data.data
         })
+
+        if (!this.state.modelSearchParams.showAll) {
+            this.setState({
+                pagination: {
+                    ...this.state.pagination,
+                    resultCount: data.count,
+                    numPages: data.numpages,
+                    currentPageNum: data.currentpage
+                },
+
+            })
+        }
+
     }
 
     getURLKey = (sortingHeader) => {
@@ -244,19 +264,29 @@ class ModelTablePage extends Component {
     onModelSort = (sortingHeader) => {
 
         var urlSortingKey = this.getURLKey(sortingHeader);
-        if(urlSortingKey === null) return;
-        modelServices.getSortedModels(urlSortingKey)
-        .then((res) => {
-            if (res.success) {
-                this.setState({
-                    tableData: res.data
-                })
-            } else {
-                console.log("error")
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                sortingIndicator: urlSortingKey
             }
-        }
-    );
+        }, () => {
+            this.updateModelTable();
+        })
 
+        //     if(urlSortingKey === null) return;
+        //     modelServices.getSortedModels(urlSortingKey)
+        //     .then((res) => {
+        //         if (res.success) {
+        //             this.setState({
+        //                 tableData: res.data
+        //             })
+        //         } else {
+        //             console.log("error")
+        //         }
+        //     }
+        // );
+
+        // }
     }
 }
 

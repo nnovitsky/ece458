@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Pagination from 'react-bootstrap/Pagination';
+import Row from 'react-bootstrap/Row';
 
 //props
 // 'currentPageNum'
@@ -9,13 +10,17 @@ import Pagination from 'react-bootstrap/Pagination';
 const genericPagination = (props) => {
     console.log(props)
     return (
-        <Pagination>
-            {/* <Pagination.First /> */}
-            <Pagination.Prev disabled={props.currentPageNum === 1} />
-            <Pagination.Item>{props.currentPageNum}</Pagination.Item>
-            <Pagination.Next onClick={(e) => props.onClick(props.currentPageNum + 1)} disabled={props.currentPageNum === props.numPages} />
-            {/* <Pagination.Last /> */}
-        </Pagination>
+        <Row>
+            <p>{`Showing Page ${props.currentPageNum} of ${props.numPages}`}</p>
+            <Pagination>
+                {/* <Pagination.First /> */}
+                <Pagination.Prev disabled={props.currentPageNum === 1} />
+                <Pagination.Item>{props.currentPageNum}</Pagination.Item>
+                <Pagination.Next onClick={(e) => props.onClick(props.currentPageNum + 1)} disabled={props.currentPageNum === props.numPages} />
+                {/* <Pagination.Last /> */}
+            </Pagination>
+        </Row>
+
     )
 }
 

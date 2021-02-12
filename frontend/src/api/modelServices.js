@@ -1,6 +1,7 @@
 import modelData from './modelData.json';
 
-const API_URL = 'http://localhost:8000';
+//const API_URL = 'http://localhost:8000';
+const API_URL = 'http://vcm-18278.vm.duke.edu:8000';
 
 export default class ModelServices {
 

@@ -131,7 +131,10 @@ form.popup input[type=text] {
 .data-table {
     overflow-y: scroll;
     max-height: 50vh;
-    
+}
+
+.data-table th {
+    cursor: pointer;
 }
 
 .data-table::-webkit-scrollbar {

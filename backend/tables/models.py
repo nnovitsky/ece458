@@ -18,8 +18,7 @@ class ItemModel(models.Model):
     model_number = models.CharField(max_length=MODEL_NUM_MAX_LENGTH)
     description = models.CharField(max_length=DESC_MAX_LENGTH)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
-    calibration_frequency = models.IntegerField(default=0, validators=[MinValueValidator(0)],
-                                                max_length=CALIBRATION_FREQUENCY_MAX_LENGTH)
+    calibration_frequency = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return self.vendor + " " + self.model_number

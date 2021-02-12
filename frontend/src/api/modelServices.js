@@ -117,7 +117,6 @@ export default class ModelServices {
     // appropriate error handling if the token gets bad
     async addModel(vendor, modelNumber, description, comment, calFrequency) {
         const token = localStorage.getItem('token');
-
         let data = {
             vendor: vendor,
             model_number: modelNumber,

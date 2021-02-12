@@ -39,7 +39,10 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 errors: [],
             },
-            isEditInstrumentShown: false,
+            editInstrumentPopup: {
+                isShown: false,
+                errors: []
+            },
             isDeleteShown: false,
             currentUser: ''
         }
@@ -66,9 +69,11 @@ class InstrumentDetailView extends Component {
             <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
         </div>
     ) {
-        let addCalibrationPopup = this.makeAddCalibrationPopup();
-        let editInstrumentPopup = this.makeEditInstrumentPopup();
-        let deleteInstrumentPopup = this.makeDeletePopup();
+
+
+        let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
+        let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
+        let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
         let calibrationCol = (
             <Col xs={7}>
@@ -161,6 +166,9 @@ class InstrumentDetailView extends Component {
 
         return (
             <Table bordered>
+                <thead className="text-center">
+                    <th colSpan={2}>Instrument Information</th>
+                </thead>
                 <tbody>
                     <tr>
                         <td><strong>Serial Number</strong></td>
@@ -203,10 +211,11 @@ class InstrumentDetailView extends Component {
         }
         return (
             <EditInstrumentPopop
-                isShown={this.state.isEditInstrumentShown}
+                isShown={this.state.editInstrumentPopup.isShown}
                 onSubmit={this.onEditInstrumentSubmit}
                 onClose={this.onEditInstrumentClosed}
                 currentInstrument={currentInstrument}
+                errors={this.state.editInstrumentPopup.errors}
             />
         )
     }
@@ -269,9 +278,7 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
-        console.log(this.state.instrument_info.calibration_history)
         return (
-
             <GenericTable
                 data={this.state.instrument_info.calibration_history}
                 keys={['$.date', '$.comment', '$.user.first_name', '$.user.last_name', '$.user.username']}
@@ -292,25 +299,40 @@ class InstrumentDetailView extends Component {
 
     onEditInstrumentClicked() {
         this.setState({
-            isEditInstrumentShown: true,
+            editInstrumentPopup: {
+                ...this.state.editInstrumentPopup,
+                isShown: true
+            }
         })
-
     }
 
     async onEditInstrumentSubmit(newInstrument) {
         console.log('Submitted')
         console.log(newInstrument)
-        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
-            (result) => {
-                this.getInstrumentInfo();
-            }
-        )
-        this.onEditInstrumentClosed();
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment)
+            .then((result) => {
+                if (result.success) {
+                    this.getInstrumentInfo();
+                    this.onEditInstrumentClosed();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["edit_instrument"]);
+                    this.setState({
+                        editInstrumentPopup: {
+                            ...this.state.editInstrumentPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+            });
     }
 
     onEditInstrumentClosed() {
         this.setState({
-            isEditInstrumentShown: false,
+            editInstrumentPopup: {
+                ...this.state.editInstrumentPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 

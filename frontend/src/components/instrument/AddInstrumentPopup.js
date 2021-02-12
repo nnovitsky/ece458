@@ -86,6 +86,9 @@ class AddInstrumentPopup extends Component {
     }
 
     render() {
+        if (this.state.vendorsArr.length === 0) {
+            this.getVendorsArr();
+        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";

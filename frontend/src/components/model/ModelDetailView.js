@@ -56,7 +56,6 @@ class ModelDetailView extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
-        this.onVendorSearch = this.onVendorSearch.bind(this);
     }
 
     async componentDidMount() {
@@ -65,9 +64,9 @@ class ModelDetailView extends React.Component {
 
     render(
         adminButtons = <div>
-                        <Button onClick={this.onEditClicked}>Edit Model</Button>
-                        <Button onClick={this.onDeleteClicked}>Delete Model</Button>
-                    </div>
+            <Button onClick={this.onEditClicked}>Edit Model</Button>
+            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+        </div>
     ) {
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
@@ -82,24 +81,24 @@ class ModelDetailView extends React.Component {
             <div className="background">
                 <div className="row mainContent">
                         <div className="col-2 text-center button-col">
-                        <img src={logo} alt="Logo" />
+                            <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                    </div>
-                    <div className="col-10">
-                        <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
-                        <Row>
-                            <Col>{this.makeDetailsTable()}</Col>
-                            <Col xs={6}>
-                                {this.makeInstrumentsTable()}
-                            </Col>
-                        </Row>
+                        </div>
+                        <div className="col-10">
+                            <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
+                            <Row>
+                                <Col>{this.makeDetailsTable()}</Col>
+                                <Col xs={6}>
+                                    {this.makeInstrumentsTable()}
+                                </Col>
+                            </Row>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div >
         );
     }
-    
+
     makeDeletePopup() {
         let body = (
             <p>Are you sure you want to delete Model: {this.state.model_info.model_number}?</p>
@@ -127,6 +126,17 @@ class ModelDetailView extends React.Component {
                 onClose={this.onEditClose}
                 currentModel={this.state.model_info}
                 errors={this.state.editPopup.errors}
+            />
+        )
+    }
+
+    makeEditPopup() {
+        return (
+            <EditModelPopup
+                isShown={this.state.isEditShown}
+                onSubmit={this.onEditSubmit}
+                onClose={this.onEditClose}
+                currentModel={this.state.model_info}
             />
         )
     }
@@ -294,10 +304,6 @@ class ModelDetailView extends React.Component {
                 })
             }
         })
-    }
-
-    onVendorSearch(search) {
-        return ([])
     }
 
     async updateInfo() {

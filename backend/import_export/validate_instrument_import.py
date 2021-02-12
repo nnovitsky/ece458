@@ -74,7 +74,6 @@ def handler(uploaded_file):
             return False, f"Row {row_number} malformed input: {row_info}"
 
         row_number += 1
-        print("^^ row " + str(row_number))
 
     duplicate_error, duplicate_info = contains_duplicates()
     if duplicate_error:

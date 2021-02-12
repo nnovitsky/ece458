@@ -33,6 +33,7 @@ class InstrumentDetailView extends Component {
                 serial_number: '',
                 comment: '',
                 calibration_frequency: '',
+                calibration_expiration: '',
                 calibration_history: [],
             },
             addCalPopup: {
@@ -63,14 +64,12 @@ class InstrumentDetailView extends Component {
     }
 
     render(
-
+        
         adminButtons = <div>
             <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
             <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
         </div>
     ) {
-
-
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
@@ -129,6 +128,7 @@ class InstrumentDetailView extends Component {
                             comment: data.comment,
                             calibration_frequency: data.item_model.calibration_frequency,
                             calibration_history: data.calibration_events,
+                            calibration_expiration: data.item_model.calibration_expiration
 
                         }
                     })
@@ -146,7 +146,7 @@ class InstrumentDetailView extends Component {
             <>
                 <tr>
                     <td><strong>Next Calibration</strong></td>
-                    <td>{'FIGURE THIS OUT'}</td>
+                    <td>WAITING ON THIS</td>
                 </tr>
                 <tr>
                     <td><strong>Calibration Frequency</strong></td>

@@ -127,7 +127,6 @@ class InstrumentTablePage extends Component {
     async updateTable() {
         let params = this.state.instrumentSearchParams;
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
-            console.log(result.data)
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,

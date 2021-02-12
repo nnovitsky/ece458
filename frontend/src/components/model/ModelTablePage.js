@@ -198,7 +198,6 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
             if (result.success) {
-                console.log(result.data)
                 this.updateData(result.data)
             } else {
                 console.log("error loading model table data")
@@ -235,7 +234,6 @@ class ModelTablePage extends Component {
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
-        console.log(data);
         this.setState({
             tableData: data.data
         })

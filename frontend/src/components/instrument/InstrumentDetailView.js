@@ -278,11 +278,22 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalibrationTable() {
+        let formattedDataArr = [];
+        let data = this.state.instrument_info.calibration_history;
+        data.forEach((current) => {
+            let formattedData = {
+                date: current.date,
+                comment: current.comment,
+                name: `${current.user.first_name} ${current.user.last_name}`,
+                username: current.user.username
+            }
+            formattedDataArr.push(formattedData);
+        })
         return (
             <GenericTable
-                data={this.state.instrument_info.calibration_history}
-                keys={['$.date', '$.comment', '$.user.first_name', '$.user.last_name', '$.user.username']}
-                headers={["Date", "Comment", "First Name", 'Last Name', "Username"]}
+                data={formattedDataArr}
+                keys={['$.date', '$.comment', '$.name', '$.username']}
+                headers={["Date", "Comment", "Name", "Username"]}
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"

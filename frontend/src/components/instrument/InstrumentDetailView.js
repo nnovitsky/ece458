@@ -326,7 +326,7 @@ class InstrumentDetailView extends Component {
                     this.getInstrumentInfo();
                     this.onEditInstrumentClosed();
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["edit_instrument"]);
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_instrument"]);
                     this.setState({
                         editInstrumentPopup: {
                             ...this.state.editInstrumentPopup,

@@ -219,7 +219,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_instrument']);
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
                     console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {

@@ -13,7 +13,7 @@
       "Ensure this field has no more than 100 characters.": "Please enter a description less than 100 characters"
     },
     "comment": {
-      "Ensure this field has no more than 2000 characters.": "Please enter a comment that is less than 2000 characters"
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
     },
     "calibration_frequency": {
       "A valid integer is required.": "Please enter a number for the Calibration Frequency"

@@ -40,6 +40,11 @@ def validate_row(current_row):
     return True, "Valid Row"
 
 
+def check_duplicates(current_row):
+
+    return True, "No Duplicates!"
+
+
 def main():
     with open(TEST_CSV, 'r') as import_file:
         reader = csv.reader(import_file)

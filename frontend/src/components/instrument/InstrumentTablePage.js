@@ -302,7 +302,14 @@ class InstrumentTablePage extends Component {
 
     onInstrumentSort = (sortingHeader) => {
 
-        const urlSortingKey = this.getURLKey(sortingHeader);
+        let urlSortingKey = this.getURLKey(sortingHeader);
+
+        //this handles ascending/descending, it toggles between
+        if (this.state.instrumentSearchParams.sortingIndicator.includes(urlSortingKey)) {
+            if (this.state.instrumentSearchParams.sortingIndicator.charAt(0) !== '-') {
+                urlSortingKey = `-${urlSortingKey}`;
+            }
+        }
         this.setState({
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,

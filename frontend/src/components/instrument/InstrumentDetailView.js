@@ -55,6 +55,7 @@ class InstrumentDetailView extends Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.onCertificateRequested = this.onCertificateRequested.bind(this);
     }
 
     async componentDidMount() {
@@ -95,7 +96,7 @@ class InstrumentDetailView extends Component {
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                             <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
-                            <Button>Download Certificate</Button>
+                            <Button onClick={this.onCertificateRequested}>Download Certificate</Button>
                         </div>
                         <div className="col-10">
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
@@ -355,6 +356,17 @@ class InstrumentDetailView extends Component {
                 redirect: '/instruments/'
             })
         });
+    }
+
+    async onCertificateRequested(e) {
+        instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
+        .then(res => {
+            if(res.success)
+            {
+                window.open(res.url, '_blank')
+                URL.revokeObjectURL(res.url)
+            }
+        })
     }
 }
 

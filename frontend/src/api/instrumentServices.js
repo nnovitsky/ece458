@@ -355,5 +355,38 @@ export default class InstrumentServices {
                 }
             })
     }
+
+    async getCalibrationPDF(pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            url: [],
+        }
+
+        const url = `${API_URL}/api/export_calibration_event_pdf/${pk}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    result.success = true
+                } else {
+                    result.success = false
+                }
+                return response.blob()
+            })
+            .then(blob => URL.createObjectURL(blob))
+            .then(url => {
+                result.url = url;
+                return result;
+            });
+
+    }
+
+
 }
 

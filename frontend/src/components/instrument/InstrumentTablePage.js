@@ -23,6 +23,7 @@ class InstrumentTablePage extends Component {
             redirect: null,   //this will be a url if a redirect is necessary
             sortingIndicator: null,
             tableData: [],     //displayed data
+            url: '',
             filters: {
                 model: '',
                 vendor: '',
@@ -88,6 +89,7 @@ class InstrumentTablePage extends Component {
                                 onDetailRequested={this.onDetailViewRequested}
                                 onCertificateRequested={this.onCertificateRequested}
                                 sortData={this.onInstrumentSort}
+                                downloadUrl={this.setState.url}
                             />
                         </div>
 
@@ -112,8 +114,6 @@ class InstrumentTablePage extends Component {
     }
 
 
-
-
     onDetailViewRequested(e) {
         this.setState({
             redirect: `/instruments/${e.target.value}`
@@ -121,7 +121,14 @@ class InstrumentTablePage extends Component {
     }
 
     onCertificateRequested(e) {
-        console.log(`Certificate requested for instrument: ${e.target.value}`);
+        instrumentServices.getCalibrationPDF(e.target.value)
+        .then(res => {
+            if(res.success)
+            {
+                window.open(res.url, '_blank')
+                URL.revokeObjectURL(res.url)
+            }
+        })
     }
 
     async onFilteredSearch(newFilter) {

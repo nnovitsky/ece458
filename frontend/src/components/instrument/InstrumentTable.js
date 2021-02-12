@@ -31,7 +31,7 @@ const instrumentTable = (props) => {
                 </thead>
                 {body}
 
-            </Table>)
+            </Table>
         </div>
     )
 

@@ -8,7 +8,7 @@ import GoodIcon from "../../assets/CalibrationIcons/Good.png";
 import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
 
 const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Callibration", "Callibration Expiration", "Status", "More", "Callibration Certificate"];
+const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Calibration", "Calibration Expiration", "Status", "More", "Calibration Certificate"];
 
 //Props
 let data;   //prop array of data to display

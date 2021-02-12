@@ -6,12 +6,14 @@ from backend.import_export import field_validators
 
 column_types = [
     'Vendor',
-    'Model Number',
-    'Serial Number',
+    'Model-Number',
+    'Serial-Number',
     'Comment',
+    'Calibration-Date',
+    'Calibration-Comment',
 ]
 
-TEST_CSV = 'sample_CSVs/_Instruments_test3_fail.csv'
+TEST_CSV = 'sample_CSVs/_Instruments_test1_pass.csv'
 
 
 def validate_row(current_row):
@@ -24,11 +26,15 @@ def validate_row(current_row):
 
         if column_type == 'Vendor':
             valid_cell, info = field_validators.is_valid_vendor(item)
-        elif column_type == 'Model Number':
+        elif column_type == 'Model-Number':
             valid_cell, info = field_validators.is_valid_model_num(item)
-        elif column_type == 'Serial Number':
+        elif column_type == 'Serial-Number':
             valid_cell, info = field_validators.is_valid_serial_num(item)
         elif column_type == 'Comment':
+            valid_cell, info = field_validators.is_valid_comment(item)
+        elif column_type == 'Calibration-Date':
+            valid_cell, info = field_validators.is_valid_calibration_date(item)
+        elif column_type == 'Calibration-Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
 
         if not valid_cell:

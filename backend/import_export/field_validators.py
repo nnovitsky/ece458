@@ -3,11 +3,11 @@ import datetime
 VENDOR_MAX_LENGTH = 30
 MODEL_NUM_MAX_LENGTH = 40
 DESC_MAX_LENGTH = 100
-COMMENT_MAX_LENGTH = 200
+COMMENT_MAX_LENGTH = 2000
 CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
-EXPECTED_DATE_FORMAT = '%Y-%m-%d'
+EXPECTED_DATE_FORMAT = '%m/%d/%Y'
 
 
 def validate_column_headers(headers, expected_headers):
@@ -71,10 +71,21 @@ def is_valid_comment(comment):
 
 def is_valid_calibration_freq(calibration_freq):
 
+    if calibration_freq == 'N/A':
+        return True, "Valid calibration freq"
+
     if len(calibration_freq) > CALIBRATION_FREQUENCY_MAX_LENGTH:
         return False, f"Calibration freq length too long." \
                       f"{len(calibration_freq)} chars long, " \
                       f"Max: {CALIBRATION_FREQUENCY_MAX_LENGTH} chars"
+
+    try:
+        cal_freq_int = int(calibration_freq)
+    except ValueError:
+        return False, "Calibration frequency not an integer or \'N/A\'."
+
+    if cal_freq_int <= 0:
+        return False, "Calibration frequency must be a positive integer."
 
     return True, "Valid calibration freq"
 
@@ -108,6 +119,6 @@ def is_valid_calibration_date(calibration_date):
     try:
         datetime.datetime.strptime(calibration_date, EXPECTED_DATE_FORMAT)
     except ValueError:
-        return False, "Incorrect date format, should be YYYY-MM-DD."
+        return False, "Incorrect date format, should be MM/DD/YYYY."
 
     return True, "Correct date format."

@@ -278,6 +278,7 @@ def import_models_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
+    # db_write_success, upload_summary = write_model_import.handler(uploaded_file)
     return Response({"description": [f"{format_response}"]}, status=status.HTTP_200_OK)
 
 

@@ -4,6 +4,7 @@ import logging
 import io
 
 from backend.import_export import field_validators
+from backend.tables.models import ItemModel
 
 column_types = [
     'Vendor',
@@ -13,12 +14,16 @@ column_types = [
     'Calibration-Frequency',
 ]
 
+sheet_models = []
+
 
 def validate_row(current_row):
 
     if len(current_row) != len(column_types):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
+
+    sheet_models.append(current_row[0] + " " + current_row[1])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -39,8 +44,19 @@ def validate_row(current_row):
     return True, "Valid Row"
 
 
-def check_duplicates(current_row):
-    return True, "No Duplicates!"
+def contains_duplicates():
+
+    print('sheet_models: ', sheet_models)
+    print('set sheet_models: ', set(sheet_models))
+    if len(sheet_models) != len(set(sheet_models)):
+        return True, "Duplicate Models contained within the imported sheet."
+
+    db_models = ItemModel.objects.all()
+    for db_model in db_models:
+        if str(db_model) in sheet_models:
+            return True, f"Duplicate model ({db_model}) already exists in database"
+
+    return False, "No Duplicates!"
 
 
 def handler(uploaded_file):
@@ -49,17 +65,19 @@ def handler(uploaded_file):
 
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
-
     if not has_valid_columns:
         return False, header_log
 
     row_number = 1
-    if has_valid_columns:
-        for row in reader:
-            valid_row, row_info = validate_row(row)
-            if not valid_row:
-                return False, f"row {row_number}: " + row_info
+    for row in reader:
+        valid_row, row_info = validate_row(row)
+        if not valid_row:
+            return False, f"row {row_number} malformed input: " + row_info
 
-            row_number += 1
+        row_number += 1
+
+    duplicate_error, duplicate_info = contains_duplicates()
+    if duplicate_error:
+        return False, f"Duplicate input: " + duplicate_info
 
     return True, "Correct formatting."

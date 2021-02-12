@@ -47,14 +47,11 @@ def validate_row(current_row):
 
 def contains_duplicates():
 
-    print('sheet_instruments: ', sheet_instruments)
-    print('set sheet_instruments: ', set(sheet_instruments))
     if len(sheet_instruments) != len(set(sheet_instruments)):
         return True, "Duplicate instruments contained within the imported sheet."
 
     db_instruments = Instrument.objects.all()
     for db_instrument in db_instruments:
-        print("\tdb_instrument: " + str(db_instrument))
         if str(db_instrument) in sheet_instruments:
             return True, f"Duplicate instrument ({db_instrument}) already exists in database"
 
@@ -77,6 +74,7 @@ def handler(uploaded_file):
             return False, f"Row {row_number} malformed input: {row_info}"
 
         row_number += 1
+        print("^^ row " + str(row_number))
 
     duplicate_error, duplicate_info = contains_duplicates()
     if duplicate_error:

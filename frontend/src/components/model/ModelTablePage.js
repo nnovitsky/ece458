@@ -24,6 +24,7 @@ class ModelTablePage extends Component {
             pagination: {
                 resultCount: '',
                 numPages: '',
+                resultsPerPage: 10,
                 currentPageNum: 1,
             },
             modelSearchParams: {
@@ -94,6 +95,7 @@ class ModelTablePage extends Component {
                             <h4>{this.state.sortingIndicator}</h4>
                             <ModelTable
                                 data={this.state.tableData}
+                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
                             />
@@ -102,6 +104,7 @@ class ModelTablePage extends Component {
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
                                 numResults={this.state.pagination.resultCount}
+                                resultsPerPage={this.state.pagination.resultsPerPage}
                                 onPageClicked={this.onPaginationClick}
                                 onShowAllToggle={this.onToggleShowAll}
                                 isShown={!this.state.modelSearchParams.showAll}
@@ -268,7 +271,7 @@ class ModelTablePage extends Component {
             case "Description":
                 sortingKey = "description_lower"
                 return sortingKey;
-            case "Callibration (days)":
+            case "Calibration (days)":
                 sortingKey = "calibration_frequency"
                 return sortingKey;
             default:

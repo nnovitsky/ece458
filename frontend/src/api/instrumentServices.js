@@ -5,74 +5,8 @@ const API_URL = 'http://localhost:8000';
 export default class InstrumentServices {
     constructor() { }
 
-    async getInstruments() {
-        const token = localStorage.getItem('token');
-
-        let result = {
-            success: true,
-            data: [],
-        }
-
-        const url = `${API_URL}/api/instruments/`;
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `JWT ${token}`
-            },
-        })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
-                        result.success = false;
-                    }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
-                    result.success = false;
-                    return result
-                }
-            )
-    }
-
-    async getInstrument(instrumentPk) {
-        const token = localStorage.getItem('token');
-
-        let result = {
-            success: true,
-            data: [],
-        }
-
-        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `JWT ${token}`
-            },
-        })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
-                        result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
-                }
-            )
-    }
-
-    async instrumentFilterSearch(filters) {
+    // handled modified/expired tokens
+    async getInstruments(filters, sort_by, show_all, pageNum) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -90,6 +24,16 @@ export default class InstrumentServices {
             count++;
         }
 
+        if (sort_by !== '') {
+            url = `${url}&sort_by=${sort_by}`;
+        }
+
+        if (show_all) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}`
+        }
+
         return fetch(url, {
             method: 'GET',
             headers: {
@@ -97,25 +41,77 @@ export default class InstrumentServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
+                        result.errors = json;
+                        return result;
+                    })
                 }
+            }
             )
     }
 
+    // handled modified/expired tokens
+    async getInstrument(instrumentPk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
     // Error handling in place for bad input
+    // handled modified/expired tokens
     async addInstrument(model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
@@ -139,9 +135,22 @@ export default class InstrumentServices {
         })
             .then(res => {
                 if (res.ok) {
-                    return result;
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
                 } else {
                     return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
                         result.errors = json;
                         return result;
@@ -150,11 +159,17 @@ export default class InstrumentServices {
             })
     }
 
+    // handling field errors and modification/expiration of tokens
     async editInstrument(instrumentPk, model_pk, serial_number, comment) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment
+        }
+
+        let result = {
+            success: true,
+            errors: []
         }
         const token = localStorage.getItem('token');
 
@@ -166,19 +181,36 @@ export default class InstrumentServices {
             },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json)
-                console.log("success")
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
             })
     }
 
+    // handled modified/expired token
     async deleteInstrument(instrumentPk) {
         const token = localStorage.getItem('token');
 
         let result = {
             success: true,
-            data: []
+            errors: []
         }
 
         return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
@@ -187,6 +219,26 @@ export default class InstrumentServices {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
+        }).then(res => {
+            if (res.ok) {
+                return result;
+            } else {
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.errors = json;
+                    return result;
+                })
+            }
         })
     }
 
@@ -228,41 +280,6 @@ export default class InstrumentServices {
                 }
             })
     }
-
-    async getSortedInstruments(sortingKey) {
-        const token = localStorage.getItem('token');
-
-        let result = {
-            success: true,
-            data: [],
-        }
-
-        const url = `${API_URL}/api/instrument_search/?sort_by=${sortingKey}`;
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Authorization: `JWT ${token}`
-            }
-        })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
-                        result.success = false;
-                    }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
-                    result.success = false;
-                    return result
-                }
-            )
-    }
-
-
 
     async getCalibrationPDF(pk) {
         const token = localStorage.getItem('token');

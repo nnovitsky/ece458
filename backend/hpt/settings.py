@@ -27,10 +27,7 @@ SECRET_KEY = 'n$w5mg7@5cd8d%_a0x+*2-_0n_%71y$$a2&-wt_kbat6huljox'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-    'vcm-18278.vm.duke.edu'
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

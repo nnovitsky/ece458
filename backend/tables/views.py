@@ -278,7 +278,7 @@ def import_models_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    return Response(status=status.HTTP_200_OK)
+    return Response({"description": [f"{format_response}"]}, status=status.HTTP_200_OK)
 
 
 # USERS

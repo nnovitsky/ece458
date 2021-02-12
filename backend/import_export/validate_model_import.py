@@ -1,6 +1,7 @@
 import sys
 import csv
 import logging
+import io
 
 from backend.import_export import field_validators
 
@@ -43,25 +44,22 @@ def check_duplicates(current_row):
 
 
 def handler(uploaded_file):
-    with open(uploaded_file, 'r') as import_file:
-        reader = csv.reader(import_file)
-        headers = next(reader)
+    uploaded_file.seek(0)
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 
-        has_valid_columns, header_log = \
-            field_validators.validate_column_headers(headers, column_types)
+    headers = next(reader)
+    has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
 
-        if not has_valid_columns:
-            return False, header_log
+    if not has_valid_columns:
+        return False, header_log
 
-        row_number = 1
-        if has_valid_columns:
-            for row in reader:
-                valid_row, row_info = validate_row(row)
-                if not valid_row:
-                    return False, row_info
+    row_number = 1
+    if has_valid_columns:
+        for row in reader:
+            valid_row, row_info = validate_row(row)
+            if not valid_row:
+                return False, f"row {row_number}: " + row_info
 
-                row_number += 1
+            row_number += 1
 
     return True, "Correct formatting."
-
-

@@ -1,0 +1,8 @@
+th.selected {
+    background-color: rgba(41, 103, 182, 0.89);
+    color: #FFF;
+}
+
+th.notSelected {
+    background-color: white;
+}

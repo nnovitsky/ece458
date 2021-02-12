@@ -27,6 +27,8 @@ urlpatterns = [
     path('token_refresh/', refresh_jwt_token),
     path('create_user/', views.UserCreate.as_view()),
     path('api/users/', views.user_list),
+    path('api/vendors/', views.vendor_list),
+    path('api/models_by_vendor/<str:vendor>/', views.model_by_vendor_list),
     path('api/models/', views.models_list),
     path('api/models/<int:pk>/', views.models_detail),
     path('api/instruments/', views.instruments_list),
@@ -35,5 +37,7 @@ urlpatterns = [
     path('api/calibration_events/<int:pk>/', views.calibration_event_detail),
     path('api/model_search/', api_views.ItemModelList.as_view()),
     path('api/instrument_search/', api_views.InstrumentList.as_view()),
-    path('api/calibration_event_search/', api_views.CalibrationEventList.as_view())
+    path('api/calibration_event_search/', api_views.CalibrationEventList.as_view()),
+    path('api/export_calibration_event_pdf/<int:pk>/', views.export_calibration_event_pdf),
+
 ]

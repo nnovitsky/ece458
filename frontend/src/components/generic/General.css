@@ -33,3 +33,120 @@ be made to be more specific */
 .filter-button {
     margin: 6px;
 }
+
+/* popup is a classname that is used for some of the body's of the popups */
+
+form.popup{
+    margin: 0px;
+    border-radius: 10px;
+    padding: 20px;
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: left;
+    display: inline-block;
+    background-color: rgb(147, 196, 127);
+}
+
+form.popup {
+    width: 100%;
+}
+
+form.popup label {
+    line-height: 1px;
+}
+
+form.popup .input-group {
+margin: 0px;
+
+}
+
+form.popup .form-control {
+    margin: 0px;
+}
+
+form.popup input[type=text] {
+    width: 100%;
+    margin: 0px;
+}
+
+/* The Generic popup has alerts, this is where they are formatted */
+
+.popup-alert{
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.popup-alert p {
+    margin: 6px;
+    text-align: center;
+}
+
+/* The generic popup has a button row, this is where that is formatted */
+.popup-button-row {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.popup-button-row button {
+    margin: 5px;
+    padding: 15px;
+}
+
+/* Calibration status icons on the instrument table oage are formatted using this tag */
+.calibration-status-icon {
+    display: block;
+    margin: auto;
+      max-width:30px;
+  max-height:30px;
+  width: auto;
+  height: auto;
+}
+
+/* generic pagination element styling */
+.pagination.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+} 
+
+.pagination button {
+    width: 150px;
+    padding: 6px;
+    margin: 5px;
+}
+
+.pagination p {
+    margin: 5px 15px 5px 15px;
+}
+
+.pagination ul {
+    margin: 5px 20px 5px 20px;
+}
+
+/* model/instrument table formatting */
+.data-table {
+    overflow-y: scroll;
+    max-height: 50vh;
+}
+
+.data-table th {
+    cursor: pointer;
+}
+
+.data-table::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.data-table::-webkit-scrollbar:vertical {
+    width: 15px;
+}
+
+.data-table::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, .5);
+}

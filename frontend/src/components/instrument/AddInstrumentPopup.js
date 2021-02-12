@@ -49,7 +49,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         } else {
@@ -68,7 +68,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: '',
                     comment: '',
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -86,7 +86,7 @@ class AddInstrumentPopup extends Component {
     }
 
     render() {
-        if (this.state.vendorsArr.length === 0) {
+        if (this.state.vendorsArr.length === null) {
             this.getVendorsArr();
         }
         let body = this.makeBody();
@@ -268,7 +268,7 @@ class AddInstrumentPopup extends Component {
                 serial_number: '',
                 comment: '',
             },
-            vendorsArr: [],
+            vendorsArr: null,
             modelsFromVendorArr: []
         })
     }

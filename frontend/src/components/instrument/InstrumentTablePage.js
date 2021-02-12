@@ -105,6 +105,7 @@ class InstrumentTablePage extends Component {
                                 onCertificateRequested={this.onCertificateRequested}
                                 sortData={this.onInstrumentSort}
                             />
+                            <hr />
                             <GenericPagination
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}

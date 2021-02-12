@@ -48,7 +48,7 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                 },
-                vendorsArr: []
+                vendorsArr: null
             }
         } else {
             this.state = {
@@ -65,7 +65,7 @@ class AddModelPopup extends Component {
                     calibration_frequency: '',
 
                 },
-                vendorsArr: [],
+                vendorsArr: null
             }
         }
 
@@ -80,7 +80,7 @@ class AddModelPopup extends Component {
     }
 
     render() {
-        if (this.state.vendorsArr.length === 0) {
+        if (this.state.vendorsArr === null) {
             this.getVendorsArr();
         }
         let body = this.makeBody();
@@ -239,7 +239,7 @@ class AddModelPopup extends Component {
                 calibration_frequency: '',
 
             },
-            vendorsArr: [],
+            vendorsArr: null,
         })
         this.props.onClose();
     }

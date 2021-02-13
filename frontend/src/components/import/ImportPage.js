@@ -23,7 +23,7 @@ class ImportPage extends Component {
         super(props);
         this.state = {
             selectedFile: null,
-            error_message: '',
+            status_message: '',
             records_count: '',
             tableData: [],
             showInstructionsPopup: {
@@ -61,10 +61,10 @@ class ImportPage extends Component {
                         <h2>Summary</h2>
                         <div className="summary overflow-auto">
                             <p>
-                                Status: <b>{this.state.error_message}</b>
+                                Status: <b>{this.state.status_message}</b>
                                 <br></br>
                                 <br></br>
-                                Records Count: {this.state.records_count}
+                                Records Count: <b>{this.state.records_count}</b>
                             </p>
                         </div>
                         <div className="text-center">
@@ -90,7 +90,8 @@ class ImportPage extends Component {
         console.log(e.target.files[0])
         this.setState({
             selectedFile: e.target.files[0],
-            error_message: 'Selected File'
+            status_message: 'Selected File',
+            records_count: '',
         })
     }
 
@@ -114,23 +115,24 @@ class ImportPage extends Component {
 
     importModelClicked = (e) => {
         if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
-            console.log(this.state.selectedFile)
             this.setState({
-                error_message: 'Uploding Model File...'
+                status_message: 'Uploding Model File...'
             })
             const formData = new FormData();
-                formData.append('file', this.state.selectedFile);
+                formData.append('FILE', this.state.selectedFile);
 
-            console.log(formData.get('file'))
             modelServices.importModelCSV(formData)
                 .then(res => {
                     if (res.success) {
-                        // do something with the JSON res.data!!!
-                        console.log(res)
+                        this.setState({
+                            status_message: "Success",
+                            records_count: res.data.description
+                        })
                     }
                     else {
                         this.setState({
-                            error_message: res.errors
+                            status_message: "Upload Errors",
+                            records_count: res.errors["Upload error"][0]
                         })
                     }
 
@@ -138,7 +140,7 @@ class ImportPage extends Component {
         }
         else {
             this.setState({
-                error_message: "Error: No file chosen"
+                status_message: "No file chosen"
             })
         }
     }
@@ -146,14 +148,13 @@ class ImportPage extends Component {
 
     importInstrumentClicked = (e) => {
         if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
-            console.log(this.state.selectedFile.name)
             this.setState({
-                error_message: 'Uploding Instrument File...'
+                status_message: 'Uploding Instrument File...'
             })
         }
         else {
             this.setState({
-                error_message: "Error: No file chosen"
+                status_message: "Error: No file chosen"
             })
         }
     }

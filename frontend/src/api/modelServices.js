@@ -423,7 +423,7 @@ export default class ModelServices {
 
         let result = {
             success: true,
-            errors: '',
+            errors: [],
             data:[]
         }
 
@@ -432,19 +432,16 @@ export default class ModelServices {
             headers: {
                 Authorization: `JWT ${token}`,
             },
-            body: {
-                FILE: csvFile,
-            },
+            body: csvFile
         })
             .then(res => {
                 if (res.ok) {
-                    console.log(res);
-                    result.success = true;
-                    result.data = res.json();
-                    return result;
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
                 } else {
                     return res.json().then(json => {
-                        console.log(json);
                         if (json.detail === 'Signature has expired.') {
                             window.location.reload();
                             result.success = false;
@@ -454,7 +451,7 @@ export default class ModelServices {
                             result.success = false;
                         }
                         result.success = false;
-                        result.errors = json.detail;
+                        result.errors = json;
                         return result;
                     })
                 }

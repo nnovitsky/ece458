@@ -56,6 +56,7 @@ def contains_duplicates():
 
 
 def handler(uploaded_file):
+    sheet_models.clear()
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 

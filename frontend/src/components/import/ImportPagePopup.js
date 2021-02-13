@@ -17,6 +17,7 @@ const importPagePopup = (props) => {
             headerText="How to Import"
             closeButtonText="Exit"
             onClose={props.onClose}
+            isSubmitButtonShown={false}
         />
     )
 }

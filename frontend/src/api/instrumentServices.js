@@ -1,7 +1,5 @@
-import instrumentData from './instrumentData.json';
-
-//const API_URL = 'http://localhost:8000';
-const API_URL = 'http://vcm-18278.vm.duke.edu:8000';
+import Configs from './config.js';
+const API_URL = Configs.API_URL
 
 export default class InstrumentServices {
     constructor() { }

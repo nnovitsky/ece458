@@ -139,14 +139,4 @@ export default class UserServices {
             })
     }
 
-<<<<<<< HEAD
-
-    getUser(pk) {
-        return userData.usersByKey[pk];
-        // const url = `${API_URL}/api/users/${pk}`;
-        // return axios.get(url).then(response => response.data);
-    }
 }
-=======
-}
->>>>>>> c680c0201f53afafe1c1e2e92f3a9a49e5de6543

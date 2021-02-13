@@ -5,6 +5,8 @@ import logo from '../../assets/HPT_logo_crop.png';
 import GenericTable from '../generic/GenericTable';
 import instramentData from "./import_holder_data.json";
 import myInstructions from './ImportInstructions.js';
+import ModelServices from "../../api/modelServices";
+import ImportPagePopup from './ImportPagePopup';
 
 
 const keys = ["$.type", "$.model_number", "$.serial"];
@@ -12,6 +14,7 @@ const headers = ["Type", "Model Number", "Serial Number", "More"];
 const buttonText = ["More"];
 const importInstructions = myInstructions;
 let data = instramentData.tools;
+const modelServices = new ModelServices();
 
 
 class ImportPage extends Component {
@@ -20,47 +23,66 @@ class ImportPage extends Component {
         super(props);
         this.state = {
             selectedFile: null,
-            error_message: ''
-          }
+            error_message: '',
+            records_count: '',
+            tableData: [],
+            showInstructionsPopup: {
+                isShown: false,
+            },
+        }
+        this.onShowInstructionsClosed = this.onShowInstructionsClosed.bind(this);
 
     }
 
-    render() {return (
+    render() {
+        return (
+            <div>
+            <ImportPagePopup
+                    isShown={this.state.showInstructionsPopup.isShown}
+                    onClose={this.onShowInstructionsClosed}
+                />
+
             <div className="background">
                 <div className="row mainContent">
                     <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
                     <div className="col-5"><h2>Import</h2>
-                    <form className="text-center" method="post" action="#" id="#">
-                    <div className="form-group files">
-                        <label>Upload Your File</label>
-                        <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
-                    </div>
-                    </form>
-                        <h5 className="text-center">{this.state.error_message}</h5>
-                        <button className="bigButton" onClick={this.importClicked}>Import</button>
-                        <div className="instructions">
-                            <h3>How to Import</h3>
-                            <p>{importInstructions}</p>
+                        <form className="text-center" method="post" action="#" id="#">
+                            <div className="form-group files">
+                                <label>Upload Your File</label>
+                                <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                            </div>
+                        </form>
+                        <div className="text-center">
+                        <button className="import" onClick={this.importModelClicked}>Import Model</button>
+                        <button className="import" onClick={this.importInstrumentClicked}>Import Instrument</button>
                         </div>
                     </div>
                     <div className="col-4 leftText">
-                    <h2>Summary</h2>
-                    <div className="summary overflow-auto">
+                        <h2>Summary</h2>
+                        <div className="summary overflow-auto">
                             <p>
-                                Status: In Progress/Success/Errors
+                                Status: <b>{this.state.error_message}</b>
                                 <br></br>
                                 <br></br>
-                                Records Count: All of the text in here needs to be generated
-                                based on what the result of the inport is. Guessing the number
-                                of errors/successes will be genrated in the backend and we 
-                                will need to parse a JSON describing this event.
+                                Records Count: {this.state.records_count}
                             </p>
                         </div>
-                        <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />
+                        <div className="text-center">
+                        <button onClick={this.onShowInstructionsClicked}>How to Import</button>
+                        </div>
+                    </div>
+
+
+                    <div className="row">
+                        <div className="col-4"> </div>
+                        <div className="col-5">
+                            <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />                         
+                        </div>
+                        <div className="col-4"> </div>
                     </div>
                 </div>
             </div>
-
+            </div>
         );
     }
 
@@ -68,28 +90,75 @@ class ImportPage extends Component {
         console.log(e.target.files[0])
         this.setState({
             selectedFile: e.target.files[0],
-            error_message: ''
+            error_message: 'Selected File'
         })
     }
 
-    importClicked = (e) => {
-        if(this.state.selectedFile !== null && typeof(this.state.selectedFile) !== 'undefined')
-        {
-            console.log(this.state.selectedFile.name)
-            console.log(this.state.selectedFile.type)
+    onShowInstructionsClicked = () => {
+        this.setState({
+            showInstructionsPopup: {
+                ...this.state.showInstructionsPopup,
+                isShown: true
+            }
+        })
+    }
+
+    onShowInstructionsClosed() {
+        this.setState({
+            showInstructionsPopup: {
+                ...this.state.showInstructionsPopup,
+                isShown: false
+            }
+        })
+    }
+
+    importModelClicked = (e) => {
+        if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
+            console.log(this.state.selectedFile)
             this.setState({
-                error_message: 'Uploding File...'
+                error_message: 'Uploding Model File...'
             })
+            const formData = new FormData();
+                formData.append('file', this.state.selectedFile);
+
+            console.log(formData.get('file'))
+            modelServices.importModelCSV(formData)
+                .then(res => {
+                    if (res.success) {
+                        // do something with the JSON res.data!!!
+                        console.log(res)
+                    }
+                    else {
+                        this.setState({
+                            error_message: res.errors
+                        })
+                    }
+
+                })
         }
-        else
-        {
+        else {
             this.setState({
                 error_message: "Error: No file chosen"
             })
         }
     }
 
-    onEntryClicked= (e) => {
+
+    importInstrumentClicked = (e) => {
+        if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
+            console.log(this.state.selectedFile.name)
+            this.setState({
+                error_message: 'Uploding Instrument File...'
+            })
+        }
+        else {
+            this.setState({
+                error_message: "Error: No file chosen"
+            })
+        }
+    }
+
+    onEntryClicked = (e) => {
         console.log("Clicked Entry");
     }
 }

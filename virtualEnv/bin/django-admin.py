@@ -1,4 +1,4 @@
-#!/Users/jackwood/Desktop/HPT/ece458/virtualEnv/bin/python3
+#!/Users/carriehunner/Desktop/dev/ECE458/ece458/virtualEnv/bin/python3
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 

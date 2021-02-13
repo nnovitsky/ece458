@@ -8,7 +8,7 @@ export default class AuthServices {
 
   async login(data) {
 
-    const url = `${API_URL}/api/token_auth/`;
+    const url = `/api/token_auth/`;
     console.log(API_URL)
 
     return fetch(url, {

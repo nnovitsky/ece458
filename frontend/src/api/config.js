@@ -1,2 +1,2 @@
-const API_URL = 'http://vcm-18278.vm.duke.edu';
-//const API_URL = 'http://localhost:8000';
+export const API_URL = 'http://vcm-18278.vm.duke.edu';
+//export const API_URL = 'http://localhost:8000';

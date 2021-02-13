@@ -1,6 +1,6 @@
-import Configs from './config.js';
-const API_URL = Configs.API_URL
-console.log(Configs)
+import API_URL from './config.js';
+//const API_URL = Configs.API_URL
+//console.log(Configs)
 
 
 export default class AuthServices {

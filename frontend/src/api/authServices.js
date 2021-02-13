@@ -7,7 +7,7 @@ export default class AuthServices {
 
   async login(data) {
 
-    const url = `${API_URL}/token_auth/`;
+    const url = `${API_URL}/api/token_auth/`;
 
     return fetch(url, {
       method: 'POST',
@@ -27,7 +27,7 @@ export default class AuthServices {
       data: [],
     }
 
-    const url = `${API_URL}/current_user/`;
+    const url = `${API_URL}/api/current_user/`;
 
     return fetch(url, {
       headers: {

@@ -22,8 +22,8 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('current_user/', views.current_user),
-    path('token_auth/', obtain_jwt_token),
+    path('api/current_user/', views.current_user),
+    path('api/token_auth/', obtain_jwt_token),
     path('token_refresh/', refresh_jwt_token),
     path('create_user/', views.UserCreate.as_view()),
     path('api/users/', views.user_list),
@@ -39,5 +39,6 @@ urlpatterns = [
     path('api/instrument_search/', api_views.InstrumentList.as_view()),
     path('api/calibration_event_search/', api_views.CalibrationEventList.as_view()),
     path('api/export_calibration_event_pdf/<int:pk>/', views.export_calibration_event_pdf),
+    path('api/import_models_csv/', views.import_models_csv),
 
 ]

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
 import GenericPagination from "../generic/GenericPagination";
@@ -90,6 +91,7 @@ class InstrumentTablePage extends Component {
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
+                            <CalStatusKey />
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>

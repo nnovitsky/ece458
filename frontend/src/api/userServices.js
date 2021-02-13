@@ -1,5 +1,5 @@
-import userData from './userData.json';
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 export default class UserServices {
     constructor() { }
@@ -48,7 +48,7 @@ export default class UserServices {
         }
         const token = localStorage.getItem('token');
 
-        return fetch(`${API_URL}/create_user/`, {
+        return fetch(`${API_URL}/api/create_user/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default class UserServices {
         }
         const token = localStorage.getItem('token');
 
-        return fetch(`${API_URL}/current_user/`, {
+        return fetch(`${API_URL}/api/current_user/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -85,10 +85,4 @@ export default class UserServices {
             })
     }
 
-
-    getUser(pk) {
-        return userData.usersByKey[pk];
-        // const url = `${API_URL}/api/users/${pk}`;
-        // return axios.get(url).then(response => response.data);
-    }
 }

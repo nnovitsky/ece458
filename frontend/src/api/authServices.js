@@ -1,5 +1,5 @@
 import API_URL from './config.js';
-//const API_URL = Configs.API_URL
+const API_URL = API_URL
 //console.log(Configs)
 
 

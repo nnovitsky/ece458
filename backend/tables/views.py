@@ -269,7 +269,6 @@ def import_models_csv(request):
     except KeyError:
         return Response({"Upload error": ["No file was uploaded."]},
                         status=status.HTTP_409_CONFLICT)
-
     if uploaded_file.content_type != 'text/csv':
         return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
                         status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)

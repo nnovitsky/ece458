@@ -1,5 +1,5 @@
 import Configs from './config.js';
-const API_URL = Configs.API_URL
+const API_URL = Configs
 
 export default class ModelServices {
 

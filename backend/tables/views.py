@@ -9,6 +9,8 @@ from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 from backend.tables import pdf_generator
+from backend.import_export import validate_model_import
+from backend.import_export import write_import_models
 
 
 @api_view(['GET'])
@@ -242,7 +244,7 @@ def export_calibration_event_pdf(request, pk):
         return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
     if instrument.item_model.calibration_frequency <= 0:
-        return Response({"description": ["Instrument is not calibratable."]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"description": ["Instrument can not be calibrated."]}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = ListInstrumentReadSerializer(instrument)
     if len(serializer.data['calibration_event']) == 0:
@@ -262,7 +264,28 @@ def import_models_csv(request):
         return Response({"permission_error": ["User does not have permission."]},
                         status=status.HTTP_401_UNAUTHORIZED)
 
+    try:
+        uploaded_file = request.FILES['FILE']
+    except KeyError:
+        return Response({"Upload error": ["No file was uploaded."]},
+                        status=status.HTTP_409_CONFLICT)
 
+    if uploaded_file.content_type != 'text/csv':
+        return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
+                        status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    correct_format, format_response = validate_model_import.handler(uploaded_file)
+    if not correct_format:
+        return Response({"Upload error": [f"{format_response}"]},
+                        status=status.HTTP_412_PRECONDITION_FAILED)
+
+    db_write_success, upload_list, upload_summary = write_import_models.handler(uploaded_file)
+
+    if not db_write_success:
+        return Response({"Upload error": [f"DB write error: {upload_summary}"]},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({"description": [f"{format_response}, {upload_summary}"]}, status=status.HTTP_200_OK)
 
 
 # USERS

@@ -7,6 +7,7 @@ COMMENT_MAX_LENGTH = 2000
 CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
+CALIBRATION_DATE_MAX_LENGTH = 20
 EXPECTED_DATE_FORMAT = '%m/%d/%Y'
 
 
@@ -115,6 +116,12 @@ def is_valid_username(calibration_username):
 def is_valid_calibration_date(calibration_date):
     if len(calibration_date) == 0:
         return False, "Missing calibration date."
+
+    # Not sure why this is a requirement if must follow MM-DD-YYYY format?
+    # Including anyways for now.
+    if len(calibration_date) > CALIBRATION_DATE_MAX_LENGTH:
+        return False, f"Calibration date \'{calibration_date}\' too long, " \
+                      f"Max: {CALIBRATION_DATE_MAX_LENGTH} chars long"
 
     try:
         datetime.datetime.strptime(calibration_date, EXPECTED_DATE_FORMAT)

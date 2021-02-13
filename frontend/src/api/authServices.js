@@ -1,5 +1,6 @@
 import Configs from './config.js';
 const API_URL = Configs.API_URL
+console.log(Configs)
 
 
 export default class AuthServices {
@@ -8,6 +9,7 @@ export default class AuthServices {
   async login(data) {
 
     const url = `${API_URL}/api/token_auth/`;
+    console.log(API_URL)
 
     return fetch(url, {
       method: 'POST',

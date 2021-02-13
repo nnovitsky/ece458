@@ -115,6 +115,7 @@ class InstrumentDetailView extends Component {
     async getInstrumentInfo() {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
+                console.log(result)
                 if (result.success) {
                     let data = result.data;
                     this.setState({
@@ -128,7 +129,7 @@ class InstrumentDetailView extends Component {
                             comment: data.comment,
                             calibration_frequency: data.item_model.calibration_frequency,
                             calibration_history: data.calibration_events,
-                            calibration_expiration: data.item_model.calibration_expiration
+                            calibration_expiration: data.calibration_expiration
 
                         }
                     })
@@ -146,7 +147,7 @@ class InstrumentDetailView extends Component {
             <>
                 <tr>
                     <td><strong>Next Calibration</strong></td>
-                    <td>WAITING ON THIS</td>
+                    <td>{this.state.instrument_info.calibration_expiration}</td>
                 </tr>
                 <tr>
                     <td><strong>Calibration Frequency</strong></td>

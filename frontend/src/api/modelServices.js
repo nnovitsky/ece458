@@ -1,6 +1,5 @@
-import modelData from './modelData.json';
-
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 export default class ModelServices {
 

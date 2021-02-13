@@ -418,6 +418,49 @@ export default class ModelServices {
             })
     }
 
+    async importModelCSV(csvFile) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            errors: '',
+            data:[]
+        }
+
+        return fetch(`${API_URL}/api/import_models_csv/`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+            body: {
+                FILE: csvFile,
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    console.log(res);
+                    result.success = true;
+                    result.data = res.json();
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        console.log(json);
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        result.success = false;
+                        result.errors = json.detail;
+                        return result;
+                    })
+                }
+            })
+    }
+
 
 //        // has handling if the token is modified/expired
 //     async getSortedModels(sortingKey) {

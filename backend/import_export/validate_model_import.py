@@ -1,8 +1,8 @@
-import sys
 import csv
-import logging
+import io
 
 from backend.import_export import field_validators
+from backend.tables.models import ItemModel
 
 column_types = [
     'Vendor',
@@ -12,7 +12,7 @@ column_types = [
     'Calibration-Frequency',
 ]
 
-TEST_CSV = 'sample_CSVs/_Models_test1_pass.csv'
+sheet_models = []
 
 
 def validate_row(current_row):
@@ -20,6 +20,8 @@ def validate_row(current_row):
     if len(current_row) != len(column_types):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
+
+    sheet_models.append(current_row[0] + " " + current_row[1])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -40,39 +42,38 @@ def validate_row(current_row):
     return True, "Valid Row"
 
 
-def check_duplicates(current_row):
+def contains_duplicates():
+
+    if len(sheet_models) != len(set(sheet_models)):
+        return True, "Duplicate models contained within the imported sheet."
+
+    db_models = ItemModel.objects.all()
+    for db_model in db_models:
+        if str(db_model) in sheet_models:
+            return True, f"Duplicate model ({db_model}) already exists in database"
+
+    return False, "No Duplicates!"
 
 
+def handler(uploaded_file):
+    uploaded_file.seek(0)
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 
-    return True, "No Duplicates!"
+    headers = next(reader)
+    has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
+    if not has_valid_columns:
+        return False, header_log
 
+    row_number = 1
+    for row in reader:
+        valid_row, row_info = validate_row(row)
+        if not valid_row:
+            return False, f"row {row_number} malformed input: " + row_info
 
-def main():
-    with open(TEST_CSV, 'r') as import_file:
-        reader = csv.reader(import_file)
-        headers = next(reader)
+        row_number += 1
 
-        has_valid_columns, header_log = \
-            field_validators.validate_column_headers(headers, column_types)
+    duplicate_error, duplicate_info = contains_duplicates()
+    if duplicate_error:
+        return False, f"Duplicate input: " + duplicate_info
 
-        if not has_valid_columns:
-            logging.error(header_log)
-
-        row_number = 1
-        if has_valid_columns:
-            for row in reader:
-                valid_row, row_info = validate_row(row)
-                if not valid_row:
-                    logging.error(f"Row {row_number}: {row_info}")
-                    sys.exit()
-
-                row_number += 1
-            logging.info(f"Successfully parsed {row_number} rows.")
-
-
-        sys.exit()
-
-
-if __name__ == '__main__':
-    logging.basicConfig(filename='import.log', level=logging.INFO)
-    main()
+    return True, "Correct formatting."

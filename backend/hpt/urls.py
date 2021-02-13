@@ -21,11 +21,11 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
     path('api/current_user/', views.current_user),
     path('api/token_auth/', obtain_jwt_token),
-    path('token_refresh/', refresh_jwt_token),
-    path('create_user/', views.UserCreate.as_view()),
+    path('api/token_refresh/', refresh_jwt_token),
+    path('api/create_user/', views.UserCreate.as_view()),
     path('api/users/', views.user_list),
     path('api/vendors/', views.vendor_list),
     path('api/models_by_vendor/<str:vendor>/', views.model_by_vendor_list),

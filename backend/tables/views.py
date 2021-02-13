@@ -279,13 +279,13 @@ def import_models_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    db_write_success, upload_summary = write_import_models.handler(uploaded_file)
+    db_write_success, upload_list, upload_summary = write_import_models.handler(uploaded_file)
 
     if not db_write_success:
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}"]}, status=status.HTTP_200_OK)
+        return Response({"description": [f"{format_response}, {upload_summary}"]}, status=status.HTTP_200_OK)
 
 
 @api_view(['PUT'])

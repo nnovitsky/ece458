@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 instrument_keys = ['item_model', 'serial_number', 'comment']
 cal_event_keys = ['date', 'user', 'instrument','comment']
-record_keys = ['Vendor', 'Model-Number', 'Serial-Number', 'Comment', 'Calibration-Date', 'Calibration-Comment']
+record_keys = ['vendor', 'model_number', 'serial_number', 'comment', 'calibration_date', 'calibration_comment']
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
 SERIAL_NUM_INDEX = 2

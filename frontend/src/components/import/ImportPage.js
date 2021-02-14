@@ -6,11 +6,10 @@ import GenericTable from '../generic/GenericTable';
 import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
+import ModelTable from "../model/ModelTable.js";
+import InstrumentTable from "../instrument/InstrumentTable.js";
 
 
-const keys = ["$.type", "$.model_number", "$.serial"];
-const headers = ["Type", "Model Number", "Serial Number", "More"];
-const buttonText = ["More"];
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
 
@@ -24,15 +23,35 @@ class ImportPage extends Component {
             status_message: '',
             records_count: '',
             tableData: [],
+            pagination: {
+                resultCount: '',
+                numPages: '',
+                resultsPerPage: 10,
+                currentPageNum: 1,
+            },
             showInstructionsPopup: {
                 isShown: false,
             },
+            showModelTable: false,
+            showInstrumentTable: false,
         }
         this.onShowInstructionsClosed = this.onShowInstructionsClosed.bind(this);
 
     }
 
-    render() {
+    render(
+        modelTable = <ModelTable
+                        data={this.state.tableData}
+                        countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
+                        onDetailRequested={this.onDetailClicked}
+                        sortData={() => {}}/>, 
+        instrumentTable = <InstrumentTable
+                            data={this.state.tableData}
+                            countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
+                            onDetailRequested={this.onDetailViewRequested}
+                            onCertificateRequested={this.onCertificateRequested}
+                            sortData={() => {}}/>
+    ) {
         return (
             <div>
             <ImportPagePopup
@@ -62,7 +81,7 @@ class ImportPage extends Component {
                                 Status: <b>{this.state.status_message}</b>
                                 <br></br>
                                 <br></br>
-                                Records Count: <b>{this.state.records_count}</b>
+                                Records: <b>{this.state.records_count}</b>
                             </p>
                         </div>
                         <div className="text-center">
@@ -74,8 +93,8 @@ class ImportPage extends Component {
                     <div className="row">
                         <div className="col-4"> </div>
                         <div className="col-5">
-                            <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />                         
-                        </div>
+                            {this.state.showModelTable ? modelTable : null}
+                            {this.state.showInstrumentTable ? instrumentTable : null}                        </div>
                         <div className="col-4"> </div>
                     </div>
                 </div>
@@ -90,6 +109,8 @@ class ImportPage extends Component {
             selectedFile: e.target.files[0],
             status_message: 'Selected File',
             records_count: '',
+            showModelTable: false,
+            showInstrumentTable: false,
         })
     }
 
@@ -122,9 +143,12 @@ class ImportPage extends Component {
             modelServices.importModelCSV(formData)
                 .then(res => {
                     if (res.success) {
+                        console.log(res);
                         this.setState({
                             status_message: "Success",
-                            records_count: res.data.description
+                            records_count: res.data.description,
+                            showModelTable: true,
+                            showInstrumentTable: false,
                         })
                     }
                     else {
@@ -155,9 +179,13 @@ class ImportPage extends Component {
             instrumentServices.importInstrumentCSV(formData)
                 .then(res => {
                     if (res.success) {
+                        console.log(res);
                         this.setState({
                             status_message: "Success",
-                            records_count: res.data.description
+                            records_count: res.data.description,
+                            tableData: res.data.upload_list,
+                            showModelTable: false,
+                            showInstrumentTable: true,
                         })
                     }
                     else {

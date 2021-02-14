@@ -313,7 +313,7 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    db_write_success, upload_summary = write_import_instruments.handler(uploaded_file)
+    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file)
 
     if not db_write_success:
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},

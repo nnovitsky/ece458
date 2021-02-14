@@ -2,7 +2,7 @@ import csv
 import io
 
 from backend.import_export import field_validators
-from backend.tables.models import Instrument
+from backend.tables.models import ItemModel, Instrument
 
 column_types = [
     'Vendor',
@@ -13,6 +13,11 @@ column_types = [
     'Calibration-Comment',
 ]
 
+VENDOR_INDEX = 0
+MODEL_NUM_INDEX = 1
+SERIAL_NUM_INDEX = 2
+
+sheet_models = []
 sheet_instruments = []
 
 
@@ -22,7 +27,9 @@ def validate_row(current_row):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
 
-    sheet_instruments.append(current_row[0] + " " + current_row[1] + " " + current_row[2])
+    sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
+    sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
+                             " " + current_row[SERIAL_NUM_INDEX])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -45,6 +52,18 @@ def validate_row(current_row):
     return True, "Valid Row"
 
 
+def check_models():
+
+    db_models = []
+    for db_model in ItemModel.objects.all():
+        db_models.append(str(db_model))
+    for model in sheet_models:
+        if model not in db_models:
+            return True, f"Model {model} referenced in sheet does not exist in database."
+
+    return False, "All models exist within db."
+
+
 def contains_duplicates():
 
     if len(sheet_instruments) != len(set(sheet_instruments)):
@@ -59,6 +78,9 @@ def contains_duplicates():
 
 
 def handler(uploaded_file):
+    sheet_models.clear()
+    sheet_instruments.clear()
+
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 
@@ -74,6 +96,10 @@ def handler(uploaded_file):
             return False, f"Row {row_number} malformed input: {row_info}"
 
         row_number += 1
+
+    model_dne, model_dne_info = check_models()
+    if model_dne:
+        return False, f"Invalid input: " + model_dne_info
 
     duplicate_error, duplicate_info = contains_duplicates()
     if duplicate_error:

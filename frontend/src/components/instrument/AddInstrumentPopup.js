@@ -49,7 +49,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         } else {
@@ -68,7 +68,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: '',
                     comment: '',
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -86,6 +86,9 @@ class AddInstrumentPopup extends Component {
     }
 
     render() {
+        if (this.state.vendorsArr === null) {
+            this.getVendorsArr();
+        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
@@ -265,7 +268,7 @@ class AddInstrumentPopup extends Component {
                 serial_number: '',
                 comment: '',
             },
-            vendorsArr: [],
+            vendorsArr: null,
             modelsFromVendorArr: []
         })
     }

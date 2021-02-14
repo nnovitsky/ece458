@@ -53,7 +53,7 @@ def validate_row(current_row):
 
 
 def check_models():
-
+    
     db_models = []
     for db_model in ItemModel.objects.all():
         db_models.append(str(db_model))

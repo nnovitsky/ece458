@@ -24,6 +24,7 @@ class ModelTablePage extends Component {
             pagination: {
                 resultCount: '',
                 numPages: '',
+                resultsPerPage: 10,
                 currentPageNum: 1,
             },
             modelSearchParams: {
@@ -91,9 +92,10 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            <h4>{this.state.sortingIndicator}</h4>
+                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <ModelTable
                                 data={this.state.tableData}
+                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
                             />
@@ -102,6 +104,7 @@ class ModelTablePage extends Component {
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
                                 numResults={this.state.pagination.resultCount}
+                                resultsPerPage={this.state.pagination.resultsPerPage}
                                 onPageClicked={this.onPaginationClick}
                                 onShowAllToggle={this.onToggleShowAll}
                                 isShown={!this.state.modelSearchParams.showAll}
@@ -155,7 +158,7 @@ class ModelTablePage extends Component {
                     this.updateModelTable();
                     this.onAddModelClosed();
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_model']);
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
                     this.setState({
                         addModelPopup: {
                             ...this.state.addModelPopup,
@@ -195,7 +198,6 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
             if (result.success) {
-                console.log(result.data)
                 this.updateData(result.data)
             } else {
                 console.log("error loading model table data")
@@ -232,7 +234,6 @@ class ModelTablePage extends Component {
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
-        console.log(data);
         this.setState({
             tableData: data.data
         })
@@ -268,20 +269,25 @@ class ModelTablePage extends Component {
             case "Description":
                 sortingKey = "description_lower"
                 return sortingKey;
-            case "Callibration (days)":
+            case "Calibration (days)":
                 sortingKey = "calibration_frequency"
                 return sortingKey;
             default:
                 this.setState({
-                    sortingIndicator: null
+                    sortingIndicator: ''
                 })
-                return null;
+                return '';
         }
     }
 
     onModelSort = (sortingHeader) => {
-
         var urlSortingKey = this.getURLKey(sortingHeader);
+        //this handles ascending/descending, it toggles between
+        if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
+            if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
+                urlSortingKey = `-${urlSortingKey}`;
+            }
+        }
         this.setState({
             modelSearchParams: {
                 ...this.state.modelSearchParams,

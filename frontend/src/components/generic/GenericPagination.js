@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row';
 // 'currentPageNum'
 // 'numPages' number of pages
 // 'numResults' number of results
+// 'resultsPerPage' number of results displayed per page
 // 'onShowAll' function to call when show all is called
 // 'onPageClicked' a handler that will be passed the page number desired
 // 'onShowAllToggle' a handler that will be called when the button is clicked
@@ -17,8 +18,7 @@ import Row from 'react-bootstrap/Row';
 let lowerBound = 0;
 let upperBound = 0;
 const genericPagination = (props) => {
-    console.log(props)
-    setBounds(props.currentPageNum, props.numResults);
+    setBounds(props.currentPageNum, props.numResults, props.resultsPerPage);
     return (
         <Row className="pagination">
 
@@ -26,7 +26,7 @@ const genericPagination = (props) => {
                 {/* <Pagination.First /> */}
                 <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === "1"} />
                 <Pagination.Item>{props.currentPageNum}</Pagination.Item>
-                <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={props.currentPageNum === props.numPages} />
+                <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={parseInt(props.currentPageNum) === props.numPages} />
                 {/* <Pagination.Last /> */}
             </Pagination>
             <p>{(props.isShown) ? `${lowerBound} - ${upperBound} of ${props.numResults}` : `1-${props.numResults} of ${props.numResults}`}</p>
@@ -36,9 +36,9 @@ const genericPagination = (props) => {
     )
 }
 
-const setBounds = (currentPage, numResults) => {
-    lowerBound = (currentPage - 1) * 10 + 1;
-    upperBound = currentPage * 10;
+const setBounds = (currentPage, numResults, resultsPerPage) => {
+    lowerBound = (currentPage - 1) * resultsPerPage + 1;
+    upperBound = currentPage * resultsPerPage;
     if (upperBound > numResults) {
         upperBound = numResults;
     }

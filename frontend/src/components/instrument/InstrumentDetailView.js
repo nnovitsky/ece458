@@ -61,6 +61,7 @@ class InstrumentDetailView extends Component {
 
     async componentDidMount() {
         await this.getInstrumentInfo();
+        await this.getCalHistory();
     }
 
     render(
@@ -128,13 +129,29 @@ class InstrumentDetailView extends Component {
                             serial_number: data.serial_number,
                             comment: data.comment,
                             calibration_frequency: data.item_model.calibration_frequency,
-                            calibration_history: data.calibration_events,
                             calibration_expiration: data.calibration_expiration
 
                         }
                     })
                 }
 
+            }
+        )
+    }
+
+    async getCalHistory() {
+        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        instrument_info: {
+                            ...this.state.instrument_info,
+                            calibration_history: result.data
+                        }
+                    })
+                } else {
+                    console.log("failed to get cal history");
+                }
             }
         )
     }
@@ -253,6 +270,7 @@ class InstrumentDetailView extends Component {
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();
+                    this.getCalHistory();
                     this.onAddCalibrationClose();
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);

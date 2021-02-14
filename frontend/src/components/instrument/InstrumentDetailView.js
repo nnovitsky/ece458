@@ -11,6 +11,7 @@ import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
+import GenericPagination from '../generic/GenericPagination';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed } from '../generic/Util';
 
@@ -35,6 +36,15 @@ class InstrumentDetailView extends Component {
                 calibration_frequency: '',
                 calibration_expiration: '',
                 calibration_history: [],
+            },
+            calibration_pagination: {
+                resultCount: '',
+                numPages: '',
+                resultsPerPage: 10,
+                currentPageNum: '',
+                numResults: '',
+                isShowAll: '',
+                desiredPage: '1'
             },
             addCalPopup: {
                 isShown: false,
@@ -78,6 +88,18 @@ class InstrumentDetailView extends Component {
         let calibrationCol = (
             <Col xs={7}>
                 {this.makeCalibrationTable()}
+                <GenericPagination
+                    currentPageNum={this.state.calibration_pagination.currentPageNum}
+                    numPages={this.state.calibration_pagination.numPages}
+                    numResults={this.state.calibration_pagination.numResults}
+                    resultsPerPage={this.state.calibration_pagination.resultsPerPage}
+                    onShowAll={() => console.log("Make On Show All Function")}
+                    onPageClicked={() => console.log("Make on page clicked function")}
+                    onShowAllToggle={() => console.log("Make on show all toggle")}
+                    isShown={!this.state.calibration_pagination.isShowAll}
+                    buttonText="Show All"
+
+                />
             </Col>
         )
 

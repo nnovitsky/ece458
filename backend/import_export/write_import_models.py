@@ -25,5 +25,5 @@ def handler(verified_file):
     if not db_model_upload.is_valid(): return False, None, "Error writing models to db."
 
     db_model_upload.save()
-    upload_summary = f"Successfully wrote {len(model_data)} models to the database."
+    upload_summary = f"Successfully wrote {len(model_data)} model(s) to the database."
     return True, model_data, upload_summary

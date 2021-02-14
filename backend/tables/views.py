@@ -9,8 +9,8 @@ from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 from backend.tables import pdf_generator
-from backend.import_export import validate_model_import
-from backend.import_export import write_import_models
+from backend.import_export import validate_model_import, validate_instrument_import
+from backend.import_export import write_import_models, write_import_instruments
 
 
 @api_view(['GET'])
@@ -284,7 +284,8 @@ def import_models_csv(request):
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}, {upload_summary}"]}, status=status.HTTP_200_OK)
+        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
+                        status=status.HTTP_200_OK)
 
 
 @api_view(['PUT'])
@@ -318,7 +319,8 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}"]}, status=status.HTTP_200_OK)
+        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
+                        status=status.HTTP_200_OK)
 
 
 # USERS

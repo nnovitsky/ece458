@@ -9,8 +9,8 @@ from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 from backend.tables import pdf_generator
-from backend.import_export import validate_instrument_import, validate_model_import
-from backend.import_export import write_import_instruments, write_import_models
+from backend.import_export import validate_model_import
+from backend.import_export import write_import_models
 
 
 @api_view(['GET'])
@@ -365,9 +365,9 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        if not request.user.is_staff:
-            return Response(
-                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+         # if not request.user.is_staff:
+             # return Response(
+                # {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

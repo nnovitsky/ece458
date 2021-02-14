@@ -18,8 +18,8 @@ export default class AuthServices {
     });
   }
 
+  // handles modified/expired token
   async getCurrentUser() {
-
     const token = localStorage.getItem('token');
 
     let result = {
@@ -34,26 +34,29 @@ export default class AuthServices {
         Authorization: `JWT ${token}`
       }
     })
-      .then(res => res.json())
-      .then(
-        (json) => {
-          console.log(json);
+      .then(res => {
+        if (res.ok) {
+          return res.json().then(json => {
+            result.data = json;
+            return result;
+          });
+        } else {
+          return res.json().then(json => {
           if (json.detail === 'Signature has expired.') {
-            console.log("GET NEW TOKEN")
+            window.location.reload();
             result.success = false;
+            return result;
           }
-          if(json.detail === 'Error decoding signature.')
-          {
+            if (json.detail === 'Error decoding signature.') {
+              window.location.reload();
             result.success = false;
-          }
-          result.data = json
-          return result
-        },
-        (error) => {
-          console.log(error)
+              return result;
+            }
           result.success = false;
-          return result
-        }
-      )
-  }
+            result.errors = json;
+            return result;
+          })
+      }
+      })
+    }
 }

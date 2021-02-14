@@ -3,15 +3,16 @@ import './ImportPage.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import GenericTable from '../generic/GenericTable';
-import instramentData from "./import_holder_data.json";
-import myInstructions from './ImportInstructions.js';
+import ModelServices from "../../api/modelServices.js";
+import InstrumentServices from "../../api/instrumentServices.js";
+import ImportPagePopup from './ImportPagePopup';
 
 
 const keys = ["$.type", "$.model_number", "$.serial"];
 const headers = ["Type", "Model Number", "Serial Number", "More"];
 const buttonText = ["More"];
-const importInstructions = myInstructions;
-let data = instramentData.tools;
+const modelServices = new ModelServices();
+const instrumentServices = new InstrumentServices();
 
 
 class ImportPage extends Component {
@@ -20,47 +21,66 @@ class ImportPage extends Component {
         super(props);
         this.state = {
             selectedFile: null,
-            error_message: ''
-          }
+            status_message: '',
+            records_count: '',
+            tableData: [],
+            showInstructionsPopup: {
+                isShown: false,
+            },
+        }
+        this.onShowInstructionsClosed = this.onShowInstructionsClosed.bind(this);
 
     }
 
-    render() {return (
+    render() {
+        return (
+            <div>
+            <ImportPagePopup
+                    isShown={this.state.showInstructionsPopup.isShown}
+                    onClose={this.onShowInstructionsClosed}
+                />
+
             <div className="background">
                 <div className="row mainContent">
                     <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
                     <div className="col-5"><h2>Import</h2>
-                    <form className="text-center" method="post" action="#" id="#">
-                    <div className="form-group files">
-                        <label>Upload Your File</label>
-                        <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
-                    </div>
-                    </form>
-                        <h5 className="text-center">{this.state.error_message}</h5>
-                        <button className="bigButton" onClick={this.importClicked}>Import</button>
-                        <div className="instructions">
-                            <h3>How to Import</h3>
-                            <p>{importInstructions}</p>
+                        <form className="text-center" method="post" action="#" id="#">
+                            <div className="form-group files">
+                                <label>Upload Your File</label>
+                                <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                            </div>
+                        </form>
+                        <div className="text-center">
+                        <button className="import" onClick={this.importModelClicked}>Import Model</button>
+                        <button className="import" onClick={this.importInstrumentClicked}>Import Instrument</button>
                         </div>
                     </div>
                     <div className="col-4 leftText">
-                    <h2>Summary</h2>
-                    <div className="summary overflow-auto">
+                        <h2>Summary</h2>
+                        <div className="summary overflow-auto">
                             <p>
-                                Status: In Progress/Success/Errors
+                                Status: <b>{this.state.status_message}</b>
                                 <br></br>
                                 <br></br>
-                                Records Count: All of the text in here needs to be generated
-                                based on what the result of the inport is. Guessing the number
-                                of errors/successes will be genrated in the backend and we 
-                                will need to parse a JSON describing this event.
+                                Records Count: <b>{this.state.records_count}</b>
                             </p>
                         </div>
-                        <GenericTable data={data} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />
+                        <div className="text-center">
+                        <button onClick={this.onShowInstructionsClicked}>How to Import</button>
+                        </div>
+                    </div>
+
+
+                    <div className="row">
+                        <div className="col-4"> </div>
+                        <div className="col-5">
+                            <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={buttonText} buttonFunctions={[this.onEntryClicked]} />                         
+                        </div>
+                        <div className="col-4"> </div>
                     </div>
                 </div>
             </div>
-
+            </div>
         );
     }
 
@@ -68,29 +88,92 @@ class ImportPage extends Component {
         console.log(e.target.files[0])
         this.setState({
             selectedFile: e.target.files[0],
-            error_message: ''
+            status_message: 'Selected File',
+            records_count: '',
         })
     }
 
-    importClicked = (e) => {
-        if(this.state.selectedFile !== null && typeof(this.state.selectedFile) !== 'undefined')
-        {
-            console.log(this.state.selectedFile.name)
-            console.log(this.state.selectedFile.type)
+    onShowInstructionsClicked = () => {
+        this.setState({
+            showInstructionsPopup: {
+                ...this.state.showInstructionsPopup,
+                isShown: true
+            }
+        })
+    }
+
+    onShowInstructionsClosed() {
+        this.setState({
+            showInstructionsPopup: {
+                ...this.state.showInstructionsPopup,
+                isShown: false
+            }
+        })
+    }
+
+    importModelClicked = (e) => {
+        if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
             this.setState({
-                error_message: 'Uploding File...'
+                status_message: 'Uploding Model File...'
             })
+            const formData = new FormData();
+                formData.append('FILE', this.state.selectedFile);
+
+            modelServices.importModelCSV(formData)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({
+                            status_message: "Success",
+                            records_count: res.data.description
+                        })
+                    }
+                    else {
+                        this.setState({
+                            status_message: "Upload Errors",
+                            records_count: res.errors["Upload error"][0]
+                        })
+                    }
+
+                })
         }
-        else
-        {
+        else {
             this.setState({
-                error_message: "Error: No file chosen"
+                status_message: "No file chosen"
             })
         }
     }
 
-    onEntryClicked= (e) => {
-        console.log("Clicked Entry");
+
+    importInstrumentClicked = (e) => {
+        if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
+            this.setState({
+                status_message: 'Uploding Instrument File...'
+            })
+            const formData = new FormData();
+                formData.append('FILE', this.state.selectedFile);
+
+            instrumentServices.importInstrumentCSV(formData)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({
+                            status_message: "Success",
+                            records_count: res.data.description
+                        })
+                    }
+                    else {
+                        this.setState({
+                            status_message: "Upload Errors",
+                            records_count: res.errors["Upload error"][0]
+                        })
+                    }
+
+                })
+        }
+        else {
+            this.setState({
+                status_message: "No file chosen"
+            })
+        }
     }
 }
 

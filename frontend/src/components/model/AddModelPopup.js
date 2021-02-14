@@ -34,8 +34,7 @@ class AddModelPopup extends Component {
         super(props);
 
         //for whatever reason the select compne
-        if (props.currentModel !== null) {
-            console.log("not null")
+        if (props.currentModel != null) {
             this.state = {
                 isEdit: true,
                 newModel: {
@@ -49,7 +48,7 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                 },
-                vendorsArr: []
+                vendorsArr: null
             }
         } else {
             this.state = {
@@ -66,13 +65,14 @@ class AddModelPopup extends Component {
                     calibration_frequency: '',
 
                 },
-                vendorsArr: [],
+                vendorsArr: null
             }
         }
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
+        this.onClose = this.onClose.bind(this);
     }
 
     async componentDidMount() {
@@ -80,6 +80,9 @@ class AddModelPopup extends Component {
     }
 
     render() {
+        if (this.state.vendorsArr === null) {
+            this.getVendorsArr();
+        }
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
@@ -90,7 +93,7 @@ class AddModelPopup extends Component {
                 headerText={bodyText}
                 closeButtonText="Cancel"
                 submitButtonText={submitText}
-                onClose={this.props.onClose}
+                onClose={this.onClose}
                 onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
                 errors={this.props.errors}
@@ -211,7 +214,7 @@ class AddModelPopup extends Component {
                 vendor: this.state.newModel.vendor.label,
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
-                description: this.state.newModel.description
+                description: this.state.newModel.description,
             }
 
             if (newModel.calibration_frequency === '') {
@@ -236,7 +239,7 @@ class AddModelPopup extends Component {
                 calibration_frequency: '',
 
             },
-            vendorsArr: [],
+            vendorsArr: null,
         })
         this.props.onClose();
     }

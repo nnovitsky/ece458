@@ -6,24 +6,3 @@ th.selected {
 th.notSelected {
     background-color: white;
 }
-
-.model-table {
-    overflow-y: scroll;
-
-    max-height: 50vh;
-    
-}
-
-.model-table::-webkit-scrollbar {
-    -webkit-appearance: none;
-}
-
-.model-table::-webkit-scrollbar:vertical {
-    width: 15px;
-}
-
-.model-table::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    border: 2px solid white; /* should match background, can't be transparent */
-    background-color: rgba(0, 0, 0, .5);
-}

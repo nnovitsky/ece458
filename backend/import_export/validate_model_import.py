@@ -47,9 +47,6 @@ def validate_row(current_row):
 
 def contains_duplicates():
 
-    print("Sheet models: ", sheet_models)
-    print("Set Sheet models: ", set(sheet_models))
-
     if len(sheet_models) != len(set(sheet_models)):
         return True, "Duplicate models contained within the imported sheet."
 

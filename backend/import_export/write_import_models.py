@@ -21,7 +21,6 @@ def handler(verified_file):
 
     model_data = get_model_list(verified_file)
     db_model_upload = ItemModelSerializer(data=model_data, many=True)
-    print("db_model_upload: ", db_model_upload)
 
     if not db_model_upload.is_valid(): return False, None, "Error writing models to db."
 

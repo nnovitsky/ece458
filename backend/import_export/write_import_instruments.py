@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 instrument_keys = ['item_model', 'serial_number', 'comment']
 cal_event_keys = ['date', 'user', 'instrument','comment']
-
+record_keys = ['Vendor', 'Model-Number', 'Serial-Number', 'Comment', 'Calibration-Date', 'Calibration-Comment']
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
 SERIAL_NUM_INDEX = 2
@@ -57,6 +57,8 @@ def get_instrument_list(file):
     reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
     headers = next(reader)
     for row in reader:
+        instrument_data.append(dict(zip(record_keys, row)))
+
         item_model = ItemModel.objects.filter(vendor=row[VENDOR_INDEX]).filter(model_number=row[MODEL_NUM_INDEX])[0]
         instrument_upload_success, current_instrument = upload_instrument(row, item_model)
 

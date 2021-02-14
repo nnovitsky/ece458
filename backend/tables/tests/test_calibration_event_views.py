@@ -14,7 +14,6 @@ tests:
 - get single cal event
 - edit cal event
 - delete cal event
-#TODO: add cal event filter/sort tests
 #TODO: add non happy path tests
 """
 
@@ -32,6 +31,7 @@ class InstrumentTests(TestCase):
         Instrument(item_model=ItemModel.objects.get(pk=1), serial_number='s1', comment="a comment").save()
         Instrument(item_model=ItemModel.objects.get(pk=2), serial_number='s1').save()
         CalibrationEvent(instrument=Instrument.objects.get(pk=1), date='2020-12-31', comment="cal", user=cls.user_staff).save()
+        CalibrationEvent(instrument=Instrument.objects.get(pk=1), date='2019-12-31', user=cls.user_non_staff).save()
         cls.cal_event_data = {
             "instrument": 1,
             "date": "2021-01-10",
@@ -74,3 +74,20 @@ class InstrumentTests(TestCase):
         response = self.client.delete(reverse('calibration_event_detail', args=[pk]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_cal_event_filter_user(self):
+        username = "newUser2"
+        response = self.client.get(reverse('calibration_event_search'), {'user': username},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        cal_events = CalibrationEvent.objects.filter(user__username=username)
+        serializer = SimpleCalibrationEventReadSerializer(cal_events, many=True)
+        self.assertEqual(serializer.data, response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_cal_event_filter_instrument(self):
+        ins_pk = 1
+        response = self.client.get(reverse('calibration_event_search'), {'instrument_pk': ins_pk},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        cal_events = CalibrationEvent.objects.filter(instrument__pk=ins_pk)
+        serializer = SimpleCalibrationEventReadSerializer(cal_events, many=True)
+        self.assertEqual(serializer.data, response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

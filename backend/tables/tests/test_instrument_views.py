@@ -14,7 +14,6 @@ tests:
 - get single instrument
 - edit instrument
 - delete instrument
-#TODO: add instrument filter/sort tests
 #TODO: add non happy path tests
 """
 
@@ -72,3 +71,38 @@ class InstrumentTests(TestCase):
         response = self.client.delete(reverse('instrument_detail', args=[pk]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_instrument_filter_model_num(self):
+        model_number = 'm1'
+        response = self.client.get(reverse('instrument_search'), {'model_number': model_number, 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        instruments = Instrument.objects.filter(item_model__model_number=model_number)
+        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer.data, response.data['data'])
+
+    def test_instrument_filter_model_pk(self):
+        model_pk = 2
+        response = self.client.get(reverse('instrument_search'), {'model_pk': model_pk, 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        instruments = Instrument.objects.filter(item_model__pk=model_pk)
+        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer.data, response.data['data'])
+
+    def test_instrument_sort_cal_exp(self):
+        # difficult to test content of results without using the same endpoint, can manually check if needed
+        response = self.client.get(reverse('instrument_search'), {'sort_by': 'calibration_expiration_date', 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response2 = self.client.get(reverse('instrument_search'), {'sort_by': '-calibration_expiration_date', 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(response.data['data'], response2.data['data'])
+
+    def test_instrument_sort_model_num(self):
+        response = self.client.get(reverse('instrument_search'), {'sort_by': 'model_number_lower', 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        instruments = Instrument.objects.order_by('item_model__model_number')
+        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer.data, response.data['data'])

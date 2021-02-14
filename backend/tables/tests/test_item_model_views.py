@@ -16,7 +16,6 @@ tests:
 - delete item model
 - get vendor list
 - get model num by vendor list
-#TODO: add filter/sort test
 #TODO: add non happy path tests
 """
 
@@ -90,3 +89,20 @@ class ItemModelTests(TestCase):
         response = self.client.get(reverse('models_by_vendor', args=[vendor]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_item_model_filter_vendor(self):
+        vendor = 'v1'
+        response = self.client.get(reverse('model_search'), {'vendor': vendor, 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        models = ItemModel.objects.filter(vendor=vendor)
+        serializer = ItemModelSerializer(models, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer.data, response.data['data'])
+
+    def test_item_model_sort_model_num(self):
+        response = self.client.get(reverse('model_search'), {'sort_by': '-model_number_lower', 'get_all': True},
+                                   HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
+        models = ItemModel.objects.order_by('-model_number')
+        serializer = ItemModelSerializer(models, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer.data, response.data['data'])

@@ -9,8 +9,8 @@ from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
 from backend.tables import pdf_generator
-from backend.import_export import validate_model_import
-from backend.import_export import write_import_models
+from backend.import_export import validate_model_import, validate_instrument_import
+from backend.import_export import write_import_models, write_import_instruments
 
 
 @api_view(['GET'])
@@ -284,7 +284,43 @@ def import_models_csv(request):
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}, {upload_summary}"]}, status=status.HTTP_200_OK)
+        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
+                        status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def import_instruments_csv(request):
+    """
+    Imports a .csv file that contains instrument information based on requirements
+    and uploads the data to the db.
+    """
+    if not request.user.is_staff:
+        return Response({"permission_error": ["User does not have permission."]},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        uploaded_file = request.FILES['FILE']
+    except KeyError:
+        return Response({"Upload error": ["No file was uploaded."]},
+                        status=status.HTTP_409_CONFLICT)
+
+    if uploaded_file.content_type != 'text/csv':
+        return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
+                        status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    correct_format, format_response = validate_instrument_import.handler(uploaded_file)
+    if not correct_format:
+        return Response({"Upload error": [f"{format_response}"]},
+                        status=status.HTTP_412_PRECONDITION_FAILED)
+
+    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file)
+
+    if not db_write_success:
+        return Response({"Upload error": [f"DB write error: {upload_summary}"]},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
+                        status=status.HTTP_200_OK)
 
 
 # USERS

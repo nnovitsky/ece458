@@ -3,18 +3,16 @@ import './ImportPage.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import GenericTable from '../generic/GenericTable';
-import instramentData from "./import_holder_data.json";
-import myInstructions from './ImportInstructions.js';
-import ModelServices from "../../api/modelServices";
+import ModelServices from "../../api/modelServices.js";
+import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
 
 
 const keys = ["$.type", "$.model_number", "$.serial"];
 const headers = ["Type", "Model Number", "Serial Number", "More"];
 const buttonText = ["More"];
-const importInstructions = myInstructions;
-let data = instramentData.tools;
 const modelServices = new ModelServices();
+const instrumentServices = new InstrumentServices();
 
 
 class ImportPage extends Component {
@@ -151,16 +149,31 @@ class ImportPage extends Component {
             this.setState({
                 status_message: 'Uploding Instrument File...'
             })
+            const formData = new FormData();
+                formData.append('FILE', this.state.selectedFile);
+
+            instrumentServices.importInstrumentCSV(formData)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({
+                            status_message: "Success",
+                            records_count: res.data.description
+                        })
+                    }
+                    else {
+                        this.setState({
+                            status_message: "Upload Errors",
+                            records_count: res.errors["Upload error"][0]
+                        })
+                    }
+
+                })
         }
         else {
             this.setState({
-                status_message: "Error: No file chosen"
+                status_message: "No file chosen"
             })
         }
-    }
-
-    onEntryClicked = (e) => {
-        console.log("Clicked Entry");
     }
 }
 

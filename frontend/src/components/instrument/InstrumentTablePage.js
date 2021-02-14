@@ -294,6 +294,9 @@ class InstrumentTablePage extends Component {
             case "Calibration Expiration":
                 sortingKey = "calibration_expiration_date"
                 return sortingKey;
+            case "Status":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey;
             default:
                 this.setState({
                     sortingIndicator: ''

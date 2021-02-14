@@ -309,6 +309,7 @@ class InstrumentDetailView extends Component {
             formattedDataArr.push(formattedData);
         })
         return (
+            <div className="data-table">
             <GenericTable
                 data={formattedDataArr}
                 keys={['$.date', '$.comment', '$.name', '$.username']}
@@ -318,6 +319,7 @@ class InstrumentDetailView extends Component {
                 tableTitle="Calibration History"
 
             />
+            </div>
         )
     }
 

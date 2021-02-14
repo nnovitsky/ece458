@@ -1,6 +1,6 @@
 import json
 from rest_framework import status
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from backend.tables.models import *
 from backend.tables.serializers import *
@@ -16,6 +16,8 @@ tests:
 - delete item model
 - get vendor list
 - get model num by vendor list
+#TODO: add filter/sort test
+#TODO: add non happy path tests
 """
 
 

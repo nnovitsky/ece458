@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from backend.tables.models import *
 from backend.tables.serializers import *
+from backend.tables.utils import setUpTestAuth
 
 
 """
@@ -23,52 +24,27 @@ class UserTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.client = Client()
-        User.objects.all().delete()
-        cls.userData = {
-            'username': "newUser",
-            'password': "pw123",
-            'first_name': "fname",
-            'last_name': "lname",
-            'email': "e@g.com"
-        }
-        cls.loginData = {
-            'username': cls.userData['username'],
-            'password': cls.userData['password']
-        }
-        cls.token_staff, cls.user_staff = cls.make_user(username="newUser", is_staff=True, data=cls.userData, login=cls.loginData, client=cls.client)
-        cls.token_non_staff, cls.user_non_staff = cls.make_user(username="newUser2", is_staff=False, data=cls.userData, login=cls.loginData, client=cls.client)
-
-    @classmethod
-    def make_user(cls, username, is_staff, data, login, client):
-        data['username'] = username
-        login['username'] = username
-        u = User(**data)
-        u.set_password("pw123")
-        u.is_staff = is_staff
-        u.save()
-        response = client.post(reverse('token_auth'), data=json.dumps(login), content_type='application/json')
-        return response.data['token'], u
+        setUpTestAuth(cls)
 
     def test_create_user_anonymous(self):
-        self.userData['username'] = "newUser3"
-        response = self.client.post(reverse('create_user'), data=json.dumps(self.userData), content_type='application/json')
+        self.user_data['username'] = "newUser3"
+        response = self.client.post(reverse('create_user'), data=json.dumps(self.user_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_user_nonauth(self):
-        self.userData['username'] = "newUser3"
-        response = self.client.post(reverse('create_user'), data=json.dumps(self.userData),
+        self.user_data['username'] = "newUser3"
+        response = self.client.post(reverse('create_user'), data=json.dumps(self.user_data),
                                     content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(self.token_non_staff))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_user_auth(self):
-        self.userData['username'] = "newUser3"
-        response = self.client.post(reverse('create_user'), data=json.dumps(self.userData),
+        self.user_data['username'] = "newUser3"
+        response = self.client.post(reverse('create_user'), data=json.dumps(self.user_data),
                                     content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_auth_user_auth(self):
-        response = self.client.post(reverse('token_auth'), data=json.dumps(self.loginData), content_type='application/json')
+        response = self.client.post(reverse('token_auth'), data=json.dumps(self.login_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_auth_user_bad_data(self):

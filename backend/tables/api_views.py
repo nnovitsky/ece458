@@ -22,11 +22,14 @@ class ItemModelList(ListAPIView):
 class InstrumentList(ListAPIView):
     # annotate list with most recent calibration and calibration expiration date
     max_date = datetime.date(9999, 12, 31)
+    min_date = datetime.date(1, 1, 1)
     queryset = Instrument.objects.all().annotate(vendor_lower=Func(F('item_model__vendor'), function='LOWER')).annotate(
         model_number_lower=Func(F('item_model__model_number'), function='LOWER')).annotate(
         description_lower=Func(F('item_model__description'), function='LOWER')).annotate(
         serial_number_lower=Func(F('serial_number'), function='LOWER'))
-    ''' duration_expression = F('item_model__calibration_frequency') * 86400000000
+
+    # uncomment the multiplication if using sqlite bc sqlite DurationField defaults to milliseconds
+    duration_expression = F('item_model__calibration_frequency') #* 86400000000
     duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
     expiration_expression = F('most_recent_calibration') + F('cal_freq')
     queryset = queryset.annotate(most_recent_calibration=Case(
@@ -36,8 +39,8 @@ class InstrumentList(ListAPIView):
         cal_freq=duration_wrapped_expression).annotate(
         calibration_expiration_date=Case(When(item_model__calibration_frequency__lte=0, then=max_date),
                                          When(most_recent_calibration__isnull=False, then=expiration_expression),
-                                         default=None,
-                                         output_field=DateField(), )) '''
+                                         default=min_date,
+                                         output_field=DateField(), ))
 
     serializer_class = ListInstrumentReadSerializer
     filter_backends = (DjangoFilterBackend,)

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
@@ -213,8 +213,8 @@ class ModelTablePage extends Component {
     async exportModels(isAll) {
         modelServices.exportModels(this.state.modelSearchParams.filters, isAll).then(result => {
             if (result.success) {
-                window.open(result.url, '_blank');
-                URL.revokeObjectURL(result.url);
+                let date = dateToString(new Date());
+                nameAndDownloadFile(result.url, `${date}-model-export`);
             }
         })
     }

@@ -1,7 +1,9 @@
 # Deployment Guide
 Fantastic Four
-Juliet Yznaga
+Carrie Hunner 
 Natalie Novitsky 
+Jack Wood
+Juliet Yznaga
 
 ## Initial Technologies
 - Ubuntu 20.04 with ssh key configured and user with sudo privileges

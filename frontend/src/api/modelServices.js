@@ -26,14 +26,11 @@ export default class ModelServices {
             url = `${url}&sort_by=${sort_by}`;
         }
 
-
         if (show_all) {
             url = `${url}&get_all`
         } else {
             url = `${url}&page=${pageNum}`
         }
-
-        console.log(url)
 
         return fetch(url, {
             method: 'GET',

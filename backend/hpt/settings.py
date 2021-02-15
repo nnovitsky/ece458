@@ -90,7 +90,7 @@ DATABASES = {
         'NAME': 'evolution_one',
         'USER': 'admin_hpt_user',
         'PASSWORD': 'fantasticfour2021!',
-        'HOST': 'vcm-18278.vm.duke.edu',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

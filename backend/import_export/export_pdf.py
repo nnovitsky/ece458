@@ -61,6 +61,7 @@ def get_fields(instrument):
 
     return fields
 
+
 #TODO: handle longer text as a second line (e.g. long comments)
 def populate_pdf(buffer, fields):
     #HEADER
@@ -88,6 +89,6 @@ def handler(instrument):
     try:
         return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
     except IOError:
-        Response(status=status.HTTP_418_IM_A_TEAPOT)
+        return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 

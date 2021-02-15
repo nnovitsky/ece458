@@ -2,9 +2,10 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-from ..config.character_limits import *
+from ..config.character_limits import VENDOR_MAX_LENGTH, MODEL_NUM_MAX_LENGTH, SERIAL_NUM_MAX_LENGTH, DESC_MAX_LENGTH, \
+    COMMENT_MAX_LENGTH, CAL_FREQUENCY_MAX_DURATION
 
 one_line = 100
 two_line = 200
@@ -18,7 +19,8 @@ class ItemModel(models.Model):
     model_number = models.CharField(max_length=MODEL_NUM_MAX_LENGTH)
     description = models.CharField(max_length=DESC_MAX_LENGTH)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
-    calibration_frequency = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    calibration_frequency = models.IntegerField(default=0, validators=[MinValueValidator(0),
+                                                                       MaxValueValidator(CAL_FREQUENCY_MAX_DURATION)])
 
     def __str__(self):
         return self.vendor + " " + self.model_number

@@ -91,7 +91,7 @@ DATABASES = {
         'USER': 'admin_hpt_user',
         'PASSWORD': 'fantasticfour2021!',
         'HOST': 'vcm-18278.vm.duke.edu',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 

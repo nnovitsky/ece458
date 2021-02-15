@@ -1,0 +1,83 @@
+import csv
+import io
+
+from backend.import_export import field_validators
+from backend.tables.models import ItemModel
+
+column_types = [
+    'Vendor',
+    'Model-Number',
+    'Short-Description',
+    'Comment',
+    'Calibration-Frequency',
+]
+
+VENDOR_INDEX = 0
+MODEL_NUM_INDEX = 1
+
+sheet_models = []
+
+
+def validate_row(current_row):
+
+    if len(current_row) != len(column_types):
+        return False, f"Row length mismatch. Expected {len(column_types)} " \
+                      f"but received {len(current_row)} items."
+
+    sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
+
+    for item, column_type in zip(current_row, column_types):
+
+        if column_type == 'Vendor':
+            valid_cell, info = field_validators.is_valid_vendor(item)
+        elif column_type == 'Model-Number':
+            valid_cell, info = field_validators.is_valid_model_num(item)
+        elif column_type == 'Short-Description':
+            valid_cell, info = field_validators.is_valid_description(item)
+        elif column_type == 'Comment':
+            valid_cell, info = field_validators.is_valid_comment(item)
+        elif column_type == 'Calibration-Frequency':
+            valid_cell, info = field_validators.is_valid_calibration_freq(item)
+
+        if not valid_cell:
+            return False, info
+
+    return True, "Valid Row"
+
+
+def contains_duplicates():
+
+    if len(sheet_models) != len(set(sheet_models)):
+        return True, "Duplicate models contained within the imported sheet."
+
+    db_models = ItemModel.objects.all()
+    for db_model in db_models:
+        if str(db_model) in sheet_models:
+            return True, f"Duplicate model ({db_model}) already exists in database"
+
+    return False, "No Duplicates!"
+
+
+def handler(uploaded_file):
+    sheet_models.clear()
+    uploaded_file.seek(0)
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
+
+    headers = next(reader)
+    has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
+    if not has_valid_columns:
+        return False, header_log
+
+    row_number = 1
+    for row in reader:
+        valid_row, row_info = validate_row(row)
+        if not valid_row:
+            return False, f"row {row_number} malformed input: " + row_info
+
+        row_number += 1
+
+    duplicate_error, duplicate_info = contains_duplicates()
+    if duplicate_error:
+        return False, f"Duplicate input: " + duplicate_info
+
+    return True, "Correct formatting."

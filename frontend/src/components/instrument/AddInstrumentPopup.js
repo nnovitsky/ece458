@@ -4,7 +4,6 @@ import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
 import "react-datepicker/dist/react-datepicker.css";
-import './instrument.css';
 import GenericPopup from "../generic/GenericPopup";
 
 //props
@@ -50,7 +49,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         } else {
@@ -69,7 +68,7 @@ class AddInstrumentPopup extends Component {
                     serial_number: '',
                     comment: '',
                 },
-                vendorsArr: [],
+                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -87,6 +86,9 @@ class AddInstrumentPopup extends Component {
     }
 
     render() {
+        if (this.state.vendorsArr === null) {
+            this.getVendorsArr();
+        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
@@ -123,6 +125,7 @@ class AddInstrumentPopup extends Component {
                     options={this.state.modelsFromVendorArr}
                     isSearchable={true}
                     onChange={this.onModelInput}
+                    noOptionsMessage={() => "Select a Vendor"}
                 />
                 <Form.Text muted>
                     The vendor needs to be entered first.
@@ -265,7 +268,7 @@ class AddInstrumentPopup extends Component {
                 serial_number: '',
                 comment: '',
             },
-            vendorsArr: [],
+            vendorsArr: null,
             modelsFromVendorArr: []
         })
     }

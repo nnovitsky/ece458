@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
+import GenericPagination from "../generic/GenericPagination";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
-import './instrument.css';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed } from '../generic/Util';
 
@@ -22,13 +23,24 @@ class InstrumentTablePage extends Component {
         super(props);
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
-            sortingIndicator: null,
             tableData: [],     //displayed data
-            filters: {
-                model_number: '',
-                vendor: '',
-                serial_number: '',
-                description: ''
+            url: '',
+            instrumentSearchParams: {
+                filters: {
+                    model: '',
+                    vendor: '',
+                    serial: '',
+                    description: ''
+                },
+                sortingIndicator: '',
+                desiredPage: '1',
+                showAll: false
+            },
+            pagination: {
+                resultCount: '',
+                numPages: '',
+                resultsPerPage: 10,
+                currentPageNum: ''
             },
             addInstrumentPopup: {
                 isShown: false,
@@ -41,9 +53,12 @@ class InstrumentTablePage extends Component {
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
-
+        this.onInstrumentSort = this.onInstrumentSort.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -76,19 +91,32 @@ class InstrumentTablePage extends Component {
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
+                            <CalStatusKey />
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.updateTable}
+                                onRemoveFilters={this.onRemoveFilters}
                             />
-                            <h4>{this.state.sortingIndicator}</h4>
+                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <InstrumentTable
                                 data={this.state.tableData}
+                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
                                 onDetailRequested={this.onDetailViewRequested}
                                 onCertificateRequested={this.onCertificateRequested}
                                 sortData={this.onInstrumentSort}
+                            />
+                            <hr />
+                            <GenericPagination
+                                currentPageNum={this.state.pagination.currentPageNum}
+                                numPages={this.state.pagination.numPages}
+                                numResults={this.state.pagination.resultCount}
+                                resultsPerPage={this.state.pagination.resultsPerPage}
+                                onPageClicked={this.onPaginationClick}
+                                onShowAllToggle={this.onToggleShowAll}
+                                isShown={!this.state.instrumentSearchParams.showAll}
+                                buttonText={(this.state.instrumentSearchParams.showAll) ? "Limit Results" : "Show All"}
                             />
                         </div>
 
@@ -100,18 +128,27 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
-        instrumentServices.getInstruments().then((result) => {
+        let params = this.state.instrumentSearchParams;
+        instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
-                    tableData: result.data
+                    tableData: result.data.data,
                 })
+                if (!this.state.instrumentSearchParams.showAll) {
+                    this.setState({
+                        pagination: {
+                            ...this.state.pagination,
+                            resultCount: result.data.count,
+                            numPages: result.data.numpages,
+                            currentPageNum: result.data.currentpage
+                        }
+                    })
+                }
             } else {
                 console.log("error")
             }
         })
     }
-
-
 
 
     onDetailViewRequested(e) {
@@ -121,26 +158,40 @@ class InstrumentTablePage extends Component {
     }
 
     onCertificateRequested(e) {
-        console.log(`Certificate requested for instrument: ${e.target.value}`);
+        instrumentServices.getCalibrationPDF(e.target.value)
+            .then(res => {
+                if (res.success) {
+                    window.open(res.url, '_blank')
+                    URL.revokeObjectURL(res.url)
+                }
+            })
     }
 
     async onFilteredSearch(newFilter) {
-        await instrumentServices.instrumentFilterSearch(newFilter).then(
-            (result) => {
-                if (result.success) {
-                    console.log("success")
-                    console.log(result.data)
-                    this.setState({
-                        tableData: result.data.data
-                    })
-                } else {
-                    console.log("Error with filter search")
-                }
-
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                filters: newFilter
             }
-        )
+        }, () => {
+            this.updateTable();
+        })
+    }
 
-
+    async onRemoveFilters() {
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                filters: {
+                    model: '',
+                    vendor: '',
+                    serial: '',
+                    description: ''
+                }
+            }
+        }, () => {
+            this.updateTable();
+        })
     }
 
     onAddInstrumentClicked = (e) => {
@@ -170,7 +221,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 } else {
-                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_instrument']);
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
                     console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {
@@ -193,7 +244,31 @@ class InstrumentTablePage extends Component {
             }
         })
     }
-    
+
+    async onPaginationClick(num) {
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                desiredPage: num
+            }
+        }, () => {
+                this.updateTable();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                instrumentSearchParams: {
+                    ...this.state.instrumentSearchParams,
+                    showAll: !prevState.instrumentSearchParams.showAll
+                }
+            }
+        }, () => {
+                this.updateTable();
+        })
+    }
+
     getURLKey = (sortingHeader) => {
         let sortingKey = null
         this.setState({
@@ -213,37 +288,41 @@ class InstrumentTablePage extends Component {
             case "Description":
                 sortingKey = "description_lower"
                 return sortingKey;
-            case "Latest Callibration":
-                    sortingKey = "-most_recent_calibration"
-                    return sortingKey; 
-            case "Callibration Expiration":
+            case "Latest Calibration":
+                sortingKey = "-most_recent_calibration"
+                return sortingKey;
+            case "Calibration Expiration":
                 sortingKey = "calibration_expiration_date"
-                return sortingKey; 
+                return sortingKey;
+            case "Status":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey;
             default:
                 this.setState({
-                    sortingIndicator: null
+                    sortingIndicator: ''
                 })
-                return null;
+                return '';
         }
     }
 
     onInstrumentSort = (sortingHeader) => {
 
-        var urlSortingKey = this.getURLKey(sortingHeader);
-        if(urlSortingKey === null) return;
-        console.log(urlSortingKey);
-        instrumentServices.getSortedInstruments(urlSortingKey)
-        .then((res) => {
-            if (res.success) {
-                this.setState({
-                    tableData: res.data
-                })
-            } else {
-                console.log("error")
+        let urlSortingKey = this.getURLKey(sortingHeader);
+
+        //this handles ascending/descending, it toggles between
+        if (this.state.instrumentSearchParams.sortingIndicator.includes(urlSortingKey)) {
+            if (this.state.instrumentSearchParams.sortingIndicator.charAt(0) !== '-') {
+                urlSortingKey = `-${urlSortingKey}`;
             }
         }
-    ); 
-
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                sortingIndicator: urlSortingKey
+            }
+        }, () => {
+            this.updateTable();
+        })
     }
 }
 export default InstrumentTablePage;

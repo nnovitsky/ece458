@@ -10,6 +10,7 @@ import GenericPopup from '../generic/GenericPopup';
 //'onSubmit' a handler that will be passed the new instrument information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'currentModel' an object formatted exactly like newModel below, can also pass null if no pre-existing
+//'errors' an optional field for an array of errors to be displayed
 
 // let newModel = {
 //     model_number: '',
@@ -33,12 +34,11 @@ class AddModelPopup extends Component {
         super(props);
 
         //for whatever reason the select compne
-        if (props.currentModel !== null) {
-            console.log("not null")
+        if (props.currentModel != null) {
             this.state = {
                 isEdit: true,
                 newModel: {
-                    model_pk: props.currentModel.model_pk,
+                    model_pk: props.currentModel.pk,
                     model_number: props.currentModel.model_number,
                     vendor: {
                         label: props.currentModel.vendor,
@@ -48,10 +48,9 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                 },
-                vendorsArr: []
+                vendorsArr: null
             }
         } else {
-            console.log('null')
             this.state = {
                 isEdit: false,
                 newModel: {
@@ -66,13 +65,14 @@ class AddModelPopup extends Component {
                     calibration_frequency: '',
 
                 },
-                vendorsArr: [],
+                vendorsArr: null
             }
         }
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
+        this.onClose = this.onClose.bind(this);
     }
 
     async componentDidMount() {
@@ -80,17 +80,23 @@ class AddModelPopup extends Component {
     }
 
     render() {
+        if (this.state.vendorsArr === null) {
+            this.getVendorsArr();
+        }
         let body = this.makeBody();
+        let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
+        let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
         return (
             <GenericPopup
                 show={this.props.isShown}
                 body={body}
-                headerText="Add Model"
+                headerText={bodyText}
                 closeButtonText="Cancel"
-                submitButtonText="Create Model"
-                onClose={this.props.onClose}
-                onSubmit={(e) => this.onSubmit(e, this.props.onSubmit)}
+                submitButtonText={submitText}
+                onClose={this.onClose}
+                onSubmit={this.onSubmit}
                 submitButtonVariant="primary"
+                errors={this.props.errors}
             />
         )
     }
@@ -99,7 +105,7 @@ class AddModelPopup extends Component {
         return (
             <Form className="popup">
                 <Form.Label>Model Number</Form.Label>
-                <Form.Control required type="text" name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
+                <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
                 <Form.Label>Vendor</Form.Label>
                 <Select
@@ -110,13 +116,13 @@ class AddModelPopup extends Component {
                     defaultInputValue={''}
                 />
                 <Form.Label>Description</Form.Label>
-                <Form.Control required type="text" name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
+                <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
                 <Form.Label>Comments</Form.Label>
-                <Form.Control as="textarea" rows={3} name={commentName} onChange={this.onTextInput} />
+                <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
 
-                <Form.Label>Callibration Frequency (days)</Form.Label>
-                <Form.Control required type="text" name={callibrationName} onChange={this.onTextInput} placeholder="Enter Callibration Frequency" />
+                <Form.Label>Calibration Frequency (days)</Form.Label>
+                <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
             </Form>
         )
@@ -200,21 +206,21 @@ class AddModelPopup extends Component {
         }
     }
 
-    onSubmit = (e) => {
+    onSubmit() {
         if (this.isValid()) {
             let newModel = {
+                pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
                 vendor: this.state.newModel.vendor.label,
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
-                description: this.state.newModel.description
+                description: this.state.newModel.description,
             }
 
             if (newModel.calibration_frequency === '') {
                 newModel.calibration_frequency = 0;
             }
             this.props.onSubmit(newModel);
-            this.onClose();
         }
     }
 
@@ -233,7 +239,7 @@ class AddModelPopup extends Component {
                 calibration_frequency: '',
 
             },
-            vendorsArr: [],
+            vendorsArr: null,
         })
         this.props.onClose();
     }
@@ -241,6 +247,10 @@ class AddModelPopup extends Component {
     isValid = () => {
         return true;
     }
+}
+
+AddModelPopup.defaultProps = {
+    errors: []
 }
 
 export default AddModelPopup;

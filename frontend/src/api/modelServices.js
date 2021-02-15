@@ -1,9 +1,10 @@
-import modelData from './modelData.json';
-
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 export default class ModelServices {
-    async getModels() {
+
+    // catches if the token is modified, good for error catching
+    async getModels(filters, sort_by, show_all, pageNum) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -11,33 +12,109 @@ export default class ModelServices {
             data: [],
         }
 
-        const url = `${API_URL}/api/models/`;
+        let url = `${API_URL}/api/model_search/?`;
+        let count = 0;
+        for (var key in filters) {
+            if (count > 0) {
+                url += '&';
+            }
+            url += (key + `= ${filters[key]}`);
+            count++;
+        }
+
+        if (sort_by !== '') {
+            url = `${url}&sort_by=${sort_by}`;
+        }
+
+
+        if (show_all) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}`
+        }
+
+        console.log(url)
+
         return fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-        })
-            .then(res => res.json())
-            .then(
-                (json) => {
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.data = json;
+                    return result;
+                });
+            } else {
+                return res.json().then(json => {
                     if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+                        window.location.reload();
                         result.success = false;
+                        return result;
                     }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
-                    return result
-                }
-            )
+                    result.errors = json;
+                    return result;
+                })
+            }
+        }
+        )
     }
 
+    async getNewModelPage(pageUrl) {
+
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        const url = `${API_URL + pageUrl}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.data = json;
+                    return result;
+                });
+            } else {
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.errors = json;
+                    return result;
+                })
+            }
+        }
+        )
+    }
+
+    // Catches errors from the backend and has 
+    // appropriate error handling if the token gets bad
     async addModel(vendor, modelNumber, description, comment, calFrequency) {
+        const token = localStorage.getItem('token');
         let data = {
             vendor: vendor,
             model_number: modelNumber,
@@ -46,8 +123,10 @@ export default class ModelServices {
             calibration_frequency: calFrequency
         }
 
-        console.log(data);
-        const token = localStorage.getItem('token');
+        let result = {
+            success: true,
+            errors: []
+        }
 
         return fetch(`${API_URL}/api/models/`, {
             method: 'POST',
@@ -57,12 +136,76 @@ export default class ModelServices {
             },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json)
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
             })
     }
 
+
+    // Catches errors from the backend and has 
+
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency) {
+        const token = localStorage.getItem('token');
+
+        let data = {
+            vendor: vendor,
+            model_number: modelNumber,
+            description: description,
+            comment: comment,
+            calibration_frequency: calFrequency
+        }
+
+        let result = {
+            success: true,
+            errors: []
+        }
+
+        return fetch(`${API_URL}/api/models/${pk}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
+    // handling bad auth token
     async getModel(pk) {
         const token = localStorage.getItem('token');
 
@@ -78,29 +221,35 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
                         result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
+                        result.errors = json;
+                        return result;
+                    })
                 }
-        )
+            })
     }
 
     async deleteModel(pk) {
         const token = localStorage.getItem('token');
         let result = {
             success: true,
-            data: [],
+            errors: [],
         }
 
         return fetch(`${API_URL}/api/models/${pk}/`, {
@@ -109,62 +258,85 @@ export default class ModelServices {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-        })
-            
-    }
-
-    async modelFilterSearch(filters) {
-        console.log(filters)
-        const token = localStorage.getItem('token');
-
-        let result = {
-            success: true,
-            data: [],
-        }
-
-        let url = `${API_URL}/api/model_search/?`;
-        let count = 0;
-        for (var key in filters) {
-            if (count > 0) {
-                url += '&';
-            }
-            url += (key + `=${filters[key]}`);
-            count++;
-        }
-        console.log(url)
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `JWT ${token}`
-            },
-        })
-            .then(res => res.json())
-            .then(
-                (json) => {
+        }).then(res => {
+            if (res.ok) {
+                return result;
+            } else {
+                return res.json().then(json => {
                     if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+                        window.location.reload();
                         result.success = false;
                     }
-                    console.log(json)
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                    }
                     result.success = false;
+                    result.errors = json;
                     return result;
-                }
-            )
+                })
+            }
+        })
+
     }
 
+    // // handles bad token
+    // async modelFilterSearch(filters) {
+    //     const token = localStorage.getItem('token');
+
+    //     let result = {
+    //         success: true,
+    //         data: [],
+    //     }
+
+    //     let url = `${API_URL}/api/model_search/?`;
+    //     let count = 0;
+    //     for (var key in filters) {
+    //         if (count > 0) {
+    //             url += '&';
+    //         }
+    //         url += (key + `=${filters[key]}`);
+    //         count++;
+    //     }
+
+    //     return fetch(url, {
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             Authorization: `JWT ${token}`
+    //         },
+    //     }).then(res => {
+    //         if (res.ok) {
+    //             return res.json().then(json => {
+    //                 result.data = json;
+    //                 return result;
+    //             });
+    //         } else {
+    //             return res.json().then(json => {
+    //                 if (json.detail === 'Signature has expired.') {
+    //                     window.location.reload();
+    //                     result.success = false;
+    //                 }
+    //                 if (json.detail === 'Error decoding signature.') {
+    //                     window.location.reload();
+    //                     result.success = false;
+    //                 }
+    //                 result.success = false;
+    //                 result.errors = json;
+    //                 return result;
+    //             })
+    //         }
+    //     })
+    // }
+
+    // has handling if the token is modified/expired
     async getVendors() {
         const token = localStorage.getItem('token');
 
         let result = {
             success: true,
             data: [],
+            errors: []
         }
 
         let url = `${API_URL}/api/vendors/`;
@@ -176,24 +348,33 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
 
+       // has handling if the token is modified/expired
     async getModelByVendor(vendor) {
         const token = localStorage.getItem('token');
 
@@ -211,87 +392,114 @@ export default class ModelServices {
                 Authorization: `JWT ${token}`
             },
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
                         result.success = false;
-                    }
-                    result.data = json
-                    return result
-                },
-                (error) => {
-                    console.log(error);
-                    result.success = false;
-                    return result;
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
 
-    getAllModelNumbers() {
-        let result = new Set();
-        modelData.getModels.forEach(el => {
-            result.add(el["model number"]);
-        })
-        return Array.from(result);
-    }
-
-    getAllVendors() {
-        let result = new Set();
-        modelData.getModels.forEach(el => {
-            result.add(el["vendor"]);
-        })
-        return Array.from(result);
-    }
-
-    getAllDescriptions() {
-        let result = new Set();
-        modelData.getModels.forEach(el => {
-            result.add(el["description"]);
-        })
-        return Array.from(result);
-    }
-
-    getAllCallibrationFrequencies() {
-        let result = new Set();
-        modelData.getModels.forEach(el => {
-            result.add(el["callibration frequency"]);
-        })
-        return Array.from(result);
-    }
-
-    async getSortedModels(sortingKey) {
+    async importModelCSV(csvFile) {
         const token = localStorage.getItem('token');
 
         let result = {
             success: true,
-            data: [],
+            errors: [],
+            data:[]
         }
 
-        const url = `${API_URL}/api/model_search/?sort_by=${sortingKey}`;
-        return fetch(url, {
-            method: 'GET',
+        return fetch(`${API_URL}/api/import_models_csv/`, {
+            method: 'PUT',
             headers: {
-                Authorization: `JWT ${token}`
-            }
+                Authorization: `JWT ${token}`,
+            },
+            body: csvFile
         })
-            .then(res => res.json())
-            .then(
-                (json) => {
-                    if (json.detail === 'Signature has expired.') {
-                        console.log("GET NEW TOKEN")
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
                         result.success = false;
-                    }
-                    result.data = json.data
-                    return result
-                },
-                (error) => {
-                    console.log(error)
-                    result.success = false;
-                    return result
+                        result.errors = json;
+                        return result;
+                    })
                 }
-            )
+            })
     }
+
+
+//        // has handling if the token is modified/expired
+//     async getSortedModels(sortingKey) {
+//         const token = localStorage.getItem('token');
+
+//         let result = {
+//             success: true,
+//             data: [],
+//         }
+
+//         const url = `${API_URL}/api/model_search/?sort_by=${sortingKey}`;
+//         return fetch(url, {
+//             method: 'GET',
+//             headers: {
+//                 Authorization: `JWT ${token}`
+//             }
+//         })
+//             .then(res => {
+//                 if (res.ok) {
+//                     return res.json().then(json => {
+//                         result.data = json.data;
+//                         return result;
+//                     });
+//                 } else {
+//                     return res.json().then(json => {
+//                         if (json.detail === 'Signature has expired.') {
+//                             window.location.reload();
+//                             result.success = false;
+//                             return result;
+//                         }
+//                         if (json.detail === 'Error decoding signature.') {
+//                             window.location.reload();
+//                             result.success = false;
+//                             return result;
+//                         }
+//                         result.success = false;
+//                         result.errors = json;
+//                         return result;
+//                     })
+//                 }
+//             })
+//     }
+// }
 }
 

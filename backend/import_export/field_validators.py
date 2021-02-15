@@ -113,9 +113,11 @@ def is_valid_username(calibration_username):
     return True, "Valid username"
 
 
-def is_valid_calibration_date(calibration_date):
-    if len(calibration_date) == 0:
-        return False, "Missing calibration date."
+def is_valid_calibration_date(calibration_date, calibratable_instrument):
+    if len(calibration_date) == 0 and calibratable_instrument:
+        return False, "Needs to be calibrated"
+    elif len(calibration_date) == 0 and not calibratable_instrument:
+        return True, "Correct formatting for non-calibratable instrument"
 
     # Not sure why this is a requirement if must follow MM-DD-YYYY format?
     # Including anyways for now.

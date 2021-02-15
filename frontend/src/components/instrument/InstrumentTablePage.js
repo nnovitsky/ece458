@@ -75,15 +75,10 @@ class InstrumentTablePage extends Component {
             )
         }
 
+        let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
-                <AddInstrumentPopup
-                    isShown={this.state.addInstrumentPopup.isShown}
-                    onSubmit={this.onAddInstrumentSubmit}
-                    onClose={this.onAddInstrumentClosed}
-                    currentInstrument={null}
-                    errors={this.state.addInstrumentPopup.errors}
-                />
+                {addInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
 
@@ -125,6 +120,18 @@ class InstrumentTablePage extends Component {
             </div>
 
         );
+    }
+
+    makeAddInsrumentPopup() {
+        return (
+            <AddInstrumentPopup
+                isShown={this.state.addInstrumentPopup.isShown}
+                onSubmit={this.onAddInstrumentSubmit}
+                onClose={this.onAddInstrumentClosed}
+                currentInstrument={null}
+                errors={this.state.addInstrumentPopup.errors}
+            />
+        )
     }
 
     async updateTable() {

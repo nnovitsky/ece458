@@ -42,7 +42,10 @@ def validate_row(current_row):
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
         elif column_type == 'Calibration-Date':
-            valid_cell, info = field_validators.is_valid_calibration_date(item)
+            this_model = ItemModel.objects.filter(
+                vendor=current_row[VENDOR_INDEX]).filter(model_number=current_row[MODEL_NUM_INDEX])[0]
+            is_calibratable = False if this_model.calibration_frequency < 1 else True
+            valid_cell, info = field_validators.is_valid_calibration_date(item, is_calibratable)
         elif column_type == 'Calibration-Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
 

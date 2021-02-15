@@ -27,9 +27,9 @@ class InstrumentTablePage extends Component {
             url: '',
             instrumentSearchParams: {
                 filters: {
-                    model: '',
+                    model_number: '',
                     vendor: '',
-                    serial: '',
+                    serial_number: '',
                     description: ''
                 },
                 sortingIndicator: '',
@@ -183,9 +183,9 @@ class InstrumentTablePage extends Component {
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,
                 filters: {
-                    model: '',
+                    model_number: '',
                     vendor: '',
-                    serial: '',
+                    serial_number: '',
                     description: ''
                 }
             }

@@ -105,7 +105,6 @@ class ImportPage extends Component {
     }
 
     onUpload = (e) => {
-        console.log(e.target.files[0])
         this.setState({
             selectedFile: e.target.files[0],
             status_message: 'Selected File',
@@ -144,7 +143,6 @@ class ImportPage extends Component {
             modelServices.importModelCSV(formData)
                 .then(res => {
                     if (res.success) {
-                        console.log(res);
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,
@@ -181,8 +179,6 @@ class ImportPage extends Component {
             instrumentServices.importInstrumentCSV(formData)
                 .then(res => {
                     if (res.success) {
-                        console.log(res);
-                        console.log(res.data.upload_list);
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,

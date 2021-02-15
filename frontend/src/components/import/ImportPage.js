@@ -92,6 +92,7 @@ class ImportPage extends Component {
                     <div className="row">
                     <div className="col-2"></div>
                     <div className="col-9">
+                            {(this.state.showModelTable || this.state.showInstrumentTable) ? <h3>Data Added:</h3> : null}
                             {this.state.showModelTable ? modelTable : null}
                             {this.state.showInstrumentTable ? instrumentTable : null} 
                     </div>                       

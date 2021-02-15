@@ -1,9 +1,9 @@
 # Deployment Guide
 Fantastic Four
-Carrie Hunner 
-Natalie Novitsky 
-Jack Wood
-Juliet Yznaga
+1. Carrie Hunner 
+2. Natalie Novitsky 
+3. Jack Wood
+4. Juliet Yznaga
 
 ## Initial Technologies
 - Ubuntu 20.04 with ssh key configured and user with sudo privileges
@@ -13,14 +13,14 @@ Juliet Yznaga
 - Npm 
 
 
-## Set up your Ubuntu Environment
+## Set Up Your Ubuntu Environment
 
 ```
 sudo apt-get update
 sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx
 ```
 
-## Move the Code to your Ubuntu Machine
+## Move the Project Code to Your Ubuntu Machine
 Create a folder on your machine to hold the project code through the command line.
 ```
 mkdir hpt_project_folder
@@ -30,7 +30,7 @@ Move into this directory and clone the repository
 cd hpt_project_folder
 git clone .......
 ```
-## Create the PostgreSQL Database and User
+## Create a PostgreSQL Database and User
 
 Log into an interactive Postgres session by typing:
 
@@ -71,7 +71,7 @@ Make sure  gunicorn and psycopg2 is installed on your machine
 ```
 
 
-## Edit the settings.py 
+## Edit the settings.py File 
 
 Edit the settings.py file to allow your host
 ```bash
@@ -96,7 +96,7 @@ DATABASES = {
 }
 ```
 
-## Initial Project Setup
+## Initial Django Project Setup
 Change your python path
 ```
 (venv) export PYTHONPATH=/home/directory/folder_above_backend

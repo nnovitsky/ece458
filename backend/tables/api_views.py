@@ -26,7 +26,7 @@ class InstrumentList(ListAPIView):
         model_number_lower=Func(F('item_model__model_number'), function='LOWER')).annotate(
         description_lower=Func(F('item_model__description'), function='LOWER')).annotate(
         serial_number_lower=Func(F('serial_number'), function='LOWER'))
-    duration_expression = F('item_model__calibration_frequency') * 86400000000
+    ''' duration_expression = F('item_model__calibration_frequency') * 86400000000
     duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
     expiration_expression = F('most_recent_calibration') + F('cal_freq')
     queryset = queryset.annotate(most_recent_calibration=Case(
@@ -37,7 +37,7 @@ class InstrumentList(ListAPIView):
         calibration_expiration_date=Case(When(item_model__calibration_frequency__lte=0, then=max_date),
                                          When(most_recent_calibration__isnull=False, then=expiration_expression),
                                          default=None,
-                                         output_field=DateField(), ))
+                                         output_field=DateField(), )) '''
 
     serializer_class = ListInstrumentReadSerializer
     filter_backends = (DjangoFilterBackend,)

@@ -47,9 +47,9 @@ def write_instrument_sheet(buffer):
             cal_comment = ""
         else:
             last_cal = db_instrument.calibrationevent_set.order_by('date')[:1]
-            print("last_cal: ", last_cal)
-            cal_date = last_cal[0].date
-            cal_comment = last_cal[0].comment
+            cal_date = '' if len(last_cal) == 0 else last_cal[0].date
+            cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
+
 
         instrument_row = [
             str(instrument_model.vendor),

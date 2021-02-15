@@ -9,7 +9,6 @@ import Row from 'react-bootstrap/Row';
 // 'numPages' number of pages
 // 'numResults' number of results
 // 'resultsPerPage' number of results displayed per page
-// 'onShowAll' function to call when show all is called
 // 'onPageClicked' a handler that will be passed the page number desired
 // 'onShowAllToggle' a handler that will be called when the button is clicked
 // 'isShown' if the pagination should be displayed
@@ -24,7 +23,7 @@ const genericPagination = (props) => {
 
             <Pagination hidden={!props.isShown}>
                 {/* <Pagination.First /> */}
-                <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === "1"} />
+                <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === 1} />
                 <Pagination.Item>{props.currentPageNum}</Pagination.Item>
                 <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={parseInt(props.currentPageNum) === props.numPages} />
                 {/* <Pagination.Last /> */}

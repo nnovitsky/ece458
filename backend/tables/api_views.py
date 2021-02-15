@@ -5,7 +5,7 @@ from django.utils import timezone
 from backend.tables.serializers import *
 from backend.tables.models import ItemModel, Instrument
 from backend.tables.filters import *
-from backend.tables.utils import list_override
+from backend.tables.utils import list_override, get_page_response
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.import_export.export_csv import handler
 
@@ -76,3 +76,8 @@ class CalibrationEventList(ListAPIView):
     serializer_class = SimpleCalibrationEventReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = CalibrationEventFilter
+
+    def list(self, request, *args, **kwargs):
+        nextPage = 1
+        previousPage = 1
+        return get_page_response(self.queryset, request, self.serializer_class, nextPage, previousPage)

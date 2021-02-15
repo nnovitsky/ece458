@@ -19,6 +19,7 @@ export default class InstrumentServices {
             if (count > 0) {
                 url += '&';
             }
+            console.log(key);
             url += (key + `=${filters[key]}`);
             count++;
         }

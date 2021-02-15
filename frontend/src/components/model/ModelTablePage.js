@@ -198,7 +198,9 @@ class ModelTablePage extends Component {
     }
 
     onExportClicked = () => {
-        console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
+        modelServices.exportModels(this.state.modelSearchParams.filters).then(result => {
+            console.log(result)
+        })
     }
 
     async updateModelTable() {

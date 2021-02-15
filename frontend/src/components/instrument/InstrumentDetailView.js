@@ -139,7 +139,6 @@ class InstrumentDetailView extends Component {
     async getInstrumentInfo() {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
-                console.log(result)
                 if (result.success) {
                     let data = result.data;
                     this.setState({
@@ -166,7 +165,6 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.showAll).then(
             (result) => {
                 if (result.success) {
-                    console.log(result)
                     this.setState({
                         instrument_info: {
                             ...this.state.instrument_info,

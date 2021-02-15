@@ -69,15 +69,10 @@ class ModelTablePage extends Component {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
+        let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         return (
             <div>
-                <AddModelPopup
-                    isShown={this.state.addModelPopup.isShown}
-                    onSubmit={this.onAddModelSubmit}
-                    onClose={this.onAddModelClosed}
-                    currentModel={null}
-                    errors={this.state.addModelPopup.errors}
-                />
+                {addModelPopup}
 
                 <div className="background">
                     <div className="row mainContent">
@@ -118,6 +113,17 @@ class ModelTablePage extends Component {
     }
 
 
+    makeAddModelPopup() {
+        return (
+            <AddModelPopup
+                isShown={this.state.addModelPopup.isShown}
+                onSubmit={this.onAddModelSubmit}
+                onClose={this.onAddModelClosed}
+                currentModel={null}
+                errors={this.state.addModelPopup.errors}
+            />
+        )
+    }
 
     onDetailClicked(e) {
         this.setState({
@@ -192,7 +198,12 @@ class ModelTablePage extends Component {
     }
 
     onExportClicked = () => {
-        console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
+        modelServices.exportModels(this.state.modelSearchParams.filters).then(result => {
+            if (result.success) {
+                window.open(result.url, '_blank')
+                URL.revokeObjectURL(result.url)
+            }
+        })
     }
 
     async updateModelTable() {

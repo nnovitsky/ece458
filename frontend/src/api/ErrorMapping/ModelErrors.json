@@ -16,7 +16,8 @@
       "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
     },
     "calibration_frequency": {
-      "A valid integer is required.": "Please enter a number for the Calibration Frequency"
+      "A valid integer is required.": "Please enter a number for the Calibration Frequency",
+      "Ensure this value is less than or equal to 3653.": "Please enter a value less than 3653 days (10 years)"
     },
     "non_field_errors": {
       "The fields vendor, model_number must make a unique set.": "This model already exists"

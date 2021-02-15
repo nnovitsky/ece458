@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import './ImportPage.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
-import GenericTable from '../generic/GenericTable';
 import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
-import ModelTable from "../model/ModelTable.js";
+import ModelTable from "./ImportModelTable.js";
 import InstrumentTable from "./ImportInstrumentTable.js";
 
 
@@ -93,6 +92,7 @@ class ImportPage extends Component {
                     <div className="row">
                     <div className="col-2"></div>
                     <div className="col-9">
+                            {(this.state.showModelTable || this.state.showInstrumentTable) ? <h3>Data Added:</h3> : null}
                             {this.state.showModelTable ? modelTable : null}
                             {this.state.showInstrumentTable ? instrumentTable : null} 
                     </div>                       
@@ -148,6 +148,7 @@ class ImportPage extends Component {
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,
+                            tableData: res.data.upload_list,
                             showModelTable: true,
                             showInstrumentTable: false,
                         })

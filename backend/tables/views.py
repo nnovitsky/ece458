@@ -326,6 +326,7 @@ def import_instruments_csv(request):
         return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
                         status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
 def export_models_csv(request):
     """
@@ -333,6 +334,16 @@ def export_models_csv(request):
     Results are filtered in the same manner as the table in the list view are.
     """
     result = export_csv.handler(MODEL_EXPORT)
+    return result
+
+
+@api_view(['GET'])
+def export_instruments_csv(request):
+    """
+    Returns a csv file that contains all instruments within the database.
+    Results are filtered in the same manner as the table in the list view are.
+    """
+    result = export_csv.handler(INSTRUMENT_EXPORT)
     return result
 
 

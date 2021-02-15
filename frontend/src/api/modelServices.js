@@ -463,7 +463,7 @@ export default class ModelServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/export_models_csv/?`;
+        let url = `${API_URL}/api/export_models_csv/?&export_instruments&export_models?`;
         let count = 0;
         for (var key in filters) {
             if (count > 0) {

@@ -59,6 +59,8 @@ class InstrumentTablePage extends Component {
         this.onInstrumentSort = this.onInstrumentSort.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onExportAll = this.onExportAll.bind(this);
+        this.onExportInstruments = this.onExportInstruments.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -85,7 +87,8 @@ class InstrumentTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportClicked}>Export</Button>
+                            <Button onClick={this.onExportInstruments}>Export Instruments</Button>
+                            <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
                             <CalStatusKey />
                         </div>
                         <div className="col-10">
@@ -210,8 +213,23 @@ class InstrumentTablePage extends Component {
         })
     }
 
-    onExportClicked = (e) => {
-        console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
+    onExportInstruments = () => {
+        this.exportInstruments(false);
+    }
+
+    onExportAll = () => {
+        this.exportInstruments(true);
+    }
+
+    async exportInstruments(isAll) {
+        instrumentServices.exportInstruments(this.state.instrumentSearchParams.filters, isAll).then(
+            (result) => {
+                if (result.success) {
+                    window.open(result.url, '_blank');
+                    URL.revokeObjectURL(result.url);
+                }
+            }
+        )
     }
 
     async onAddInstrumentSubmit(newInstrument) {

@@ -6,6 +6,30 @@ from backend.tables.serializers import *
 from backend.tables.models import ItemModel, Instrument
 from backend.tables.filters import *
 from backend.tables.utils import list_override, get_page_response
+from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
+from backend.import_export.export_csv import handler
+
+
+class ItemModelExport(ListAPIView):
+    queryset = ItemModel.objects.all()
+    serializer_class = ItemModelSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = ItemModelFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        return handler(queryset, MODEL_EXPORT)
+
+
+class InstrumentExport(ListAPIView):
+    queryset = Instrument.objects.all()
+    serializer_class = InstrumentWriteSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = InstrumentFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        return handler(queryset, INSTRUMENT_EXPORT)
 
 
 class ItemModelList(ListAPIView):

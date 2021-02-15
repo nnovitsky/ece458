@@ -8,18 +8,14 @@ from django.http import FileResponse
 from rest_framework import status
 from rest_framework.response import Response
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
+from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
 model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Calibration-Frequency']
 instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Comment', 'Calibration-Date', 'Calibration-Comment']
 
-MODEL_EXPORT = 0
-INSTRUMENT_EXPORT = 1
-ZIP_EXPORT = 2
 
-
-def write_model_sheet(buffer):
+def write_model_sheet(db_models, buffer):
     model_list = []
-    db_models = ItemModel.objects.all()
     for db_model in db_models:
         model_row = [
             str(db_model.vendor),
@@ -37,9 +33,8 @@ def write_model_sheet(buffer):
     return buffer, f"model_export_{date.today().strftime('%Y_%m_%d')}.csv"
 
 
-def write_instrument_sheet(buffer):
+def write_instrument_sheet(db_instruments, buffer):
     instrument_list = []
-    db_instruments = Instrument.objects.all()
     for db_instrument in db_instruments:
         instrument_model = db_instrument.item_model
 
@@ -74,12 +69,12 @@ def zip_files():
     return True
 
 
-def handler(export_code):
+def handler(queryset, export_code):
 
     if export_code == MODEL_EXPORT:
-        output_buffer, file_name = write_model_sheet(BytesIO())
+        output_buffer, file_name = write_model_sheet(queryset, BytesIO())
     elif export_code == INSTRUMENT_EXPORT:
-        output_buffer, file_name = write_instrument_sheet(BytesIO())
+        output_buffer, file_name = write_instrument_sheet(queryset, BytesIO())
     elif export_code == ZIP_EXPORT:
         model_buffer = write_model_sheet()
         instrument_buffer = write_instrument_sheet()

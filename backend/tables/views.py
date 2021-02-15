@@ -11,10 +11,7 @@ from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
-
-MODEL_EXPORT = 0
-INSTRUMENT_EXPORT = 1
-ZIP_EXPORT = 2
+from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
 
 @api_view(['GET'])
@@ -325,26 +322,6 @@ def import_instruments_csv(request):
     else:
         return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
                         status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def export_models_csv(request):
-    """
-    Returns a csv file that contains all models within the database.
-    Results are filtered in the same manner as the table in the list view are.
-    """
-    result = export_csv.handler(MODEL_EXPORT)
-    return result
-
-
-@api_view(['GET'])
-def export_instruments_csv(request):
-    """
-    Returns a csv file that contains all instruments within the database.
-    Results are filtered in the same manner as the table in the list view are.
-    """
-    result = export_csv.handler(INSTRUMENT_EXPORT)
-    return result
 
 
 # USERS

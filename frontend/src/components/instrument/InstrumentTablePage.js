@@ -33,7 +33,7 @@ class InstrumentTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: '1',
+                desiredPage: 1,
                 showAll: false
             },
             pagination: {

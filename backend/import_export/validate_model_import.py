@@ -12,6 +12,9 @@ column_types = [
     'Calibration-Frequency',
 ]
 
+VENDOR_INDEX = 0
+MODEL_NUM_INDEX = 1
+
 sheet_models = []
 
 
@@ -21,7 +24,7 @@ def validate_row(current_row):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
 
-    sheet_models.append(current_row[0] + " " + current_row[1])
+    sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -56,6 +59,7 @@ def contains_duplicates():
 
 
 def handler(uploaded_file):
+    sheet_models.clear()
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 

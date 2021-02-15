@@ -192,6 +192,7 @@ class ModelDetailView extends React.Component {
         });
 
         return (
+            <div className="data-table">
             <Table bordered hover>
                 <thead>
                     <tr>
@@ -208,6 +209,7 @@ class ModelDetailView extends React.Component {
                     {rows}
                 </tbody>
             </Table>
+            </div>
         )
 
     }

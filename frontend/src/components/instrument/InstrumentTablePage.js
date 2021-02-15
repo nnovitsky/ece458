@@ -25,9 +25,9 @@ class InstrumentTablePage extends Component {
             sortingIndicator: null,
             tableData: [],     //displayed data
             filters: {
-                model: '',
+                model_number: '',
                 vendor: '',
-                serial: '',
+                serial_number: '',
                 description: ''
             },
             addInstrumentPopup: {

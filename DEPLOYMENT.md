@@ -5,12 +5,26 @@ Fantastic Four
 3. Jack Wood
 4. Juliet Yznaga
 
-## Initial Technologies
+## Initial Technologies and Installations
 - Ubuntu 20.04 with ssh key configured and user with sudo privileges
-- Python3
-- Git
-- NodeJS 
-- Npm 
+- Added as contributor on the ece45 GitHub project owned by Natalie Novitsky
+- Python3 installed on Ubuntu 20.04: should be pre-installed 
+```
+sudo apt update
+sudo apt -y upgrade
+python3 -V
+```
+- GitHub installed on Ubuntu 20.04 
+```
+sudo apt install git
+git --version
+```
+- NodeJS installed on Ubuntu 20.04
+- Npm installed on Ubuntu 20.04
+```
+sudo apt install nodejs
+sudo apt install npm
+```
 
 
 ## Set Up Your Ubuntu Environment

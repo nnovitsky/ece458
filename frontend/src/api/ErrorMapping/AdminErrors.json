@@ -2,7 +2,7 @@
   "add_edit_user": {
     "username": {
       "This field may not be blank.": "Please enter a username",
-      "Ensure this field has no more than 50 characters.": "Please enter a username less than 50 characters",
+      "Ensure this field has no more than 128 characters.": "Please enter a username less than 50 characters",
       "A user with that username already exists.": "This username is already in use"
     },
     "password": {

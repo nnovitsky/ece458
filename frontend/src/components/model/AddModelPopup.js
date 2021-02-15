@@ -80,6 +80,7 @@ class AddModelPopup extends Component {
     }
 
     render() {
+        console.log(this.state)
         if (this.state.vendorsArr === null) {
             this.getVendorsArr();
         }

@@ -33,7 +33,7 @@ class InstrumentTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: '1',
+                desiredPage: 1,
                 showAll: false
             },
             pagination: {
@@ -292,6 +292,9 @@ class InstrumentTablePage extends Component {
                 sortingKey = "-most_recent_calibration"
                 return sortingKey;
             case "Calibration Expiration":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey;
+            case "Status":
                 sortingKey = "calibration_expiration_date"
                 return sortingKey;
             default:

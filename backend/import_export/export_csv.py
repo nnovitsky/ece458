@@ -1,5 +1,6 @@
 from io import BytesIO
 from datetime import date
+from zipfile import ZipFile
 
 import pandas as pd
 
@@ -50,7 +51,6 @@ def write_instrument_sheet(buffer):
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 
-
         instrument_row = [
             str(instrument_model.vendor),
             str(instrument_model.model_number),
@@ -85,7 +85,7 @@ def handler(export_code):
         instrument_buffer = write_instrument_sheet()
         zip_files()
     else:
-        print("invalid status code")
+        return Response({"description": ["invalid status code for export config"]}, status=status.HTTP_418_IM_A_TEAPOT)
 
     try:
         return FileResponse(output_buffer, as_attachment=True, filename=file_name)

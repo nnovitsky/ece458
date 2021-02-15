@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
+import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
 import GenericPagination from "../generic/GenericPagination";
@@ -32,7 +33,7 @@ class InstrumentTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: '1',
+                desiredPage: 1,
                 showAll: false
             },
             pagination: {
@@ -90,6 +91,7 @@ class InstrumentTablePage extends Component {
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportClicked}>Export</Button>
+                            <CalStatusKey />
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
@@ -290,6 +292,9 @@ class InstrumentTablePage extends Component {
                 sortingKey = "-most_recent_calibration"
                 return sortingKey;
             case "Calibration Expiration":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey;
+            case "Status":
                 sortingKey = "calibration_expiration_date"
                 return sortingKey;
             default:

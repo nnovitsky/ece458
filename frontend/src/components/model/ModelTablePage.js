@@ -92,7 +92,6 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            <h4>{this.state.sortingIndicator}</h4>
                             <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <ModelTable
                                 data={this.state.tableData}

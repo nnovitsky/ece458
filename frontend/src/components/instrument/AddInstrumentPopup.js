@@ -86,7 +86,7 @@ class AddInstrumentPopup extends Component {
     }
 
     render() {
-        if (this.state.vendorsArr.length === null) {
+        if (this.state.vendorsArr === null) {
             this.getVendorsArr();
         }
         let body = this.makeBody();

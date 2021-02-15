@@ -1,6 +1,5 @@
-import instrumentData from './instrumentData.json';
-
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 export default class InstrumentServices {
     constructor() { }
@@ -280,6 +279,55 @@ export default class InstrumentServices {
             })
     }
 
+    async getCalFromInstrument(pk, pageNum, showAll) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+            errors: []
+        }
+
+        let url = `${API_URL}/api/calibration_event_search/?instrument_pk=${pk}`;
+        if (showAll) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}`
+        }
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
     // safely handled modified/expired tokens
     async getCalibrationPDF(pk) {
         const token = localStorage.getItem('token');
@@ -316,6 +364,48 @@ export default class InstrumentServices {
                             window.location.reload();
                             result.success = false;
                             return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
+
+
+    async importInstrumentCSV(csvFile) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            errors: [],
+            data:[]
+        }
+
+        return fetch(`${API_URL}/api/import_instruments_csv/`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+            body: csvFile
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
                         }
                         result.success = false;
                         result.errors = json;

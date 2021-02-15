@@ -6,6 +6,8 @@ import AddUserPopup from "./AddUserPopup";
 import './Admin.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 const userServices = new UserServices();
 
@@ -23,6 +25,7 @@ class AdminPage extends React.Component {
             tableData: [],
             addUserPopup: {
                 isShown: false,
+                errors: []
             },
         };
 
@@ -43,6 +46,7 @@ class AdminPage extends React.Component {
                     isShown={this.state.addUserPopup.isShown}
                     onSubmit={this.onAddUserSubmit}
                     onClose={this.onAddUserClosed}
+                    errors={this.state.addUserPopup.errors}
                 />
 
                 <div className="background">
@@ -63,12 +67,21 @@ class AdminPage extends React.Component {
     }
 
     async onAddUserSubmit(newUser) {
-        console.log("New user added")
-        console.log(newUser);
         userServices.addUser(newUser.username, newUser.password, newUser.first_name, newUser.last_name, newUser.email)
             .then((res) => {
-                this.updateUserTable();
-                this.onAddUserClosed();
+                if (res.success) {
+                    this.updateUserTable();
+                    this.onAddUserClosed();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_user']);
+                    this.setState({
+                        addUserPopup: {
+                            ...this.state.addUserPopup,
+                            errors: formattedErrors
+                        }
+                    })
+                }
+
             }
             );
     }

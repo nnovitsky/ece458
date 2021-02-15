@@ -1,5 +1,5 @@
-
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 export default class ModelServices {
 
@@ -409,6 +409,46 @@ export default class ModelServices {
                             window.location.reload();
                             result.success = false;
                             return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
+    async importModelCSV(csvFile) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            errors: [],
+            data:[]
+        }
+
+        return fetch(`${API_URL}/api/import_models_csv/`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+            body: csvFile
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
                         }
                         result.success = false;
                         result.errors = json;

@@ -33,16 +33,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def validate(self, data):
-        if 'first_name' not in data or data['first_name'] == '':
-            raise serializers.ValidationError("First name is required.")
-        if 'last_name' not in data or data['last_name'] == '':
-            raise serializers.ValidationError("Last name is required.")
-        if 'email' not in data or data['email'] == '':
-            # check email format?
-            raise serializers.ValidationError("Email is required.")
-        return data
-
     class Meta:
         model = User
         fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
@@ -59,16 +49,6 @@ class UserEditSerializer(serializers.ModelSerializer):
         payload = jwt_payload_handler(obj)
         token = jwt_encode_handler(payload)
         return token
-
-    def validate(self, data):
-        if 'first_name' in data and data['first_name'] == '':
-            raise serializers.ValidationError("First name is required.")
-        if 'last_name' in data and data['last_name'] == '':
-            raise serializers.ValidationError("Last name is required.")
-        if 'email' in data and data['email'] == '':
-            # check email format?
-            raise serializers.ValidationError("Email is required.")
-        return data
 
     class Meta:
         model = User
@@ -134,15 +114,28 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
     # use when viewing detail page for instrument
     item_model = ItemModelSerializer()
     calibration_events = serializers.SerializerMethodField('_get_all_calibrations')
+    calibration_expiration = serializers.SerializerMethodField('_get_calibration_expiration')
 
     def _get_all_calibrations(self, obj):
         cal_events = obj.calibrationevent_set.order_by('-date')
         serializer = SimpleCalibrationEventReadSerializer(cal_events, many=True)
         return serializer.data
 
+    def _get_calibration_expiration(self, obj):
+        cal_frequency = obj.item_model.calibration_frequency
+        if cal_frequency < 1:
+            return "Uncalibratable."
+        last_cal = obj.calibrationevent_set.order_by('-date')[:1]
+        if len(last_cal) < 1:
+            return "Instrument not calibrated."
+        else:
+            last_cal = last_cal[0]
+            exp_date = last_cal.date + datetime.timedelta(cal_frequency)
+            return exp_date
+
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_events')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_expiration', 'calibration_events')
 
 
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):

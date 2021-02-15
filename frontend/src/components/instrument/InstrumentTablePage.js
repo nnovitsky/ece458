@@ -8,7 +8,7 @@ import GenericPagination from "../generic/GenericPagination";
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
@@ -225,8 +225,8 @@ class InstrumentTablePage extends Component {
         instrumentServices.exportInstruments(this.state.instrumentSearchParams.filters, isAll).then(
             (result) => {
                 if (result.success) {
-                    window.open(result.url, '_blank');
-                    URL.revokeObjectURL(result.url);
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-instrument-export`);
                 }
             }
         )

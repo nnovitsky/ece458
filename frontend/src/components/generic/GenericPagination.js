@@ -18,12 +18,13 @@ let lowerBound = 0;
 let upperBound = 0;
 const genericPagination = (props) => {
     setBounds(props.currentPageNum, props.numResults, props.resultsPerPage);
+    console.log(`Lower: ${lowerBound} Upper: ${upperBound}`)
     return (
         <Row className="pagination">
 
             <Pagination hidden={!props.isShown}>
                 {/* <Pagination.First /> */}
-                <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === "1"} />
+                <Pagination.Prev onClick={() => props.onPageClicked(props.currentPageNum - 1)} disabled={props.currentPageNum === 1} />
                 <Pagination.Item>{props.currentPageNum}</Pagination.Item>
                 <Pagination.Next onClick={(e) => props.onPageClicked(props.currentPageNum + 1)} disabled={parseInt(props.currentPageNum) === props.numPages} />
                 {/* <Pagination.Last /> */}

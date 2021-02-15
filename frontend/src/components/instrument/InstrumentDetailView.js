@@ -38,13 +38,13 @@ class InstrumentDetailView extends Component {
                 calibration_history: [],
             },
             calibration_pagination: {
-                resultCount: '',
+                numResults: '',
                 numPages: '',
                 resultsPerPage: 10,
-                currentPageNum: '',
+                currentPageNum: 1,
                 numResults: '',
                 isShowAll: '',
-                desiredPage: '1'
+                desiredPage: 1
             },
             addCalPopup: {
                 isShown: false,
@@ -163,7 +163,7 @@ class InstrumentDetailView extends Component {
     }
 
     async getCalHistory() {
-        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk).then(
+        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.showAll).then(
             (result) => {
                 if (result.success) {
                     console.log(result)
@@ -174,7 +174,7 @@ class InstrumentDetailView extends Component {
                         },
                         calibration_pagination: {
                             ...this.state.calibration_pagination,
-                            resultCount: result.data.count,
+                            numResults: result.data.count,
                             numPages: result.data.numpages,
                             resultsPerPage: 10,
                             currentPageNum: result.data.currentpage,
@@ -349,7 +349,7 @@ class InstrumentDetailView extends Component {
                 buttonFunctions={[]}
                 buttonText={[]}
                 tableTitle="Calibration History"
-
+                    countStart={(this.state.calibration_pagination.currentPageNum - 1) * this.state.calibration_pagination.resultsPerPage + 1}
             />
             </div>
         )

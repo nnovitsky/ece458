@@ -8,7 +8,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
-from backend.import_export import pdf_generator, export_pdf
+from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 
@@ -255,7 +255,7 @@ def export_calibration_event_pdf(request, pk):
         return Response({"description": ["Instrument has no associated calibration events"]},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    return pdf_generator.handler(instrument)
+    return export_pdf.handler(instrument)
 
 
 @api_view(['PUT'])

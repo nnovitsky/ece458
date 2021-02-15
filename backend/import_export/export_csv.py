@@ -65,4 +65,3 @@ def handler(export_code):
         return FileResponse(output_buffer, as_attachment=True, filename=file_name)
     except IOError:
         return Response(status=status.HTTP_418_IM_A_TEAPOT)
-

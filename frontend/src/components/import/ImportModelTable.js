@@ -1,7 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import './ModelTable.css'
+import '../model/ModelTable.css'
 
 const headerText = ["Model Number", "Vendor", "Description", "Comments", "Calibration (days)", "More"];
 const keys = ["model_number", "vendor", "description", "comment", "calibration_frequency"];
@@ -14,7 +14,7 @@ let countStart; //prop of int of data count to start at
 //'sortData' event handler to call when header is clicked
 
 
-const modelTable = (props) => {
+const importModelTable = (props) => {
     console.log(props.data);
     data = props.data;
     countStart = props.countStart;
@@ -100,4 +100,4 @@ const createBody = (onMoreClicked) => {
     );
 }
 
-export default modelTable;
+export default importModelTable;

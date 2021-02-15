@@ -7,7 +7,7 @@ import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
 import ModelTable from "../model/ModelTable.js";
-import InstrumentTable from "../instrument/InstrumentTable.js";
+import InstrumentTable from "./ImportInstrumentTable.js";
 
 
 const modelServices = new ModelServices();
@@ -43,7 +43,7 @@ class ImportPage extends Component {
         modelTable = <ModelTable
                         data={this.state.tableData}
                         countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-                        onDetailRequested={this.onDetailClicked}
+                        onDetailRequested={this.onDetailViewRequested}
                         sortData={() => {}}/>, 
         instrumentTable = <InstrumentTable
                             data={this.state.tableData}
@@ -89,13 +89,14 @@ class ImportPage extends Component {
                         </div>
                     </div>
 
-
+                    <div className="container">
                     <div className="row">
-                        <div className="col-4"> </div>
-                        <div className="col-5">
+                    <div className="col-2"></div>
+                    <div className="col-9">
                             {this.state.showModelTable ? modelTable : null}
-                            {this.state.showInstrumentTable ? instrumentTable : null}                        </div>
-                        <div className="col-4"> </div>
+                            {this.state.showInstrumentTable ? instrumentTable : null} 
+                    </div>                       
+                    </div>
                     </div>
                 </div>
             </div>
@@ -180,6 +181,7 @@ class ImportPage extends Component {
                 .then(res => {
                     if (res.success) {
                         console.log(res);
+                        console.log(res.data.upload_list);
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,

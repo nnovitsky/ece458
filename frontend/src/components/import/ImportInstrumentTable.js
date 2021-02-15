@@ -15,7 +15,6 @@ let countStart; //prop of int of data count to start at
 
 
 const importInstrumentTable = (props) => {
-    console.log(props.data);
     data = props.data;
     countStart = props.countStart;
     let header = createHeader(props.sortData);

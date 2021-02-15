@@ -4,3 +4,4 @@ djangorestframework-jwt~=1.11.0
 django-cors-headers~=3.7.0
 django-filter~=2.4.0
 reportlab~=3.5.59
+pandas~=1.2.2

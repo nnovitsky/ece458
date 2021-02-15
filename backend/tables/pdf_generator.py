@@ -61,6 +61,7 @@ def get_fields(instrument):
 
     return fields
 
+
 #TODO: handle longer text as a second line (e.g. long comments)
 def populate_pdf(buffer, fields):
     #HEADER

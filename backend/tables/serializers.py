@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
+from backend.config.character_limits import FIRST_NAME_MAX_LENGTH, LAST_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, \
+    EMAIL_MAX_LENGTH
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 import datetime
@@ -36,11 +38,20 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     def validate(self, data):
         if 'first_name' not in data or data['first_name'] == '':
             raise serializers.ValidationError("First name is required.")
+        if len(data['first_name']) > FIRST_NAME_MAX_LENGTH:
+            raise serializers.ValidationError(f"First name must be less than {FIRST_NAME_MAX_LENGTH} characters.")
+
         if 'last_name' not in data or data['last_name'] == '':
             raise serializers.ValidationError("Last name is required.")
+        if len(data['last_name']) > LAST_NAME_MAX_LENGTH:
+            raise serializers.ValidationError(f"Last name must be less than {LAST_NAME_MAX_LENGTH} characters.")
+
         if 'email' not in data or data['email'] == '':
             # check email format?
             raise serializers.ValidationError("Email is required.")
+        if len(data['email']) > EMAIL_MAX_LENGTH:
+            raise serializers.ValidationError(f"Email must be less than {EMAIL_MAX_LENGTH} characters.")
+
         return data
 
     class Meta:

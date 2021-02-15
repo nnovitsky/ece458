@@ -2,7 +2,6 @@
   "add_edit_user": {
     "username": {
       "This field may not be blank.": "Please enter a username",
-      "Ensure this field has no more than 128 characters.": "Please enter a username less than 50 characters",
       "A user with that username already exists.": "This username is already in use"
     },
     "password": {
@@ -17,6 +16,14 @@
     },
     "email": {
       "Ensure this field has no more than 320 characters.": "Please enter an email less than 320 characters"
+    },
+    "input_error": {
+      "Username must be less than 128 characters.": "Please enter a username less than 128 characters",
+      "First name must be less than 128 characters.": "Please enter a first name less than 128 characters",
+      "Last name must be less than 128 characters.": "Please enter a last name less than 128 characters",
+      "Email must be less than 320 characters.": "Please enter an email less than 320 characters",
+      "Password must be less than 256 characters.": "Please enter a password less than 256 characters"
+
     },
     "non_field_errors": {
       "First name is required.": "Please enter a first name",

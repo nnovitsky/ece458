@@ -23,7 +23,7 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
     page = int(request.GET.get('page', 1))
-    paginator = Paginator(objects, 3)
+    paginator = Paginator(objects, 10)
     try:
         data = paginator.page(page)
     except PageNotAnInteger:

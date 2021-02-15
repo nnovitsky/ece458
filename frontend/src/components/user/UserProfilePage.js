@@ -8,6 +8,8 @@ import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import EditUserPopup from './EditUserPopup.js'
+import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
+import { rawErrorsToDisplayed } from "../generic/Util";
 
 const authServices = new AuthServices();
 const userServices = new UserServices();
@@ -22,6 +24,7 @@ class UserPage extends React.Component {
             userData: [],
             editUserPopup: {
                 isShown: false,
+                errors: []
             },
         };
 
@@ -43,6 +46,7 @@ class UserPage extends React.Component {
                     isShown={this.state.editUserPopup.isShown}
                     onSubmit={this.onEditUserSubmit}
                     onClose={this.onEditUserClosed}
+                    errors={this.state.editUserPopup.errors}
                 />
             <div className="background">
                 <div className="row mainContent">
@@ -71,7 +75,8 @@ class UserPage extends React.Component {
         this.setState({
             editUserPopup: {
                 ...this.state.editUserPopup,
-                isShown: false
+                isShown: false,
+                errors: []
             }
         })
     }
@@ -88,9 +93,20 @@ class UserPage extends React.Component {
     async onEditUserSubmit(updatedUser) {
         userServices.editUser(updatedUser.username, updatedUser.password, updatedUser.first_name, updatedUser.last_name)
                     .then((res) => {
-                        localStorage.setItem('token', res.token)
-                        this.updateUserInfo();
-                        this.onEditUserClosed();
+                        if (res.success) {
+                            localStorage.setItem('token', res.token)
+                            this.updateUserInfo();
+                            this.onEditUserClosed();
+                        } else {
+                            let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_user']);
+                            this.setState({
+                                editUserPopup: {
+                                    ...this.state.editUserPopup,
+                                    errors: formattedErrors
+                                }
+                            })
+                        }
+
                     }
         );
     }

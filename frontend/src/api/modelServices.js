@@ -455,7 +455,7 @@ export default class ModelServices {
             })
     }
 
-    async exportModels(filters) {
+    async exportModels(filters, isAll) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -463,7 +463,7 @@ export default class ModelServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/export_models_csv/?&export_instruments&export_models?`;
+        let url = `${API_URL}/api/export_models_csv/?`;
         let count = 0;
         for (var key in filters) {
             if (count > 0) {
@@ -471,6 +471,10 @@ export default class ModelServices {
             }
             url += (key + `= ${filters[key]}`);
             count++;
+        }
+
+        if (isAll) {
+            url += `&export_instruments`
         }
 
         return fetch(url, {

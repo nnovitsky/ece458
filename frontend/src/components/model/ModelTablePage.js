@@ -40,6 +40,9 @@ class ModelTablePage extends Component {
             addModelPopup: {
                 isShown: false,
                 errors: []
+            },
+            exportPopup: {
+                isShown: false
             }
 
         }
@@ -53,6 +56,8 @@ class ModelTablePage extends Component {
         this.updateModelTable = this.updateModelTable.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
+        this.onExportAllClicked = this.onExportAllClicked.bind(this);
     }
 
     async componentDidMount() {
@@ -73,13 +78,13 @@ class ModelTablePage extends Component {
         return (
             <div>
                 {addModelPopup}
-
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportClicked}>Export</Button>
+                            <Button onClick={this.onExportModelsClicked}>Export Models</Button>
+                            <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
@@ -197,11 +202,19 @@ class ModelTablePage extends Component {
         })
     }
 
-    onExportClicked = () => {
-        modelServices.exportModels(this.state.modelSearchParams.filters).then(result => {
+    onExportModelsClicked = () => {
+        this.exportModels(false);
+    }
+
+    onExportAllClicked = () => {
+        this.exportModels(true);
+    }
+
+    async exportModels(isAll) {
+        modelServices.exportModels(this.state.modelSearchParams.filters, isAll).then(result => {
             if (result.success) {
-                window.open(result.url, '_blank')
-                URL.revokeObjectURL(result.url)
+                window.open(result.url, '_blank');
+                URL.revokeObjectURL(result.url);
             }
         })
     }

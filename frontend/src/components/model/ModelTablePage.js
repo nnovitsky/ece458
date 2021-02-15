@@ -199,7 +199,10 @@ class ModelTablePage extends Component {
 
     onExportClicked = () => {
         modelServices.exportModels(this.state.modelSearchParams.filters).then(result => {
-            console.log(result)
+            if (result.success) {
+                window.open(result.url, '_blank')
+                URL.revokeObjectURL(result.url)
+            }
         })
     }
 

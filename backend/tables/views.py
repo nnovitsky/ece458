@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response
+from backend.tables.utils import get_page_response, validate_user
 from backend.tables.filters import *
 from backend.tables import pdf_generator
 from backend.import_export import validate_model_import, validate_instrument_import
@@ -335,6 +335,8 @@ def current_user(request):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
+        error_check = validate_user(request, create=False)
+        if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
         if 'password' in request.data:
             pw = request.data.pop('password')
@@ -369,6 +371,8 @@ class UserCreate(APIView):
          # if not request.user.is_staff:
              # return Response(
                 # {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        error_check = validate_user(request, create=True)
+        if error_check: return error_check
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

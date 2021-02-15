@@ -1,4 +1,4 @@
-from io import StringIO
+from io import BytesIO
 from datetime import date
 
 import pandas as pd
@@ -23,16 +23,17 @@ def write_model_sheet(buffer):
         model_row = [
             str(db_model.vendor),
             str(db_model.model_number),
-            str(db_model.short_description),
+            str(db_model.description),
             str(db_model.comment),
             str(db_model.calibration_frequency)
         ]
         model_list.append(model_row)
 
-    model_sheet = pd.DataFrame(model_list, columns=model_headers, index=False)
-    file_name = f"model_export_{date.today().strftime('%Y_%m_%d')}.csv"
-    model_sheet.to_csv(file_name)
-    return buffer, file_name
+    model_sheet = pd.DataFrame(model_list, columns=model_headers)
+    model_sheet.to_csv(buffer, index=False)
+    buffer.seek(0)
+
+    return buffer, f"model_export_{date.today().strftime('%Y_%m_%d')}.csv"
 
 
 def write_instrument_sheet():
@@ -51,9 +52,9 @@ def zip_files():
 def handler(export_code):
 
     if export_code == MODEL_EXPORT:
-        output_buffer, file_name = write_model_sheet(StringIO())
+        output_buffer, file_name = write_model_sheet(BytesIO())
     elif export_code == INSTRUMENT_EXPORT:
-        output_buffer, file_name = write_instrument_sheet(StringIO())
+        output_buffer, file_name = write_instrument_sheet(BytesIO())
     elif export_code == ZIP_EXPORT:
         model_buffer = write_model_sheet()
         instrument_buffer = write_instrument_sheet()

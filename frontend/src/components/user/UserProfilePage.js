@@ -40,14 +40,10 @@ class UserPage extends React.Component {
 
 
     render() {
+        let editUserPopup = (this.state.editUserPopup.isShown) ? this.makeEditProfilePopup() : null;
         return (
             <div>
-                <EditUserPopup
-                    isShown={this.state.editUserPopup.isShown}
-                    onSubmit={this.onEditUserSubmit}
-                    onClose={this.onEditUserClosed}
-                    errors={this.state.editUserPopup.errors}
-                />
+                {editUserPopup}
             <div className="background">
                 <div className="row mainContent">
                     <div className="col-2 text-center">
@@ -68,6 +64,17 @@ class UserPage extends React.Component {
             </div>
             </div>
         );
+    }
+
+    makeEditProfilePopup() {
+        return (
+            <EditUserPopup
+                isShown={this.state.editUserPopup.isShown}
+                onSubmit={this.onEditUserSubmit}
+                onClose={this.onEditUserClosed}
+                errors={this.state.editUserPopup.errors}
+            />
+        )
     }
 
 

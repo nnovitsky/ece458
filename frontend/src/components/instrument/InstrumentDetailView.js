@@ -67,6 +67,8 @@ class InstrumentDetailView extends Component {
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
     }
 
     async componentDidMount() {
@@ -93,9 +95,8 @@ class InstrumentDetailView extends Component {
                     numPages={this.state.calibration_pagination.numPages}
                     numResults={this.state.calibration_pagination.numResults}
                     resultsPerPage={this.state.calibration_pagination.resultsPerPage}
-                    onShowAll={() => console.log("Make On Show All Function")}
-                    onPageClicked={() => console.log("Make on page clicked function")}
-                    onShowAllToggle={() => console.log("Make on show all toggle")}
+                    onPageClicked={this.onPaginationClick}
+                    onShowAllToggle={this.onToggleShowAll}
                     isShown={!this.state.calibration_pagination.isShowAll}
                     buttonText="Show All"
 
@@ -420,6 +421,31 @@ class InstrumentDetailView extends Component {
             }
         })
     }
+
+    async onPaginationClick(num) {
+        this.setState({
+            calibration_pagination: {
+                ...this.state.calibration_pagination,
+                desiredPage: num
+            }
+        }, () => {
+            this.updateTable();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                calibration_pagination: {
+                    ...this.state.calibration_pagination,
+                    showAll: !prevState.calibration_pagination.showAll
+                }
+            }
+        }, () => {
+            this.getCalHistory();
+        })
+    }
+
 }
 
 export default withRouter(InstrumentDetailView);

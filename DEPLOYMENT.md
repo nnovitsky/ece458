@@ -18,6 +18,8 @@ python3 -V
 ```
 sudo apt install git
 git --version
+git config --global user.name "Your User Name"
+git config --global user.email you@example.com
 ```
 - NodeJS installed on Ubuntu 20.04
 - Npm installed on Ubuntu 20.04

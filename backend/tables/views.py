@@ -142,7 +142,7 @@ def instruments_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = DetailInstrumentReadSerializer(instrument, context={'request': request})
+        serializer = ListInstrumentReadSerializer(instrument, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':

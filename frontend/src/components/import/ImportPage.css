@@ -1,12 +1,17 @@
-.bigButton{
-    height: 200px;
-    width: 50%;
-    margin-top: 10px;
+input[type=file]{
+    padding: 20px;
+    padding-bottom: 50px;
+    margin-bottom: 35px;
+}
+
+button.import{
+    margin-bottom: 25px;
+    width: 100%;
 }
 
 .instructions{
     margin-top: 10px;
-    padding: 20px;
+    padding: 30px;
     width: 100%;
     text-align: left;
     background-color: rgb(221, 221, 221);

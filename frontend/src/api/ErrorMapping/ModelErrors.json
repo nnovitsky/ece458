@@ -1,0 +1,30 @@
+{
+  "add_edit_model": {
+    "vendor": {
+      "This field may not be blank.": "Please enter a vendor",
+      "Ensure this field has no more than 30 characters.": "Please enter a vendor less than 30 characters"
+    },
+    "model_number": {
+      "This field may not be blank.": "Please enter a model number",
+      "Ensure this field has no more than 40 characters.": "Please enter a model number less than 40 characters"
+    },
+    "description": {
+      "This field may not be blank.": "Please enter a description",
+      "Ensure this field has no more than 100 characters.": "Please enter a description less than 100 characters"
+    },
+    "comment": {
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
+    },
+    "calibration_frequency": {
+      "A valid integer is required.": "Please enter a number for the Calibration Frequency"
+    },
+    "non_field_errors": {
+      "The fields vendor, model_number must make a unique set.": "This model already exists"
+    }
+  },
+  "delete_model": {
+    "delete_error": {
+      "Cannot delete model with instrument instances.": "Failed: Cannot delete a model with existing instruments"
+    }
+  }
+}

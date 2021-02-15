@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 import { NavLink } from 'react-router-dom';
 
+
 function Navigation(props) {
+
     const logged_in_nav = (
         <nav>
             <ul>
@@ -11,7 +13,7 @@ function Navigation(props) {
                 <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
                 <li><NavLink to="/import">Import&nbsp;</NavLink></li>
                 <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
-                <li><NavLink to="/admin">Admin&nbsp;</NavLink></li>
+                { props.is_admin ? <li><NavLink to="/admin">Admin&nbsp;</NavLink></li> : null }
                 <li><NavLink onClick={props.handle_logout} to="/">Logout&nbsp;</NavLink></li>
             </ul>
         </nav>
@@ -25,7 +27,10 @@ function Navigation(props) {
     );
 
     return (
-        <div>{props.logged_in ? logged_in_nav : logged_out_nav}</div>
+        
+        <div>
+            {props.logged_in ? logged_in_nav : logged_out_nav}
+        </div>
     );
 }
 
@@ -33,5 +38,6 @@ export default Navigation;
 
 Navigation.propTypes = {
     logged_in: PropTypes.bool.isRequired,
-    handle_logout: PropTypes.func.isRequired
+    handle_logout: PropTypes.func.isRequired,
+    is_admin: PropTypes.bool.isRequired
 }

@@ -1,29 +1,62 @@
-import React from 'react';
-import userData from './userData.json';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8000';
+import Configs from './config.js';
+const API_URL = Configs
 
 
 export default class AuthServices {
-    constructor() { }
+  constructor() { }
 
-    async login(data) {
-      return fetch('http://localhost:8000/token_auth/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+  async login(data) {
+
+    const url = `${API_URL}/api/token_auth/`;
+
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+  }
+
+  // handles modified/expired token
+  async getCurrentUser() {
+    const token = localStorage.getItem('token');
+
+    let result = {
+      success: true,
+      data: [],
     }
 
-    async getCurrentUser(token) {
+    const url = `${API_URL}/api/current_user/`;
 
-      return fetch('http://localhost:8000/current_user/', {
-        headers: {
-          Authorization: `JWT ${token}`
-        }
-      });
+    return fetch(url, {
+      headers: {
+        Authorization: `JWT ${token}`
+      }
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json().then(json => {
+            result.data = json;
+            return result;
+          });
+        } else {
+          return res.json().then(json => {
+          if (json.detail === 'Signature has expired.') {
+            window.location.reload();
+            result.success = false;
+            return result;
+          }
+            if (json.detail === 'Error decoding signature.') {
+              window.location.reload();
+            result.success = false;
+              return result;
+            }
+          result.success = false;
+            result.errors = json;
+            return result;
+          })
+      }
+      })
     }
 }

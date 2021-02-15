@@ -2,6 +2,7 @@ import React from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert'
 
 // This popup will make a generic dialog that will appear, it'll have a header, a body that is passed in as a prop,
 // and then a row of buttons based on props passed in
@@ -12,15 +13,17 @@ import Button from 'react-bootstrap/Button';
 // 'body': html to put into the body of the popup
 // 'headerText': string of the text to be displayed in the header
 // 'closeButtonText': text displayed for the popup to close
-// 'submitButtonText': text displayed for the popup to submit
+// 'submitButtonText': optional text displayed for the popup to submit, this is optional if you decide to hide the submit button
 // 'onClose': handler for the close button being clicked
-// 'onSubmit': handler for the submit button being clicked
+// 'onSubmit': optional handler for the submit button being clicked, this is optional in case you choose to hide the submit button
 // 'submitButtonVariant': a string that corresponds to a button variant, eg 'primary' or 'danger'
+// 'errors': an array of strings that are warnings, note an empty array means no errors are displayed, this is an optional field
+// 'isSubmitButtonShown' optional boolean for if the submit button should be shown
+//  'isSecondaryButtonShown': optional boolean for if the secondary button should be shown
 
 const genericPopup = (props) => {
-
     return (
-        <Modal show={props.show}>
+        <Modal className="popup" show={props.show} onHide={props.onClose}>
             <Modal.Header>
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
@@ -30,20 +33,45 @@ const genericPopup = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
-                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant)}
+                <Alert className={"popup-alert"} variant={'danger'} show={props.errors.length > 0}>
+                    {makeErrorsParagraphs(props.errors)}
+                </Alert>
+                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant, props.isSubmitButtonShown, props.isSecondaryButtonShown)}
+
             </Modal.Footer>
         </Modal>
     )
 }
 
-const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant) => {
+const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant, isSubmitButtonShown, isSecondaryButtonShown) => {
     let buttons = [];
 
-    buttons.push(<Button variant="secondary" onClick={onClose}>{closeText}</Button>)
-    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit}>{submitText}</Button>)
+    buttons.push(<Button variant="secondary" onClick={onClose} hidden={!isSecondaryButtonShown}>{closeText}</Button>)
+    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit} hidden={!isSubmitButtonShown}>{submitText}</Button>)
 
+    let buttonDiv = (
+        <div className="popup-button-row">
+            {buttons}
+        </div>
+    )
 
-    return buttons;
+    return buttonDiv;
+}
+
+const makeErrorsParagraphs = (errorsArr) => {
+    let result = [];
+    errorsArr.forEach(e => {
+        result.push(<p>{e}</p>)
+    })
+    return result;
+}
+
+genericPopup.defaultProps = {
+    errors: [],
+    isSubmitButtonShown: true,
+    isSecondaryButtonShown: true,
+    onSubmit: () => { },
+    submitButtonText: ''
 }
 
 export default genericPopup;

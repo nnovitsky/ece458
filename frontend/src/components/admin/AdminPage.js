@@ -67,8 +67,6 @@ class AdminPage extends React.Component {
     }
 
     async onAddUserSubmit(newUser) {
-        console.log("New user added")
-        console.log(newUser);
         userServices.addUser(newUser.username, newUser.password, newUser.first_name, newUser.last_name, newUser.email)
             .then((res) => {
                 if (res.success) {

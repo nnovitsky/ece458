@@ -166,10 +166,19 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk).then(
             (result) => {
                 if (result.success) {
+                    console.log(result)
                     this.setState({
                         instrument_info: {
                             ...this.state.instrument_info,
-                            calibration_history: result.data
+                            calibration_history: result.data.data
+                        },
+                        calibration_pagination: {
+                            ...this.state.calibration_pagination,
+                            resultCount: result.data.count,
+                            numPages: result.data.numpages,
+                            resultsPerPage: 10,
+                            currentPageNum: result.data.currentpage,
+                            isShowAll: false,
                         }
                     })
                 } else {
@@ -429,7 +438,7 @@ class InstrumentDetailView extends Component {
                 desiredPage: num
             }
         }, () => {
-            this.updateTable();
+                this.getCalHistory();
         })
     }
 

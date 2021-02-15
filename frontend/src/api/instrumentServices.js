@@ -279,7 +279,7 @@ export default class InstrumentServices {
             })
     }
 
-    async getCalFromInstrument(pk) {
+    async getCalFromInstrument(pk, pageNum, showAll) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -288,7 +288,14 @@ export default class InstrumentServices {
             errors: []
         }
 
-        return fetch(`${API_URL}/api/calibration_event_search/?instrument_pk=${pk}`, {
+        let url = `${API_URL}/api/calibration_event_search/?instrument_pk=${pk}`;
+        if (showAll) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}`
+        }
+
+        return fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

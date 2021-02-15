@@ -8,9 +8,13 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response
 from backend.tables.filters import *
-from backend.tables import pdf_generator
+from backend.import_export import pdf_generator, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
+
+MODEL_EXPORT = 0
+INSTRUMENT_EXPORT = 1
+ZIP_EXPORT = 2
 
 
 @api_view(['GET'])
@@ -321,6 +325,15 @@ def import_instruments_csv(request):
     else:
         return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
                         status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def export_models_csv(request):
+    """
+    Returns a csv file that contains all models within the database.
+    Results are filtered in the same manner as the table in the list view are.
+    """
+    result = export_csv.handler(MODEL_EXPORT)
+    return result
 
 
 # USERS

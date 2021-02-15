@@ -88,6 +88,6 @@ def handler(instrument):
     try:
         return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
     except IOError:
-        Response(status=status.HTTP_418_IM_A_TEAPOT)
+        return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 

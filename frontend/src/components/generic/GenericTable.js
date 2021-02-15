@@ -10,6 +10,7 @@ let headers;    //array of strings that will be displayed as the header, should 
 let buttonFunctions; //array of button functions, each button will get its own column
 let buttonText; //array of text, each element will be the text in a button
 let tableTitle; //optional prop, this would be the title of the table and will be displayed in the top row
+let countStart; //optional prop that will be the count start of the first instrument
 
 const GenericTable = (props) => {
     data = props.data;
@@ -17,7 +18,8 @@ const GenericTable = (props) => {
     headers = props.headers;
     buttonFunctions = props.buttonFunctions;
     buttonText = props.buttonText;
-    tableTitle = props.tableTitle
+    tableTitle = props.tableTitle;
+    countStart = props.countStart;
 
     return (
         <div>
@@ -71,7 +73,7 @@ const createHeader = () => {
 //it makes the body of the table, returning a <tb> filled element
 const createBody = () => {
     let rows = [];
-    let count = 1;
+    let count = countStart;
     data.forEach(currentData => {
         let rowElements = []
         rowElements.push(
@@ -105,5 +107,9 @@ const createBody = () => {
 // const onDetailClicked = (e) => {
 //     history.push(`/models/${e.target.value}`);
 // }
+
+GenericTable.defaultProps = {
+    countStart: 1
+}
 
 export default GenericTable;

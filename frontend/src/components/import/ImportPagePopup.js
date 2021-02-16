@@ -25,9 +25,9 @@ const importPagePopup = (props) => {
 const makeBody = () => {
     return (
         <Form className="popup">
-            <p>
+            <div className="popupScrolling overflow-auto">
                 {importInstructions}
-            </p>
+            </div>
         </Form>
     )
 }

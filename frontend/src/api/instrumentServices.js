@@ -67,6 +67,57 @@ export default class InstrumentServices {
             )
     }
 
+    // used to get the serial numbers for the model detail view
+    async getInstrumentsByModelPk(model_pk, pageNum, showAll) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/instrument_search/?model_pk=${model_pk}`;
+
+        if (showAll) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}`
+        }
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            }
+            )
+    }
+
     // handled modified/expired tokens
     async getInstrument(instrumentPk) {
         const token = localStorage.getItem('token');
@@ -436,7 +487,6 @@ export default class InstrumentServices {
         }
 
         if (isAll) {
-            console.log('exporting all')
             url += `&export_models`;
         }
 

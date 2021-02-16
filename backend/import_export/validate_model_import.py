@@ -80,4 +80,4 @@ def handler(uploaded_file):
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
 
-    return True, "Correct formatting."
+    return True, "Correct formatting. "

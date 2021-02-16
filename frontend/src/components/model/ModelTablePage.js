@@ -320,14 +320,17 @@ class ModelTablePage extends Component {
                 urlSortingKey = `-${urlSortingKey}`;
             }
         }
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                sortingIndicator: urlSortingKey
-            }
-        }, () => {
-            this.updateModelTable();
-        })
+        if (urlSortingKey !== `-`) {
+            this.setState({
+                modelSearchParams: {
+                    ...this.state.modelSearchParams,
+                    sortingIndicator: urlSortingKey
+                }
+            }, () => {
+                this.updateModelTable();
+            })
+        }
+
     }
 }
 

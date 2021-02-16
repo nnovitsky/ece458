@@ -34,7 +34,7 @@ const makeTable = () => {
 
     return (
         <div className="data-table">
-            <Table striped bordered hover>
+            <Table striped bordered hover size="sm">
                 {header}
                 {body}
 

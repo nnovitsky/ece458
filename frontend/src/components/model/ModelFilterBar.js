@@ -28,7 +28,7 @@ const ModelFilterBar = (props) => {
                     <Col>
                         <h3>Filters</h3>
                         <Form.Group>
-                            <Form.Control name={modelName} type="text" placeholder="Enter Model" onChange={onTextInput} />
+                            <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
                         </Form.Group>
                     </Col>
                     <Col>

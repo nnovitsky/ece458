@@ -42,7 +42,6 @@ class InstrumentDetailView extends Component {
                 numPages: '',
                 resultsPerPage: 10,
                 currentPageNum: 1,
-                numResults: '',
                 isShowAll: false,
                 desiredPage: 1
             },
@@ -82,7 +81,6 @@ class InstrumentDetailView extends Component {
             <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
         </div>
     ) {
-        console.log(this.state.calibration_pagination)
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
@@ -165,11 +163,14 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.isShowAll).then(
             (result) => {
                 if (result.success) {
-                    console.log(result.data.count,)
                     this.setState({
                         instrument_info: {
                             ...this.state.instrument_info,
-                            calibration_history: result.data.data
+                            calibration_history: result.data.data,
+                            calibration_pagination: {
+                                ...this.state.calibration_pagination,
+                                numResults: result.data.count
+                            }
                         }
                     })
                     if (!this.state.calibration_pagination.isShowAll) {
@@ -218,9 +219,9 @@ class InstrumentDetailView extends Component {
 
         return (
             <Table bordered>
-                <thead className="text-center">
+                <tr className="text-center">
                     <th colSpan={2}>Instrument Information</th>
-                </thead>
+                </tr>
                 <tbody>
                     <tr>
                         <td><strong>Serial Number</strong></td>
@@ -308,7 +309,6 @@ class InstrumentDetailView extends Component {
                     this.onAddCalibrationClose();
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
-                    console.log(formattedErrors);
                     this.setState({
                         addCalPopup: {
                             ...this.state.addCalPopup,
@@ -413,7 +413,6 @@ class InstrumentDetailView extends Component {
     }
 
     async onDeleteSubmit() {
-        console.log("Deleting instrument");
         await instrumentServices.deleteInstrument(this.state.instrument_info.pk).then(result => {
             this.onDeleteClose();
             this.setState({

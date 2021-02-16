@@ -143,6 +143,10 @@ class InstrumentTablePage extends Component {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
+                    pagination: {
+                        ...this.state.pagination,
+                        resultCount: result.data.count,
+                    }
                 })
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
@@ -236,18 +240,17 @@ class InstrumentTablePage extends Component {
         await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
             (result) => {
                 if (result.success) {
-                    console.log("Added!");
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []
-                        }
+                        },
+                        redirect: `/instruments/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
-                    console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
@@ -314,7 +317,7 @@ class InstrumentTablePage extends Component {
                 sortingKey = "description_lower"
                 return sortingKey;
             case "Latest Calibration":
-                sortingKey = "-most_recent_calibration"
+                sortingKey = "most_recent_calibration"
                 return sortingKey;
             case "Calibration Expiration":
                 sortingKey = "calibration_expiration_date"
@@ -333,21 +336,23 @@ class InstrumentTablePage extends Component {
     onInstrumentSort = (sortingHeader) => {
 
         let urlSortingKey = this.getURLKey(sortingHeader);
-
         //this handles ascending/descending, it toggles between
         if (this.state.instrumentSearchParams.sortingIndicator.includes(urlSortingKey)) {
             if (this.state.instrumentSearchParams.sortingIndicator.charAt(0) !== '-') {
                 urlSortingKey = `-${urlSortingKey}`;
             }
         }
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                sortingIndicator: urlSortingKey
-            }
-        }, () => {
-            this.updateTable();
-        })
+        if (urlSortingKey !== `-`) {
+            this.setState({
+                instrumentSearchParams: {
+                    ...this.state.instrumentSearchParams,
+                    sortingIndicator: urlSortingKey
+                }
+            }, () => {
+                this.updateTable();
+            })
+        }
+
     }
 }
 export default InstrumentTablePage;

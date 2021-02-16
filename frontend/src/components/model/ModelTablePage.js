@@ -166,8 +166,12 @@ class ModelTablePage extends Component {
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 if (res.success) {
+
                     this.updateModelTable();
                     this.onAddModelClosed();
+                    this.setState({
+                        redirect: `/models/${res.data.pk}`
+                    })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
                     this.setState({
@@ -259,7 +263,11 @@ class ModelTablePage extends Component {
     // sorting the data, filtering the data, or pagination
     updateData(data) {
         this.setState({
-            tableData: data.data
+            tableData: data.data,
+            pagination: {
+                ...this.state.pagination,
+                resultCount: data.count,
+            }
         })
 
         if (!this.state.modelSearchParams.showAll) {
@@ -312,14 +320,17 @@ class ModelTablePage extends Component {
                 urlSortingKey = `-${urlSortingKey}`;
             }
         }
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                sortingIndicator: urlSortingKey
-            }
-        }, () => {
-            this.updateModelTable();
-        })
+        if (urlSortingKey !== `-`) {
+            this.setState({
+                modelSearchParams: {
+                    ...this.state.modelSearchParams,
+                    sortingIndicator: urlSortingKey
+                }
+            }, () => {
+                this.updateModelTable();
+            })
+        }
+
     }
 }
 

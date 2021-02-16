@@ -19,7 +19,6 @@ let countStart; //prop int of the starting number to list for the first data poi
 //'sortData' handler to call when a header is clicked for sorting
 
 const instrumentTable = (props) => {
-    console.log(props.data);
     data = props.data;
     countStart = props.countStart;
     let header = createHeader(props.sortData);
@@ -27,7 +26,7 @@ const instrumentTable = (props) => {
 
     return (
         <div className="data-table">
-            <Table striped bordered hover>
+            <Table striped bordered hover size="sm">
                 <thead>
                     {header}
                 </thead>

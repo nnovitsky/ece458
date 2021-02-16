@@ -15,7 +15,6 @@ let countStart; //prop of int of data count to start at
 
 
 const modelTable = (props) => {
-    console.log(props.data);
     data = props.data;
     countStart = props.countStart;
     let header = createHeader(props.sortData);
@@ -24,7 +23,7 @@ const modelTable = (props) => {
     return (
         <div className="data-table">
 
-            <Table striped bordered>
+            <Table striped bordered size="sm">
             <thead>
                 {header}
             </thead>
@@ -73,7 +72,7 @@ const createBody = (onMoreClicked) => {
         )
         count++;
         keys.forEach(k => {
-            if ((k === "calibration_frequency") && (currentData[k] == 0)) {
+            if ((k === "calibration_frequency") && (currentData[k] === 0)) {
                 rowElements.push(
                     <td>N/A</td>)
             } else {

@@ -23,7 +23,7 @@ const importInstrumentTable = (props) => {
     return (
         <div className="data-table">
 
-            <Table striped bordered>
+            <Table striped bordered size="sm">
             <thead>
                 {header}
             </thead>

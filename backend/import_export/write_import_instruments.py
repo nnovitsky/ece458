@@ -37,7 +37,7 @@ def reformat_date(MM_DD_YYYY):
 
 
 def upload_cal_event(current_row, current_instrument):
-    admin = User.objects.filter(username='admin_hpt_user')[0]
+    admin = User.objects.filter(username='admin')[0]
     db_date = reformat_date(current_row[CAL_DATE_INDEX])
     cal_event_info = [db_date, admin.pk, current_instrument.pk, current_row[CAL_COMMENT_INDEX]]
     cal_event_data = dict(zip(cal_event_keys, cal_event_info))

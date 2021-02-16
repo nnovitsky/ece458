@@ -270,7 +270,7 @@ def import_models_csv(request):
     except KeyError:
         return Response({"Upload error": ["No file was uploaded."]},
                         status=status.HTTP_409_CONFLICT)
-    if uploaded_file.content_type != 'text/csv':
+    if uploaded_file.content_type not in ['text/csv', 'application/vnd.ms-excel']:
         return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
                         status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
@@ -305,7 +305,7 @@ def import_instruments_csv(request):
         return Response({"Upload error": ["No file was uploaded."]},
                         status=status.HTTP_409_CONFLICT)
 
-    if uploaded_file.content_type != 'text/csv':
+    if uploaded_file.content_type not in ['text/csv', 'application/vnd.ms-excel']:
         return Response({"Upload error": ["Incorrect file type uploaded. Must be CSV."]},
                         status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
@@ -314,7 +314,7 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file)
+    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file, request)
 
     if not db_write_success:
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},

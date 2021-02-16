@@ -169,7 +169,11 @@ class InstrumentDetailView extends Component {
                     this.setState({
                         instrument_info: {
                             ...this.state.instrument_info,
-                            calibration_history: result.data.data
+                            calibration_history: result.data.data,
+                            calibration_pagination: {
+                                ...this.state.calibration_pagination,
+                                numResults: result.data.count
+                            }
                         }
                     })
                     if (!this.state.calibration_pagination.isShowAll) {

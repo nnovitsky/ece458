@@ -17,7 +17,7 @@ import Row from 'react-bootstrap/Row';
 let lowerBound = 0;
 let upperBound = 0;
 const genericPagination = (props) => {
-    console.log(props)
+    console.log(props.numResults);
     setBounds(props.currentPageNum, props.numResults, props.resultsPerPage);
     return (
         <Row className="pagination">

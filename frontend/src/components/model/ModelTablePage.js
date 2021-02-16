@@ -259,7 +259,11 @@ class ModelTablePage extends Component {
     // sorting the data, filtering the data, or pagination
     updateData(data) {
         this.setState({
-            tableData: data.data
+            tableData: data.data,
+            pagination: {
+                ...this.state.pagination,
+                resultCount: data.count,
+            }
         })
 
         if (!this.state.modelSearchParams.showAll) {

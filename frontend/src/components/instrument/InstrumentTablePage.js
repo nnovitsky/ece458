@@ -143,6 +143,10 @@ class InstrumentTablePage extends Component {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
+                    pagination: {
+                        ...this.state.pagination,
+                        resultCount: result.data.count,
+                    }
                 })
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({

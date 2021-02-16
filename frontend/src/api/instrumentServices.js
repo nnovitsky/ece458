@@ -416,5 +416,64 @@ export default class InstrumentServices {
     }
 
 
+
+    async exportInstruments(filters, isAll) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/export_instruments_csv/?`;
+        let count = 0;
+        for (var key in filters) {
+            if (count > 0) {
+                url += '&';
+            }
+            url += (key + `=${filters[key]}`);
+            count++;
+        }
+
+        if (isAll) {
+            console.log('exporting all')
+            url += `&export_models`;
+        }
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.blob().then(blob => {
+                    return URL.createObjectURL(blob)
+                })
+                    .then(url => {
+                        result.url = url;
+                        return result;
+                    })
+            } else {
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.errors = json;
+                    return result;
+                })
+            }
+        }
+        )
+    }
 }
 

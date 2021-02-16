@@ -2,7 +2,6 @@ from io import BytesIO
 from datetime import datetime, date
 import pytz
 
-
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER #8.5x11
 from reportlab.lib.units import inch

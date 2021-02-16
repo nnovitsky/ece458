@@ -15,6 +15,7 @@ import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
 import { rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
+import GenericPagination from '../generic/GenericPagination';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
@@ -36,8 +37,8 @@ class ModelDetailView extends React.Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
-                instruments: []
             },
+            instruments: [],
             editPopup: {
                 isShown: false,
                 errors: []
@@ -45,7 +46,14 @@ class ModelDetailView extends React.Component {
             deletePopup: {
                 isShown: false,
                 errors: []
-            }
+            },
+            pagination: {
+                resultCount: '',
+                numPages: '',
+                resultsPerPage: 10,
+                currentPageNum: '',
+                desiredPage: 1
+            },
 
         }
 
@@ -56,10 +64,13 @@ class ModelDetailView extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
 
     async componentDidMount() {
-        await this.updateInfo();
+        await this.updateModelInfo();
+        await this.getInstruments();
     }
 
     render(
@@ -90,6 +101,16 @@ class ModelDetailView extends React.Component {
                                 <Col>{this.makeDetailsTable()}</Col>
                                 <Col xs={6}>
                                     {this.makeInstrumentsTable()}
+                                    <GenericPagination
+                                        currentPageNum={this.state.pagination.currentPageNum}
+                                        numPages={this.state.pagination.numPages}
+                                        numResults={this.state.pagination.resultCount}
+                                        resultsPerPage={this.state.pagination.resultsPerPage}
+                                        onPageClicked={this.onPaginationClick}
+                                        onShowAllToggle={this.onToggleShowAll}
+                                        isShown={!this.state.pagination.showAll}
+                                        buttonText={(this.state.pagination.showAll) ? "Limit Results" : "Show All"}
+                                    />
                                 </Col>
                             </Row>
                         </div>
@@ -174,7 +195,7 @@ class ModelDetailView extends React.Component {
     makeInstrumentsTable() {
         let rows = [];
         let count = 1;
-        this.state.model_info.instruments.forEach((element) => {
+        this.state.instruments.forEach((element) => {
             let currentRow = [];
             currentRow.push(
                 <td>{count}</td>
@@ -241,7 +262,7 @@ class ModelDetailView extends React.Component {
                     }
                 })
 
-                this.updateInfo();
+                this.updateModelInfo();
                 this.onEditClose();
             } else {
                 let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add__edit_model"]);
@@ -308,17 +329,71 @@ class ModelDetailView extends React.Component {
         })
     }
 
-    async updateInfo() {
+    async onPaginationClick(num) {
+        this.setState({
+            pagination: {
+                ...this.state.pagination,
+                desiredPage: num
+            }
+        }, () => {
+            this.getInstruments();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                pagination: {
+                    ...this.state.pagination,
+                    showAll: !prevState.pagination.showAll
+                }
+            }
+        }, () => {
+            this.getInstruments();
+        })
+    }
+
+    async updateModelInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
                 this.setState({
-                    model_info: result.data
+                    model_info: result.data,
                 })
+
+
             } else {
                 console.log("error")
             }
         })
     }
+
+    async getInstruments() {
+        instrumentServices.getInstrumentsByModelPk(this.state.model_info.pk, this.state.pagination.desiredPage, this.state.pagination.showAll)
+            .then(result => {
+                if (result.success) {
+                    this.setState({
+                        instruments: result.data.data,
+                        pagination: {
+                            ...this.state.pagination,
+                            resultCount: result.data.count,
+                        }
+                    })
+                    if (!this.state.pagination.showAll) {
+                        this.setState({
+                            pagination: {
+                                ...this.state.pagination,
+                                resultCount: result.data.count,
+                                numPages: result.data.numpages,
+                                currentPageNum: result.data.currentpage
+                            }
+                        })
+                    }
+                } else {
+                    console.log("failed to get instrument instances");
+                }
+            })
+    }
+
 }
 export default withRouter(ModelDetailView);
 

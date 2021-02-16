@@ -33,11 +33,15 @@ const makeTable = () => {
     let body = createBody();
 
     return (
-        <Table striped bordered hover>
-            {header}
-            {body}
+        <div className="data-table">
+            <Table striped bordered hover size="sm">
+                {header}
+                {body}
 
-        </Table>)
+            </Table>
+        </div>
+    )
+
 }
 
 const createHeader = () => {

@@ -1,10 +1,10 @@
 from io import BytesIO
 from datetime import date
-from zipfile import ZipFile
+import zipfile
 
 import pandas as pd
 
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
@@ -64,25 +64,32 @@ def write_instrument_sheet(db_instruments, buffer):
     return buffer, f"instrument_export_{date.today().strftime('%Y_%m_%d')}.csv"
 
 
-def zip_files():
-
-    return True
+def zip_files(model_buffer, model_file_name, instrument_buffer, instrument_file_name):
+    mem_zip = BytesIO()
+    with zipfile.ZipFile(mem_zip, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(model_file_name, model_buffer.getvalue())
+        zf.writestr(instrument_file_name, instrument_buffer.getvalue())
+    return mem_zip.getbuffer(), f"zip_export_{date.today().strftime('%Y_%m_%d')}.zip"
 
 
 def handler(queryset, export_code):
 
     if export_code == MODEL_EXPORT:
-        output_buffer, file_name = write_model_sheet(queryset, BytesIO())
+        output_buffer, file_name = write_model_sheet(queryset['models'], BytesIO())
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
     elif export_code == INSTRUMENT_EXPORT:
-        output_buffer, file_name = write_instrument_sheet(queryset, BytesIO())
+        output_buffer, file_name = write_instrument_sheet(queryset['instruments'], BytesIO())
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
     elif export_code == ZIP_EXPORT:
-        model_buffer = write_model_sheet()
-        instrument_buffer = write_instrument_sheet()
-        zip_files()
+        model_buffer, model_file_name = write_model_sheet(queryset['models'], BytesIO())
+        instrument_buffer, instrument_file_name = write_instrument_sheet(queryset['instruments'], BytesIO())
+        output_buffer, file_name = zip_files(model_buffer, model_file_name, instrument_buffer, instrument_file_name)
+        response = HttpResponse(output_buffer, content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename={file_name}'
     else:
         return Response({"description": ["invalid status code for export config"]}, status=status.HTTP_418_IM_A_TEAPOT)
 
     try:
-        return FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        return response
     except IOError:
         return Response(status=status.HTTP_418_IM_A_TEAPOT)

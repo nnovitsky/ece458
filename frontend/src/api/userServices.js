@@ -100,6 +100,10 @@ export default class UserServices {
 
     // handles modified/expired tokens
     async editUser(username, password, first_name, last_name) {
+        console.log(username);
+        console.log(password);
+        console.log(first_name);
+        console.log(last_name);
         let data = {
             username: username,
             password: password,

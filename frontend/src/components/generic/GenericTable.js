@@ -33,7 +33,7 @@ const makeTable = () => {
     let body = createBody();
 
     return (
-        <Table striped bordered hover>
+        <Table striped bordered hover size="sm">
             {header}
             {body}
 

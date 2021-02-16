@@ -40,9 +40,11 @@ Create a folder on your machine to hold the project code through the command lin
 ```
 $ mkdir hpt_project_folder
 ```
-Fork this repository on [ece458]() by using the fork icon in the top right 
+
+Fork this repository on [ece458](https://github.com/nnovitsky/ece458) by using the fork icon in the top right 
 corner in the git interface.
-Move into the directory you created and clone the repository now in your account. 
+
+On your Ubuntu manchine, move into the directory you created and clone the repository now in your account. 
 Checkout into the production branch `dev_postgres`
 ```
 $ cd hpt_project_folder
@@ -53,27 +55,25 @@ $ git checkout dev_postgres
 
 Now we will create a Postgres database for this project. Exit the repository and
 log into an interactive Postgres session by typing:
-
 ```
 $ sudo -u postgres psql
 ```
-Now we will create the database:
 
+Now we will create the database:
 ```
 postgres=# CREATE DATABASE hpt_db;
 ```
 
-Next, create a database user for our project. Make sure to select a secure password:
-
+Next, create a database user for our project. Make sure to choose a secure password:
 ```
 postgres=# CREATE USER  hpt_project_user WITH PASSWORD 'protected_password';
 ```
 
 Now, we can give our new user access to administer our new database:
-
 ```
 postgres=# GRANT ALL PRIVILEGES ON DATABASE hpt_db TO hpt_project_user;
 ```
+
 Finally, exit the Postgres session
 ```
 postgres=# \q
@@ -91,11 +91,11 @@ $ cd home/hpt_project_folder/ece458/backend
 $ virtualenv venv
 $ source venv/bin/activate
 ```
-Make sure gunicorn and psycopg2 is installed on your machine
+Next, make sure gunicorn and psycopg2 are installed on your machine:
 ```
 (venv) pip install django gunicorn psycopg2
 ```
-Download the backend requirements coming from the ece458 folder
+Download the backend requirements coming from the ece458 folder:
 ```
 (venv) cd ..
 (venv) pip3 install -r requirements.txt
@@ -103,15 +103,15 @@ Download the backend requirements coming from the ece458 folder
 
 ## Edit the settings.py File 
 
-Edit the settings.py file to allow your host. settings.py is located in the hpt folder in the backend
+Edit the settings.py file to allow your host. settings.py is located in the hpt folder in the backend:
 ```
 $ cd backend/hpt
 ```
 ```bash
-ALLOWED_HOSTS = ['your_server_domain_or_IP', 'second_domain_or_IP', . . .]
+ALLOWED_HOSTS = ['your_server_domain']
 ```
 
-In settings.py, change the databases attributes to your corresponding database:
+In settings.py, change the databases attributes to your corresponding database we configured above:
 ```bash
 DATABASES = {
 	'local': {
@@ -130,28 +130,28 @@ DATABASES = {
 ```
 
 ## Initial Django Project Setup
-We will next need to make sure your python path is correct
+We will next need to make sure your python path is correct. Run this command to set your path:
 ```
 (venv) export PYTHONPATH=/home/hpt_project_folder/ece458
 ```
-Migrate initial database schema to your new PostgreSQL database, you will need 
+Migrate initial database schema to your new PostgreSQL database. You will need 
 to navigate back to the backend folder where the manage.py file is located to 
-do this
+do this:
 ```
 (venv) cd backend
 (venv) python3 manage.py makemigrations
 (venv) python3 manage.py migrate
 ``` 
 Create an administrative user for the project. You will be prompted to give a
-username, email and password to be used for the Django admin page
+username, email and password to be used for the Django admin page:
 ```
 (venv) python3 manage.py createsuperuser
 ```
-Collect all of the static content into the static directory configuration we configured
+Collect all of the static content into the static directory configuration we configured:
 ```
 (venv) python3 manage.py collectstatic
 ```
-Test out your project by typing this in the backend folder: 
+Test out your project by typing this command (make sure you are still in the backend folder): 
 ```
 (venv) python3 manage.py runserver 0.0.0.0:8000
 ```
@@ -241,7 +241,7 @@ First, we will open up a new server block and specify that the server should lis
 ```
 server {
     listen 80;
-    server_name server_domain_or_IP;
+    server_name server_domain;
     root /home/hpt_project_folder/ece458/frontend/build;
     index index.html;
 }
@@ -260,7 +260,7 @@ server {
     }
   }
 ```
-Last, we will create a `location / {}` block to match all other requests. Inside of this location, we will include the standard proxy_params file included with Nginx and then pass traffic to the socket that our Gunicorn process created. 
+Last, we will create a `location /api {}` to direct to our Django endpoints. Inside of this location, we will include the standard proxy_params file included with Nginx and then pass traffic to the socket that our Gunicorn process created. 
 
 ```
 server {
@@ -274,7 +274,7 @@ server {
         root /home/hpt_project_folder/ece458/frontend/build;
     }
     
-	location / {
+	location /api {
         include proxy_params;
         proxy_pass http://unix:/home/hpt_project_folder/ece458/backend/backend.sock;
     }
@@ -297,14 +297,14 @@ $ sudo systemctl restart nginx
 ## Preparing the React Frontend to Launch 
 The next step is to create a build of the frontend static files for the server to display. This is done by navigating to the `home/hpt_project_folder/ece458` directory and then navigating to the frontend folder
 ```
-$ cd frontend
+$ cd home/hpt_project_folder/ece458/frontend
 ```
 First make sure that the frontend has all the necessary node modules by running
 ```
 $ npm install 
 ```
 The npm dependencies were installed using the `--save-dev` flag which allows the user to only make one call to `npm install` to grab the necessary tools
-Next you will need to add your own server into the configure.js file in order for the frontend to hit the Django endpoints. Navigate to the configure.js file, add your server host and comment out the unecessary hosts:
+Next you will need to add your own server into the configure.js file in order for the frontend to hit the Django endpoints. Navigate to the configure.js file, add your server host and remove the unecessary hosts:
 
 ```
 $ cd home/hpt_project_folder/ece458/frontend/src/api
@@ -316,12 +316,11 @@ const API_URL = 'https://your-hostname';
 
 export default API_URL;
 ```
-
 Next, build the frontend into static files to be served by running the command 
 ```
 $ npm run build
 ```
-This will create a `/frontend/build` directory which holds all of the content for our server to display. Restart Nignx to ensure the files will get served
+This will create a `/frontend/build` directory which holds all of the static content for our server to display. Restart Nignx to ensure the files will get served
 ```
 $ sudo systemctl restart nginx
 ```  

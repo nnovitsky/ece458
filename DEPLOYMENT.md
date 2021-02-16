@@ -28,7 +28,6 @@ $ sudo apt install nodejs
 $ sudo apt install npm
 ```
 
-
 ## Set Up Your Ubuntu Environment
 
 ```
@@ -41,20 +40,24 @@ Create a folder on your machine to hold the project code through the command lin
 ```
 $ mkdir hpt_project_folder
 ```
-Move into this directory and clone the repository
+Fork this repository on [ece458]() by using the fork icon in the top right 
+corner in the git interface.
+Move into the directory you created and clone the repository now in your account. 
+Checkout into the production branch `dev_postgres`
 ```
 $ cd hpt_project_folder
 $ git clone .......
+$ git checkout dev_postgres
 ```
 ## Create a PostgreSQL Database and User
 
-Log into an interactive Postgres session by typing:
+Now we will create a Postgres database for this project. Exit the repository and
+log into an interactive Postgres session by typing:
 
 ```
 $ sudo -u postgres psql
 ```
-
-Create a database:
+Now we will create the database:
 
 ```
 postgres=# CREATE DATABASE hpt_db;
@@ -71,20 +74,24 @@ Now, we can give our new user access to administer our new database:
 ```
 postgres=# GRANT ALL PRIVILEGES ON DATABASE hpt_db TO hpt_project_user;
 ```
-
-Exit the Postgres session
+Finally, exit the Postgres session
 ```
 postgres=# \q
 ```
 
 ## Accessing the Virtual Environment 
-
-Move into the backend folder and access the virtual machine:
+We will now create a virtual environment. First, install the necessary packages:
 ```
-$ cd backend 
-$ venv source/bin/activate
+$ sudo -H pip3 install --upgrade pip
+$ sudo -H pip3 install virtualenv
 ```
-Make sure  gunicorn and psycopg2 is installed on your machine
+Move into the backend folder, then create and access the virtual machine:
+```
+$ cd home/hpt_project_folder/ece458/backend 
+$ virtualenv venv
+$ source venv/bin/activate
+```
+Make sure gunicorn and psycopg2 is installed on your machine
 ```
 (venv) pip install django gunicorn psycopg2
 ```
@@ -94,19 +101,17 @@ Download the backend requirements coming from the ece458 folder
 (venv) pip3 install -r requirements.txt
 ```
 
-
 ## Edit the settings.py File 
 
 Edit the settings.py file to allow your host. settings.py is located in the hpt folder in the backend
 ```
-$ cd backend
-$ cd hpt
+$ cd backend/hpt
 ```
 ```bash
 ALLOWED_HOSTS = ['your_server_domain_or_IP', 'second_domain_or_IP', . . .]
 ```
 
-In settings.py, change the databases attributes
+In settings.py, change the databases attributes to your corresponding database:
 ```bash
 DATABASES = {
 	'local': {
@@ -125,16 +130,20 @@ DATABASES = {
 ```
 
 ## Initial Django Project Setup
-Change your python path
+We will next need to make sure your python path is correct
 ```
-(venv) export PYTHONPATH=/home/directory/folder_above_backend
+(venv) export PYTHONPATH=/home/hpt_project_folder/ece458
 ```
-Migrate initial database schema to you PostgreSQL database
+Migrate initial database schema to your new PostgreSQL database, you will need 
+to navigate back to the backend folder where the manage.py file is located to 
+do this
 ```
+(venv) cd backend
 (venv) python3 manage.py makemigrations
 (venv) python3 manage.py migrate
 ``` 
-Create an administrative user for the project
+Create an administrative user for the project. You will be prompted to give a
+username, email and password to be used for the Django admin page
 ```
 (venv) python3 manage.py createsuperuser
 ```
@@ -142,7 +151,7 @@ Collect all of the static content into the static directory configuration we con
 ```
 (venv) python3 manage.py collectstatic
 ```
-Test out your project by typing 
+Test out your project by typing this in the backend folder: 
 ```
 (venv) python3 manage.py runserver 0.0.0.0:8000
 ```
@@ -150,16 +159,19 @@ To ensure it's working visit your server domain followed by :8000
 ```
 http://server_domain_or_IP:8000
 ```
-You should see the default Django index page. If you append `/admin` to the end of the URL in the address bar, you will be prompted for the administrative username and password you created with the `createsuperuser` command.
+You should see the default Django index page. If you append `/api/admin` to the end of the URL in the address bar, you will be prompted for the administrative username and password you created with the `createsuperuser` command. Make sure your username and password works. When you have confirmed, end the session
+by typing `ctrl-C` into the terminal.
 
 ## Testing you Project with Gunicorn 
 Make sure the Gunicorn can serve the application by typing:
 ```
 (venv) gunicorn --bind 0.0.0.0:8000 hpt.wsgi
 ```
-This will start Gunicorn on the same interface that the Django development server was running on. You can go back and test the app again.
+This will start Gunicorn on the same interface that the Django development server was running on. You can go back and test the app again 
+with your username and password. Note that this app will not have the styling which was present when you ran the backend with runserver.
 
-Once we know our project can be served by Gunicorn, you can close the virtual environment. 
+Once we know our project can be served by Gunicorn, you can stop Gunicorn and close the virtual environment. 
+`ctrl-C`
 ```
 (venv) deactivate
 ```
@@ -168,10 +180,10 @@ Once we know our project can be served by Gunicorn, you can close the virtual en
 
 Create and open a systemd service file for Gunicorn with sudo privileges in your text editor
 ```
-$ sudo  nano /etc/systemd/system/gunicorn.service
+$ sudo nano /etc/systemd/system/gunicorn.service
 ```
 We will add a `[Unit]`  `[Service]` and `[Install]` section. 
-- The `[Unit]` will specify ????? 
+- The `[Unit]` will specify the name of the service and tell the system to only start this after the networking targest has been reached. 
 - The `[Service]` section clarifies what the service file should execute. The User specifies the user of the vcm and grants them ownership of the process. The Group gives ownership to `www-data` so that Nginx can communicate easily with Gunicorn. The Environment tag clarifies the `PYTHONPATH` which should be used to launch Gunicorn. WorkingDirectory specifies where the service file should start executing and the ExecStart tag gives the commands that should be executed.
 - The `[Install]` section has only one tag, WantedBy which allows multiple users to access our server. Here is the full file:
 
@@ -183,9 +195,9 @@ After=network.target
 [Service]
 User= your_ubuntu_server_user
 Group=www-data
-WorkingDirectory=/home/hpt_project_folder/backend
-Environment="PYTHONPATH=/home/vcm/evo1/ece458/"
-ExecStart=/home/hpt_project_folder/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/hpt_project_folder/backend/backend.sock hpt.wsgi
+WorkingDirectory=/home/hpt_project_folder/ece458/backend
+Environment="PYTHONPATH=/home/hpt_project_folder/ece458/"
+ExecStart=/home/hpt_project_folder/ece458/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/hpt_project_folder/ece458/backend/backend.sock hpt.wsgi
 
 [Install]
 WantedBy=multi-user.target
@@ -203,7 +215,7 @@ Make sure the sock file was created by looking into your project directory
 ```
 $ ls /home/hpt_project_folder/backend
 ```
-If the status call indicated an error, or the backend.sock folder was not created, there was an issue with starting Gunicorn. You can find a more in-depth log of what occurred by using the command and pressing `shift + g` to navigate to the bottom of the log
+If the status call indicated an error, or the backend.sock folder was not created, there was an issue with starting Gunicorn. You can find a more in-depth log of what occurred by using the command and pressing `[shift + g]` to navigate to the bottom of the log
 ```
 $ sudo journalctl -u gunicorn
 ```
@@ -216,10 +228,6 @@ Anytime you make an edit to the `/etc/systemd/system/gunicorn.service` file, mak
 ```
 $ sudo systemctl daemon-reload
 $ sudo systemctl restart gunicorn
-```
-To ensure it's working visit your server domain followed by :8000. You should see the default Django page. By adding /admin to the url, you will be directed to the admin login and should be able to login with your superuser
-```
-http://server_domain_or_IP/admin
 ```
 
 ## Configure Nginx to Proxy Pass to Gunicorn 
@@ -234,6 +242,8 @@ First, we will open up a new server block and specify that the server should lis
 server {
     listen 80;
     server_name server_domain_or_IP;
+    root /home/hpt_project_folder/ece458/frontend/build;
+    index index.html;
 }
 ```
 Next, we will specify for Nginx to ignore any issues with finding a favicon and we will tell it where to find the static assets in our Django backend. 
@@ -241,10 +251,12 @@ Next, we will specify for Nginx to ignore any issues with finding a favicon and 
 server {
     listen 80;
     server_name server_domain_or_IP;
+    root /home/hpt_project_folder/ece458/frontend/build;
+    index index.html;
     
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /home/sammy/myproject;
+        root /home/hpt_project_folder/ece458/frontend/build;
     }
   }
 ```
@@ -254,20 +266,23 @@ Last, we will create a `location / {}` block to match all other requests. Inside
 server {
     listen 80;
     server_name server_domain_or_IP;
+    root /home/hpt_project_folder/ece458/frontend/build;
+    index index.html;
     
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /home/sammy/myproject;
+        root /home/hpt_project_folder/ece458/frontend/build;
     }
     
 	location / {
         include proxy_params;
-        proxy_pass http://unix:/home/sammy/myproject/myproject.sock;
+        proxy_pass http://unix:/home/hpt_project_folder/ece458/backend/backend.sock;
     }
  }
 ```
 
-Save and close the file `/etc/nginx/sites-available/hpt_project`. Next, we must enable the file by linking it to the `sites-enabled` directory like so:
+Save and close the file `/etc/nginx/sites-available/hpt_project`. Next, we must enable the file by linking it to the `sites-enabled` directory. This
+can be done by typing:
 ```
 $ sudo ln -s /etc/nginx/sites-available/hpt_project /etc/nginx/sites-enabled
 ```
@@ -280,7 +295,7 @@ If no errors are reported, restart Nignx  by typing:
 $ sudo systemctl restart nginx
 ```
 ## Preparing the React Frontend to Launch 
-The next step is to create a build of the frontend static files for the server to display. This is done by navigating to the `home/hpt_project/ece458` directory and then navigating to the frontend folder
+The next step is to create a build of the frontend static files for the server to display. This is done by navigating to the `home/hpt_project_folder/ece458` directory and then navigating to the frontend folder
 ```
 $ cd frontend
 ```
@@ -337,4 +352,3 @@ Now, we will specify how we would like to run Certbot. We want Certbot to edit t
 ```
 $ sudo certbot --nginx
 ```
-??????NEED STUFF ABOUT USERNAME AND EMAIL???????

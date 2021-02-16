@@ -53,10 +53,11 @@ def get_fields(instrument):
     fields.append(model_data.get('description'))
     fields.append(str(model_data.get('serial_number')))
 
+    cal_event = instrument.calibrationevent_set.order_by('-date')[:1][0]
     calibration_event_data = serializer.data['calibration_event'][0]
     fields.append(calibration_event_data.get('date'))
     fields.append(str(serializer.data['calibration_expiration']))
-    fields.append(str(calibration_event_data.get('user'))) #Returns the user's PK???
+    fields.append(cal_event.user.username)
     fields.append(calibration_event_data.get('comment'))
 
     return fields

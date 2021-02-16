@@ -301,9 +301,6 @@ class ModelTablePage extends Component {
             case "Description":
                 sortingKey = "description_lower"
                 return sortingKey;
-            case "Comments":
-                sortingKey = "comments_lower"
-                return sortingKey;
             case "Calibration (days)":
                 sortingKey = "calibration_frequency"
                 return sortingKey;

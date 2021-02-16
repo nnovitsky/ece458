@@ -317,7 +317,7 @@ class InstrumentTablePage extends Component {
                 sortingKey = "description_lower"
                 return sortingKey;
             case "Latest Calibration":
-                sortingKey = "-most_recent_calibration"
+                sortingKey = "most_recent_calibration"
                 return sortingKey;
             case "Calibration Expiration":
                 sortingKey = "calibration_expiration_date"

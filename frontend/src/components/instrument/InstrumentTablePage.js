@@ -246,7 +246,8 @@ class InstrumentTablePage extends Component {
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []
-                        }
+                        },
+                        redirect: `/instruments/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);

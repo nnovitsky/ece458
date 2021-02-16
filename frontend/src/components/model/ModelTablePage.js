@@ -166,8 +166,12 @@ class ModelTablePage extends Component {
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
             .then((res) => {
                 if (res.success) {
+
                     this.updateModelTable();
                     this.onAddModelClosed();
+                    this.setState({
+                        redirect: `/models/${res.data.pk}`
+                    })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
                     this.setState({

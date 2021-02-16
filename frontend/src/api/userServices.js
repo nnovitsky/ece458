@@ -123,7 +123,6 @@ export default class UserServices {
         })
             .then(res => {
                 if (res.ok) {
-                    console.log(res);
                     return res.json().then(json => {
                         result.success = true;
                         result.data = json;

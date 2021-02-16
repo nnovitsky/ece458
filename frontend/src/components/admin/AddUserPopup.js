@@ -48,7 +48,7 @@ const makeBody = () => {
             <Form.Control required type="text" name={username} onChange={onTextInput} placeholder="Enter Username" />
 
             <Form.Label>Password</Form.Label>
-            <Form.Control required type="text" name={password} onChange={onTextInput} placeholder="Enter Password" />
+            <Form.Control required type="password" name={password} onChange={onTextInput} placeholder="Enter Password" />
 
             <Form.Label>First Name</Form.Label>
             <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter Your First Name" />

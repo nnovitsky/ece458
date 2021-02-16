@@ -219,9 +219,9 @@ class InstrumentDetailView extends Component {
 
         return (
             <Table bordered>
-                <thead className="text-center">
+                <tr className="text-center">
                     <th colSpan={2}>Instrument Information</th>
-                </thead>
+                </tr>
                 <tbody>
                     <tr>
                         <td><strong>Serial Number</strong></td>

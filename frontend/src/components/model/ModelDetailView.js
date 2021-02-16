@@ -214,7 +214,7 @@ class ModelDetailView extends React.Component {
 
         return (
             <div className="data-table">
-            <Table bordered hover>
+                <Table bordered hover size="sm">
                 <thead>
                     <tr>
                         <th colSpan="3" className="text-center">Instances by Serial Number</th>

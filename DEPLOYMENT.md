@@ -304,15 +304,27 @@ First make sure that the frontend has all the necessary node modules by running
 $ npm install 
 ```
 The npm dependencies were installed using the `--save-dev` flag which allows the user to only make one call to `npm install` to grab the necessary tools
+Next you will need to add your own server into the configure.js file in order for the frontend to hit the Django endpoints. Navigate to the configure.js file, add your server host and comment out the unecessary hosts:
+
+```
+$ cd home/hpt_project_folder/ece458/frontend/src/api
+$ nano config.js
+```
+Edit the config.js to point to your host and save the file:
+```
+const API_URL = 'https://your-hostname';
+
+export default API_URL;
+```
+
 Next, build the frontend into static files to be served by running the command 
 ```
 $ npm run build
 ```
-This will create a `/frontend/build` directory which holds all of the content for our server to display. Restart Nignx then navigate to your browser to see if the frontend is being displayed
+This will create a `/frontend/build` directory which holds all of the content for our server to display. Restart Nignx to ensure the files will get served
 ```
 $ sudo systemctl restart nginx
 ```  
-Navigate to `http://server_domain_or_IP/` to see if it worked. 
 
 ## Setting up LetsEcrypt and SSL Certification 
 The final step is to protect the project information with https by getting a certificate with Certbot. Navigate to the [Certbot page](https://certbot.eff.org/)
@@ -352,3 +364,6 @@ Now, we will specify how we would like to run Certbot. We want Certbot to edit t
 ```
 $ sudo certbot --nginx
 ```
+With this, we have allowed Certbot to edit our 'sites-available' page to configure https security. Now your site is ready to launch!
+Navigate to `https://your-hostname` and login to the HPT interface using your superuser credentials. Here, you can add and import models/instruments and create new users to populate the database.
+

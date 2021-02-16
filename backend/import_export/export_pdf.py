@@ -1,11 +1,8 @@
 from io import BytesIO
-import os
 from datetime import datetime, date
-import time
 import pytz
 
 
-from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER #8.5x11
 from reportlab.lib.units import inch
@@ -56,7 +53,6 @@ def fill_pdf(buffer, fields):
                             topMargin=72, bottomMargin=18)
 
     elements = []
-    # formatted_time = time.ctime()
     tz_eastern = pytz.timezone('America/New_York')
     today_dt = datetime.now(tz_eastern)
     formatted_time = today_dt.strftime("%m/%d/%y %H:%M:%S")

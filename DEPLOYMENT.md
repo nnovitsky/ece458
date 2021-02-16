@@ -7,7 +7,7 @@ Fantastic Four
 
 ## Initial Technologies and Installations
 - Ubuntu 20.04 with ssh key configured and user with sudo privileges
-- Added as contributor on the ece45 GitHub project owned by Natalie Novitsky
+- Added with permissions to fork the ece458 GitHub project owned by Natalie Novitsky
 - Python3 installed on Ubuntu 20.04: should be pre-installed 
 ```
 $ sudo apt update

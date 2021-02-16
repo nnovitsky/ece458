@@ -29,16 +29,6 @@ EXPECTED_FIELDS = [
 ]
 
 
-X_CENTER = LETTER[0] / 2
-Y_CENTER = LETTER[1] / 2
-HEADER_X_OFFSET = 125
-HEADER_Y_OFFSET = LETTER[1] - 60
-BODY_X_OFFSET = 40
-BODY_Y_OFFSET = LETTER[1] - 100
-NEW_LINE = 35
-HEADER_TEXT = "HPT Calibration Certificate"
-
-
 def get_fields(instrument):
 
     fields = []

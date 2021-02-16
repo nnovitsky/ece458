@@ -88,4 +88,5 @@ class CalibrationEventList(ListAPIView):
     def list(self, request, *args, **kwargs):
         nextPage = 1
         previousPage = 1
-        return get_page_response(self.queryset, request, self.serializer_class, nextPage, previousPage)
+        queryset = self.filter_queryset(self.get_queryset())
+        return get_page_response(queryset, request, self.serializer_class, nextPage, previousPage)

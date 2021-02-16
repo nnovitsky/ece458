@@ -60,7 +60,7 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
     # reusable pagination function
     if 'get_all' in request.GET:
         serializer = serializerType(objects, context={'request': request}, many=True)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'data': serializer.data, 'count': len(serializer.data)}, status=status.HTTP_200_OK)
 
     page = int(request.GET.get('page', 1))
     paginator = Paginator(objects, 10)

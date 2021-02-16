@@ -6,6 +6,7 @@ import AddUserPopup from "./AddUserPopup";
 import './Admin.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
+import GenericPagination from "../generic/GenericPagination";
 import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
 import { rawErrorsToDisplayed } from '../generic/Util';
 
@@ -27,10 +28,20 @@ class AdminPage extends React.Component {
                 isShown: false,
                 errors: []
             },
+            user_pagination: {
+                resultCount: '',
+                numPages: '',
+                resultsPerPage: 10,
+                currentPageNum: '',
+                desiredPage: '1',
+                showAll: false
+            }
         };
 
         this.onAddUserClosed = this.onAddUserClosed.bind(this);
         this.onAddUserSubmit = this.onAddUserSubmit.bind(this);
+        this.onPaginationClick = this.onPaginationClick.bind(this);
+        this.onToggleShowAll = this.onToggleShowAll.bind(this);
     }
 
     
@@ -57,6 +68,16 @@ class AdminPage extends React.Component {
                         <div className="col-10">
                             <h2>Hello, Admin</h2>
                             <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={[]} buttonFunctions={[]} />
+                            <GenericPagination
+                                currentPageNum={this.state.user_pagination.currentPageNum}
+                                numPages={this.state.user_pagination.numPages}
+                                numResults={this.state.user_pagination.resultCount}
+                                resultsPerPage={this.state.user_pagination.resultsPerPage}
+                                onPageClicked={this.onPaginationClick}
+                                onShowAllToggle={this.onToggleShowAll}
+                                isShown={!this.state.user_pagination.showAll}
+                                buttonText={(this.state.user_pagination.showAll) ? "Limit Results" : "Show All"}
+                            />
                             <button onClick={this.onAddUserClicked}>Add New User</button>
                         </div>
                     </div>
@@ -110,17 +131,52 @@ class AdminPage extends React.Component {
     }
 
     async updateUserTable() {
-        userServices.getUsers().then((result) => {
+        userServices.getUsers(this.state.user_pagination.desiredPage, this.state.user_pagination.showAll).then((result) => {
             if (result.success) {
                 this.setState({
                     redirect: null,
-                    tableData: result.data
+                    tableData: result.data.data
                 })
+
+                if (!this.state.user_pagination.showAll) {
+                    this.setState({
+                        user_pagination: {
+                            ...this.state.user_pagination,
+                            resultCount: result.data.count,
+                            numPages: result.data.numpages,
+                            currentPageNum: result.data.currentpage
+                        }
+                    })
+                }
             } else {
                 console.log("error")
             }
         }
         )
+    }
+
+    async onPaginationClick(num) {
+        this.setState({
+            user_pagination: {
+                ...this.state.user_pagination,
+                desiredPage: num
+            }
+        }, () => {
+            this.updateUserTable();
+        })
+    }
+
+    async onToggleShowAll() {
+        this.setState((prevState) => {
+            return {
+                user_pagination: {
+                    ...this.state.user_pagination,
+                    showAll: !prevState.user_pagination.showAll
+                }
+            }
+        }, () => {
+            this.updateUserTable();
+        })
     }
 
 }

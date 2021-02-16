@@ -62,7 +62,6 @@ const InstrumentFilterBar = (props) => {
 }
 
 const onTextInput = (e) => {
-    console.log(e.target.value)
     switch (e.target.name) {
         case modelName:
             filters.model_number = e.target.value;

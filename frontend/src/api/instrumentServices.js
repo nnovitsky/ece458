@@ -436,7 +436,6 @@ export default class InstrumentServices {
         }
 
         if (isAll) {
-            console.log('exporting all')
             url += `&export_models`;
         }
 

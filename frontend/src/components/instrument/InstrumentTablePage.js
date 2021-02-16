@@ -240,7 +240,6 @@ class InstrumentTablePage extends Component {
         await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
             (result) => {
                 if (result.success) {
-                    console.log("Added!");
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
@@ -251,7 +250,6 @@ class InstrumentTablePage extends Component {
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
-                    console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,

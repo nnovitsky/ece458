@@ -10,47 +10,49 @@ Fantastic Four
 - Added as contributor on the ece45 GitHub project owned by Natalie Novitsky
 - Python3 installed on Ubuntu 20.04: should be pre-installed 
 ```
-sudo apt update
-sudo apt -y upgrade
-python3 -V
+$ sudo apt update
+$ sudo apt -y upgrade
+$ python3 -V
 ```
 - GitHub installed on Ubuntu 20.04 
 ```
-sudo apt install git
-git --version
-git config --global user.name "Your User Name"
-git config --global user.email you@example.com
+$ sudo apt install git
+$ git --version
+$ git config --global user.name "Your User Name"
+$ git config --global user.email you@example.com
 ```
 - NodeJS installed on Ubuntu 20.04
 - Npm installed on Ubuntu 20.04
 ```
-sudo apt install nodejs
-sudo apt install npm
+$ sudo apt install nodejs
+$ sudo apt install npm
 ```
 
 
 ## Set Up Your Ubuntu Environment
 
 ```
-sudo apt-get update
-sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx
+$ sudo apt-get update
+$ sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib nginx
 ```
 
 ## Move the Project Code to Your Ubuntu Machine
 Create a folder on your machine to hold the project code through the command line.
 ```
-mkdir hpt_project_folder
+$ mkdir hpt_project_folder
 ```
 Move into this directory and clone the repository
 ```
-cd hpt_project_folder
-git clone .......
+$ cd hpt_project_folder
+$ git clone .......
 ```
 ## Create a PostgreSQL Database and User
 
 Log into an interactive Postgres session by typing:
 
-```sudo -u postgres psql```
+```
+$ sudo -u postgres psql
+```
 
 Create a database:
 
@@ -79,17 +81,27 @@ postgres=# \q
 
 Move into the backend folder and access the virtual machine:
 ```
-venv source/bin/activate
+$ cd backend 
+$ venv source/bin/activate
 ```
 Make sure  gunicorn and psycopg2 is installed on your machine
 ```
 (venv) pip install django gunicorn psycopg2
 ```
+Download the backend requirements coming from the ece458 folder
+```
+(venv) cd ..
+(venv) pip3 install -r requirements.txt
+```
 
 
 ## Edit the settings.py File 
 
-Edit the settings.py file to allow your host
+Edit the settings.py file to allow your host. settings.py is located in the hpt folder in the backend
+```
+$ cd backend
+$ cd hpt
+```
 ```bash
 ALLOWED_HOSTS = ['your_server_domain_or_IP', 'second_domain_or_IP', . . .]
 ```
@@ -119,12 +131,12 @@ Change your python path
 ```
 Migrate initial database schema to you PostgreSQL database
 ```
-python3 manage.py makemigrations
+(venv) python3 manage.py makemigrations
 (venv) python3 manage.py migrate
 ``` 
 Create an administrative user for the project
 ```
-(venv)python3 manage.py createsuperuser
+(venv) python3 manage.py createsuperuser
 ```
 Collect all of the static content into the static directory configuration we configured
 ```
@@ -156,7 +168,7 @@ Once we know our project can be served by Gunicorn, you can close the virtual en
 
 Create and open a systemd service file for Gunicorn with sudo privileges in your text editor
 ```
-sudo  nano /etc/systemd/system/gunicorn.service
+$ sudo  nano /etc/systemd/system/gunicorn.service
 ```
 We will add a `[Unit]`  `[Service]` and `[Install]` section. 
 - The `[Unit]` will specify ????? 
@@ -180,30 +192,30 @@ WantedBy=multi-user.target
 ```
 Now we can start the Gunicorn service we created and enable it so that it starts at boot:
 ```
-sudo systemctl start gunicorn
-sudo systemctl enable gunicorn
+$ sudo systemctl start gunicorn
+$ sudo systemctl enable gunicorn
 ```
 Check the status of gunicorn and see if it was able to start
 ```
-sudo systemctl start status
+$ sudo systemctl start status
 ```
 Make sure the sock file was created by looking into your project directory
 ```
-ls /home/hpt_project_folder/backend
+$ ls /home/hpt_project_folder/backend
 ```
 If the status call indicated an error, or the backend.sock folder was not created, there was an issue with starting Gunicorn. You can find a more in-depth log of what occurred by using the command and pressing `shift + g` to navigate to the bottom of the log
 ```
-sudo journalctl -u gunicorn
+$ sudo journalctl -u gunicorn
 ```
-Most likely, one of the paths was incorrectly inputted into the service file. Check your paths and if an error still persists, try to execute the ExecStart commands yourself in the command line. Navigate to your project folder and execute:
+Most likely, one of the paths was incorrectly inputted into the service file. Check your paths and if an error still persists, try to execute the ExecStart commands yourself in the command line. To do this, navigate to your project folder and execute:
 ```
-cd /home/hpt_project_folder/backend
-venv/bin/gunicorn --access-logfile - --workers 3 --bind /home/hpt_project_folder/backend/backend.sock hpt.wsgi
+$ cd /home/hpt_project_folder/backend
+$ venv/bin/gunicorn --access-logfile - --workers 3 --bind /home/hpt_project_folder/backend/backend.sock hpt.wsgi
 ```
 Anytime you make an edit to the `/etc/systemd/system/gunicorn.service` file, make sure to reload the daemon to reread your new service definition and restart Gunicorn 
 ```
-sudo systemctl daemon-reload
-sudo systemctl restart gunicorn
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart gunicorn
 ```
 To ensure it's working visit your server domain followed by :8000. You should see the default Django page. By adding /admin to the url, you will be directed to the admin login and should be able to login with your superuser
 ```
@@ -214,7 +226,7 @@ http://server_domain_or_IP/admin
 
 With our backend running on Gunicorn, we can now work on Nginx and configure it to pass traffic to the process. We begin by creating a new server block in Nginx's sites-available directory.
 ```
-sudo  nano /etc/nginx/sites-available/hpt_project
+$ sudo  nano /etc/nginx/sites-available/hpt_project
 ```
 
 First, we will open up a new server block and specify that the server should listen on port 80 which is the normal port for internet traffic. We will also specify that it should respond to our server's host name. 
@@ -257,33 +269,33 @@ server {
 
 Save and close the file `/etc/nginx/sites-available/hpt_project`. Next, we must enable the file by linking it to the `sites-enabled` directory like so:
 ```
-sudo ln -s /etc/nginx/sites-available/hpt_project /etc/nginx/sites-enabled
+$ sudo ln -s /etc/nginx/sites-available/hpt_project /etc/nginx/sites-enabled
 ```
 Then test your Nginx configuration for syntax errors by typing:
 ```
-sudo nginx -t
+$ sudo nginx -t
 ```
 If no errors are reported, restart Nignx  by typing:
 ```
-sudo systemctl restart nginx
+$ sudo systemctl restart nginx
 ```
 ## Preparing the React Frontend to Launch 
 The next step is to create a build of the frontend static files for the server to display. This is done by navigating to the `home/hpt_project/ece458` directory and then navigating to the frontend folder
 ```
-cd frontend
+$ cd frontend
 ```
 First make sure that the frontend has all the necessary node modules by running
 ```
-npm install 
+$ npm install 
 ```
 The npm dependencies were installed using the `--save-dev` flag which allows the user to only make one call to `npm install` to grab the necessary tools
 Next, build the frontend into static files to be served by running the command 
 ```
-npm run build
+$ npm run build
 ```
 This will create a `/frontend/build` directory which holds all of the content for our server to display. Restart Nignx then navigate to your browser to see if the frontend is being displayed
 ```
-sudo systemctl restart nginx
+$ sudo systemctl restart nginx
 ```  
 Navigate to `http://server_domain_or_IP/` to see if it worked. 
 
@@ -307,22 +319,22 @@ $ sudo apt install snapd
 Then, once installed, check that it is correctly installed using the hello-world example above.
 Next, ensure that your version of Snapd is up to date with the following instruction 
 ```
-sudo snap install core; sudo snap refresh core
+$ sudo snap install core; sudo snap refresh core
 ```
 If you have any Certbot packages, you should remove them before installing Certbot Snap to ensure that when you run `certbot` as a command, the snap is used rather than the installation from your OS package manager. Do this by typing
 ```
-sudo apt-get remove certbot
+$ sudo apt-get remove certbot
 ```
 The next step is to install Certbot using this command 
 ```
-sudo snap install --classic certbot
+$ sudo snap install --classic certbot
 ```
 To ensure the `certbot` command can be run, execute this command on the command line 
 ```
-sudo ln -s /snap/bin/certbot /usr/bin/certbot
+$ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 ```
 Now, we will specify how we would like to run Certbot. We want Certbot to edit the Nginx configuration automatically to serve it and turn on HTTPS in a single step. Specify this to Certbot with the command 
 ```
-sudo certbot --nginx
+$ sudo certbot --nginx
 ```
 ??????NEED STUFF ABOUT USERNAME AND EMAIL???????

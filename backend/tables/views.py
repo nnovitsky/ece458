@@ -204,7 +204,7 @@ def models_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = DetailItemModelSerializer(model, context={'request': request})
+        serializer = ItemModelSerializer(model, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':

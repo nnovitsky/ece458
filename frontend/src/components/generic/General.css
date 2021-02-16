@@ -129,7 +129,7 @@ form.popup input[type=text] {
 /* model/instrument table formatting */
 .data-table {
     overflow-y: scroll;
-    max-height: 50vh;
+    max-height: 40vh;
 }
 
 .data-table th {

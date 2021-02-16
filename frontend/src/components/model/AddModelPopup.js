@@ -73,6 +73,7 @@ class AddModelPopup extends Component {
         this.onTextInput = this.onTextInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onClose = this.onClose.bind(this);
+        this.getVendorsArr = this.getVendorsArr.bind(this);
     }
 
     async componentDidMount() {

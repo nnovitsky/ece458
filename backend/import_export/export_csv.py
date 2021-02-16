@@ -1,13 +1,13 @@
 from io import BytesIO
-from datetime import date
+from datetime import date, datetime
 import zipfile
+import pytz
 
 import pandas as pd
 
 from django.http import FileResponse, HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
 model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Calibration-Frequency']
@@ -30,7 +30,7 @@ def write_model_sheet(db_models, buffer):
     model_sheet.to_csv(buffer, index=False)
     buffer.seek(0)
 
-    return buffer, f"model_export_{date.today().strftime('%Y_%m_%d')}.csv"
+    return buffer, f"model_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.csv"
 
 
 def write_instrument_sheet(db_instruments, buffer):
@@ -61,7 +61,7 @@ def write_instrument_sheet(db_instruments, buffer):
     instrument_sheet.to_csv(buffer, index=False)
     buffer.seek(0)
 
-    return buffer, f"instrument_export_{date.today().strftime('%Y_%m_%d')}.csv"
+    return buffer, f"instrument_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.csv"
 
 
 def zip_files(model_buffer, model_file_name, instrument_buffer, instrument_file_name):
@@ -69,7 +69,7 @@ def zip_files(model_buffer, model_file_name, instrument_buffer, instrument_file_
     with zipfile.ZipFile(mem_zip, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr(model_file_name, model_buffer.getvalue())
         zf.writestr(instrument_file_name, instrument_buffer.getvalue())
-    return mem_zip.getbuffer(), f"zip_export_{date.today().strftime('%Y_%m_%d')}.zip"
+    return mem_zip.getbuffer(), f"zip_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.zip"
 
 
 def handler(queryset, export_code):

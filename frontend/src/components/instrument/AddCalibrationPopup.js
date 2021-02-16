@@ -62,7 +62,6 @@ const onCommentChange = (e) => {
 }
 
 const onDateChange = (date, setCalDate) => {
-    console.log(dateToString(date));
     newCalibration.date = dateToString(date)
     setCalDate(date);
 }

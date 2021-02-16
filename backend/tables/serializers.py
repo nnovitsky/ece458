@@ -62,19 +62,6 @@ class ItemModelSerializer(serializers.ModelSerializer):
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
 
 
-class DetailItemModelSerializer(serializers.ModelSerializer):
-    instruments = serializers.SerializerMethodField('_get_instruments')
-
-    def _get_instruments(self, obj):
-        instruments = obj.instrument_set.order_by('-serial_number')
-        serializer = InstrumentWriteSerializer(instruments, many=True)
-        return serializer.data
-
-    class Meta:
-        model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'instruments')
-
-
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
 
     class Meta:

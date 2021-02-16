@@ -135,7 +135,11 @@ class AdminPage extends React.Component {
             if (result.success) {
                 this.setState({
                     redirect: null,
-                    tableData: result.data.data
+                    tableData: result.data.data,
+                    user_pagination: {
+                        ...this.state.user_pagination,
+                        resultCount: result.data.count
+                    }
                 })
 
                 if (!this.state.user_pagination.showAll) {

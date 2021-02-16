@@ -43,7 +43,7 @@ class InstrumentDetailView extends Component {
                 resultsPerPage: 10,
                 currentPageNum: 1,
                 numResults: '',
-                isShowAll: '',
+                isShowAll: false,
                 desiredPage: 1
             },
             addCalPopup: {
@@ -77,12 +77,12 @@ class InstrumentDetailView extends Component {
     }
 
     render(
-        
         adminButtons = <div>
             <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
             <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
         </div>
     ) {
+        console.log(this.state.calibration_pagination)
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
@@ -98,7 +98,7 @@ class InstrumentDetailView extends Component {
                     onPageClicked={this.onPaginationClick}
                     onShowAllToggle={this.onToggleShowAll}
                     isShown={!this.state.calibration_pagination.isShowAll}
-                    buttonText="Show All"
+                    buttonText={(this.state.calibration_pagination.isShowAll) ? "Limit Results" : "Show All"}
 
                 />
             </Col>
@@ -162,23 +162,27 @@ class InstrumentDetailView extends Component {
     }
 
     async getCalHistory() {
-        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.showAll).then(
+        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.isShowAll).then(
             (result) => {
                 if (result.success) {
+                    console.log(result.data.count,)
                     this.setState({
                         instrument_info: {
                             ...this.state.instrument_info,
                             calibration_history: result.data.data
-                        },
-                        calibration_pagination: {
-                            ...this.state.calibration_pagination,
-                            numResults: result.data.count,
-                            numPages: result.data.numpages,
-                            resultsPerPage: 10,
-                            currentPageNum: result.data.currentpage,
-                            isShowAll: false,
                         }
                     })
+                    if (!this.state.calibration_pagination.isShowAll) {
+                        this.setState({
+                            calibration_pagination: {
+                                ...this.state.calibration_pagination,
+                                numResults: result.data.count,
+                                numPages: result.data.numpages,
+                                resultsPerPage: 10,
+                                currentPageNum: result.data.currentpage,
+                            }
+                        });
+                    }
                 } else {
                     console.log("failed to get cal history");
                 }
@@ -445,7 +449,7 @@ class InstrumentDetailView extends Component {
             return {
                 calibration_pagination: {
                     ...this.state.calibration_pagination,
-                    showAll: !prevState.calibration_pagination.showAll
+                    isShowAll: !prevState.calibration_pagination.isShowAll
                 }
             }
         }, () => {

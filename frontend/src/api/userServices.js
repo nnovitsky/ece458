@@ -100,11 +100,24 @@ export default class UserServices {
 
     // handles modified/expired tokens
     async editUser(username, password, first_name, last_name) {
+        let data = {};
         if(username !== '')
         {
-            console.log("Equal!");
+            data['username'] = username; 
         }
-        console.log(password);
+        if(password !== '')
+        {
+            data['password'] = password; 
+        }
+        if(first_name !== '')
+        {
+            data['first_name'] = first_name; 
+        }
+        if(last_name !== '')
+        {
+            data['last_name'] = last_name; 
+        }
+/*         console.log(password);
         console.log(first_name);
         console.log(last_name);
         let data = {
@@ -112,7 +125,7 @@ export default class UserServices {
             password: password,
             first_name: first_name,
             last_name: last_name,
-        }
+        } */
 
         let result = {
             success: false,

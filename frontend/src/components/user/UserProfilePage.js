@@ -50,7 +50,7 @@ class UserPage extends React.Component {
                         <img src={logo} alt="Logo" />
                     </div>
                     <div className="col-10">
-                        <h2>Hello, {this.state.userData.username}</h2>
+                            <h2>Hello, {`${this.state.userData.first_name} ${this.state.userData.last_name}`}</h2>
                         <Row>
                             <Col xs={6}>
                             {this.makeDetailsTable()}

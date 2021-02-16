@@ -27,5 +27,23 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
     return formattedErrors;
 }
 
+// url obtained from a blob object
+//name is the name of the file, doesnt need the extension
+const nameAndDownloadFile = (blobURL, name) => {
+    const link = document.createElement("a");
+    link.href = blobURL
+    link.download = name;
+    document.body.appendChild(link);
+    link.dispatchEvent(
+        new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+        })
+    )
+    // window.open(result.url, '_blank');
+    URL.revokeObjectURL(blobURL);
+}
 
-export { dateToString, rawErrorsToDisplayed };
+
+export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };

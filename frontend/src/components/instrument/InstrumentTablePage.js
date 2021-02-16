@@ -8,7 +8,7 @@ import GenericPagination from "../generic/GenericPagination";
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
@@ -33,7 +33,7 @@ class InstrumentTablePage extends Component {
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: '1',
+                desiredPage: 1,
                 showAll: false
             },
             pagination: {
@@ -59,6 +59,8 @@ class InstrumentTablePage extends Component {
         this.onInstrumentSort = this.onInstrumentSort.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onExportAll = this.onExportAll.bind(this);
+        this.onExportInstruments = this.onExportInstruments.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -75,22 +77,18 @@ class InstrumentTablePage extends Component {
             )
         }
 
+        let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
-                <AddInstrumentPopup
-                    isShown={this.state.addInstrumentPopup.isShown}
-                    onSubmit={this.onAddInstrumentSubmit}
-                    onClose={this.onAddInstrumentClosed}
-                    currentInstrument={null}
-                    errors={this.state.addInstrumentPopup.errors}
-                />
+                {addInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
 
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportClicked}>Export</Button>
+                            <Button onClick={this.onExportInstruments}>Export Instruments</Button>
+                            <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
                             <CalStatusKey />
                         </div>
                         <div className="col-10">
@@ -125,6 +123,18 @@ class InstrumentTablePage extends Component {
             </div>
 
         );
+    }
+
+    makeAddInsrumentPopup() {
+        return (
+            <AddInstrumentPopup
+                isShown={this.state.addInstrumentPopup.isShown}
+                onSubmit={this.onAddInstrumentSubmit}
+                onClose={this.onAddInstrumentClosed}
+                currentInstrument={null}
+                errors={this.state.addInstrumentPopup.errors}
+            />
+        )
     }
 
     async updateTable() {
@@ -203,8 +213,23 @@ class InstrumentTablePage extends Component {
         })
     }
 
-    onExportClicked = (e) => {
-        console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
+    onExportInstruments = () => {
+        this.exportInstruments(false);
+    }
+
+    onExportAll = () => {
+        this.exportInstruments(true);
+    }
+
+    async exportInstruments(isAll) {
+        instrumentServices.exportInstruments(this.state.instrumentSearchParams.filters, isAll).then(
+            (result) => {
+                if (result.success) {
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-instrument-export`);
+                }
+            }
+        )
     }
 
     async onAddInstrumentSubmit(newInstrument) {

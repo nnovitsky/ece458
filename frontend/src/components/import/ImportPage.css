@@ -26,3 +26,8 @@ button.import{
     text-align: left;
     background-color: rgb(221, 221, 221);
 }
+
+.popupScrolling{
+    height: 300px;
+    width: 300px;
+}

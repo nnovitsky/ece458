@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
@@ -40,6 +40,9 @@ class ModelTablePage extends Component {
             addModelPopup: {
                 isShown: false,
                 errors: []
+            },
+            exportPopup: {
+                isShown: false
             }
 
         }
@@ -53,6 +56,8 @@ class ModelTablePage extends Component {
         this.updateModelTable = this.updateModelTable.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
+        this.onExportAllClicked = this.onExportAllClicked.bind(this);
     }
 
     async componentDidMount() {
@@ -69,22 +74,17 @@ class ModelTablePage extends Component {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
+        let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         return (
             <div>
-                <AddModelPopup
-                    isShown={this.state.addModelPopup.isShown}
-                    onSubmit={this.onAddModelSubmit}
-                    onClose={this.onAddModelClosed}
-                    currentModel={null}
-                    errors={this.state.addModelPopup.errors}
-                />
-
+                {addModelPopup}
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportClicked}>Export</Button>
+                            <Button onClick={this.onExportModelsClicked}>Export Models</Button>
+                            <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
@@ -118,6 +118,17 @@ class ModelTablePage extends Component {
     }
 
 
+    makeAddModelPopup() {
+        return (
+            <AddModelPopup
+                isShown={this.state.addModelPopup.isShown}
+                onSubmit={this.onAddModelSubmit}
+                onClose={this.onAddModelClosed}
+                currentModel={null}
+                errors={this.state.addModelPopup.errors}
+            />
+        )
+    }
 
     onDetailClicked(e) {
         this.setState({
@@ -191,8 +202,21 @@ class ModelTablePage extends Component {
         })
     }
 
-    onExportClicked = () => {
-        console.log('Export clicked, handler needs to be implemented in ModelTablePage.js');
+    onExportModelsClicked = () => {
+        this.exportModels(false);
+    }
+
+    onExportAllClicked = () => {
+        this.exportModels(true);
+    }
+
+    async exportModels(isAll) {
+        modelServices.exportModels(this.state.modelSearchParams.filters, isAll).then(result => {
+            if (result.success) {
+                let date = dateToString(new Date());
+                nameAndDownloadFile(result.url, `${date}-model-export`);
+            }
+        })
     }
 
     async updateModelTable() {

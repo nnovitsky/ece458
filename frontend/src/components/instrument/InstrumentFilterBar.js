@@ -33,7 +33,7 @@ const InstrumentFilterBar = (props) => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Control name={modelName} type="text" placeholder="Enter Model" onChange={onTextInput} />
+                            <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
                         </Form.Group>
 
                         <Form.Group>

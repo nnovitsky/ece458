@@ -106,6 +106,7 @@ class UserPage extends React.Component {
                             this.updateUserInfo();
                             this.onEditUserClosed();
                         } else {
+                            console.log(res);
                             let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_user']);
                             this.setState({
                                 editUserPopup: {

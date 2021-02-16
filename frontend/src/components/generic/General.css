@@ -130,7 +130,7 @@ form.popup input[type=text] {
 .data-table {
     overflow-y: scroll;
     max-height: 40vh;
-    max-width: 40vh;
+    max-width: 100vw;
 }
 
 .data-table th {

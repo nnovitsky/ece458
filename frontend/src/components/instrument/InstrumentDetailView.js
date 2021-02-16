@@ -42,7 +42,6 @@ class InstrumentDetailView extends Component {
                 numPages: '',
                 resultsPerPage: 10,
                 currentPageNum: 1,
-                numResults: '',
                 isShowAll: false,
                 desiredPage: 1
             },

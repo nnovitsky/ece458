@@ -12,6 +12,7 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
+import DataTable from '../generic/DataTable';
 
 const modelServices = new ModelServices();
 
@@ -75,6 +76,7 @@ class ModelTablePage extends Component {
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
+        let tableConfig = this.makeTableConfig();
         return (
             <div>
                 {addModelPopup}
@@ -93,11 +95,15 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
                             <p>Click on a table header to sort the data by that field, click again for descending order</p>
-                            <ModelTable
+                            {/* <ModelTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
+                            /> */}
+                            <DataTable
+                                config={tableConfig}
+                                data={this.state.tableData}
                             />
                             <hr />
                             <Pagination
@@ -128,6 +134,30 @@ class ModelTablePage extends Component {
                 errors={this.state.addModelPopup.errors}
             />
         )
+    }
+
+    makeTableConfig() {
+        return [
+            {
+                dataField: 'vendor',
+                text: 'Vendor',
+                sort: true,
+            },
+            {
+                dataField: 'model_number',
+                text: 'Model Number',
+                sort: true,
+            },
+            {
+                dataField: 'description',
+                text: 'Description',
+                sort: true,
+            },
+            {
+                dataField: 'calibration_frequency',
+                text: 'Calibration Frequency',
+            }
+        ]
     }
 
     onDetailClicked(e) {

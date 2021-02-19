@@ -101,7 +101,7 @@ class UserPage extends React.Component {
         userServices.editUser(updatedUser.username, updatedUser.password, updatedUser.first_name, updatedUser.last_name)
                     .then((res) => {
                         if (res.success) {
-                            localStorage.setItem('token', res.token)
+                            localStorage.setItem('token', res.data.token)
                             this.updateUserInfo();
                             this.onEditUserClosed();
                         } else {

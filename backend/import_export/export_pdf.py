@@ -34,7 +34,7 @@ def get_fields(instrument):
     fields.append(model_data.get('vendor'))
     fields.append(model_data.get('model_number'))
     fields.append(model_data.get('description'))
-    fields.append(str(model_data.get('serial_number')))
+    fields.append(str(instrument.serial_number))
 
     cal_event = instrument.calibrationevent_set.order_by('-date')[:1][0]
     calibration_event_data = serializer.data['calibration_event'][0]

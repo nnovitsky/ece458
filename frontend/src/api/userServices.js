@@ -105,7 +105,7 @@ export default class UserServices {
             password: password,
             first_name: first_name,
             last_name: last_name,
-        }
+        } 
 
         let result = {
             success: false,
@@ -123,7 +123,11 @@ export default class UserServices {
         })
             .then(res => {
                 if (res.ok) {
-                    return result;
+                    return res.json().then(json => {
+                        result.success = true;
+                        result.data = json;
+                        return result;
+                    });
                 } else {
                     return res.json().then(json => {
                         if (json.detail === 'Signature has expired.') {

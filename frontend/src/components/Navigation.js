@@ -11,7 +11,7 @@ function Navigation(props) {
             <ul>
                 <li><NavLink to="/models">Models&nbsp;</NavLink></li>
                 <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
-                <li><NavLink to="/import">Import&nbsp;</NavLink></li>
+                { props.is_admin ? <li><NavLink to="/import">Import&nbsp;</NavLink></li> : null }
                 <li><NavLink to="/user-profile">User Profile&nbsp;</NavLink></li>
                 { props.is_admin ? <li><NavLink to="/admin">Admin&nbsp;</NavLink></li> : null }
                 <li><NavLink onClick={props.handle_logout} to="/">Logout&nbsp;</NavLink></li>

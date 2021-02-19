@@ -81,9 +81,17 @@ WSGI_APPLICATION = 'hpt.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'local': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'evolution_two',
+        'USER': 'admin_hpt_user',
+        'PASSWORD': 'fantasticfour2021!',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

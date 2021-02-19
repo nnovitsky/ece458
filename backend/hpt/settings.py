@@ -87,7 +87,7 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'evolution_one',
+        'NAME': 'evolution_two',
         'USER': 'admin_hpt_user',
         'PASSWORD': 'fantasticfour2021!',
         'HOST': 'localhost',

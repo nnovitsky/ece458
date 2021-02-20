@@ -7,6 +7,8 @@ export default class ModelServices {
     async getModels(filters, sort_by, show_all, pageNum) {
         const token = localStorage.getItem('token');
 
+        console.log(sort_by);
+
         let result = {
             success: true,
             data: [],

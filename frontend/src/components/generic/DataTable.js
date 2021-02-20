@@ -13,7 +13,7 @@ import './DataTable.css';
 // }]
 
 // data: json data array,
-// onSort: event handler that will be passed the data field name and "asc" or "desc", only required if a column is sortable
+// onTableChange: event handler that will be passed information about pagination and sorting
 
 let keyField;
 const DataTable = (props) => {
@@ -22,8 +22,10 @@ const DataTable = (props) => {
         <BootstrapTable
             data={props.data}
             columns={props.config}
+            remote={{ sort: true }}
             bootstrap4
             keyField={keyField}
+            onTableChange={props.onTableChange}
         />
     )
 }

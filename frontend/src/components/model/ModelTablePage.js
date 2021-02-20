@@ -59,6 +59,7 @@ class ModelTablePage extends Component {
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
         this.onExportAllClicked = this.onExportAllClicked.bind(this);
+        this.onTableChange = this.onTableChange.bind(this);
     }
 
     async componentDidMount() {
@@ -104,6 +105,7 @@ class ModelTablePage extends Component {
                             <DataTable
                                 config={tableConfig}
                                 data={this.state.tableData}
+                                onTableChange={this.onTableChange}
                             />
                             <hr />
                             <Pagination
@@ -168,6 +170,26 @@ class ModelTablePage extends Component {
                 }
             }
         ]
+    }
+
+    onTableChange(type, { sortField, sortOrder }) {
+        console.log("table change");
+        console.log(type);
+        console.log(sortField);
+        console.log(sortOrder);
+
+        switch (type) {
+            case 'sort':
+                let sortKey = this.getSortingKey(sortField, sortOrder);
+                this.setState({
+                    modelSearchParams: {
+                        ...this.state.modelSearchParams,
+                        sortingIndicator: sortKey,
+                    }
+                }, () => {
+                    this.updateModelTable();
+                })
+        }
     }
 
     onDetailClicked(e) {
@@ -324,54 +346,82 @@ class ModelTablePage extends Component {
 
     }
 
-    getURLKey = (sortingHeader) => {
-
-        let sortingKey = null
-        this.setState({
-            sortingIndicator: 'Sorted By: ' + sortingHeader
-        })
-
-        switch (sortingHeader) {
-            case "Model Number":
-                sortingKey = "model_number_lower"
-                return sortingKey;
-            case "Vendor":
-                sortingKey = "vendor_lower"
-                return sortingKey;
-            case "Description":
-                sortingKey = "description_lower"
-                return sortingKey;
-            case "Calibration (days)":
-                sortingKey = "calibration_frequency"
-                return sortingKey;
+    getSortingKey = (sortingField, direction) => {
+        let result;
+        switch (sortingField) {
+            case 'vendor':
+                result = 'vendor_lower';
+                break;
+            case 'model_number':
+                result = 'model_number_lower';
+                break;
+            case 'description':
+                result = 'description_lower';
+                break;
+            case 'calibration_frequency':
+                result = 'calibration_frequency_lower';
+                break;
             default:
-                this.setState({
-                    sortingIndicator: ''
-                })
                 return '';
         }
+        switch (direction) {
+            case 'asc':
+                return result;
+            case 'desc':
+                return `-${result}`;
+            default:
+                return result;
+        }
     }
 
-    onModelSort = (sortingHeader) => {
-        var urlSortingKey = this.getURLKey(sortingHeader);
-        //this handles ascending/descending, it toggles between
-        if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
-            if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
-                urlSortingKey = `-${urlSortingKey}`;
-            }
-        }
-        if (urlSortingKey !== `-`) {
-            this.setState({
-                modelSearchParams: {
-                    ...this.state.modelSearchParams,
-                    sortingIndicator: urlSortingKey
-                }
-            }, () => {
-                this.updateModelTable();
-            })
-        }
+    // getURLKey = (sortingHeader) => {
 
-    }
+    //     let sortingKey = null
+    //     this.setState({
+    //         sortingIndicator: 'Sorted By: ' + sortingHeader
+    //     })
+
+    //     switch (sortingHeader) {
+    //         case "Model Number":
+    //             sortingKey = "model_number_lower"
+    //             return sortingKey;
+    //         case "Vendor":
+    //             sortingKey = "vendor_lower"
+    //             return sortingKey;
+    //         case "Description":
+    //             sortingKey = "description_lower"
+    //             return sortingKey;
+    //         case "Calibration (days)":
+    //             sortingKey = "calibration_frequency"
+    //             return sortingKey;
+    //         default:
+    //             this.setState({
+    //                 sortingIndicator: ''
+    //             })
+    //             return '';
+    //     }
+    // }
+
+    // onModelSort = () => {
+    //     var urlSortingKey = this.getURLKey(sortingHeader);
+    //     //this handles ascending/descending, it toggles between
+    //     if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
+    //         if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
+    //             urlSortingKey = `-${urlSortingKey}`;
+    //         }
+    //     }
+    //     if (urlSortingKey !== `-`) {
+    //         this.setState({
+    //             modelSearchParams: {
+    //                 ...this.state.modelSearchParams,
+    //                 sortingIndicator: urlSortingKey
+    //             }
+    //         }, () => {
+    //             this.updateModelTable();
+    //         })
+    //     }
+
+    // }
 }
 
 export default ModelTablePage;

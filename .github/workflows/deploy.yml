@@ -44,7 +44,7 @@ jobs:
 
 
       - name: Build Frontend
-        run: ssh test_server 'cd /home/jay18/evo2/ece458/frontend && npm run build'
+        run: ssh test_server 'cd /home/jay18/evo2/ece458/frontend && npm install && npm run build'
 
       
       - name: Start the server

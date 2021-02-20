@@ -53,10 +53,11 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         // firstPageTitle: 'Next page',
         // lastPageTitle: 'Last page',
         showTotal: true,
-        paginationTotalRenderer: customTotal,
+        // paginationTotalRenderer: customTotal,
         disablePageTitle: true,
+        sizePerPageRenderer,
         sizePerPageList: [{
-            text: '10', value: 5
+            text: '10', value: 10
         }, {
             text: 'Show All', value: totalResults
         }] // A numeric array is also available. the purpose of above example is custom the text
@@ -108,6 +109,31 @@ let makeConfig = (countStart) => {
         ]
     )
 };
+
+const sizePerPageRenderer = ({
+    options,
+    currSizePerPage,
+    onSizePerPageChange
+}) => (
+    <div className="btn-group" role="group">
+        {
+            options.map((option) => {
+                console.log(`Current Page: ${currSizePerPage} and checking ${option.page}`);
+                const isSelect = currSizePerPage === `${option.page}`;
+                return (
+                    <button
+                        key={option.text}
+                        type="button"
+                        onClick={() => onSizePerPageChange(option.page)}
+                        className={`btn ${isSelect ? 'btn-primary' : 'btn-secondary'}`}
+                    >
+                        { option.text}
+                    </button>
+                );
+            })
+        }
+    </div>
+);
 
 const customTotal = (from, to, size) => (
     <span className="react-bootstrap-table-pagination-total">

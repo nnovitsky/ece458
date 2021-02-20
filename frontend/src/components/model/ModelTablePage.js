@@ -106,7 +106,7 @@ class ModelTablePage extends Component {
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 countStart={(this.state.pagination.currentPageNum - 1) * 10 + 1}
-                                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: this.state.pagination.resultsPerPage, totalSize: this.state.pagination.resultCount }}
+                                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
                             <Pagination
@@ -162,14 +162,27 @@ class ModelTablePage extends Component {
                 });
                 return;
             case 'pagination':
-                this.setState({
-                    modelSearchParams: {
-                        ...this.state.modelSearchParams,
-                        desiredPage: page
-                    }
-                }, () => {
-                    this.updateModelTable();
-                })
+                if (sizePerPage === this.state.pagination.resultCount) {
+                    this.setState({
+                        modelSearchParams: {
+                            ...this.state.modelSearchParams,
+                            desiredPage: 1,
+                            showAll: true,
+                        }
+                    }, () => {
+                        this.updateModelTable();
+                    })
+                } else {
+                    this.setState({
+                        modelSearchParams: {
+                            ...this.state.modelSearchParams,
+                            desiredPage: page,
+                            showAll: false,
+                        }
+                    }, () => {
+                        this.updateModelTable();
+                    })
+                }
         }
     }
 

@@ -158,8 +158,9 @@ class ModelTablePage extends Component {
                 text: 'Calibration Frequency',
             },
             {
-                text: 'More',
+                isKey: true,
                 dataField: 'pk',
+                text: 'More',
                 formatter: (pk) => {
                     return (
                         <a href={`/models/${pk}`}>More</a>

@@ -1,0 +1,47 @@
+name: SSH Deploy
+on: []
+#on: [push, pull_request]
+#jobs:
+#  deploy:
+#    name: "Deploy to staging"
+#    runs-on: ubuntu-latest
+#    if: github.event_name == 'push'
+#    steps:
+#      - name: Configure SSH
+#        run: |
+#          mkdir -p ~/.ssh/
+#          echo "$SSH_KEY" > ~/.ssh/staging.key
+#          chmod 600 ~/.ssh/staging.key
+#          cat >>~/.ssh/config <<END
+#          Host test_server
+#            HostName $SSH_HOST
+#            User $SSH_USER
+#            IdentityFile ~/.ssh/staging.key
+#            StrictHostKeyChecking no
+#          END
+#        env:
+#          SSH_USER: ${{ secrets.DEPLOY_USER }}
+#          SSH_KEY: ${{ secrets.DEPLOY_KEY }}
+#          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+
+
+
+#      - name: Stop the server
+#        run: ssh test_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
+
+
+#      - name: Check out the source
+#        run: ssh test_server 'cd /home/jay18/evo2/ece458 && git pull'
+        
+
+#      - name: Perform migrations
+#        run: ssh test_server 'cd /home/jay18/evo2/ece458/backend && source venv/bin/activate && export PYTHONPATH=/home/jay18/evo2/ece458 && cd /home/jay18/evo2/ece458/backend && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+
+
+#      - name: Build Frontend
+#        run: ssh test_server 'cd /home/jay18/evo2/ece458/frontend && npm run build'
+
+      
+#      - name: Start the server
+#        if: ${{ always() }}
+#        run: ssh test_server 'sudo systemctl start gunicorn && sudo systemctl start nginx'

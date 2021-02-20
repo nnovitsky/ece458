@@ -2,7 +2,7 @@ import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import paginationFactory, { PaginationProvider, PaginationTotalStandalone, PaginationListStandalone } from 'react-bootstrap-table2-paginator';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 
 // props
 // data: json data object to be displayed
@@ -18,40 +18,50 @@ const keyField = 'pk';
 
 const NewModelTable = (props) => {
     let config = makeConfig(props.countStart);
+    let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     console.log(props.countStart);
     return (
-        <PaginationProvider
-            pagination={paginationFactory({ custom: true, totalSize: props.pagination.totalSize })}
-        >
-            {
-                ({
-                    paginationProps,
-                    paginationTableProps
-                }) => (
-                    <div>
-                        <PaginationTotalStandalone
-                            {...paginationProps}
-                        />
-                        <PaginationListStandalone
-                            {...paginationProps}
-                        />
-                        <BootstrapTable
-                            data={props.data}
-                            columns={config}
-                            remote
-                            bootstrap4
-                            keyField={keyField}
-                            pagination={paginationFactory(props.pagination)}
-                            onTableChange={props.onTableChange}
-                            {...paginationTableProps}
-                        />
-                    </div>
-                )
-            }
-        </PaginationProvider>
+
+        <BootstrapTable
+            data={props.data}
+            columns={config}
+            remote
+            bootstrap4
+            keyField={keyField}
+            pagination={paginationFactory(options)}
+            onTableChange={props.onTableChange}
+        />
 
     )
 }
+
+const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
+    return ({
+        page: page,
+        sizePerPage: sizePerPage,
+        totalSize: totalSize,
+        paginationSize: 4,
+        pageStartIndex: 1,
+        // alwaysShowAllBtns: true, // Always show next and previous button
+        // withFirstAndLast: false, // Hide the going to First and Last page button
+        // hideSizePerPage: true, // Hide the sizePerPage dropdown always
+        // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
+        // firstPageText: 'First',
+        // prePageText: 'Back',
+        // nextPageTitle: 'First page',
+        // prePageTitle: 'Pre page',
+        // firstPageTitle: 'Next page',
+        // lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+            text: '10', value: 5
+        }, {
+            text: 'Show All', value: totalResults
+        }] // A numeric array is also available. the purpose of above example is custom the text
+    })
+};
 
 let makeConfig = (countStart) => {
     return (
@@ -97,7 +107,13 @@ let makeConfig = (countStart) => {
             }
         ]
     )
-}
+};
+
+const customTotal = (from, to, size) => (
+    <span className="react-bootstrap-table-pagination-total">
+        Showing { from} to { to} of { size} Results
+    </span>
+);
 
 
 export default NewModelTable;

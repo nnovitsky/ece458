@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
 import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
-import ModelTable from "./ModelTable";
+import ModelTable from "./NewModelTable";
 import AddModelPopup from "./AddModelPopup";
 import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
@@ -73,11 +73,11 @@ class ModelTablePage extends Component {
     render(
         adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
     ) {
+        console.log(this.state.pagination);
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
-        let tableConfig = this.makeTableConfig();
         return (
             <div>
                 {addModelPopup}
@@ -102,10 +102,11 @@ class ModelTablePage extends Component {
                                 onDetailRequested={this.onDetailClicked}
                                 sortData={this.onModelSort}
                             /> */}
-                            <DataTable
-                                config={tableConfig}
+                            <ModelTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
+                                countStart={(this.state.pagination.currentPageNum - 1) * 10 + 1}
+                                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: this.state.pagination.resultsPerPage, totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
                             <Pagination
@@ -138,45 +139,15 @@ class ModelTablePage extends Component {
         )
     }
 
-    makeTableConfig() {
-        return [
-            {
-                dataField: 'vendor',
-                text: 'Vendor',
-                sort: true,
-            },
-            {
-                dataField: 'model_number',
-                text: 'Model Number',
-                sort: true,
-            },
-            {
-                dataField: 'description',
-                text: 'Description',
-                sort: true,
-            },
-            {
-                dataField: 'calibration_frequency',
-                text: 'Calibration Frequency',
-            },
-            {
-                isKey: true,
-                dataField: 'pk',
-                text: 'More',
-                formatter: (pk) => {
-                    return (
-                        <a href={`/models/${pk}`}>More</a>
-                    )
-                }
-            }
-        ]
-    }
+    // makeTableConfig() {
+    //     return 
+    // }
 
-    onTableChange(type, { sortField, sortOrder }) {
+    onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
         console.log("table change");
         console.log(type);
-        console.log(sortField);
-        console.log(sortOrder);
+        console.log(page);
+        console.log(sizePerPage);
 
         switch (type) {
             case 'sort':
@@ -185,6 +156,16 @@ class ModelTablePage extends Component {
                     modelSearchParams: {
                         ...this.state.modelSearchParams,
                         sortingIndicator: sortKey,
+                    }
+                }, () => {
+                    this.updateModelTable();
+                });
+                return;
+            case 'pagination':
+                this.setState({
+                    modelSearchParams: {
+                        ...this.state.modelSearchParams,
+                        desiredPage: page
                     }
                 }, () => {
                     this.updateModelTable();
@@ -339,6 +320,14 @@ class ModelTablePage extends Component {
                     resultCount: data.count,
                     numPages: data.numpages,
                     currentPageNum: data.currentpage
+                },
+
+            })
+        } else {
+            this.setState({
+                pagination: {
+                    ...this.state.pagination,
+                    currentPageNum: 1
                 },
 
             })

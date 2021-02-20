@@ -1,0 +1,14 @@
+
+/* formats the pagination bar */
+.pagination-row {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+
+.pagination-row span {
+    margin-left: 8px;
+}
+
+.pagination-row button {
+    width: 110px;
+}

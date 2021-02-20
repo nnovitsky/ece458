@@ -37,31 +37,28 @@ let makeConfig = (countStart) => {
         [
             // this is a column for a number for the table
             {
-                dataField: '#',
-                text: '#',
-                formatter: (cell, row, rowIndex, countStart) => {
+                dataField: '#', //json data key for this column
+                text: '#',      //displayed column header text
+                formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                     let rowNumber = (countStart + rowIndex);
                     return <span>{rowNumber}</span>;
                 },
-                formatExtraData: countStart,
-                headerStyle: (colum, colIndex) => {
-                    return { width: '5%' };
-                }
+                formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
+                headerClasses: 'num-column'
             },
             {
                 dataField: 'vendor',
                 text: 'Vendor',
                 sort: true,
                 title: (cell) => `Vendor: ${cell}`,
-                headerStyle: (colum, colIndex) => {
-                    return { width: '15%' };
-                }
+                headerClasses: 'vendor-column'
             },
             {
                 dataField: 'model_number',
-                text: 'Model Number',
+                text: 'Model #',
                 sort: true,
                 title: (cell) => `Model Number: ${cell}`,
+                headerClasses: 'model-number-column'
             },
             {
                 dataField: 'description',
@@ -69,20 +66,21 @@ let makeConfig = (countStart) => {
                 sort: true,
                 title: (cell) => `Description: ${cell}`,
                 headerClasses: 'description-column',
-                classes: 'description-column'
             },
             {
                 dataField: 'calibration_frequency',
-                text: 'Calibration Frequency',
+                text: 'Cal. Frequency',
                 sort: false,
                 title: (cell) => `Cal. Frequency: ${cell} days`,
-                headerTitle: () => `Calibration Frequency`
+                headerTitle: () => `Calibration Frequency`,
+                headerClasses: 'cal-column',
             },
             {
                 isKey: true,
                 dataField: 'pk',
                 text: 'More',
                 sort: false,
+                headerClasses: 'more-column',
 
                 formatter: (pk) => {
                     return (

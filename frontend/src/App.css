@@ -41,7 +41,8 @@
 nav ul {
   list-style: none;
   display: flex;
-  background-color: rgb(147, 196, 127);
+  /* background-color: rgb(147, 196, 127); */
+  background-color: blue;
   margin-bottom: 0px;
 }
 

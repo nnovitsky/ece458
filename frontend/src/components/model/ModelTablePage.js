@@ -4,7 +4,6 @@ import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./NewModelTable";
 import AddModelPopup from "./AddModelPopup";
-import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -12,7 +11,6 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
-import DataTable from '../generic/DataTable';
 
 const modelServices = new ModelServices();
 
@@ -55,8 +53,8 @@ class ModelTablePage extends Component {
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
-        this.onPaginationClick = this.onPaginationClick.bind(this);
-        this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        //this.onPaginationClick = this.onPaginationClick.bind(this);
+        //this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
         this.onExportAllClicked = this.onExportAllClicked.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
@@ -105,7 +103,6 @@ class ModelTablePage extends Component {
                             <ModelTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
-                                countStart={(this.state.pagination.currentPageNum - 1) * 10 + 1}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
@@ -139,10 +136,7 @@ class ModelTablePage extends Component {
         )
     }
 
-    // makeTableConfig() {
-    //     return 
-    // }
-
+    // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
         console.log("table change");
         console.log(type);
@@ -291,29 +285,29 @@ class ModelTablePage extends Component {
         )
     }
 
-    async onPaginationClick(num) {
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                desiredPage: num
-            }
-        }, () => {
-            this.updateModelTable();
-        })
-    }
+    // async onPaginationClick(num) {
+    //     this.setState({
+    //         modelSearchParams: {
+    //             ...this.state.modelSearchParams,
+    //             desiredPage: num
+    //         }
+    //     }, () => {
+    //         this.updateModelTable();
+    //     })
+    // }
 
-    async onToggleShowAll() {
-        this.setState((prevState) => {
-            return {
-                modelSearchParams: {
-                    ...this.state.modelSearchParams,
-                    showAll: !prevState.modelSearchParams.showAll
-                }
-            }
-        }, () => {
-            this.updateModelTable();
-        })
-    }
+    // async onToggleShowAll() {
+    //     this.setState((prevState) => {
+    //         return {
+    //             modelSearchParams: {
+    //                 ...this.state.modelSearchParams,
+    //                 showAll: !prevState.modelSearchParams.showAll
+    //             }
+    //         }
+    //     }, () => {
+    //         this.updateModelTable();
+    //     })
+    // }
 
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination

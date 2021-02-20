@@ -1,5 +1,6 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
+import "./ModelTable.css";
 
 // props
 // data: json data object to be displayed
@@ -42,31 +43,47 @@ let makeConfig = (countStart) => {
                     let rowNumber = (countStart + rowIndex);
                     return <span>{rowNumber}</span>;
                 },
-                formatExtraData: countStart
+                formatExtraData: countStart,
+                headerStyle: (colum, colIndex) => {
+                    return { width: '5%' };
+                }
             },
             {
                 dataField: 'vendor',
                 text: 'Vendor',
                 sort: true,
+                title: (cell) => `Vendor: ${cell}`,
+                headerStyle: (colum, colIndex) => {
+                    return { width: '15%' };
+                }
             },
             {
                 dataField: 'model_number',
                 text: 'Model Number',
                 sort: true,
+                title: (cell) => `Model Number: ${cell}`,
             },
             {
                 dataField: 'description',
                 text: 'Description',
                 sort: true,
+                title: (cell) => `Description: ${cell}`,
+                headerClasses: 'description-column',
+                classes: 'description-column'
             },
             {
                 dataField: 'calibration_frequency',
                 text: 'Calibration Frequency',
+                sort: false,
+                title: (cell) => `Cal. Frequency: ${cell} days`,
+                headerTitle: () => `Calibration Frequency`
             },
             {
                 isKey: true,
                 dataField: 'pk',
                 text: 'More',
+                sort: false,
+
                 formatter: (pk) => {
                     return (
                         <a href={`/models/${pk}`}>More</a>

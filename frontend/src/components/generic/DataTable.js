@@ -63,6 +63,7 @@ const NewModelTable = (props) => {
                             bootstrap4
                             keyField={props.keyField}
                             onTableChange={props.onTableChange}
+                            headerClasses='data-table-header'
                             {...paginationTableProps}
                         />
                     </div>

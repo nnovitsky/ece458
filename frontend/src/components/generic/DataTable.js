@@ -8,9 +8,8 @@ import './DataTable.css';
 // config = [{
 //      isKey: true //needs to be true for ONE of the data fields, the rest can be omitted
 //     dataFieldName: "model_number",   //required
-//     displayName: "Model Number",     //required
+//     text: "Model Number",     //required
 //     isSortable: true,                   //required
-//      jsonPath: "$.item_model.model_number"      //optional, the jsonpath to the data. if omitted, will be "$.{dataFieldName}"
 // }]
 
 // data: json data array,

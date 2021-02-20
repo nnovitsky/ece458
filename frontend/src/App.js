@@ -65,6 +65,7 @@ class App extends Component {
         .then(res => res.json())
         .then(json => {
           if (typeof json.user === 'undefined') {
+            console.log(json)
             this.setState({ error_message: 'Incorrect Login Credentials' });
           }
           else {

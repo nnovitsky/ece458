@@ -95,7 +95,7 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
+                            {/* <p>Click on a table header to sort the data by that field, click again for descending order</p> */}
                             {/* <ModelTable
                                 data={this.state.tableData}
                                 countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
@@ -109,7 +109,7 @@ class ModelTablePage extends Component {
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
-                            <Pagination
+                            {/* <Pagination
                                 currentPageNum={this.state.pagination.currentPageNum}
                                 numPages={this.state.pagination.numPages}
                                 numResults={this.state.pagination.resultCount}
@@ -118,7 +118,7 @@ class ModelTablePage extends Component {
                                 onShowAllToggle={this.onToggleShowAll}
                                 isShown={!this.state.modelSearchParams.showAll}
                                 buttonText={(this.state.modelSearchParams.showAll) ? "Limit Results" : "Show All"}
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import paginationFactory from 'react-bootstrap-table2-paginator';
+import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, PaginationListStandalone, PaginationTotalStandalone } from 'react-bootstrap-table2-paginator';
 
 // props
 // data: json data object to be displayed
@@ -21,22 +21,45 @@ const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     console.log(props.countStart);
     return (
-
-        <BootstrapTable
-            data={props.data}
-            columns={config}
-            remote
-            bootstrap4
-            keyField={keyField}
+        <PaginationProvider
             pagination={paginationFactory(options)}
-            onTableChange={props.onTableChange}
-        />
+        >
+            {
+                ({
+                    paginationProps,
+                    paginationTableProps
+                }) => (
+                    <div>
+                        <SizePerPageDropdownStandalone
+                            {...paginationProps}
+                        />
+                        <PaginationListStandalone
+                            {...paginationProps}
+                        />
+                        <PaginationTotalStandalone
+                            {...paginationProps}
+                        />
+                        <BootstrapTable
+                            data={props.data}
+                            columns={config}
+                            remote
+                            bootstrap4
+                            keyField={keyField}
+                            onTableChange={props.onTableChange}
+                            {...paginationTableProps}
+                        />
+                    </div>
+
+                )}
+        </PaginationProvider>
+
 
     )
 }
 
 const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
     return ({
+        custom: true,
         page: page,
         sizePerPage: sizePerPage,
         totalSize: totalSize,

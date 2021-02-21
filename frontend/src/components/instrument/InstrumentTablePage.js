@@ -13,6 +13,7 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../gene
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import Row from 'react-bootstrap/esm/Row';
 
 
 
@@ -90,14 +91,16 @@ class InstrumentTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
                             />
-                            {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportInstruments}>Export Instruments</Button>
-                            <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
+                            
                             <CalStatusKey />
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
-                            
+                            <div className="table-button-row">
+                                {this.props.is_admin ? adminButtons : null}
+                                <Button onClick={this.onExportInstruments}>Export Instruments</Button>
+                                <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
+                            </div>
                             <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <InstrumentTable
                                 data={this.state.tableData}

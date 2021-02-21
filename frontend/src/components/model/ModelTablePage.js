@@ -86,13 +86,15 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportModelsClicked}>Export Models</Button>
-                            <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
+
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
-                            
+                            <div className="table-button-row">
+                                {this.props.is_admin ? adminButtons : null}
+                                <Button onClick={this.onExportModelsClicked}>Export Models</Button>
+                                <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
+                            </div>
                             {/* <p>Click on a table header to sort the data by that field, click again for descending order</p> */}
                             {/* <ModelTable
                                 data={this.state.tableData}

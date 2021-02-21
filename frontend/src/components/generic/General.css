@@ -56,7 +56,17 @@ be made to be more specific */
     padding: 5px;
 }
 
+/* class applied to the button rows on top of the model/instrument data tables */
+.table-button-row {
+    display: flex;
+    flex-direction: row;
+}
+.table-button-row button{
+    margin: 5px;
+    display: inline-block;
+    flex: 1;
 
+}
 
 /* popup is a classname that is used for some of the body's of the popups */
 

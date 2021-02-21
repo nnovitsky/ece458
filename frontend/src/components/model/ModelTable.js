@@ -1,102 +1,99 @@
 import React from 'react';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import './ModelTable.css'
+import DataTable from '../generic/DataTable';
+import "./ModelTable.css";
 
-const headerText = ["Model Number", "Vendor", "Description", "Calibration (days)", "More"];
-const keys = ["model_number", "vendor", "description", "calibration_frequency"];
-let lastSortedId = null;
+// props
+// data: json data object to be displayed
 
-//props
-let data;   //prop of array of model data to display
-let countStart; //prop of int of data count to start at
-//'onDetailRequested': function passed in prop that will be called when detail view is requested, will be passed model pk
-//'sortData' event handler to call when header is clicked
+// onTableChange: event handler that will be passed information about sorting and pagination
+// the handler function should accept inputs like: onTableChange(type, { sortField, sortOrder, page, sizePerPage })
+// sortfield/sortOrder can be omit if none of the fields are sortable
 
+// pagination: {
+//     page: 1,    //current page
+//     sizePerPage: 10, //results per page
+//     totalSize: 12   //total num results
+// }
+const keyField = 'pk';
 
-const modelTable = (props) => {
-    data = props.data;
-    countStart = props.countStart;
-    let header = createHeader(props.sortData);
-    let body = createBody(props.onDetailRequested); 
-
+const NewModelTable = (props) => {
+    let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
+    let config = makeConfig(countStart);
     return (
-        <div className="data-table">
+        <DataTable
+            data={props.data}
+            onTableChange={props.onTableChange}
+            pagination={props.pagination}
+            keyField={keyField}
+            config={config}
+        />
 
-            <Table striped bordered size="sm">
-            <thead>
-                {header}
-            </thead>
-            {body}
 
-            </Table>
-        </div>
     )
 }
 
-const onClickTableHeader = (e, onSortData, h) => {
-    if (lastSortedId !== null) {
-        document.getElementById(lastSortedId).style.backgroundColor = "white";
-    }
-    document.getElementById(e.target.id).style.backgroundColor = "rgb(147, 196, 127)";
-    lastSortedId = e.target.id;
-    onSortData(h);
-
-}
-
-
-const createHeader = (onSortData) => {
-    let header = [];
-    header.push(
-        <th>#</th>
-    )
-    headerText.forEach(h => {
-        header.push(
-            <th onClick={(e) => onClickTableHeader(e, onSortData, h)} id={h}>{h}</th>
-        )
-    })
+let makeConfig = (countStart) => {
     return (
-        <tr>
-            {header}
-        </tr>
-    )
-}
+        [
+            // this is a column for a number for the table
+            {
+                dataField: '#', //json data key for this column
+                text: '#',      //displayed column header text
+                formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
+                    let rowNumber = (countStart + rowIndex);
+                    return <span>{rowNumber}</span>;
+                },
+                formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
+                headerClasses: 'num-column'
+            },
+            {
+                dataField: 'vendor',
+                text: 'Vendor',
+                sort: true,
+                title: (cell) => `Vendor: ${cell}`,
+                headerClasses: 'vendor-column'
+            },
+            {
+                dataField: 'model_number',
+                text: 'Model #',
+                sort: true,
+                title: (cell) => `Model Number: ${cell}`,
+                headerClasses: 'model-number-column'
+            },
+            {
+                dataField: 'description',
+                text: 'Description',
+                sort: true,
+                title: (cell) => `Description: ${cell}`,
+                headerClasses: 'description-column',
+            },
+            {
+                dataField: 'calibration_frequency',
+                text: 'Cal. Frequency',
+                sort: false,
+                title: (cell) => `Cal. Frequency: ${cell} days`,
+                headerTitle: () => `Calibration Frequency`,
+                headerClasses: 'cal-column',
+            },
+            {
+                isKey: true,
+                dataField: 'pk',
+                text: 'More',
+                sort: false,
+                headerClasses: 'more-column',
 
-const createBody = (onMoreClicked) => {
-    let rows = [];
-    let count = countStart + 1;
-    data.forEach(currentData => {
-        let rowElements = []
-        rowElements.push(
-            <td>{count}</td>
-        )
-        count++;
-        keys.forEach(k => {
-            if ((k === "calibration_frequency") && (currentData[k] === 0)) {
-                rowElements.push(
-                    <td>N/A</td>)
-            } else {
-            rowElements.push(
-                <td>{currentData[k]}</td>
-            )
+                formatter: (pk) => {
+                    return (
+                        <a href={`/models/${pk}`}>More</a>
+                    )
+                }
             }
+        ]
+    )
+};
 
-        })
-        rowElements.push(
-            <td><Button onClick={onMoreClicked} value={currentData.pk}>More</Button></td>
-        )
-        let currentRow = (
-            <tr>
-                {rowElements}
-            </tr>
-        )
-        rows.push(currentRow);
-    })
-    return (
-        <tbody>
-            {rows}
-        </tbody>
-    );
+export default NewModelTable;
+
+NewModelTable.defaultProps = {
+    data: [],
 }
-
-export default modelTable;

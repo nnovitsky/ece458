@@ -173,12 +173,12 @@ class InstrumentTablePage extends Component {
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
-            .then(res => {
-                if (res.success) {
-                    window.open(res.url, '_blank')
-                    URL.revokeObjectURL(res.url)
-                }
-            })
+            .then((result) => {
+                    if (result.success) {
+                        let date = dateToString(new Date());
+                        nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    }
+                })
     }
 
     async onFilteredSearch(newFilter) {

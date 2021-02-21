@@ -13,7 +13,7 @@ import DeletePopup from '../generic/GenericPopup';
 import GenericTable from '../generic/GenericTable';
 import GenericPagination from '../generic/GenericPagination';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 
@@ -423,13 +423,11 @@ class InstrumentDetailView extends Component {
 
     async onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
-        .then(res => {
-            if(res.success)
-            {
-                window.open(res.url, '_blank')
-                URL.revokeObjectURL(res.url)
-            }
-        })
+            .then((result) => {
+                if (result.success) {
+                    nameAndDownloadFile(result.url, `calibration-certificate`);
+                }
+            })
     }
 
     async onPaginationClick(num) {

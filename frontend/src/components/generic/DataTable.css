@@ -1,4 +1,11 @@
 
+/* class applied to the entire data table, makes sure overflow is hidden */
+.data-table th, td{
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* formats the pagination bar */
 .pagination-row {
     margin-block-start: 1em;
@@ -25,7 +32,7 @@
     padding: 3px 5px 3px 5px !important;
 }
 
-/*  */
+/* formats the no result message */
 .data-table-no-results {
     padding: 50px;
 }

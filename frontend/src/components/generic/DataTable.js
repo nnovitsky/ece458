@@ -47,31 +47,35 @@ const NewModelTable = (props) => {
                     ({
                         paginationProps,
                         paginationTableProps
-                    }) => (
+                    },
+                        paginationRow = (props.pagination.totalSize === 0) ? null : (<div className="pagination-row" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
+                            <SizePerPageDropdownStandalone
+                                {...paginationProps}
+                            />
+                            <PaginationListStandalone
+                                {...paginationProps}
+                            />
+                            <PaginationTotalStandalone
+                                {...paginationProps}
+                            />
+                        </div>)
+                    ) => (
                         <div>
-                            <div className="pagination-row">
-                                <SizePerPageDropdownStandalone
-                                    {...paginationProps}
-                                />
-                                <PaginationListStandalone
-                                    {...paginationProps}
-                                />
-                                <PaginationTotalStandalone
-                                    {...paginationProps}
-                                />
-                            </div>
                             <BootstrapTable
-                                data={props.data}
-                                columns={props.config}
                                 remote
                                 bootstrap4
+                                striped
+                                condensed
+                                data={props.data}
+                                columns={props.config}
                                 keyField={props.keyField}
                                 onTableChange={props.onTableChange}
-                                headerClasses='data-table-header'
+                                headerClasses='data-table-header data-table'
+                                bodyClasses='data-table'
                                 {...paginationTableProps}
-                                headerClasses='data-table-header'
                                 noDataIndication={noResults(props.noResults)}
                             />
+                            {paginationRow}
                         </div>
 
                     )}

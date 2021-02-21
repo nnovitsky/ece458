@@ -1,6 +1,6 @@
 
 /* class applied to the entire data table, makes sure overflow is hidden */
-.data-table th, td{
+.data-table td{
     white-space:nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

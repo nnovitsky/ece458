@@ -86,7 +86,6 @@ class InstrumentTablePage extends Component {
                             {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportInstruments}>Export Instruments</Button>
                             <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
-                            <CalStatusKey />
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>

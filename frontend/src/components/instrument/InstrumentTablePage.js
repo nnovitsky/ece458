@@ -86,6 +86,10 @@ class InstrumentTablePage extends Component {
 
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
+                            <FilterBar
+                                onSearch={this.onFilteredSearch}
+                                onRemoveFilters={this.onRemoveFilters}
+                            />
                             {this.props.is_admin ? adminButtons : null}
                             <Button onClick={this.onExportInstruments}>Export Instruments</Button>
                             <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
@@ -93,10 +97,7 @@ class InstrumentTablePage extends Component {
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
-                            <FilterBar
-                                onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.onRemoveFilters}
-                            />
+                            
                             <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <InstrumentTable
                                 data={this.state.tableData}

@@ -22,21 +22,22 @@ let filters = {
 const ModelFilterBar = (props) => {
     return (
 
-            <Container className="filter-column">
-                <Col>
+        <Container className="filter-column">
+            <Col>
 
-                    <h3>Filters</h3>
-                    <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
-                    <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
-
-                    <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
-
-                    <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
-                    <Button onClick={props.onRemoveFilters}>Clear</Button>
-                </Col>
+                <h3>Filters</h3>
+                <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
+                <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
 
 
-            </Container>
+                <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
+
+                <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
+                <Button onClick={props.onRemoveFilters}>Clear</Button>
+            </Col>
+
+
+        </Container>
 
     )
 }

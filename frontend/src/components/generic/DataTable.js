@@ -64,11 +64,7 @@ const NewModelTable = (props) => {
                             onTableChange={props.onTableChange}
                             headerClasses='data-table-header'
                             {...paginationTableProps}
-                            rowStyle={{
-                                position: "sticky",
-                                top: "0"
-                                }
-                            }
+                            headerClasses='data-table-header'
                         />
                     </div>
 

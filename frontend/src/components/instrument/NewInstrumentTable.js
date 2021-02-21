@@ -122,7 +122,7 @@ let makeConfig = (countStart, onCertificateRequested) => {
                 text: 'More',
                 sort: false,
                 headerClasses: 'more-column',
-
+                title: (cell) => 'Go to instrument detail view',
                 formatter: (pk) => {
                     return (
                         <a href={`/instruments/${pk}`}>More</a>
@@ -134,6 +134,7 @@ let makeConfig = (countStart, onCertificateRequested) => {
                 text: 'Calibration Certificate',
                 sort: false,
                 headerClasses: 'calibration-certificate-column',
+                title: (cell) => 'Download Instrument Calibration Certificate',
                 formatter: (cell, row) => {
                     return (
                         <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" disabled={row.calibration_event.length === 0}>Download</Button>

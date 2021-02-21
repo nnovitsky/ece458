@@ -82,7 +82,7 @@ let makeConfig = (countStart) => {
                 text: 'More',
                 sort: false,
                 headerClasses: 'more-column',
-
+                title: (cell) => `Go to model detail view`,
                 formatter: (pk) => {
                     return (
                         <a href={`/models/${pk}`}>More</a>

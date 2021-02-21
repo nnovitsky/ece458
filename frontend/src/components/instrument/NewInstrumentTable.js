@@ -30,6 +30,7 @@ const newInstrumentTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
+            noResults='No Instrument Results'
         />
 
 

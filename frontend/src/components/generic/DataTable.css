@@ -24,3 +24,8 @@
 .data-table-button {
     padding: 3px 5px 3px 5px !important;
 }
+
+/*  */
+.data-table-no-results {
+    padding: 50px;
+}

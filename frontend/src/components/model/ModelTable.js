@@ -26,6 +26,7 @@ const NewModelTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
+            noResults='No Model Results'
         />
 
 

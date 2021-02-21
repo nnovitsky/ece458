@@ -32,48 +32,58 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 // ]
 // there are examples throughout the repo, it's possible to format the displayed data, talk to carrie if running into trouble
 
+//noResults: test to be displayed when no data is present
+
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     return (
         <div className="data-table">
 
-        
-        <PaginationProvider
-            pagination={paginationFactory(options)}
-        >
-            {
-                ({
-                    paginationProps,
-                    paginationTableProps
-                }) => (
-                    <div>
-                        <div className="pagination-row">
-                            <SizePerPageDropdownStandalone
-                                {...paginationProps}
-                            />
-                            <PaginationListStandalone
-                                {...paginationProps}
-                            />
-                            <PaginationTotalStandalone
-                                {...paginationProps}
+
+            <PaginationProvider
+                pagination={paginationFactory(options)}
+            >
+                {
+                    ({
+                        paginationProps,
+                        paginationTableProps
+                    }) => (
+                        <div>
+                            <div className="pagination-row">
+                                <SizePerPageDropdownStandalone
+                                    {...paginationProps}
+                                />
+                                <PaginationListStandalone
+                                    {...paginationProps}
+                                />
+                                <PaginationTotalStandalone
+                                    {...paginationProps}
+                                />
+                            </div>
+                            <BootstrapTable
+                                data={props.data}
+                                columns={props.config}
+                                remote
+                                bootstrap4
+                                keyField={props.keyField}
+                                onTableChange={props.onTableChange}
+                                headerClasses='data-table-header'
+                                {...paginationTableProps}
+                                headerClasses='data-table-header'
+                                noDataIndication={noResults(props.noResults)}
                             />
                         </div>
-                        <BootstrapTable
-                            data={props.data}
-                            columns={props.config}
-                            remote
-                            bootstrap4
-                            keyField={props.keyField}
-                            onTableChange={props.onTableChange}
-                            headerClasses='data-table-header'
-                            {...paginationTableProps}
-                            headerClasses='data-table-header'
-                        />
-                    </div>
 
-                )}
-        </PaginationProvider>
+                    )}
+            </PaginationProvider>
+        </div>
+    )
+}
 
+const noResults = (text) => {
+    return (
+        <div className="data-table-no-results">
+            <h2>{text}</h2>
         </div>
     )
 }

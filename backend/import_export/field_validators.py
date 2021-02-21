@@ -131,3 +131,12 @@ def is_valid_calibration_date(calibration_date, calibratable_instrument):
         return False, "Incorrect date format, should be MM/DD/YYYY."
 
     return True, "Correct date format."
+
+
+def is_blank_row(row):
+
+    for item in row:
+        if item != '':
+            return False
+
+    return True

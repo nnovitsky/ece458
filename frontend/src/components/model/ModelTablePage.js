@@ -71,7 +71,6 @@ class ModelTablePage extends Component {
     render(
         adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
     ) {
-        console.log(this.state.pagination);
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -190,7 +189,8 @@ class ModelTablePage extends Component {
         this.setState({
             modelSearchParams: {
                 ...this.state.modelSearchParams,
-                filters: newFilter
+                filters: newFilter,
+                desiredPage: 1
             }
         }, () => {
             this.updateModelTable();

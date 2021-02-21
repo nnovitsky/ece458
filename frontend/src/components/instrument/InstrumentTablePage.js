@@ -185,7 +185,8 @@ class InstrumentTablePage extends Component {
         this.setState({
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,
-                filters: newFilter
+                filters: newFilter,
+                desiredPage: 1
             }
         }, () => {
             this.updateTable();

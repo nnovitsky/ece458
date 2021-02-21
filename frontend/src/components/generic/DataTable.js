@@ -55,7 +55,6 @@ const NewModelTable = (props) => {
                                 {...paginationProps}
                             />
                         </div>
-
                         <BootstrapTable
                             data={props.data}
                             columns={props.config}
@@ -65,6 +64,11 @@ const NewModelTable = (props) => {
                             onTableChange={props.onTableChange}
                             headerClasses='data-table-header'
                             {...paginationTableProps}
+                            rowStyle={{
+                                position: "sticky",
+                                top: "0"
+                                }
+                            }
                         />
                     </div>
 

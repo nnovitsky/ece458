@@ -12,3 +12,9 @@
 .pagination-row button {
     width: 110px;
 }
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: rgb(241, 243, 241);
+}

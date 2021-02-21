@@ -70,7 +70,7 @@ const NewModelTable = (props) => {
                                 columns={props.config}
                                 keyField={props.keyField}
                                 onTableChange={props.onTableChange}
-                                headerClasses='data-table-header data-table'
+                                headerClasses='data-table-header'
                                 bodyClasses='data-table'
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}

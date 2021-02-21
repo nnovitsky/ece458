@@ -150,11 +150,6 @@ class InstrumentTablePage extends Component {
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
-        console.log("table change");
-        console.log(type);
-        console.log(page);
-        console.log(sizePerPage);
-
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);

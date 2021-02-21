@@ -35,6 +35,9 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     return (
+        <div className="data-table">
+
+        
         <PaginationProvider
             pagination={paginationFactory(options)}
         >
@@ -71,7 +74,7 @@ const NewModelTable = (props) => {
                 )}
         </PaginationProvider>
 
-
+        </div>
     )
 }
 

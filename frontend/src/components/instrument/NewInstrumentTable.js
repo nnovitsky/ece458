@@ -106,6 +106,13 @@ let makeConfig = (countStart, onCertificateRequested) => {
                 text: 'Calibration Expiration',
                 sort: true,
                 title: (cell) => `Calibration Expiration: ${cell}`,
+                formatter: (cell) => {   //formats the data and the returned is displayed in the cell
+                    let display = cell;
+                    if(cell === 'Instrument not calibrated.') {
+                        display = 'Never Calibrated';
+                    }
+                    return <span>{display}</span>;
+                },
                 headerClasses: 'calibration-expiration-column',
             },
             {
@@ -126,10 +133,9 @@ let makeConfig = (countStart, onCertificateRequested) => {
                 text: 'Calibration Certificate',
                 sort: false,
                 headerClasses: 'calibration-certificate-column',
-
                 formatter: (cell, row) => {
                     return (
-                        <Button onClick={onCertificateRequested} value={row.pk} disabled={row.calibration_event.length === 0}>Download</Button>
+                        <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" disabled={row.calibration_event.length === 0}>Download</Button>
                     )
                 }
             }

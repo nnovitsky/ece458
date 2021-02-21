@@ -1,6 +1,6 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
-import "./ModelTable.css";
+import "../generic/InstrumentModelTable.css";
 
 // props
 // data: json data object to be displayed

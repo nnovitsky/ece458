@@ -33,12 +33,13 @@ const InstrumentFilterBar = (props) => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Control name={modelName} type="text" placeholder="Enter Model" onChange={onTextInput} />
-                        </Form.Group>
-
-                        <Form.Group>
                             <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
                         </Form.Group>
+                        <Form.Group>
+                            <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
+                        </Form.Group>
+
+
 
                     </Col>
                     <Col>
@@ -62,7 +63,6 @@ const InstrumentFilterBar = (props) => {
 }
 
 const onTextInput = (e) => {
-    console.log(e.target.value)
     switch (e.target.name) {
         case modelName:
             filters.model_number = e.target.value;

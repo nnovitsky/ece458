@@ -68,7 +68,6 @@ form.popup input[type=text] {
     width: 100%;
     margin: 0px;
 }
-
 /* The Generic popup has alerts, this is where they are formatted */
 
 .popup-alert{
@@ -130,7 +129,8 @@ form.popup input[type=text] {
 /* model/instrument table formatting */
 .data-table {
     overflow-y: scroll;
-    max-height: 50vh;
+    max-height: 40vh;
+    max-width: 100vw;
 }
 
 .data-table th {

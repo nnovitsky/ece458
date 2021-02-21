@@ -6,11 +6,12 @@ from rest_framework.views import APIView
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response
+from backend.tables.utils import get_page_response, validate_user
 from backend.tables.filters import *
-from backend.tables import pdf_generator
+from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
+from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
 
 @api_view(['GET'])
@@ -142,7 +143,7 @@ def instruments_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = DetailInstrumentReadSerializer(instrument, context={'request': request})
+        serializer = ListInstrumentReadSerializer(instrument, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
@@ -203,7 +204,7 @@ def models_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = DetailItemModelSerializer(model, context={'request': request})
+        serializer = ItemModelSerializer(model, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'PUT':
@@ -251,7 +252,7 @@ def export_calibration_event_pdf(request, pk):
         return Response({"description": ["Instrument has no associated calibration events"]},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    return pdf_generator.handler(instrument)
+    return export_pdf.handler(instrument)
 
 
 @api_view(['PUT'])
@@ -335,6 +336,8 @@ def current_user(request):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
+        error_check = validate_user(request, create=False)
+        if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
         if 'password' in request.data:
             pw = request.data.pop('password')
@@ -366,9 +369,11 @@ class UserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        if not request.user.is_staff:
-            return Response(
-                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+         # if not request.user.is_staff:
+             # return Response(
+                # {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        error_check = validate_user(request, create=True)
+        if error_check: return error_check
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()

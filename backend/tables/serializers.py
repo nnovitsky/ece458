@@ -33,16 +33,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def validate(self, data):
-        if 'first_name' not in data or data['first_name'] == '':
-            raise serializers.ValidationError("First name is required.")
-        if 'last_name' not in data or data['last_name'] == '':
-            raise serializers.ValidationError("Last name is required.")
-        if 'email' not in data or data['email'] == '':
-            # check email format?
-            raise serializers.ValidationError("Email is required.")
-        return data
-
     class Meta:
         model = User
         fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
@@ -60,16 +50,6 @@ class UserEditSerializer(serializers.ModelSerializer):
         token = jwt_encode_handler(payload)
         return token
 
-    def validate(self, data):
-        if 'first_name' in data and data['first_name'] == '':
-            raise serializers.ValidationError("First name is required.")
-        if 'last_name' in data and data['last_name'] == '':
-            raise serializers.ValidationError("Last name is required.")
-        if 'email' in data and data['email'] == '':
-            # check email format?
-            raise serializers.ValidationError("Email is required.")
-        return data
-
     class Meta:
         model = User
         fields = ('token', 'username', 'first_name', 'last_name', 'email')
@@ -80,19 +60,6 @@ class ItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
-
-
-class DetailItemModelSerializer(serializers.ModelSerializer):
-    instruments = serializers.SerializerMethodField('_get_instruments')
-
-    def _get_instruments(self, obj):
-        instruments = obj.instrument_set.order_by('-serial_number')
-        serializer = InstrumentWriteSerializer(instruments, many=True)
-        return serializer.data
-
-    class Meta:
-        model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'instruments')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):

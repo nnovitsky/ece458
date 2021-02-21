@@ -27,6 +27,9 @@ def validate_row(current_row):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
 
+    if field_validators.is_blank_row(current_row):
+        return True, "Blank row."
+
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])
@@ -42,7 +45,14 @@ def validate_row(current_row):
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
         elif column_type == 'Calibration-Date':
-            valid_cell, info = field_validators.is_valid_calibration_date(item)
+            try:
+                this_model = ItemModel.objects.filter(
+                    vendor=current_row[VENDOR_INDEX]).filter(model_number=current_row[MODEL_NUM_INDEX])[0]
+            except IndexError:
+                return False, "No model instances of this instrument exist in db"
+
+            is_calibratable = False if this_model.calibration_frequency < 1 else True
+            valid_cell, info = field_validators.is_valid_calibration_date(item, is_calibratable)
         elif column_type == 'Calibration-Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
 
@@ -80,7 +90,7 @@ def contains_duplicates():
 def handler(uploaded_file):
     sheet_models.clear()
     sheet_instruments.clear()
-
+    
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
 
@@ -105,4 +115,4 @@ def handler(uploaded_file):
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
 
-    return True, "Correct formatting."
+    return True, "Correct formatting. "

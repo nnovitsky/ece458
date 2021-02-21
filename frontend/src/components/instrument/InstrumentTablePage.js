@@ -8,7 +8,7 @@ import GenericPagination from "../generic/GenericPagination";
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
@@ -27,13 +27,13 @@ class InstrumentTablePage extends Component {
             url: '',
             instrumentSearchParams: {
                 filters: {
-                    model: '',
+                    model_number: '',
                     vendor: '',
-                    serial: '',
+                    serial_number: '',
                     description: ''
                 },
                 sortingIndicator: '',
-                desiredPage: '1',
+                desiredPage: 1,
                 showAll: false
             },
             pagination: {
@@ -59,6 +59,8 @@ class InstrumentTablePage extends Component {
         this.onInstrumentSort = this.onInstrumentSort.bind(this);
         this.onPaginationClick = this.onPaginationClick.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onExportAll = this.onExportAll.bind(this);
+        this.onExportInstruments = this.onExportInstruments.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -75,22 +77,18 @@ class InstrumentTablePage extends Component {
             )
         }
 
+        let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
-                <AddInstrumentPopup
-                    isShown={this.state.addInstrumentPopup.isShown}
-                    onSubmit={this.onAddInstrumentSubmit}
-                    onClose={this.onAddInstrumentClosed}
-                    currentInstrument={null}
-                    errors={this.state.addInstrumentPopup.errors}
-                />
+                {addInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
 
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportClicked}>Export</Button>
+                            <Button onClick={this.onExportInstruments}>Export Instruments</Button>
+                            <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
                             <CalStatusKey />
                         </div>
                         <div className="col-10">
@@ -127,12 +125,28 @@ class InstrumentTablePage extends Component {
         );
     }
 
+    makeAddInsrumentPopup() {
+        return (
+            <AddInstrumentPopup
+                isShown={this.state.addInstrumentPopup.isShown}
+                onSubmit={this.onAddInstrumentSubmit}
+                onClose={this.onAddInstrumentClosed}
+                currentInstrument={null}
+                errors={this.state.addInstrumentPopup.errors}
+            />
+        )
+    }
+
     async updateTable() {
         let params = this.state.instrumentSearchParams;
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
+                    pagination: {
+                        ...this.state.pagination,
+                        resultCount: result.data.count,
+                    }
                 })
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
@@ -183,9 +197,9 @@ class InstrumentTablePage extends Component {
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,
                 filters: {
-                    model: '',
+                    model_number: '',
                     vendor: '',
-                    serial: '',
+                    serial_number: '',
                     description: ''
                 }
             }
@@ -203,26 +217,40 @@ class InstrumentTablePage extends Component {
         })
     }
 
-    onExportClicked = (e) => {
-        console.log('Export clicked, this handler still needs to be implemented in the InstrumentTablePage.js')
+    onExportInstruments = () => {
+        this.exportInstruments(false);
+    }
+
+    onExportAll = () => {
+        this.exportInstruments(true);
+    }
+
+    async exportInstruments(isAll) {
+        instrumentServices.exportInstruments(this.state.instrumentSearchParams.filters, isAll).then(
+            (result) => {
+                if (result.success) {
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-instrument-export`);
+                }
+            }
+        )
     }
 
     async onAddInstrumentSubmit(newInstrument) {
         await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
             (result) => {
                 if (result.success) {
-                    console.log("Added!");
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []
-                        }
+                        },
+                        redirect: `/instruments/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
-                    console.log(formattedErrors);
                     this.setState({
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
@@ -289,9 +317,12 @@ class InstrumentTablePage extends Component {
                 sortingKey = "description_lower"
                 return sortingKey;
             case "Latest Calibration":
-                sortingKey = "-most_recent_calibration"
+                sortingKey = "most_recent_calibration"
                 return sortingKey;
             case "Calibration Expiration":
+                sortingKey = "calibration_expiration_date"
+                return sortingKey;
+            case "Status":
                 sortingKey = "calibration_expiration_date"
                 return sortingKey;
             default:
@@ -305,21 +336,23 @@ class InstrumentTablePage extends Component {
     onInstrumentSort = (sortingHeader) => {
 
         let urlSortingKey = this.getURLKey(sortingHeader);
-
         //this handles ascending/descending, it toggles between
         if (this.state.instrumentSearchParams.sortingIndicator.includes(urlSortingKey)) {
             if (this.state.instrumentSearchParams.sortingIndicator.charAt(0) !== '-') {
                 urlSortingKey = `-${urlSortingKey}`;
             }
         }
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                sortingIndicator: urlSortingKey
-            }
-        }, () => {
-            this.updateTable();
-        })
+        if (urlSortingKey !== `-`) {
+            this.setState({
+                instrumentSearchParams: {
+                    ...this.state.instrumentSearchParams,
+                    sortingIndicator: urlSortingKey
+                }
+            }, () => {
+                this.updateTable();
+            })
+        }
+
     }
 }
 export default InstrumentTablePage;

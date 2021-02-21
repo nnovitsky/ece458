@@ -27,7 +27,7 @@ def validate_column_headers(headers, expected_headers):
 def is_valid_vendor(vendor):
 
     if len(vendor) > VENDOR_MAX_LENGTH:
-        return False, f"Vendor length too long." \
+        return False, f"Vendor length too long. " \
                       f"{len(vendor)} chars long, " \
                       f"Max: {VENDOR_MAX_LENGTH} chars"
     elif len(vendor) == 0:
@@ -39,7 +39,7 @@ def is_valid_vendor(vendor):
 def is_valid_model_num(model_num):
 
     if len(model_num) > MODEL_NUM_MAX_LENGTH:
-        return False, f"Model number length too long." \
+        return False, f"Model number length too long. " \
                       f"{len(model_num)} chars long, " \
                       f"Max: {MODEL_NUM_MAX_LENGTH} chars"
     elif len(model_num) == 0:
@@ -51,7 +51,7 @@ def is_valid_model_num(model_num):
 def is_valid_description(desc):
 
     if len(desc) > DESC_MAX_LENGTH:
-        return False, f"Description length too long." \
+        return False, f"Description length too long. " \
                       f"{len(desc)} chars long, " \
                       f"Max: {DESC_MAX_LENGTH} chars"
     elif len(desc) == 0:
@@ -63,7 +63,7 @@ def is_valid_description(desc):
 def is_valid_comment(comment):
 
     if len(comment) > COMMENT_MAX_LENGTH:
-        return False, f"Comment length too long." \
+        return False, f"Comment length too long. " \
                       f"{len(comment)} chars long, " \
                       f"Max: {COMMENT_MAX_LENGTH} chars"
 
@@ -76,7 +76,7 @@ def is_valid_calibration_freq(calibration_freq):
         return True, "Valid calibration freq"
 
     if len(calibration_freq) > CALIBRATION_FREQUENCY_MAX_LENGTH:
-        return False, f"Calibration freq length too long." \
+        return False, f"Calibration freq length too long. " \
                       f"{len(calibration_freq)} chars long, " \
                       f"Max: {CALIBRATION_FREQUENCY_MAX_LENGTH} chars"
 
@@ -93,7 +93,7 @@ def is_valid_calibration_freq(calibration_freq):
 
 def is_valid_serial_num(serial_num):
     if len(serial_num) > SERIAL_NUM_MAX_LENGTH:
-        return False, f"Serial number length too long." \
+        return False, f"Serial number length too long. " \
                       f"{len(serial_num)} chars long, " \
                       f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
     elif len(serial_num) == 0:
@@ -113,9 +113,11 @@ def is_valid_username(calibration_username):
     return True, "Valid username"
 
 
-def is_valid_calibration_date(calibration_date):
-    if len(calibration_date) == 0:
-        return False, "Missing calibration date."
+def is_valid_calibration_date(calibration_date, calibratable_instrument):
+    if len(calibration_date) == 0 and calibratable_instrument:
+        return False, "Needs to be calibrated"
+    elif len(calibration_date) == 0 and not calibratable_instrument:
+        return True, "Correct formatting for non-calibratable instrument"
 
     # Not sure why this is a requirement if must follow MM-DD-YYYY format?
     # Including anyways for now.
@@ -129,3 +131,12 @@ def is_valid_calibration_date(calibration_date):
         return False, "Incorrect date format, should be MM/DD/YYYY."
 
     return True, "Correct date format."
+
+
+def is_blank_row(row):
+
+    for item in row:
+        if item != '':
+            return False
+
+    return True

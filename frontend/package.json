@@ -42,11 +42,10 @@
     "jsonpath": "^1.1.0",
     "prop-types": "^15.7.2",
     "react-bootstrap": "^1.4.3",
+    "react-bootstrap-table-next": "^4.0.3",
+    "react-bootstrap-table2-paginator": "^2.1.2",
     "react-datepicker": "^3.4.1",
-    "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
-    "react-select": "^4.1.0",
-    "redux-devtools-extension": "^2.13.8",
-    "redux-thunk": "^2.3.0"
+    "react-select": "^4.1.0"
   }
 }

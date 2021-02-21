@@ -8,7 +8,7 @@ import NaIcon from '../../assets/CalibrationIcons/Non-Calibratable.png';
 
 const calStatusKey = () => {
     return (
-        <Table striped bordered hover>
+        <Table striped bordered size="sm">
             <thead>
                 <tr>
                     <th colSpan={3}>Status Key</th>

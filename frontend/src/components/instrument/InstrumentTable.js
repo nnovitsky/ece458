@@ -26,7 +26,7 @@ const instrumentTable = (props) => {
 
     return (
         <div className="data-table">
-            <Table striped bordered hover>
+            <Table striped bordered size="sm">
                 <thead>
                     {header}
                 </thead>

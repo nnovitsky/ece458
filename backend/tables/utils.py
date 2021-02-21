@@ -6,6 +6,46 @@ from django.core.exceptions import FieldError
 from django.test import Client
 from django.urls import reverse
 from backend.tables.models import *
+from backend.config.character_limits import *
+
+
+def validate_user(request, create=False):
+    if 'username' in request.data:
+        if len(request.data['username']) > USERNAME_MAX_LENGTH:
+            return Response({'input_error': [f"Username must be less than {USERNAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
+        elif len(request.data['username']) == 0:
+            return Response({'input_error': ["Username is required."]}, status.HTTP_400_BAD_REQUEST)
+
+    if 'first_name' in request.data:
+        if len(request.data['first_name']) > FIRST_NAME_MAX_LENGTH:
+            return Response({'input_error': [f"First name must be less than {FIRST_NAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
+        elif len(request.data['first_name']) == 0:
+            return Response({'input_error': ["First name is required."]}, status.HTTP_400_BAD_REQUEST)
+    elif create:
+        return Response({'input_error': ['First name is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if 'last_name' in request.data:
+        if len(request.data['last_name']) > LAST_NAME_MAX_LENGTH:
+            return Response({'input_error': [f"Last name must be less than {LAST_NAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
+        elif len(request.data['last_name']) == 0:
+            return Response({'input_error': ["Last name is required."]}, status.HTTP_400_BAD_REQUEST)
+    elif create:
+        return Response({'input_error': ['Last name is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if 'email' in request.data:
+        if len(request.data['email']) > EMAIL_MAX_LENGTH:
+            return Response({'input_error': [f"Email must be less than {EMAIL_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
+        elif len(request.data['email']) == 0:
+            return Response({'input_error': ["Email is required."]}, status.HTTP_400_BAD_REQUEST)
+    elif create:
+        return Response({'input_error': ['Email is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if 'password' in request.data:
+        if len(request.data['password']) > PASSWORD_MAX_LENGTH:
+            return Response({'input_error': [f"Password must be less than {PASSWORD_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
+        elif len(request.data['password']) == 0:
+            return Response({'input_error': ["Password is required."]}, status.HTTP_400_BAD_REQUEST)
+    return None
 
 
 def list_override(list_view, request, name):
@@ -26,7 +66,7 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
         serializer = serializerType(objects, context={'request': request}, many=True)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
-    page = request.GET.get('page', 1)
+    page = int(request.GET.get('page', 1))
     paginator = Paginator(objects, 10)
     try:
         data = paginator.page(page)

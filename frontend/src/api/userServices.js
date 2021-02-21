@@ -5,7 +5,7 @@ export default class UserServices {
     constructor() { }
 
     // handles modified/expired token
-    getUsers() {
+    getUsers(desiredPage, isShowAll) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -13,7 +13,12 @@ export default class UserServices {
             data: [],
         }
 
-        const url = `${API_URL}/api/users/`;
+        let url = `${API_URL}/api/users/?`;
+        if (isShowAll) {
+            url += `&get_all`;
+        } else {
+            url += `&page=${desiredPage}`
+        }
         return fetch(url, {
             method: 'GET',
             headers: {
@@ -23,7 +28,7 @@ export default class UserServices {
             .then(res => {
                 if (res.ok) {
                     return res.json().then(json => {
-                        result.data = json.data;
+                        result.data = json;
                         return result;
                     });
                 } else {
@@ -100,7 +105,7 @@ export default class UserServices {
             password: password,
             first_name: first_name,
             last_name: last_name,
-        }
+        } 
 
         let result = {
             success: false,
@@ -118,7 +123,11 @@ export default class UserServices {
         })
             .then(res => {
                 if (res.ok) {
-                    return result;
+                    return res.json().then(json => {
+                        result.success = true;
+                        result.data = json;
+                        return result;
+                    });
                 } else {
                     return res.json().then(json => {
                         if (json.detail === 'Signature has expired.') {

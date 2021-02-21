@@ -1,10 +1,10 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import './ModelTable.css'
+import '../model/ModelTable.css'
 
-const headerText = ["Model Number", "Vendor", "Description", "Calibration (days)", "More"];
-const keys = ["model_number", "vendor", "description", "calibration_frequency"];
+const headerText = ["Model Number", "Vendor", "Description", "Comments", "Calibration Date"];
+const keys = ["model_number", "vendor", "serial_number", "comment", "calibration_date"];
 let lastSortedId = null;
 
 //props
@@ -14,11 +14,11 @@ let countStart; //prop of int of data count to start at
 //'sortData' event handler to call when header is clicked
 
 
-const modelTable = (props) => {
+const importInstrumentTable = (props) => {
     data = props.data;
     countStart = props.countStart;
     let header = createHeader(props.sortData);
-    let body = createBody(props.onDetailRequested); 
+    let body = createBody(); 
 
     return (
         <div className="data-table">
@@ -62,7 +62,7 @@ const createHeader = (onSortData) => {
     )
 }
 
-const createBody = (onMoreClicked) => {
+const createBody = () => {
     let rows = [];
     let count = countStart + 1;
     data.forEach(currentData => {
@@ -72,7 +72,7 @@ const createBody = (onMoreClicked) => {
         )
         count++;
         keys.forEach(k => {
-            if ((k === "calibration_frequency") && (currentData[k] === 0)) {
+            if ((k === "calibration_frequency") && (currentData[k] == 0)) {
                 rowElements.push(
                     <td>N/A</td>)
             } else {
@@ -82,9 +82,6 @@ const createBody = (onMoreClicked) => {
             }
 
         })
-        rowElements.push(
-            <td><Button onClick={onMoreClicked} value={currentData.pk}>More</Button></td>
-        )
         let currentRow = (
             <tr>
                 {rowElements}
@@ -99,4 +96,4 @@ const createBody = (onMoreClicked) => {
     );
 }
 
-export default modelTable;
+export default importInstrumentTable;

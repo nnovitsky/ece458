@@ -7,6 +7,7 @@ import GenericPopup from '../generic/GenericPopup';
 //'isShown' a boolean if the popup is visible
 //'onSubmit' a handler that will be passed the new user information
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
+//'errors' an array of formatted errors to display
 
 let newUser = {
     username: '',
@@ -33,6 +34,7 @@ const editUserPopup = (props) => {
             onClose={props.onClose}
             onSubmit={(e) => onSubmit(e, props.onSubmit)}
             submitButtonVariant="primary"
+            errors={props.errors}
         />
     )
 }
@@ -44,7 +46,7 @@ const makeBody = () => {
             <Form.Control required type="text" name={username} onChange={onTextInput} placeholder="Enter Username" />
 
             <Form.Label>Password</Form.Label>
-            <Form.Control required type="text" name={password} onChange={onTextInput} placeholder="Enter Password" />
+            <Form.Control required type="password" name={password} onChange={onTextInput} placeholder="Enter Password" />
 
             <Form.Label>First Name</Form.Label>
             <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter Your First Name" />

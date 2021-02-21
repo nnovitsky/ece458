@@ -1,8 +1,26 @@
-th.selected {
-    background-color: rgba(41, 103, 182, 0.89);
-    color: #FFF;
+/* data column formatting
+    these classes are used in the configs of each table
+*/
+.num-column {
+    width: 5%;
 }
 
-th.notSelected {
-    background-color: white;
+.vendor-column {
+    width: 15%;
+}
+
+.model-number-column {
+    width: 12%;
+}
+
+.description-column {
+    /* width is not defined so it fills the remaining width, the description will likely be the longest field */
+}
+
+.cal-column {
+    width: 15%;
+}
+
+.more-column {
+    width: 10%;
 }

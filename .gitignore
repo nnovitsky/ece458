@@ -105,11 +105,14 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.venv2
 env/
 venv/
+venv2/
 ENV/
 env.bak/
 venv.bak/
+venv2.bak/
 
 # Spyder project settings
 .spyderproject
@@ -128,3 +131,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Cache
+frontend/.eslintcache

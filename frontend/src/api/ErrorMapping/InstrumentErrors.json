@@ -2,10 +2,10 @@
   "add_edit_instrument": {
     "serial_number": {
       "This field may not be blank.": "A serial number is a required field.",
-      "Ensure this field has no more than 40 characters.": "Please enter a Serial Number less than 40 characters"
+      "Ensure this field has no more than 40 characters.": "Please enter a Serial Number no longer than 40 characters"
     },
     "comment": {
-      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment no longer than 2000 characters"
     },
     "item_model": {
       "This field may not be null.": "Both the vendor and the model number are required fields"
@@ -16,10 +16,10 @@
   },
   "add_calibration": {
     "non_field_errors": {
-      "Cannot set future date.": "Please select a date on or earlier than today."
+      "Cannot set future date.": "Please select a date on, or earlier than, today."
     },
     "comment": {
-      "Ensure this field has no more than 2000 characters.": "Please enter a comment less than 2000 characters"
+      "Ensure this field has no more than 2000 characters.": "Please enter a comment no longer than 2000 characters"
     }
   }
 }

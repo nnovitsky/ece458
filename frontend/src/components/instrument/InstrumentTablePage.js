@@ -3,6 +3,7 @@ import InstrumentServices from "../../api/instrumentServices";
 import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
 import InstrumentTable from "./InstrumentTable";
+import NewInstrumentTable from "./NewInstrumentTable";
 import GenericPagination from "../generic/GenericPagination";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
@@ -37,10 +38,10 @@ class InstrumentTablePage extends Component {
                 showAll: false
             },
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
-                currentPageNum: ''
+                currentPageNum: 1
             },
             addInstrumentPopup: {
                 isShown: false,
@@ -61,6 +62,7 @@ class InstrumentTablePage extends Component {
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
+        this.onTableChange = this.onTableChange.bind(this);
     }
     //make async calls here
     async componentDidMount() {
@@ -76,7 +78,6 @@ class InstrumentTablePage extends Component {
                 <Redirect to={this.state.redirect} />
             )
         }
-
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
@@ -104,6 +105,12 @@ class InstrumentTablePage extends Component {
                                 onDetailRequested={this.onDetailViewRequested}
                                 onCertificateRequested={this.onCertificateRequested}
                                 sortData={this.onInstrumentSort}
+                            />
+                            <NewInstrumentTable 
+                                data={this.state.tableData}
+                                onTableChange={this.onTableChange}
+                                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                                onCertificateRequested={this.onCertificateRequested}
                             />
                             <hr />
                             <GenericPagination
@@ -162,6 +169,50 @@ class InstrumentTablePage extends Component {
                 console.log("error")
             }
         })
+    }
+
+    // event handler for the NewModelTable, it handles sorting and pagination
+    onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
+        console.log("table change");
+        console.log(type);
+        console.log(page);
+        console.log(sizePerPage);
+
+        switch (type) {
+            case 'sort':
+                let sortKey = this.getSortingKey(sortField, sortOrder);
+                this.setState({
+                    instrumentSearchParams: {
+                        ...this.state.instrumentSearchParams,
+                        sortingIndicator: sortKey,
+                    }
+                }, () => {
+                    this.updateTable();
+                });
+                return;
+            case 'pagination':
+                if (sizePerPage === this.state.pagination.resultCount) {
+                    this.setState({
+                        instrumentSearchParams: {
+                            ...this.state.instrumentSearchParams,
+                            desiredPage: 1,
+                            showAll: true,
+                        }
+                    }, () => {
+                        this.updateTable();
+                    })
+                } else {
+                    this.setState({
+                        instrumentSearchParams: {
+                            ...this.state.instrumentSearchParams,
+                            desiredPage: page,
+                            showAll: false,
+                        }
+                    }, () => {
+                        this.updateTable();
+                    })
+                }
+        }
     }
 
 
@@ -353,6 +404,41 @@ class InstrumentTablePage extends Component {
             })
         }
 
+    }
+
+    getSortingKey = (sortingField, direction) => {
+        console.log(sortingField, direction)
+        let result;
+        switch (sortingField) {
+            case 'item_model.vendor':
+                result = 'vendor_lower';
+                break;
+            case 'item_model.model_number':
+                result = 'model_number_lower';
+                break;
+            case 'serial_number':
+                result = 'serial_number_lower';
+                break;
+            case 'item_model.description':
+                result = 'description_lower';
+                break;
+            case 'latest_calibration':
+                result = 'most_recent_calibration';
+                break;
+            case 'calibration_expiration':
+                result = 'calibration_expiration_date';
+                break;
+            default:
+                return '';
+        }
+        switch (direction) {
+            case 'asc':
+                return result;
+            case 'desc':
+                return `-${result}`;
+            default:
+                return result;
+        }
     }
 }
 export default InstrumentTablePage;

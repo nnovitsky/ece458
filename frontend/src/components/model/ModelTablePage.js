@@ -21,8 +21,8 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
                 currentPageNum: 1,
             },

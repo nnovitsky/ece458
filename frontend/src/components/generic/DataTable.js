@@ -120,7 +120,6 @@ const sizePerPageRenderer = ({
     <div className="btn-group" role="group">
         {
             options.map((option) => {
-                console.log(options);
                 const isSelect = currSizePerPage === `${option.page}`;
                 return (
                     <button

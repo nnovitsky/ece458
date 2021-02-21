@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import Button from 'react-bootstrap/esm/Button';
+import Button from 'react-bootstrap/Button';
 
 const modelName = "model";
 const vendorName = "vendor";
@@ -21,33 +21,23 @@ let filters = {
 // 'onRemoveFilters' a prop that will be called when user wants to remove filters
 const ModelFilterBar = (props) => {
     return (
-        <div>
 
-            <Container>
-                <Row>
-                    <Col>
-                        <h3>Filters</h3>
-                        <Form.Group>
-                            <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
-                        </Form.Group>
-                    </Col>
-                    <Col xs={3}>
-                        <Button className="filter-button" onClick={(e) => onSearch(props.onSearch)}>Apply Filters</Button>
-                        <Button className="filter-button" onClick={props.onRemoveFilters}>Remove Filters</Button>
-                    </Col>
-                </Row>
+            <Container className="filter-column">
+                <Col>
+
+                    <h3>Filters</h3>
+                    <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
+                    <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
+
+                    <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={onTextInput} />
+
+                    <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
+                    <Button onClick={props.onRemoveFilters}>Clear</Button>
+                </Col>
 
 
             </Container>
-        </div>
+
     )
 }
 

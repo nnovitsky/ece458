@@ -19,6 +19,9 @@
 /* apply this css to any logo columns that will have buttons
 add 'button-col' to the classname for the div acting as the column
 */
+.button-col {
+    padding: 5px !important;
+}
 .button-col button {
     padding: 15px;
     margin: 10px;
@@ -30,9 +33,30 @@ be made to be more specific */
     padding: 5px;
 }
 
-.filter-button {
-    margin: 6px;
+/* Class that encompasses the filter column, 'filter-column' should be applied to a container for the filter column */
+.filter-column {
+    width: 100%;
+    padding: 5px !important;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
 }
+.filter-column .col {
+    padding: 0px !important;
+}
+
+.filter-column input {
+    width: 100%;
+    margin: 5px 1px 1px 1px;
+    padding: 5px;
+}
+
+.filter-column button{
+    width: 100%;
+    margin: 5px 1px 1px 1px;
+    padding: 5px;
+}
+
+
 
 /* popup is a classname that is used for some of the body's of the popups */
 

@@ -41,13 +41,14 @@
 nav ul {
   list-style: none;
   display: flex;
-  background-color: rgb(147, 196, 127);
+  /* background-color: rgb(147, 196, 127); */
+  background-color: rgb(57, 127, 60);
   /*background-color: blue;*/
   margin-bottom: 0px;
 }
 
 nav ul li {
-  padding: 20px;
+  padding: 10px;
 }
 
 nav ul li a {

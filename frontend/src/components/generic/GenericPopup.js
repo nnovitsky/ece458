@@ -23,7 +23,7 @@ import Alert from 'react-bootstrap/Alert'
 
 const genericPopup = (props) => {
     return (
-        <Modal className="popup" show={props.show} onHide={props.onClose}>
+        <Modal className="popup" show={props.show} onHide={props.onClose} size={props.size}>
             <Modal.Header>
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>

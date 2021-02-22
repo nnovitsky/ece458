@@ -1,12 +1,25 @@
 .background{
-    background-color: rgb(57, 127, 60);
+    background-color: rgb(147, 196, 127);
     padding: 5px;
 }
 
+
+.btn-primary {
+    border-color: rgb(57, 127, 60) !important;
+    background-color: rgb(57, 127, 60) !important;
+}
+
+.btn-primary:hover{
+    background-color: rgb(96, 153, 74) !important;
+    border-color: rgb(96, 153, 74) !important;
+}
+
+
 .mainContent{
     background-color: white;
-    padding: 20px;
-    margin: 30px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: -10px;
 }
 
 .col-2 img{

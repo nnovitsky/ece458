@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 
@@ -24,41 +23,24 @@ let filters = {
 
 const InstrumentFilterBar = (props) => {
     return (
-        <div>
+        <Container className="filter-column">
+            <Col>
+                <h3>Filters</h3>
 
-            <Container>
-                <Row>
-                    <Col xs={2}>
-                        <h3>Filters</h3>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
-                        </Form.Group>
+                <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
 
+                <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
 
+                <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={onTextInput} />
 
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={onTextInput} />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={onTextInput} />
-                        </Form.Group>
-                    </Col>
-                    <Col xs={2}>
-                        <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply Filters</Button>
-                        <Button className="filter-button" onClick={props.onRemoveFilters}>Remove Filters</Button>
-                    </Col>
-                </Row>
+                <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={onTextInput} />
+
+                <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
+                <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
 
 
-            </Container>
-        </div>
+            </Col>
+        </Container>
     )
 }
 
@@ -83,6 +65,16 @@ const onTextInput = (e) => {
 
 const onSearch = (e, parentHandler) => {
     parentHandler(filters)
+}
+
+const onClear = (parentHandler) => {
+    filters = {
+        model_number: '',
+        vendor: '',
+        serial_number: '',
+        description: ''
+    }
+    parentHandler();
 }
 
 export default InstrumentFilterBar;

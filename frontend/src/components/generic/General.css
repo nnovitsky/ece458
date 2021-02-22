@@ -1,6 +1,6 @@
 .background{
     background-color: rgb(57, 127, 60);
-    padding: 10px;
+    padding: 5px;
 }
 
 .mainContent{
@@ -13,12 +13,15 @@
     max-width: 90px;
     max-height: 90px;
     margin: 10px;
-    margin-bottom: 8vh;
+    margin-bottom: 25px;
 }
 
 /* apply this css to any logo columns that will have buttons
 add 'button-col' to the classname for the div acting as the column
 */
+.button-col {
+    padding: 5px !important;
+}
 .button-col button {
     padding: 15px;
     margin: 10px;
@@ -30,8 +33,39 @@ be made to be more specific */
     padding: 5px;
 }
 
-.filter-button {
-    margin: 6px;
+/* Class that encompasses the filter column, 'filter-column' should be applied to a container for the filter column */
+.filter-column {
+    width: 100%;
+    padding: 5px !important;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+.filter-column .col {
+    padding: 0px !important;
+}
+
+.filter-column input {
+    width: 100%;
+    margin: 1px 1px 10px 1px;
+    padding: 5px;
+}
+
+.filter-column button{
+    width: 100%;
+    margin: 1px 1px 5px 1px;
+    padding: 5px;
+}
+
+/* class applied to the button rows on top of the model/instrument data tables */
+.table-button-row {
+    display: flex;
+    flex-direction: row;
+}
+.table-button-row button{
+    margin: 10px;
+    display: inline-block;
+    flex: 1;
+
 }
 
 /* popup is a classname that is used for some of the body's of the popups */

@@ -17,6 +17,10 @@
     width: 10%;
 }
 
+.asset-tag-column {
+    width: 10%;
+}
+
 /* .description-column {
     width is not defined so it fills the remaining width, the description will likely be the longest field
 } */

@@ -25,6 +25,10 @@
     width is not defined so it fills the remaining width, the description will likely be the longest field
 } */
 
+/* 
+.comment-column left undefined
+*/
+
 .cal-column {
     width: 15%;
 }
@@ -43,4 +47,12 @@
 
 .calibration-certificate-column {
     width: 10%;
+}
+
+.name-column {
+    width: 30%;
+}
+
+.username-column {
+    width: 20%;
 }

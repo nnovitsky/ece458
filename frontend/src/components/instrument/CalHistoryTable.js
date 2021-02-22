@@ -1,7 +1,6 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
-import Button from 'react-bootstrap/Button';
-import '../generic/InstrumentModelTable.css';
+import "../generic/ColumnSizeFormatting.css";
 
 // props
 // data: json data object to be displayed
@@ -15,13 +14,11 @@ import '../generic/InstrumentModelTable.css';
 //     sizePerPage: 10, //results per page
 //     totalSize: 12   //total num results
 // }
-
-// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 const keyField = 'pk';
 
-const serialTable = (props) => {
+const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onMoreClicked);
+    let config = makeConfig(countStart);
     return (
         <DataTable
             data={props.data}
@@ -36,12 +33,13 @@ const serialTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, onMoreClicked) => {
+let makeConfig = (countStart) => {
     return (
         [
             // this is a column for a number for the table
             {
-                dataField: '#', //json data key for this column
+                dataField: 'pk', //json data key for this column
+                isKey: true,
                 text: '#',      //displayed column header text
                 formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                     let rowNumber = (countStart + rowIndex);
@@ -51,43 +49,42 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'num-column'
             },
             {
-                dataField: 'asset_tag',
-                text: 'Asset Tag',
+                dataField: 'date',
+                text: 'Date',
                 sort: false,
-                title: (cell) => `Asset Tag: ${cell}`,
-                formatter: (pk) => {
-                    return (
-                        <p>ADD ME</p>
-                    )
-                },
-                headerClasses: 'asset-tag-column'
+                title: (cell) => `Calibration Date: ${cell}`,
+                headerClasses: 'cal-column'
             },
             {
-                dataField: 'serial_number',
-                text: 'Serial Number',
+                dataField: 'comment',
+                text: 'Comment',
                 sort: false,
-                title: (cell) => `Serial: ${cell}`,
-                headerClasses: 'serial-number-column'
+                title: (cell) => `Comment: ${cell}`,
+                headerClasses: 'comment-column'
             },
             {
-                isKey: true,
-                dataField: 'pk',
-                text: 'More',
+                dataField: 'user',
+                text: 'Name',
                 sort: false,
-                headerClasses: 'more-column',
-                title: (cell) => 'Go to instrument detail view',
-                formatter: (pk) => {
-                    return (
-                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-                    )
+                title: (cell) => `Name: ${cell}`,
+                headerClasses: 'name-column',
+                formatter: (user) => {
+                    return <span>{`${user.first_name} ${user.last_name}`}</span>
                 }
-            }
+            },
+            {
+                dataField: 'user.username',
+                text: 'Username',
+                sort: false,
+                title: (cell) => `Username: ${cell}`,
+                headerClasses: 'username-column'
+            },
         ]
     )
 };
 
-export default serialTable;
+export default calHistoryTable;
 
-serialTable.defaultProps = {
+calHistoryTable.defaultProps = {
     data: [],
 }

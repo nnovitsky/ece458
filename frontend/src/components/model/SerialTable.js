@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
-import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
+import "../generic/ColumnSizeFormatting.css";
 
 // props
 // data: json data object to be displayed
@@ -19,7 +19,7 @@ import Button from 'react-bootstrap/Button';
 // onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 const keyField = 'pk';
 
-const NewModelTable = (props) => {
+const serialTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
     return (
@@ -29,7 +29,7 @@ const NewModelTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
-            noResults='No Model Results'
+            noResults='No Instrument Results'
         />
 
 
@@ -51,33 +51,23 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'num-column'
             },
             {
-                dataField: 'vendor',
-                text: 'Vendor',
-                sort: true,
-                title: (cell) => `Vendor: ${cell}`,
-                headerClasses: 'vendor-column'
-            },
-            {
-                dataField: 'model_number',
-                text: 'Model #',
-                sort: true,
-                title: (cell) => `Model Number: ${cell}`,
-                headerClasses: 'model-number-column'
-            },
-            {
-                dataField: 'description',
-                text: 'Description',
-                sort: true,
-                title: (cell) => `Description: ${cell}`,
-                headerClasses: 'description-column',
-            },
-            {
-                dataField: 'calibration_frequency',
-                text: 'Cal. Frequency',
+                dataField: 'asset_tag',
+                text: 'Asset Tag',
                 sort: false,
-                title: (cell) => `Cal. Frequency: ${cell} days`,
-                headerTitle: () => `Calibration Frequency`,
-                headerClasses: 'cal-column',
+                title: (cell) => `Asset Tag: ${cell}`,
+                formatter: (pk) => {
+                    return (
+                        <p>ADD ME</p>
+                    )
+                },
+                headerClasses: 'asset-tag-column'
+            },
+            {
+                dataField: 'serial_number',
+                text: 'Serial Number',
+                sort: false,
+                title: (cell) => `Serial: ${cell}`,
+                headerClasses: 'serial-number-column'
             },
             {
                 isKey: true,
@@ -85,7 +75,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                 text: 'More',
                 sort: false,
                 headerClasses: 'more-column',
-                title: (cell) => `Go to model detail view`,
+                title: (cell) => 'Go to instrument detail view',
                 formatter: (pk) => {
                     return (
                         <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
@@ -96,8 +86,8 @@ let makeConfig = (countStart, onMoreClicked) => {
     )
 };
 
-export default NewModelTable;
+export default serialTable;
 
-NewModelTable.defaultProps = {
+serialTable.defaultProps = {
     data: [],
 }

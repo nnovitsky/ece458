@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
-import '../generic/InstrumentModelTable.css';
+import '../generic/ColumnSizeFormatting.css';
 // import "./ModelTable.css";
 
 // props

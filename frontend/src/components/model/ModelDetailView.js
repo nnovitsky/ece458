@@ -15,13 +15,10 @@ import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
 import { rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
-import GenericPagination from '../generic/GenericPagination';
-import SerialTable from '../instrument/SerialTable';
+import SerialTable from './SerialTable';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
-let instrumentData = [];
-let history;
 
 
 class ModelDetailView extends React.Component {
@@ -49,10 +46,10 @@ class ModelDetailView extends React.Component {
                 errors: []
             },
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
-                currentPageNum: '',
+                currentPageNum: 1,
                 desiredPage: 1,
                 showAll: false,
             },

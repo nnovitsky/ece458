@@ -37,10 +37,9 @@ def reformat_date(MM_DD_YYYY):
     return datetime.date(year, month, day)
 
 
-def upload_cal_event(current_row, current_instrument):
-    admin = User.objects.filter(username='admin')[0]
+def upload_cal_event(current_row, current_instrument, user):
     db_date = reformat_date(current_row[CAL_DATE_INDEX])
-    cal_event_info = [db_date, admin.pk, current_instrument.pk, current_row[CAL_COMMENT_INDEX]]
+    cal_event_info = [db_date, user.pk, current_instrument.pk, current_row[CAL_COMMENT_INDEX]]
     cal_event_data = dict(zip(cal_event_keys, cal_event_info))
     cal_event_upload = CalibrationEventWriteSerializer(data=cal_event_data)
     if cal_event_upload.is_valid():
@@ -51,7 +50,7 @@ def upload_cal_event(current_row, current_instrument):
     return False
 
 
-def get_instrument_list(file):
+def get_instrument_list(file, user):
     instrument_data = []
 
     file.seek(0)
@@ -70,14 +69,14 @@ def get_instrument_list(file):
             return False, [], "Failed to upload instruments to db"
 
         if item_model.calibration_frequency != 0:
-            cal_event_upload_success = upload_cal_event(row, current_instrument)
+            cal_event_upload_success = upload_cal_event(row, current_instrument, user)
             if not cal_event_upload_success:
                 return False, [], "Failed to upload cal events to db"
 
     return True, instrument_data, f"Uploaded {len(instrument_data)} records to db"
 
 
-def handler(verified_file):
-
-    successful_upload, instrument_data, upload_summary = get_instrument_list(verified_file)
+def handler(verified_file, request):
+    user = request.user
+    successful_upload, instrument_data, upload_summary = get_instrument_list(verified_file, user)
     return successful_upload, instrument_data, upload_summary

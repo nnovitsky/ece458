@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
 import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
-import ModelTable from "./NewModelTable";
+import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
@@ -21,8 +21,8 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
                 currentPageNum: 1,
             },
@@ -53,8 +53,6 @@ class ModelTablePage extends Component {
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
-        //this.onPaginationClick = this.onPaginationClick.bind(this);
-        //this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
         this.onExportAllClicked = this.onExportAllClicked.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
@@ -71,7 +69,6 @@ class ModelTablePage extends Component {
     render(
         adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
     ) {
-        console.log(this.state.pagination);
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -93,29 +90,12 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            {/* <p>Click on a table header to sort the data by that field, click again for descending order</p> */}
-                            {/* <ModelTable
-                                data={this.state.tableData}
-                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-                                onDetailRequested={this.onDetailClicked}
-                                sortData={this.onModelSort}
-                            /> */}
                             <ModelTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
-                            {/* <Pagination
-                                currentPageNum={this.state.pagination.currentPageNum}
-                                numPages={this.state.pagination.numPages}
-                                numResults={this.state.pagination.resultCount}
-                                resultsPerPage={this.state.pagination.resultsPerPage}
-                                onPageClicked={this.onPaginationClick}
-                                onShowAllToggle={this.onToggleShowAll}
-                                isShown={!this.state.modelSearchParams.showAll}
-                                buttonText={(this.state.modelSearchParams.showAll) ? "Limit Results" : "Show All"}
-                            /> */}
                         </div>
                     </div>
                 </div>
@@ -138,11 +118,6 @@ class ModelTablePage extends Component {
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
-        console.log("table change");
-        console.log(type);
-        console.log(page);
-        console.log(sizePerPage);
-
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);
@@ -190,7 +165,7 @@ class ModelTablePage extends Component {
         this.setState({
             modelSearchParams: {
                 ...this.state.modelSearchParams,
-                filters: newFilter
+                filters: newFilter,
             }
         }, () => {
             this.updateModelTable();
@@ -285,30 +260,6 @@ class ModelTablePage extends Component {
         )
     }
 
-    // async onPaginationClick(num) {
-    //     this.setState({
-    //         modelSearchParams: {
-    //             ...this.state.modelSearchParams,
-    //             desiredPage: num
-    //         }
-    //     }, () => {
-    //         this.updateModelTable();
-    //     })
-    // }
-
-    // async onToggleShowAll() {
-    //     this.setState((prevState) => {
-    //         return {
-    //             modelSearchParams: {
-    //                 ...this.state.modelSearchParams,
-    //                 showAll: !prevState.modelSearchParams.showAll
-    //             }
-    //         }
-    //     }, () => {
-    //         this.updateModelTable();
-    //     })
-    // }
-
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
@@ -369,55 +320,6 @@ class ModelTablePage extends Component {
                 return result;
         }
     }
-
-    // getURLKey = (sortingHeader) => {
-
-    //     let sortingKey = null
-    //     this.setState({
-    //         sortingIndicator: 'Sorted By: ' + sortingHeader
-    //     })
-
-    //     switch (sortingHeader) {
-    //         case "Model Number":
-    //             sortingKey = "model_number_lower"
-    //             return sortingKey;
-    //         case "Vendor":
-    //             sortingKey = "vendor_lower"
-    //             return sortingKey;
-    //         case "Description":
-    //             sortingKey = "description_lower"
-    //             return sortingKey;
-    //         case "Calibration (days)":
-    //             sortingKey = "calibration_frequency"
-    //             return sortingKey;
-    //         default:
-    //             this.setState({
-    //                 sortingIndicator: ''
-    //             })
-    //             return '';
-    //     }
-    // }
-
-    // onModelSort = () => {
-    //     var urlSortingKey = this.getURLKey(sortingHeader);
-    //     //this handles ascending/descending, it toggles between
-    //     if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
-    //         if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
-    //             urlSortingKey = `-${urlSortingKey}`;
-    //         }
-    //     }
-    //     if (urlSortingKey !== `-`) {
-    //         this.setState({
-    //             modelSearchParams: {
-    //                 ...this.state.modelSearchParams,
-    //                 sortingIndicator: urlSortingKey
-    //             }
-    //         }, () => {
-    //             this.updateModelTable();
-    //         })
-    //     }
-
-    // }
 }
 
 export default ModelTablePage;

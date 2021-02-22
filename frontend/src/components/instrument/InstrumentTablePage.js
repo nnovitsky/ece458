@@ -101,6 +101,7 @@ class InstrumentTablePage extends Component {
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
+                                onMoreClicked={this.onDetailViewRequested}
                             />
                             <hr />
                         </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import '../generic/InstrumentModelTable.css';
 import DataTable from '../generic/DataTable';
 import "../generic/InstrumentModelTable.css";
+import Button from 'react-bootstrap/Button';
 
 // props
 // data: json data object to be displayed
@@ -15,11 +16,13 @@ import "../generic/InstrumentModelTable.css";
 //     sizePerPage: 10, //results per page
 //     totalSize: 12   //total num results
 // }
+
+// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 const keyField = 'pk';
 
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart);
+    let config = makeConfig(countStart, props.onMoreClicked);
     return (
         <DataTable
             data={props.data}
@@ -34,7 +37,7 @@ const NewModelTable = (props) => {
     )
 }
 
-let makeConfig = (countStart) => {
+let makeConfig = (countStart, onMoreClicked) => {
     return (
         [
             // this is a column for a number for the table
@@ -86,7 +89,7 @@ let makeConfig = (countStart) => {
                 title: (cell) => `Go to model detail view`,
                 formatter: (pk) => {
                     return (
-                        <a href={`/models/${pk}`}>More</a>
+                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
                     )
                 }
             }

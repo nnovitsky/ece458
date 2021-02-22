@@ -97,6 +97,7 @@ class ModelTablePage extends Component {
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                                onMoreClicked={this.onDetailClicked}
                             />
                             <hr />
                         </div>

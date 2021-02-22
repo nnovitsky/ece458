@@ -74,8 +74,8 @@ form.popup{
     margin: 0px;
     border-radius: 10px;
     padding: 20px;
-    padding-left: 20%;
-    padding-right: 20%;
+    padding-left: 5%;
+    padding-right: 5%;
     text-align: left;
     display: inline-block;
     background-color: rgb(147, 196, 127);
@@ -140,6 +140,7 @@ form.popup input[type=text] {
 }
 
 /* generic pagination element styling */
+/* ONCE THE NEW TABLE IS DONE, THIS IS DEPRECATED AND CAN BE DELETED */
 .pagination.row {
     display: flex;
     flex-direction: row;
@@ -161,7 +162,7 @@ form.popup input[type=text] {
 }
 
 /* model/instrument table formatting */
-.data-table {
+/* .data-table {
     overflow-y: scroll;
     max-height: 40vh;
     max-width: 100vw;
@@ -181,6 +182,6 @@ form.popup input[type=text] {
 
 .data-table::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    border: 2px solid white; /* should match background, can't be transparent */
+    border: 2px solid white; 
     background-color: rgba(0, 0, 0, .5);
-}
+} */

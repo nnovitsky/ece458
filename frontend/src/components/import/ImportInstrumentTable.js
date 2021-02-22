@@ -1,7 +1,6 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import '../model/ModelTable.css'
 
 const headerText = ["Model Number", "Vendor", "Description", "Comments", "Calibration Date"];
 const keys = ["model_number", "vendor", "serial_number", "comment", "calibration_date"];

@@ -32,19 +32,23 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 // ]
 // there are examples throughout the repo, it's possible to format the displayed data, talk to carrie if running into trouble
 
+//noResults: test to be displayed when no data is present
+
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     return (
-        <PaginationProvider
-            pagination={paginationFactory(options)}
-        >
-            {
-                ({
-                    paginationProps,
-                    paginationTableProps
-                }) => (
-                    <div>
-                        <div className="pagination-row">
+        <div className="data-table">
+
+
+            <PaginationProvider
+                pagination={paginationFactory(options)}
+            >
+                {
+                    ({
+                        paginationProps,
+                        paginationTableProps
+                    },
+                        paginationRow = (props.pagination.totalSize === 0) ? null : (<div className="pagination-row" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
                             <SizePerPageDropdownStandalone
                                 {...paginationProps}
                             />
@@ -54,24 +58,37 @@ const NewModelTable = (props) => {
                             <PaginationTotalStandalone
                                 {...paginationProps}
                             />
+                        </div>)
+                    ) => (
+                        <div>
+                            <BootstrapTable
+                                remote
+                                bootstrap4
+                                striped
+                                condensed
+                                data={props.data}
+                                columns={props.config}
+                                keyField={props.keyField}
+                                onTableChange={props.onTableChange}
+                                headerClasses='data-table-header'
+                                bodyClasses='data-table'
+                                {...paginationTableProps}
+                                noDataIndication={noResults(props.noResults)}
+                            />
+                            {paginationRow}
                         </div>
 
-                        <BootstrapTable
-                            data={props.data}
-                            columns={props.config}
-                            remote
-                            bootstrap4
-                            keyField={props.keyField}
-                            onTableChange={props.onTableChange}
-                            headerClasses='data-table-header'
-                            {...paginationTableProps}
-                        />
-                    </div>
+                    )}
+            </PaginationProvider>
+        </div>
+    )
+}
 
-                )}
-        </PaginationProvider>
-
-
+const noResults = (text) => {
+    return (
+        <div className="data-table-no-results">
+            <h2>{text}</h2>
+        </div>
     )
 }
 
@@ -120,7 +137,6 @@ const sizePerPageRenderer = ({
     <div className="btn-group" role="group">
         {
             options.map((option) => {
-                console.log(`Current Page: ${currSizePerPage} and checking ${option.page}`);
                 const isSelect = currSizePerPage === `${option.page}`;
                 return (
                     <button

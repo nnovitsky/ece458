@@ -1,0 +1,42 @@
+/* data column formatting
+    these classes are used in the configs of the instrument/model data tables
+*/
+.num-column {
+    width: 7%;
+}
+
+.vendor-column {
+    width: 15%;
+}
+
+.model-number-column {
+    width: 10%;
+}
+
+.serial-number-column {
+    width: 10%;
+}
+
+/* .description-column {
+    width is not defined so it fills the remaining width, the description will likely be the longest field
+} */
+
+.cal-column {
+    width: 15%;
+}
+
+.latest-calibration-column {
+    width: 12%;
+}
+
+.calibration-expiration-column {
+    width: 12%;
+}
+
+.more-column {
+    width: 8%;
+}
+
+.calibration-certificate-column {
+    width: 10%;
+}

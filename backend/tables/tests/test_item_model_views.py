@@ -53,15 +53,15 @@ class ItemModelTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_single_model(self):
-        pk = 1
+        pk = ItemModel.objects.all()[0].pk
         response = self.client.get(reverse('model_detail', args=[pk]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         model = ItemModel.objects.get(pk=pk)
-        serializer = DetailItemModelSerializer(model)
+        serializer = ItemModelSerializer(model)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_model_edit_auth(self):
-        pk = 1
+        pk = ItemModel.objects.all()[0].pk
         self.model_data['description'] = "testing new description"
         response = self.client.put(reverse('model_detail', args=[pk]), data=json.dumps(self.model_data),
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
@@ -70,7 +70,7 @@ class ItemModelTests(TestCase):
         self.assertEqual(model.description, response.data['description'])
 
     def test_model_delete_auth(self):
-        pk = 2
+        pk = ItemModel.objects.all()[1].pk
         response = self.client.delete(reverse('model_detail', args=[pk]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 

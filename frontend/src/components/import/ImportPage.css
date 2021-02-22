@@ -28,6 +28,6 @@ button.import{
 }
 
 .popupScrolling{
-    height: 300px;
-    width: 300px;
+    height: 50vh;
+    width: 100%;
 }

@@ -1,7 +1,11 @@
+import json
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from django.core.exceptions import FieldError
+from django.test import Client
+from django.urls import reverse
+from backend.tables.models import *
 from backend.config.character_limits import *
 
 
@@ -81,3 +85,34 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
 
     return Response({'data': serializer.data, 'count': paginator.count, 'numpages': paginator.num_pages,
                      'currentpage': page, 'nextpage': nextPage, 'previouspage': previousPage})
+
+
+def setUpTestAuth(class_object):
+    class_object.client = Client()
+    User.objects.all().delete()
+    class_object.user_data = {
+        'username': "newUser",
+        'password': "pw123",
+        'first_name': "fname",
+        'last_name': "lname",
+        'email': "e@g.com"
+    }
+    class_object.login_data = {
+        'username': class_object.user_data['username'],
+        'password': class_object.user_data['password']
+    }
+    class_object.token_staff, class_object.user_staff = make_user(username="newUser", is_staff=True, data=class_object.user_data,
+                                                    login=class_object.login_data, client=class_object.client)
+    class_object.token_non_staff, class_object.user_non_staff = make_user(username="newUser2", is_staff=False, data=class_object.user_data,
+                                                            login=class_object.login_data, client=class_object.client)
+
+
+def make_user(username, is_staff, data, login, client):
+    data['username'] = username
+    login['username'] = username
+    u = User(**data)
+    u.set_password("pw123")
+    u.is_staff = is_staff
+    u.save()
+    response = client.post(reverse('token_auth'), data=json.dumps(login), content_type='application/json')
+    return response.data['token'], u

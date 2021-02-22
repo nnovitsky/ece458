@@ -4,7 +4,6 @@ import ModelServices from "../../api/modelServices";
 import ModelFilterBar from "./ModelFilterBar";
 import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
-import Pagination from '../generic/GenericPagination';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -22,8 +21,8 @@ class ModelTablePage extends Component {
             redirect: null,
             tableData: [],
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
                 currentPageNum: 1,
             },
@@ -54,10 +53,9 @@ class ModelTablePage extends Component {
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
         this.updateModelTable = this.updateModelTable.bind(this);
-        this.onPaginationClick = this.onPaginationClick.bind(this);
-        this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onExportModelsClicked = this.onExportModelsClicked.bind(this);
         this.onExportAllClicked = this.onExportAllClicked.bind(this);
+        this.onTableChange = this.onTableChange.bind(this);
     }
 
     async componentDidMount() {
@@ -92,24 +90,12 @@ class ModelTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
-                            <p>Click on a table header to sort the data by that field, click again for descending order</p>
                             <ModelTable
                                 data={this.state.tableData}
-                                countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-                                onDetailRequested={this.onDetailClicked}
-                                sortData={this.onModelSort}
+                                onTableChange={this.onTableChange}
+                                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                             />
                             <hr />
-                            <Pagination
-                                currentPageNum={this.state.pagination.currentPageNum}
-                                numPages={this.state.pagination.numPages}
-                                numResults={this.state.pagination.resultCount}
-                                resultsPerPage={this.state.pagination.resultsPerPage}
-                                onPageClicked={this.onPaginationClick}
-                                onShowAllToggle={this.onToggleShowAll}
-                                isShown={!this.state.modelSearchParams.showAll}
-                                buttonText={(this.state.modelSearchParams.showAll) ? "Limit Results" : "Show All"}
-                            />
                         </div>
                     </div>
                 </div>
@@ -130,6 +116,45 @@ class ModelTablePage extends Component {
         )
     }
 
+    // event handler for the NewModelTable, it handles sorting and pagination
+    onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
+        switch (type) {
+            case 'sort':
+                let sortKey = this.getSortingKey(sortField, sortOrder);
+                this.setState({
+                    modelSearchParams: {
+                        ...this.state.modelSearchParams,
+                        sortingIndicator: sortKey,
+                    }
+                }, () => {
+                    this.updateModelTable();
+                });
+                return;
+            case 'pagination':
+                if (sizePerPage === this.state.pagination.resultCount) {
+                    this.setState({
+                        modelSearchParams: {
+                            ...this.state.modelSearchParams,
+                            desiredPage: 1,
+                            showAll: true,
+                        }
+                    }, () => {
+                        this.updateModelTable();
+                    })
+                } else {
+                    this.setState({
+                        modelSearchParams: {
+                            ...this.state.modelSearchParams,
+                            desiredPage: page,
+                            showAll: false,
+                        }
+                    }, () => {
+                        this.updateModelTable();
+                    })
+                }
+        }
+    }
+
     onDetailClicked(e) {
         this.setState({
             redirect: `/models/${e.target.value}`
@@ -140,7 +165,7 @@ class ModelTablePage extends Component {
         this.setState({
             modelSearchParams: {
                 ...this.state.modelSearchParams,
-                filters: newFilter
+                filters: newFilter,
             }
         }, () => {
             this.updateModelTable();
@@ -235,30 +260,6 @@ class ModelTablePage extends Component {
         )
     }
 
-    async onPaginationClick(num) {
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                desiredPage: num
-            }
-        }, () => {
-            this.updateModelTable();
-        })
-    }
-
-    async onToggleShowAll() {
-        this.setState((prevState) => {
-            return {
-                modelSearchParams: {
-                    ...this.state.modelSearchParams,
-                    showAll: !prevState.modelSearchParams.showAll
-                }
-            }
-        }, () => {
-            this.updateModelTable();
-        })
-    }
-
     // method called with the data from a successful api hit for getting the model table,
     // sorting the data, filtering the data, or pagination
     updateData(data) {
@@ -280,57 +281,44 @@ class ModelTablePage extends Component {
                 },
 
             })
-        }
-
-    }
-
-    getURLKey = (sortingHeader) => {
-
-        let sortingKey = null
-        this.setState({
-            sortingIndicator: 'Sorted By: ' + sortingHeader
-        })
-
-        switch (sortingHeader) {
-            case "Model Number":
-                sortingKey = "model_number_lower"
-                return sortingKey;
-            case "Vendor":
-                sortingKey = "vendor_lower"
-                return sortingKey;
-            case "Description":
-                sortingKey = "description_lower"
-                return sortingKey;
-            case "Calibration (days)":
-                sortingKey = "calibration_frequency"
-                return sortingKey;
-            default:
-                this.setState({
-                    sortingIndicator: ''
-                })
-                return '';
-        }
-    }
-
-    onModelSort = (sortingHeader) => {
-        var urlSortingKey = this.getURLKey(sortingHeader);
-        //this handles ascending/descending, it toggles between
-        if (this.state.modelSearchParams.sortingIndicator.includes(urlSortingKey)) {
-            if (this.state.modelSearchParams.sortingIndicator.charAt(0) !== '-') {
-                urlSortingKey = `-${urlSortingKey}`;
-            }
-        }
-        if (urlSortingKey !== `-`) {
+        } else {
             this.setState({
-                modelSearchParams: {
-                    ...this.state.modelSearchParams,
-                    sortingIndicator: urlSortingKey
-                }
-            }, () => {
-                this.updateModelTable();
+                pagination: {
+                    ...this.state.pagination,
+                    currentPageNum: 1
+                },
+
             })
         }
 
+    }
+
+    getSortingKey = (sortingField, direction) => {
+        let result;
+        switch (sortingField) {
+            case 'vendor':
+                result = 'vendor_lower';
+                break;
+            case 'model_number':
+                result = 'model_number_lower';
+                break;
+            case 'description':
+                result = 'description_lower';
+                break;
+            case 'calibration_frequency':
+                result = 'calibration_frequency_lower';
+                break;
+            default:
+                return '';
+        }
+        switch (direction) {
+            case 'asc':
+                return result;
+            case 'desc':
+                return `-${result}`;
+            default:
+                return result;
+        }
     }
 }
 

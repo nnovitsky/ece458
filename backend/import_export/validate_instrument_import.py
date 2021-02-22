@@ -27,6 +27,9 @@ def validate_row(current_row):
         return False, f"Row length mismatch. Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
 
+    if field_validators.is_blank_row(current_row):
+        return True, "Blank row."
+
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])

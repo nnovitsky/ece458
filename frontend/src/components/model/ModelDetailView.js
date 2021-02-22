@@ -151,17 +151,6 @@ class ModelDetailView extends React.Component {
         )
     }
 
-    makeEditPopup() {
-        return (
-            <EditModelPopup
-                isShown={this.state.isEditShown}
-                onSubmit={this.onEditSubmit}
-                onClose={this.onEditClose}
-                currentModel={this.state.model_info}
-            />
-        )
-    }
-
     makeDetailsTable() {
         let modelInfo = this.state.model_info;
         return (

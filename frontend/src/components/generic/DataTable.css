@@ -1,0 +1,38 @@
+
+/* class applied to the entire data table, makes sure overflow is hidden */
+.data-table td{
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* formats the pagination bar */
+.pagination-row {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+
+.pagination-row span {
+    margin-left: 8px;
+}
+
+.pagination-row button {
+    width: 110px;
+}
+
+/* used to make the data table header sticky */
+.data-table-header {
+    position: sticky;
+    top: 0;
+    background-color: rgb(241, 243, 241);
+}
+
+/* apply to any buttons in the table */
+.data-table-button {
+    padding: 3px 5px 3px 5px !important;
+}
+
+/* formats the no result message */
+.data-table-no-results {
+    padding: 50px;
+}

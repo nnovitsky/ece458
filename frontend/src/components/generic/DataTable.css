@@ -20,6 +20,21 @@
     width: 110px;
 }
 
+/* setting the pagination bar of button colors to match the color scheme of the site */
+.page-item.disabled .page-link{
+    color: #6c757d !important;
+}
+
+.page-item.active .page-link{
+    background-color: rgb(57, 127, 60) !important;
+    border-color: rgb(57, 127, 60) !important;
+    color: white !important;
+}
+
+.page-link {
+    color: rgb(57, 127, 60) !important;
+}
+
 /* used to make the data table header sticky */
 .data-table-header {
     position: sticky;

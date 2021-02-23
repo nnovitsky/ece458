@@ -9,7 +9,16 @@ import jwt
 # this function is setting the authenticaton string we need to provide the oauth server
 # this is how the oauth server knows it is getting a valid request from your application
 def format_auth_string():
-    string = "{}:{}".format(os.environ["OAUTH_CLIENT_ID"], os.environ["OAUTH_CLIENT_SECRET"])
+    if "OAUTH_CLIENT_ID" in os.environ:
+        client_id = os.environ["OAUTH_CLIENT_ID"]
+    else:
+        client_id = "ece458_2021_s_nen4"
+    if "OAUTH_CLIENT_ID" in os.environ:
+        client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+    else:
+        client_secret = "OnKlVSj0Yf6qnRZ7qH8AbyDYJAvDTiCyeiXW4BGfMgVltZk4kExQF9TvEZQyoDPWEkCBVrxzDBK8a4RxZZA-Fw"
+
+    string = "{}:{}".format(client_id, client_secret)
     data = base64.b64encode(string.encode())
     return data.decode("utf-8")
 
@@ -23,9 +32,14 @@ def get_token(code):
     else:
         url = "https://oauth.oit.duke.edu/oidc/token"
 
+    if "OAUTH_REDIRECT_URI" in os.environ:
+        redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
+    else:
+        redirect_uri = "http://localhost:8000/oauth/consume"
+
     payload = urllib.parse.urlencode({
         'grant_type': "authorization_code",
-        'redirect_uri': os.environ["OAUTH_REDIRECT_URI"],
+        'redirect_uri': redirect_uri,
         'code': code
     })
     headers = {

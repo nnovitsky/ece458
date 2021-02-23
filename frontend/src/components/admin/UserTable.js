@@ -39,8 +39,8 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
         [
             // this is a column for a number for the table
             {
-                isKey: true,    //one column needs to be the keyfield, this has to be unique or the table has errors
-                dataField: 'pk', //json data key for this column
+                
+                dataField: '#', //json data key for this column
                 text: '#',      //displayed column header text
                 formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                     let rowNumber = (countStart + rowIndex);
@@ -50,6 +50,7 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 headerClasses: 'num-column'     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
             },
             {
+                isKey: true,    //one column needs to be the keyfield, this has to be unique or the table has errors
                 dataField: 'username',
                 text: 'Username',
                 sort: false,

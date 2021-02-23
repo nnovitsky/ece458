@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
-import '../generic/InstrumentModelTable.css';
+import '../generic/ColumnSizeFormatting.css';
 // import "./ModelTable.css";
 
 // props
@@ -18,11 +18,12 @@ import '../generic/InstrumentModelTable.css';
 // }
 
 // onCertificateRequested: handler for when a calibration certificate is requested
+// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 const keyField = 'pk';
 
 const newInstrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onCertificateRequested);
+    let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
     return (
         <DataTable
             data={props.data}
@@ -49,7 +50,7 @@ const getLatestCalText = (data) => {
     }
 }
 
-let makeConfig = (countStart, onCertificateRequested) => {
+let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
     return (
         [
             // this is a column for a number for the table
@@ -125,7 +126,7 @@ let makeConfig = (countStart, onCertificateRequested) => {
                 title: (cell) => 'Go to instrument detail view',
                 formatter: (pk) => {
                     return (
-                        <a href={`/instruments/${pk}`}>More</a>
+                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
                     )
                 }
             },

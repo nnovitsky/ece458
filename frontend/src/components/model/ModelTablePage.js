@@ -80,20 +80,24 @@ class ModelTablePage extends Component {
                     <div className="row mainContent">
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportModelsClicked}>Export Models</Button>
-                            <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
-                        </div>
-                        <div className="col-10">
-                            <h1>Models</h1>
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                             />
+
+                        </div>
+                        <div className="col-10">
+                            <h1>Models</h1>
+                            <div className="table-button-row">
+                                {this.props.is_admin ? adminButtons : null}
+                                <Button onClick={this.onExportModelsClicked}>Export Models</Button>
+                                <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
+                            </div>
                             <ModelTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                                onMoreClicked={this.onDetailClicked}
                             />
                             <hr />
                         </div>
@@ -166,6 +170,7 @@ class ModelTablePage extends Component {
             modelSearchParams: {
                 ...this.state.modelSearchParams,
                 filters: newFilter,
+                desiredPage: 1
             }
         }, () => {
             this.updateModelTable();

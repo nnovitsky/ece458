@@ -13,6 +13,7 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../gene
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import Row from 'react-bootstrap/esm/Row';
 
 
 
@@ -83,21 +84,24 @@ class InstrumentTablePage extends Component {
 
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
-                            {this.props.is_admin ? adminButtons : null}
-                            <Button onClick={this.onExportInstruments}>Export Instruments</Button>
-                            <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
-                        </div>
-                        <div className="col-10">
-                            <h1>Instrument Table</h1>
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
                             />
+                        </div>
+                        <div className="col-10">
+                            <h1>Instrument Table</h1>
+                            <div className="table-button-row">
+                                {this.props.is_admin ? adminButtons : null}
+                                <Button onClick={this.onExportInstruments}>Export Instruments</Button>
+                                <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
+                            </div>
                             <NewInstrumentTable 
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
+                                onMoreClicked={this.onDetailViewRequested}
                             />
                             <hr />
                         </div>
@@ -196,19 +200,20 @@ class InstrumentTablePage extends Component {
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
-            .then(res => {
-                if (res.success) {
-                    window.open(res.url, '_blank')
-                    URL.revokeObjectURL(res.url)
-                }
-            })
+            .then((result) => {
+                    if (result.success) {
+                        let date = dateToString(new Date());
+                        nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    }
+                })
     }
 
     async onFilteredSearch(newFilter) {
         this.setState({
             instrumentSearchParams: {
                 ...this.state.instrumentSearchParams,
-                filters: newFilter
+                filters: newFilter,
+                desiredPage: 1
             }
         }, () => {
             this.updateTable();

@@ -7,6 +7,7 @@ import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
 import ModelTable from "./ImportModelTable.js";
 import InstrumentTable from "./ImportInstrumentTable.js";
+import Button from 'react-bootstrap/Button';
 
 
 const modelServices = new ModelServices();
@@ -68,9 +69,13 @@ class ImportPage extends Component {
                                 <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
                             </div>
                         </form>
-                        <div className="text-center">
-                        <button className="import" onClick={this.importModelClicked}>Import Model</button>
-                        <button className="import" onClick={this.importInstrumentClicked}>Import Instrument</button>
+                        <div className="popup-button-row text-center lowerMargin">
+                            <Button onClick={this.importModelClicked}>Import Model</Button>
+                            <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
+                        </div>
+                        <div className="text-center" >
+                            <Button variant="secondary" style={{width: "100%"}} onClick={this.onShowInstructionsClicked}>How to Import</Button>
+
                         </div>
                     </div>
                     <div className="col-4 leftText">
@@ -82,9 +87,6 @@ class ImportPage extends Component {
                                 <br></br>
                                 Records: <b>{this.state.records_count}</b>
                             </p>
-                        </div>
-                        <div className="text-center">
-                        <button onClick={this.onShowInstructionsClicked}>How to Import</button>
                         </div>
                     </div>
 

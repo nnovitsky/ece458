@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http import FileResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
@@ -322,6 +323,34 @@ def import_instruments_csv(request):
     else:
         return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
                         status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_example_model_csv(request):
+    """
+    Returns the sample csv file for how model imports should be formatted.
+    """
+    path = "import_export/sample_csv/"
+    file_name = "example_model_upload.csv"
+
+    try:
+        return FileResponse(open(path + file_name, 'rb'), as_attachment=True, filename=file_name)
+    except IOError:
+        return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_example_instrument_csv(request):
+    """
+    Returns the sample csv file for how instrument imports should be formatted.
+    """
+    path = "import_export/sample_csv/"
+    file_name = "example_instrument_upload.csv"
+
+    try:
+        return FileResponse(open(path + file_name, 'rb'), as_attachment=True, filename=file_name)
+    except IOError:
+        return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
 
 
 # USERS

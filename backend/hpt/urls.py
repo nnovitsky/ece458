@@ -43,5 +43,7 @@ urlpatterns = [
     path('api/import_instruments_csv/', views.import_instruments_csv),
     path('api/export_models_csv/', api_views.ItemModelExport.as_view()),
     path('api/export_instruments_csv/', api_views.InstrumentExport.as_view()),
+    path('api/export_example_model_csv/', views.get_example_model_csv),
+    path('api/export_example_instrument_csv/', views.get_example_instrument_csv),
 
 ]

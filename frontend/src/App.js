@@ -101,7 +101,7 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div>
-          <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin}/>
+          <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username}/>
           <Switch>
             <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />

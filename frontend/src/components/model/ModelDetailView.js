@@ -15,12 +15,10 @@ import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
 import { rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
-import GenericPagination from '../generic/GenericPagination';
+import SerialTable from './SerialTable';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
-let instrumentData = [];
-let history;
 
 
 class ModelDetailView extends React.Component {
@@ -48,11 +46,12 @@ class ModelDetailView extends React.Component {
                 errors: []
             },
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
-                currentPageNum: '',
-                desiredPage: 1
+                currentPageNum: 1,
+                desiredPage: 1,
+                showAll: false,
             },
 
         }
@@ -64,8 +63,7 @@ class ModelDetailView extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
-        this.onPaginationClick = this.onPaginationClick.bind(this);
-        this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onSerialTableChange = this.onSerialTableChange.bind(this);
     }
 
     async componentDidMount() {
@@ -96,20 +94,19 @@ class ModelDetailView extends React.Component {
                             {this.props.is_admin ? adminButtons : null}
                         </div>
                         <div className="col-10">
-                            <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
+                            
                             <Row>
-                                <Col>{this.makeDetailsTable()}</Col>
+                                <Col>
+                                    <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
+                                {this.makeDetailsTable()}
+                                </Col>
                                 <Col xs={6}>
-                                    {this.makeInstrumentsTable()}
-                                    <GenericPagination
-                                        currentPageNum={this.state.pagination.currentPageNum}
-                                        numPages={this.state.pagination.numPages}
-                                        numResults={this.state.pagination.resultCount}
-                                        resultsPerPage={this.state.pagination.resultsPerPage}
-                                        onPageClicked={this.onPaginationClick}
-                                        onShowAllToggle={this.onToggleShowAll}
-                                        isShown={!this.state.pagination.showAll}
-                                        buttonText={(this.state.pagination.showAll) ? "Limit Results" : "Show All"}
+                                    <h2>Instrument Instances</h2>
+                                    <SerialTable 
+                                        data={this.state.instruments}
+                                        onTableChange={this.onSerialTableChange}
+                                        pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount}}
+                                        onMoreClicked={this.onMoreClicked}
                                     />
                                 </Col>
                             </Row>
@@ -180,51 +177,6 @@ class ModelDetailView extends React.Component {
             </Table>
         )
     }
-
-    makeInstrumentsTable() {
-        let rows = [];
-        let count = 1;
-        this.state.instruments.forEach((element) => {
-            let currentRow = [];
-            currentRow.push(
-                <td>{count}</td>
-            )
-            currentRow.push(
-                <td>{element["serial_number"]}</td>
-            )
-            currentRow.push(
-                <td><Button onClick={this.onMoreClicked} value={element["pk"]}>More</Button></td>
-            )
-            count++;
-            rows.push(
-                <tr>{currentRow}</tr>
-            )
-        });
-
-        return (
-            <div className="data-table">
-                <Table bordered hover size="sm">
-                <thead>
-                    <tr>
-                        <th colSpan="3" className="text-center">Instances by Serial Number</th>
-                    </tr>
-                    <tr>
-                        <th>#</th>
-                        <th>Serial Number</th>
-                        <th>More</th>
-                    </tr>
-
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </Table>
-            </div>
-        )
-
-    }
-
-
 
     onMoreClicked(e) {
         this.setState({
@@ -318,29 +270,35 @@ class ModelDetailView extends React.Component {
         })
     }
 
-    async onPaginationClick(num) {
-        this.setState({
-            pagination: {
-                ...this.state.pagination,
-                desiredPage: num
-            }
-        }, () => {
-            this.getInstruments();
-        })
+    async onSerialTableChange(type, { page, sizePerPage }) {
+        switch (type) {
+            case 'pagination':
+                if (sizePerPage === this.state.pagination.resultCount) {
+                    this.setState({
+                        pagination: {
+                            ...this.state.pagination,
+                            desiredPage: 1,
+                            showAll: true,
+                        }
+                    }, () => {
+                        this.getInstruments();
+                    })
+                } else {
+                    this.setState({
+                        pagination: {
+                            ...this.state.pagination,
+                            desiredPage: page,
+                            showAll: false,
+                        }
+                    }, () => {
+                        this.getInstruments();
+                    })
+                }
+            default:
+                return;
+        }
     }
 
-    async onToggleShowAll() {
-        this.setState((prevState) => {
-            return {
-                pagination: {
-                    ...this.state.pagination,
-                    showAll: !prevState.pagination.showAll
-                }
-            }
-        }, () => {
-            this.getInstruments();
-        })
-    }
 
     async updateModelInfo() {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {

@@ -11,7 +11,6 @@ import "react-datepicker/dist/react-datepicker.css";
 //'errors': an array of errors to display
 
 let newCalibration = {
-    user: 'connect me!',
     date: dateToString(new Date()),
     comment: '',
 }
@@ -26,8 +25,8 @@ const AddCalibrationPopup = (props) => {
             headerText="Add Calibration"
             closeButtonText="Cancel"
             submitButtonText="Submit Calibration"
-            onClose={props.onClose}
-            onSubmit={() => props.onSubmit(newCalibration)}
+            onClose={() => preClose(props.onClose)}
+            onSubmit={() => preSubmit(props.onSubmit)}
             submitButtonVariant="primary"
             errors={props.errors}
         />
@@ -55,6 +54,22 @@ const makeBody = (calDate, setCalDate) => {
             </Form>
         </div>
     )
+}
+
+const preClose = (parentHandler) => {
+    newCalibration = {
+        date: dateToString(new Date()),
+        comment: '',
+    }
+    parentHandler();
+}
+
+const preSubmit = (parentHandler) => {
+    parentHandler(newCalibration);
+    newCalibration = {
+        date: dateToString(new Date()),
+        comment: '',
+    }
 }
 
 const onCommentChange = (e) => {

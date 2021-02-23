@@ -339,6 +339,20 @@ def get_example_model_csv(request):
         return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+def get_example_instrument_csv(request):
+    """
+    Returns the sample csv file for how model imports should be formatted.
+    """
+    path = "import_export/sample_csv/"
+    file_name = "example_instrument_upload.csv"
+
+    try:
+        return FileResponse(open(path + file_name, 'rb'), as_attachment=True, filename=file_name)
+    except IOError:
+        return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
+
+
 # USERS
 @api_view(['GET', 'PUT'])
 def current_user(request):

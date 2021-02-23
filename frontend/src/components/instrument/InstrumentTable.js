@@ -2,7 +2,11 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
 import '../generic/ColumnSizeFormatting.css';
-// import "./ModelTable.css";
+
+import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
+import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
+import GoodIcon from "../../assets/CalibrationIcons/Good.png";
+import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
 
 // props
 // data: json data object to be displayed
@@ -48,6 +52,42 @@ const getLatestCalText = (data) => {
     } else {
         return "Non-Calibratable";
     }
+}
+
+
+const getCalStatusIcon = (currentData) => {
+    let result ={
+        icon: '',
+        text: '',
+    }
+    if (currentData.item_model.calibration_frequency > 0) {
+        let expireDateString = currentData.calibration_expiration;
+        if (currentData.calibration_event.length > 0) {
+            let expireDate = new Date(expireDateString);
+            let lasCalDate = new Date(currentData.calibration_event[0].date);
+            let timeDifference = expireDate.getTime() - lasCalDate.getTime();
+            let daysDifference = timeDifference / (1000 * 3600 * 24);
+            if (daysDifference > 30) {
+                result.icon = GoodIcon;
+                result.text = `Good: expires in ${daysDifference} days`;
+            }
+            else if (daysDifference <= 30) {
+                result.icon = WarningIcon;
+                result.text = `Warning: expires in ${daysDifference} days`;
+            } else {
+                result.icon = ExpiredIcon;
+                result.text = `Warning: this calibration is expired`;
+            }
+        } else {
+            result.icon = ExpiredIcon;
+            result.text = `Warning: this calibration is expired`;
+        }
+    } else {
+        result.icon = NonCalibratableIcon;
+        result.text = `Instrument is not calibratable`;
+    }
+    
+    return (result)
 }
 
 let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
@@ -108,14 +148,27 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 text: 'Calibration Expiration',
                 sort: true,
                 title: (cell) => `Calibration Expiration: ${cell}`,
-                formatter: (cell) => {   //formats the data and the returned is displayed in the cell
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                     let display = cell;
+                    
                     if(cell === 'Instrument not calibrated.') {
                         display = 'Never Calibrated';
                     }
+                    
                     return <span>{display}</span>;
                 },
                 headerClasses: 'calibration-expiration-column',
+            },
+            {
+                dataField: 'icon',
+                text: 'Status',
+                sort: false,
+                title: (cell, row) => {return(getCalStatusIcon(row).text)},
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    let result = getCalStatusIcon(row);
+                    return <span><img src={result.icon} className='calibration-status-icon' /></span>;
+                },
+                headerClasses: 'status-column',   
             },
             {
                 isKey: true,
@@ -145,6 +198,7 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
         ]
     )
 };
+
 
 export default instrumentTable;
 

@@ -56,3 +56,7 @@
 .username-column {
     width: 20%;
 }
+
+.status-column {
+    max-width: 30px;
+}

@@ -65,7 +65,7 @@ const NewModelTable = (props) => {
                                 remote
                                 bootstrap4
                                 striped
-                                condensed
+                                condensed={true}
                                 data={props.data}
                                 columns={props.config}
                                 keyField={props.keyField}

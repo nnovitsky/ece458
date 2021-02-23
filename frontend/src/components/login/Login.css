@@ -33,3 +33,38 @@ form.login{
     display: inline-block;
     background-color: rgb(147, 196, 127);
 }
+
+hr { 
+    position: relative; 
+    top: 0px; 
+    border: none; 
+    height: 3px; 
+    background: black; 
+    margin-bottom: 50px; 
+    width: 100%;
+}
+
+h6 { 
+    display: flex; 
+    flex-direction: row; 
+} 
+  
+h6:before, 
+h6:after { 
+    content: ""; 
+    flex: 2 2; 
+    border-bottom: 1px solid #000; 
+    margin: auto; 
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+#duke-button {
+    background-color: #012169 !important;
+    padding: 15px;
+    width: 100%;
+    }
+
+#duke-button:hover {
+    background-color: #000f31  !important;
+    }

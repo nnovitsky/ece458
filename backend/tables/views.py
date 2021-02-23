@@ -342,7 +342,7 @@ def get_example_model_csv(request):
 @api_view(['GET'])
 def get_example_instrument_csv(request):
     """
-    Returns the sample csv file for how model imports should be formatted.
+    Returns the sample csv file for how instrument imports should be formatted.
     """
     path = "import_export/sample_csv/"
     file_name = "example_instrument_upload.csv"

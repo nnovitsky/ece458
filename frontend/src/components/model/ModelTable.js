@@ -82,7 +82,7 @@ let makeConfig = (countStart, onMoreClicked) => {
             {
                 isKey: true,
                 dataField: 'pk',
-                text: 'More',
+                text: 'Details',
                 sort: false,
                 headerClasses: 'more-column',
                 title: (cell) => `Go to model detail view`,

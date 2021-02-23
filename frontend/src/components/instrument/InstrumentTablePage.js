@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
 import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
-import NewInstrumentTable from "./NewInstrumentTable";
+import InstrumentTable from "./InstrumentTable";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
@@ -96,7 +96,7 @@ class InstrumentTablePage extends Component {
                                 <Button onClick={this.onExportInstruments}>Export Instruments</Button>
                                 <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
                             </div>
-                            <NewInstrumentTable 
+                            <InstrumentTable 
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}

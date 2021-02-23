@@ -15,6 +15,9 @@ import '../generic/ColumnSizeFormatting.css';
 //     totalSize: 12   //total num results
 // }
 
+// inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
+
+
 const keyField = 'pk';
 
 const userTable = (props) => {
@@ -28,6 +31,7 @@ const userTable = (props) => {
             keyField={keyField}
             config={config}
             noResults='No Users'
+            inlineElements={props.inlineElements}
         />
 
 
@@ -95,4 +99,5 @@ export default userTable;
 
 userTable.defaultProps = {
     data: [],
+    inlineElements: <></>,
 }

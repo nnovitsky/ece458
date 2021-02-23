@@ -36,11 +36,12 @@
 }
 
 /* used to make the data table header sticky */
-.data-table-header {
+.data-table-header th{
+    background-color: rgb(100, 100, 100) !important;
+    color: white;
+    /* background-color: white; */
     position: sticky;
     top: 0;
-    background-color: rgb(241, 243, 241);
-    
 }
 
 /* apply to any buttons in the table */
@@ -48,13 +49,13 @@
     padding: 3px 5px 3px 5px !important;
     border-color: transparent !important;
     background-color: transparent !important;
-    color: blue !important;
+    color: rgb(57, 127, 60) !important;
 }
 
 .data-table-button:hover {
     border-color: transparent !important;
     background-color: transparent !important;
-    color: blue !important;
+    color: rgb(57, 127, 60) !important;
     text-decoration: underline !important;
 }
 

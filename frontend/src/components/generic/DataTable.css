@@ -36,7 +36,10 @@
 }
 
 /* used to make the data table header sticky */
-.data-table-header {
+.data-table-header th{
+    background-color: rgb(100, 100, 100) !important;
+    color: white;
+    /* background-color: white; */
     position: sticky;
     top: 0;
 }

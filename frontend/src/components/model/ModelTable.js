@@ -31,6 +31,7 @@ const NewModelTable = (props) => {
             keyField={keyField}
             config={config}
             noResults='No Model Results'
+            inlineElements={props.inlineElements}
         />
 
 

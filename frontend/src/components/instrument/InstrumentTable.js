@@ -23,6 +23,7 @@ import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.
 
 // onCertificateRequested: handler for when a calibration certificate is requested
 // onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
+// inlineElements: elements to be inline withe pagination components on the top of the screen
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
@@ -36,6 +37,7 @@ const instrumentTable = (props) => {
             keyField={keyField}
             config={config}
             noResults='No Instrument Results'
+            inlineElements={props.inlineElements}
         />
 
 

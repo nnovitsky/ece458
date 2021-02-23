@@ -8,8 +8,8 @@
 
 /* formats the pagination show all/total results components */
 .pagination-top-row {
-    margin-block-start: 1em;
-    margin-block-end: 1em;
+    margin-block-start: .5em;
+    margin-block-end: .5em;
     float: right;
     width: 100%;
 }

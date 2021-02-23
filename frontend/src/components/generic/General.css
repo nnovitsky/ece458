@@ -71,13 +71,13 @@ be made to be more specific */
 
 /* class applied to the button rows on top of the model/instrument data tables */
 .table-button-row {
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
 }
 .table-button-row button{
-    margin: 10px;
-    display: inline-block;
-    flex: 1;
+    /* margin: 10px; */
+    /* display: inline-block; */
+    margin-left: 5px;
+    max-width: 150px;
 
 }
 

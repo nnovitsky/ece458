@@ -17,6 +17,7 @@ import Button from 'react-bootstrap/Button';
 // }
 
 // onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
+// inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 const keyField = 'pk';
 
 const NewModelTable = (props) => {
@@ -82,7 +83,7 @@ let makeConfig = (countStart, onMoreClicked) => {
             {
                 isKey: true,
                 dataField: 'pk',
-                text: 'More',
+                text: 'Details',
                 sort: false,
                 headerClasses: 'more-column',
                 title: (cell) => `Go to model detail view`,

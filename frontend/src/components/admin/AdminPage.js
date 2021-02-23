@@ -50,6 +50,11 @@ class AdminPage extends React.Component {
     }
 
     render() {
+
+        let buttonRow = (<div className="table-button-row">
+            <Button onClick={this.onAddUserClicked}>Add New User</Button>
+        </div>)
+
         return (
             <div>
                 <AddUserPopup
@@ -66,13 +71,11 @@ class AdminPage extends React.Component {
                         </div>
                         <div className="col-10">
                             <h2>Hello, Admin</h2>
-                            <div className="table-button-row col-3 alignLeft">
-                                <Button onClick={this.onAddUserClicked}>Add New User</Button>
-                            </div>
                             <UserTable
                                 data={this.state.tableData}
                                 onTableChange={this.onUserTableChange}
                                 pagination={{ page: this.state.user_pagination.currentPageNum, sizePerPage: (this.state.user_pagination.showAll ? this.state.user_pagination.resultCount : this.state.user_pagination.resultsPerPage), totalSize: this.state.user_pagination.resultCount }}
+                                inlineElements={buttonRow}
                             />
                         </div>
                     </div>

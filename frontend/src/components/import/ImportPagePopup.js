@@ -5,6 +5,13 @@ import GenericPopup from '../generic/GenericPopup';
 import myInstructions from './ImportInstructions.js';
 import './ImportPage.css';
 import { nameAndDownloadFile } from '../generic/Util';
+import ModelServices from "../../api/modelServices";
+import InstrumentServices from "../../api/instrumentServices";
+import Button from 'react-bootstrap/Button';
+
+
+const modelServices = new ModelServices();
+const instrumentServices = new InstrumentServices();
 
 //props
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
@@ -23,9 +30,9 @@ class  ImportPagePopup extends Component {
             body={body}
             headerText="How to Import"
             closeButtonText="Exit"
-            submitButtonText="Download Example CSV"
+            submitButtonText="Download Model Example CSV"
             onClose={this.props.onClose}
-            onSubmit={this.onCSVDOwnload}
+            onSubmit={this.onModelCSVDOwnload}
             size="lg"
         />
     )
@@ -39,8 +46,21 @@ class  ImportPagePopup extends Component {
             </Form>
         )
     }
-    async onCSVDOwnload() {
-        nameAndDownloadFile('https://people.sc.fsu.edu/~jburkardt/data/csv/addresses.csv', `example-csv`);
+
+    async onModelCSVDOwnload() {
+        modelServices.exportSampleModelCSV().then(result => {
+            if (result.success) {
+                nameAndDownloadFile(result.url, `example-model-export`);
+            }
+        })
+    }
+
+    async onInstrumentCSVDownload() {
+        instrumentServices.exportSampleInstrumentCSV().then(result => {
+            if (result.success) {
+                nameAndDownloadFile(result.url, `example-instrument-export`);
+            }
+        })
     }
 }
 

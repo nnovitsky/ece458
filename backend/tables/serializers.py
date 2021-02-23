@@ -1,29 +1,48 @@
 from rest_framework import serializers
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent
+from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 import datetime
 
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.SerializerMethodField('_get_groups')
+
+    def _get_groups(self, obj):
+        grps = [utype.name for utype in obj.usertype_set.all()]
+        return grps
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'is_staff')
+        fields = ('username', 'first_name', 'last_name', 'email', 'groups')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
 
-    token = serializers.SerializerMethodField()
+    token = serializers.SerializerMethodField('_get_token')
     password = serializers.CharField(write_only=True)
+    groups = serializers.SerializerMethodField('_add_to_groups')
 
-    def get_token(self, obj):
+    def _get_token(self, obj):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
         payload = jwt_payload_handler(obj)
         token = jwt_encode_handler(payload)
         return token
+
+    def _add_to_groups(self, obj):
+        if 'groups' not in self.initial_data: return []
+        for groupname in self.initial_data['groups']:
+            if UserType.contains_user(obj, groupname):
+                continue
+            try:
+                group = UserType.objects.get(name=groupname)
+            except UserType.DoesNotExist:
+                group = UserType(name=groupname)
+                group.save()
+            group.users.add(obj)
+        return self.initial_data['groups']
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -35,14 +54,15 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
+        fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email', 'groups')
 
 
 class UserEditSerializer(serializers.ModelSerializer):
 
-    token = serializers.SerializerMethodField()
+    token = serializers.SerializerMethodField('_get_token')
+    groups = serializers.SerializerMethodField('_add_to_groups')
 
-    def get_token(self, obj):
+    def _get_token(self, obj):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -50,9 +70,47 @@ class UserEditSerializer(serializers.ModelSerializer):
         token = jwt_encode_handler(payload)
         return token
 
+    def _add_to_groups(self, obj):
+        if 'groups' not in self.initial_data: return []
+        for groupname in self.initial_data['groups']:
+            if UserType.contains_user(obj, groupname):
+                continue
+            try:
+                group = UserType.objects.get(name=groupname)
+            except UserType.DoesNotExist:
+                group = UserType(name=groupname)
+                group.save()
+            group.users.add(obj)
+        return self.initial_data['groups']
+
     class Meta:
         model = User
-        fields = ('token', 'username', 'first_name', 'last_name', 'email')
+        fields = ('token', 'username', 'first_name', 'last_name', 'email', 'groups')
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField('_get_token')
+    password = serializers.CharField(write_only=True)
+    username = serializers.CharField(write_only=True)
+    user = serializers.SerializerMethodField('_get_user_data')
+
+    def _get_token(self, obj):
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(obj)
+        token = jwt_encode_handler(payload)
+        return token
+
+    def _get_user_data(self, obj):
+        serializer = UserSerializer(obj)
+        return serializer.data
+
+    class Meta:
+        model = User
+        fields = ('token', 'username', 'password', 'user')
+
+
 
 
 class ItemModelSerializer(serializers.ModelSerializer):

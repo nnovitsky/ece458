@@ -4,6 +4,29 @@ import json
 import urllib
 import base64
 import jwt
+from rest_framework.response import Response
+from rest_framework import status
+from backend.tables.models import *
+from backend.tables.serializers import UserTokenSerializer
+
+
+def login_oauth_user(id_token, user_details):
+    username = id_token['id_token']['sub']
+    oauth_pw = "oauth"
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User(username=username, first_name=user_details['given_name'], last_name=user_details['family_name'],
+                    email=user_details['email'])
+        user.set_password(oauth_pw)
+        user.save()
+        UserType.objects.get(name="oauth").users.add(user)
+    serializer = UserTokenSerializer(user, data={'username': username, 'password': oauth_pw})
+    if serializer.is_valid():
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 # this function is setting the authenticaton string we need to provide the oauth server
@@ -55,5 +78,13 @@ def get_token(code):
 # let's parse it into a dictonary so python can work with it
 def parse_id_token(response):
     id_token = jwt.decode(response["id_token"], verify=False)
-    print(id_token)
     return {"access_token": response["access_token"], "id_token": id_token}
+
+
+def get_user_details(auth_token):
+    url = "https://oauth.oit.duke.edu/oidc/userinfo"
+    headers = {
+        'authorization': "Bearer {}".format(auth_token['access_token'])
+    }
+    response = requests.request("GET", url, headers=headers)
+    return json.loads(response.text)

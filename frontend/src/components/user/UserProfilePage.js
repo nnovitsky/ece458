@@ -53,7 +53,7 @@ class UserPage extends React.Component {
                         </div>
                         <div className="col-10">
                             <h2>Hello, {`${this.state.userData.first_name} ${this.state.userData.last_name}`}</h2>
-                            <div className="table-button-row col-3 alignLeft">
+                            <div className="table-button-row col-3 alignButton">
                                 <Button onClick={this.onEditUserClicked}>Edit Information</Button>
                             </div>
                             <Row>

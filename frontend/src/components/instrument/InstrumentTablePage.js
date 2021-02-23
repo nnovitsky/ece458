@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import InstrumentServices from "../../api/instrumentServices";
-import CalStatusKey from './CalStatusKey';
 import FilterBar from "./InstrumentFilterBar";
-import NewInstrumentTable from "./NewInstrumentTable";
+import InstrumentTable from "./InstrumentTable";
 
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
@@ -13,7 +12,6 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../gene
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
-import Row from 'react-bootstrap/esm/Row';
 
 
 
@@ -67,7 +65,7 @@ class InstrumentTablePage extends Component {
     }
 
     render(
-        adminButtons = <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+        adminButtons = <Button onClick={this.onAddInstrumentClicked} style={{width: "75px", float:"left"}}>Create</Button>
     ) {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
@@ -75,6 +73,13 @@ class InstrumentTablePage extends Component {
                 <Redirect to={this.state.redirect} />
             )
         }
+        let buttonRow = (
+            <div className="table-button-row">
+                {this.props.is_admin ? adminButtons : null}
+                <Button onClick={this.onExportInstruments}>Export</Button>
+                {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
+            </div>
+        )
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
@@ -91,17 +96,14 @@ class InstrumentTablePage extends Component {
                         </div>
                         <div className="col-10">
                             <h1>Instrument Table</h1>
-                            <div className="table-button-row">
-                                {this.props.is_admin ? adminButtons : null}
-                                <Button onClick={this.onExportInstruments}>Export Instruments</Button>
-                                <Button onClick={this.onExportAll}>Export Instruments and Models</Button>
-                            </div>
-                            <NewInstrumentTable 
+                            
+                            <InstrumentTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
                                 onMoreClicked={this.onDetailViewRequested}
+                                inlineElements={buttonRow}
                             />
                             <hr />
                         </div>
@@ -188,6 +190,10 @@ class InstrumentTablePage extends Component {
                         this.updateTable();
                     })
                 }
+                return;
+            default:
+                console.log(`Instrument page does not support ${type} table function`);
+                return;
         }
     }
 
@@ -201,11 +207,11 @@ class InstrumentTablePage extends Component {
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
             .then((result) => {
-                    if (result.success) {
-                        let date = dateToString(new Date());
-                        nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
-                    }
-                })
+                if (result.success) {
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                }
+            })
     }
 
     async onFilteredSearch(newFilter) {

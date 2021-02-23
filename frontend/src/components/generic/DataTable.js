@@ -32,7 +32,9 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 // ]
 // there are examples throughout the repo, it's possible to format the displayed data, talk to carrie if running into trouble
 
-//noResults: test to be displayed when no data is present
+//noResults: text to be displayed when no data is present
+
+// inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
@@ -48,19 +50,25 @@ const NewModelTable = (props) => {
                         paginationProps,
                         paginationTableProps
                     },
-                        paginationRow = (props.pagination.totalSize === 0) ? null : (<div className="pagination-row" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
+                        totalAndShowAll = (props.pagination.totalSize === 0) ? null : (<div className="pagination-top-row" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
+                            {props.inlineElements}
                             <SizePerPageDropdownStandalone
-                                {...paginationProps}
-                            />
-                            <PaginationListStandalone
                                 {...paginationProps}
                             />
                             <PaginationTotalStandalone
                                 {...paginationProps}
                             />
+                            
+                        </div>),
+                        paginationPages = (props.pagination.totalSize === 0) ? null : (<div className="" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
+                        <PaginationListStandalone
+                            {...paginationProps}
+                        />
+
                         </div>)
                     ) => (
                         <div>
+                            {totalAndShowAll}
                             <BootstrapTable
                                 remote
                                 bootstrap4
@@ -75,7 +83,7 @@ const NewModelTable = (props) => {
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
                             />
-                            {paginationRow}
+                            {paginationPages}
                         </div>
 
                     )}
@@ -100,7 +108,7 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         totalSize: totalSize,
         paginationSize: 3,
         pageStartIndex: 1,
-        alwaysShowAllBtns: true, // Always show next and previous button
+        // alwaysShowAllBtns: true, // Always show next and previous button
         // withFirstAndLast: false, // Hide the going to First and Last page button
         // hideSizePerPage: true, // Hide the sizePerPage dropdown always
         hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
@@ -134,7 +142,7 @@ const sizePerPageRenderer = ({
     currSizePerPage,
     onSizePerPageChange
 }) => (
-    <div className="btn-group" role="group">
+    <div className="btn-group pagination-button-row" role="group">
         {
             options.map((option) => {
                 const isSelect = currSizePerPage === `${option.page}`;
@@ -157,4 +165,5 @@ export default NewModelTable;
 
 NewModelTable.defaultProps = {
     data: [],
+    inlineElements: <></>,
 }

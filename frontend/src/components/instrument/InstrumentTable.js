@@ -138,7 +138,7 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 title: (cell) => 'Download Instrument Calibration Certificate',
                 formatter: (cell, row) => {
                     return (
-                        <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" disabled={row.calibration_event.length === 0}>Download</Button>
+                        <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>Download</Button>
                     )
                 }
             }

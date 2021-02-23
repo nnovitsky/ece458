@@ -65,7 +65,7 @@ class InstrumentTablePage extends Component {
     }
 
     render(
-        adminButtons = <Button onClick={this.onAddInstrumentClicked}>Add Instrument</Button>
+        adminButtons = <Button onClick={this.onAddInstrumentClicked} style={{width: "75px", float:"left"}}>Add Instrument</Button>
     ) {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {

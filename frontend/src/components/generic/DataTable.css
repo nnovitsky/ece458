@@ -6,18 +6,26 @@
     text-overflow: ellipsis;
 }
 
-/* formats the pagination bar */
-.pagination-row {
+/* formats the pagination show all/total results components */
+.pagination-top-row {
     margin-block-start: 1em;
     margin-block-end: 1em;
+    float: right;
+    width: 100%;
 }
 
-.pagination-row span {
-    margin-left: 8px;
+.pagination-top-row span {
+    margin-right: 10px;
+    float: right;
 }
 
-.pagination-row button {
+.pagination-button-row {
+    float: right;
+}
+
+.pagination-button-row button {
     width: 110px;
+    float: right;
 }
 
 /* setting the pagination bar of button colors to match the color scheme of the site */

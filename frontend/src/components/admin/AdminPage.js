@@ -66,7 +66,7 @@ class AdminPage extends React.Component {
                         </div>
                         <div className="col-10">
                             <h2>Hello, Admin</h2>
-                            <div className="table-button-row col-3" style={{align: "left"}}>
+                            <div className="table-button-row col-3 alignLeft">
                                 <Button onClick={this.onAddUserClicked}>Add New User</Button>
                             </div>
                             <UserTable

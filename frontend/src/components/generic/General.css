@@ -135,11 +135,13 @@ form.popup input[type=text] {
     display: flex;
     width: 100%;
     flex-direction: row;
+    justify-content: center;
 }
 
 .popup-button-row button {
     margin: 5px;
     padding: 15px;
+    width: 100%;
 }
 
 /* Calibration status icons on the instrument table oage are formatted using this tag */

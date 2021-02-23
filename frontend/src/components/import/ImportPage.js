@@ -69,7 +69,7 @@ class ImportPage extends Component {
                                 <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
                             </div>
                         </form>
-                        <div className="popup-button-row text-center lowerMargin">
+                        <div className="popup-button-row lowerMargin">
                             <Button onClick={this.importModelClicked}>Import Model</Button>
                             <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
                         </div>

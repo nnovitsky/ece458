@@ -1,0 +1,3 @@
+Vendor,Model-Number,Short-Description,Comment,Calibration-Frequency
+VendorA,Model123,Multimeter with temp probes,An example of a calibratable model,90
+VendorB,Model456,External Battery,An example of a noncalibratable model,N/A

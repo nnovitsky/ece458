@@ -1,12 +1,11 @@
 input[type=file]{
     padding: 20px;
     padding-bottom: 50px;
-    margin-bottom: 35px;
+    margin-bottom: 20px;
 }
 
-button.import{
-    margin-bottom: 25px;
-    width: 100%;
+.lowerMargin{
+    margin-bottom: 15px;
 }
 
 .instructions{
@@ -19,7 +18,7 @@ button.import{
 }
 
 .summary{
-    height: 200px;
+    height: 240px;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 20px;

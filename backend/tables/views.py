@@ -13,6 +13,21 @@ from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
+from backend.tables.oauth import print_auth_code_request, get_token, parse_id_token
+
+
+def get_url(request):
+    data = print_auth_code_request()
+    print(data)
+    return Response(data, status=status.HTTP_200_OK)
+
+
+#@api_view(['GET'])
+def consume_oauth(request):
+    code = request.GET['code']
+    auth_token = get_token(code)
+    id_token = parse_id_token(auth_token)
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

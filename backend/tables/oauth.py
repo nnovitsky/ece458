@@ -29,13 +29,15 @@ def print_auth_code_request():
         urllib.parse.quote(os.environ["OAUTH_REDIRECT_URI"])
     )
 
-    print("Copy and paste this url into your web browser.")
-    cprint(request_url, "cyan")
-    text = colored('"code"', 'green')
-    code = colored('m781z2', 'green')
+    return request_url
 
-    print("Once you are redirected, copy the value of the {} parameter in the url.".format(text))
-    print("For example: https://www.google.com/?code={}".format(code))
+    # print("Copy and paste this url into your web browser.")
+    # cprint(request_url, "cyan")
+    # text = colored('"code"', 'green')
+    # code = colored('m781z2', 'green')
+
+    # print("Once you are redirected, copy the value of the {} parameter in the url.".format(text))
+    # print("For example: https://www.google.com/?code={}".format(code))
 
 
 # Take the oauth code the user provides after login, verify it with the OAuth server
@@ -58,8 +60,6 @@ def get_token(code):
     }
 
     response = requests.request("POST", url, data=payload, headers=headers)
-    print("Here is your auth token: ")
-    print(json.loads(response.text))
     return json.loads(response.text)
 
 
@@ -89,4 +89,4 @@ def main():
     parse_id_token(response_token)
 
 
-main()
+# main()

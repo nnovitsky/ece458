@@ -39,8 +39,6 @@
 .data-table-header {
     position: sticky;
     top: 0;
-    background-color: rgb(241, 243, 241);
-    
 }
 
 /* apply to any buttons in the table */

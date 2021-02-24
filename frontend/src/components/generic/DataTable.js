@@ -50,20 +50,26 @@ const NewModelTable = (props) => {
                         paginationProps,
                         paginationTableProps
                     },
-                        totalAndShowAll = (props.pagination.totalSize === 0) ? null : (<div className="pagination-top-row" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
+                        totalAndShowAll = (
+                        <div className="pagination-top-row">
                             {props.inlineElements}
-                            <SizePerPageDropdownStandalone
-                                {...paginationProps}
-                            />
-                            <PaginationTotalStandalone
-                                {...paginationProps}
-                            />
+                                {(props.pagination.totalSize === 0) ? null : (
+                                <>
+                                    <SizePerPageDropdownStandalone
+                                        {...paginationProps}
+
+                                    />
+                                    <PaginationTotalStandalone
+                                        {...paginationProps}
+                                    />
+                                </>)}
                             
+
                         </div>),
                         paginationPages = (props.pagination.totalSize === 0) ? null : (<div className="" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
-                        <PaginationListStandalone
-                            {...paginationProps}
-                        />
+                            <PaginationListStandalone
+                                {...paginationProps}
+                            />
 
                         </div>)
                     ) => (

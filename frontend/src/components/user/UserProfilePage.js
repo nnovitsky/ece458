@@ -53,7 +53,7 @@ class UserPage extends React.Component {
                         </div>
                         <div className="col-10">
                             <h2>Hello, {`${this.state.userData.first_name} ${this.state.userData.last_name}`}</h2>
-                            <div className="table-button-row col-3 alignLeft">
+                            <div className="table-button-row col-3 alignButton">
                                 <Button onClick={this.onEditUserClicked}>Edit Information</Button>
                             </div>
                             <Row>
@@ -157,7 +157,7 @@ class UserPage extends React.Component {
             <Table bordered hover>
                 <tbody>
                     <tr>
-                        <td><strong>User Name</strong></td>
+                        <td><strong>Username</strong></td>
                         <td>{userInfo.username}</td>
                     </tr>
                     <tr>

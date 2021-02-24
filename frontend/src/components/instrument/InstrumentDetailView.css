@@ -1,0 +1,11 @@
+
+.cal-history-table {
+    margin: 5px;
+}
+
+.instrument-detail-col {
+    min-width: 250px;
+    max-width: 25%;
+    margin: 10px;
+    margin-left: 20px;
+}

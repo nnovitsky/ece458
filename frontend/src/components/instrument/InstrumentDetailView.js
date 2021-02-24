@@ -84,22 +84,27 @@ class InstrumentDetailView extends Component {
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
-        let calibrationCol = (
-            <Col xs={7}>
-                <CalHistoryTable
-                    data={this.state.instrument_info.calibration_history}
-                    onTableChange={this.onCalHistoryTableChange}
-                    pagination={
-                        {
-                            page: this.state.calibration_pagination.currentPageNum,
-                            sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
-                            totalSize: this.state.calibration_pagination.resultCount
-                        }}
-                />
-            </Col>
+        let calButtonRow = (
+            <div className="table-button-row">
+                <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
+            </div>
+        )
+        let calTable = (
+            <CalHistoryTable
+                data={this.state.instrument_info.calibration_history}
+                onTableChange={this.onCalHistoryTableChange}
+                pagination={
+                    {
+                        page: this.state.calibration_pagination.currentPageNum,
+                        sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
+                        totalSize: this.state.calibration_pagination.resultCount
+                    }}
+                inlineElements={calButtonRow}
+            />
         )
 
-        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationCol : null;
+        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calTable : null;
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }
@@ -113,17 +118,15 @@ class InstrumentDetailView extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
-                            <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
-                            <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                         </div>
                         <div className="col-10">
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
                             <Row>
                                 <Col>{this.makeDetailsTable()}</Col>
-                                {displayedCalibrationData}
-                                
                             </Row>
+                            {displayedCalibrationData}
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -193,48 +196,27 @@ class InstrumentDetailView extends Component {
     makeDetailsTable() {
         let detailData = this.state.instrument_info;
 
-        let calibrationData = (
-            <>
-                <tr>
-                    <td><strong>Next Calibration</strong></td>
-                    <td>{this.state.instrument_info.calibration_expiration}</td>
-                </tr>
-                <tr>
-                    <td><strong>Calibration Frequency</strong></td>
-                    <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
-                </tr>
-            </>
-        )
-
-        let noCalibrationData = (
-            <tr>
-                <td><strong>Calibration</strong></td>
-                <td>This model isn't calibratable</td>
-            </tr>
-        )
-
-        let calibrationIncluded = (this.state.instrument_info.calibration_frequency !== 0) ? calibrationData : noCalibrationData;
+        let hasCalibration = (this.state.instrument_info.calibration_frequency !== 0);
 
         return (
             <Table bordered>
-                <tr className="text-center">
-                    <th colSpan={2}>Instrument Information</th>
-                </tr>
-                <tbody>
+                <thead>
                     <tr>
                         <td><strong>Serial Number</strong></td>
-                        <td>{detailData.serial_number}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Model</strong></td>
-                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
-                    </tr>
-                    <tr>
+                        <td><strong>Model Number</strong></td>
+                        <td hidden={!hasCalibration}><strong>Calibration Expiration</strong></td>
+                        <td hidden={!hasCalibration}><strong>Calibration Frequency</strong></td>
                         <td><strong>Comment</strong></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{detailData.serial_number}</td>
+                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                        <td hidden={!hasCalibration}>{this.state.instrument_info.calibration_expiration}</td>
+                        <td hidden={!hasCalibration}>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
                         <td>{detailData.comment}</td>
                     </tr>
-                    {calibrationIncluded}
-
                 </tbody>
             </Table>
         )

@@ -157,7 +157,7 @@ class UserPage extends React.Component {
             <Table bordered hover>
                 <tbody>
                     <tr>
-                        <td><strong>User Name</strong></td>
+                        <td><strong>Username</strong></td>
                         <td>{userInfo.username}</td>
                     </tr>
                     <tr>

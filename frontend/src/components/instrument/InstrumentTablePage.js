@@ -52,6 +52,7 @@ class InstrumentTablePage extends Component {
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
@@ -92,6 +93,8 @@ class InstrumentTablePage extends Component {
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
+                                currentFilter={this.state.instrumentSearchParams.filters}
+                                onFilterChange={this.onFilterChange}
                             />
                         </div>
                         <div className="col-10">
@@ -212,6 +215,15 @@ class InstrumentTablePage extends Component {
                     nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
                 }
             })
+    }
+
+    onFilterChange(newFilter) {
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                filters: newFilter,
+            }
+        })
     }
 
     async onFilteredSearch(newFilter) {

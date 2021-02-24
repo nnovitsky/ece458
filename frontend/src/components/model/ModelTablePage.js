@@ -49,6 +49,7 @@ class ModelTablePage extends Component {
         //binding
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
@@ -88,6 +89,8 @@ class ModelTablePage extends Component {
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
+                                onFilterChange={this.onFilterChange}
+                                currentFilter={this.state.modelSearchParams.filters}
                             />
 
                         </div>
@@ -164,6 +167,15 @@ class ModelTablePage extends Component {
     onDetailClicked(e) {
         this.setState({
             redirect: `/models/${e.target.value}`
+        })
+    }
+
+    onFilterChange(newFilter) {
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: newFilter,
+            }
         })
     }
 

@@ -195,28 +195,39 @@ class InstrumentDetailView extends Component {
 
     makeDetailsTable() {
         let detailData = this.state.instrument_info;
-
-        let hasCalibration = (this.state.instrument_info.calibration_frequency !== 0);
+        let hasHistory = this.state.instrument_info.calibration_frequency !== 0;
 
         return (
             <Table bordered>
-                <thead>
-                    <tr>
-                        <td><strong>Serial Number</strong></td>
-                        <td><strong>Model Number</strong></td>
-                        <td hidden={!hasCalibration}><strong>Calibration Expiration</strong></td>
-                        <td hidden={!hasCalibration}><strong>Calibration Frequency</strong></td>
-                        <td><strong>Comment</strong></td>
-                    </tr>
-                </thead>
+                <tr className="text-center">
+                    <th colSpan={2}>Instrument Information</th>
+                </tr>
                 <tbody>
                     <tr>
+                        <td><strong>Serial Number</strong></td>
                         <td>{detailData.serial_number}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Model</strong></td>
                         <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
-                        <td hidden={!hasCalibration}>{this.state.instrument_info.calibration_expiration}</td>
-                        <td hidden={!hasCalibration}>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
+                    </tr>
+                    <tr hidden={!hasHistory}>
+                        <td><strong>Next Calibration</strong></td>
+                        <td>{this.state.instrument_info.calibration_expiration}</td>
+                    </tr>
+                    <tr hidden={!hasHistory}> 
+                        <td><strong>Calibration Frequency</strong></td>
+                        <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
+                    </tr>
+                    <tr hidden={hasHistory}>
+                        <td><strong>Calibration</strong></td>
+                        <td>This model isn't calibratable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comment</strong></td>
                         <td>{detailData.comment}</td>
                     </tr>
+
                 </tbody>
             </Table>
         )

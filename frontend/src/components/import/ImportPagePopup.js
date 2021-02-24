@@ -1,4 +1,4 @@
-import React, { Component }  from 'react';
+import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 
 import GenericPopup from '../generic/GenericPopup';
@@ -17,29 +17,31 @@ const instrumentServices = new InstrumentServices();
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 const importInstructions = myInstructions;
 
-class  ImportPagePopup extends Component {
-    constructor(props)
-    {
+class ImportPagePopup extends Component {
+    constructor(props) {
         super(props);
     }
-    render() { 
+    render() {
         let body = this.makeBody();
         return (
-        <GenericPopup 
-            show={this.props.isShown}
-            body={body}
-            headerText="How to Import"
-            closeButtonText="Exit"
-            submitButtonText="Download Model Example CSV"
-            onClose={this.props.onClose}
-            onSubmit={this.onModelCSVDOwnload}
-            size="lg"
-        />
-    )
+            <GenericPopup
+                show={this.props.isShown}
+                body={body}
+                headerText="How to Import"
+                closeButtonText="Exit"
+                onClose={this.props.onClose}
+                isSubmitButtonShown={false}
+                size="lg"
+            />
+        )
     }
     makeBody = () => {
         return (
             <Form className="popup">
+                <div className="popup-button-row lowerMargin">
+                    <Button onClick={this.onModelCSVDOwnload}>Download Sample Model CSV</Button>
+                    <Button onClick={this.onInstrumentCSVDownload}>Download Sample Instrument CSV</Button>
+                </div>
                 <div className="popupScrolling overflow-auto">
                     {importInstructions}
                 </div>

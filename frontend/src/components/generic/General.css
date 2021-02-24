@@ -77,7 +77,8 @@ be made to be more specific */
     /* margin: 10px; */
     /* display: inline-block; */
     margin-left: 5px;
-    max-width: 150px;
+    /* max-width: 150px; */
+    height: min-content;
 
 }
 

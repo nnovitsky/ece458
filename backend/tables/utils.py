@@ -48,8 +48,9 @@ def validate_user(request, create=False):
     return None
 
 
-def list_override(list_view, request, name):
+def list_override(list_view, request):
     queryset = list_view.filter_queryset(list_view.get_queryset())
+    print(len(queryset))
     if "sort_by" in request.GET:
         try:
             queryset = queryset.order_by(request.GET["sort_by"])

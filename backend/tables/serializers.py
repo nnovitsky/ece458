@@ -155,6 +155,34 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
         fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration')
 
 
+class InstrumentSearchSerializer(serializers.ModelSerializer):
+    item_model = serializers.SerializerMethodField()
+    calibration_event = serializers.SerializerMethodField()
+    calibration_expiration = serializers.SerializerMethodField()
+
+    def get_item_model(self, obj):
+        return {
+            "vendor": obj.vendor,
+            "model_number": obj.model_number,
+            "description": obj.description
+        }
+
+    def get_calibration_event(self, obj):
+        if obj.cal_freq == 0: return []
+        elif not obj.most_recent_calibration: return []
+        return [{"date": obj.most_recent_calibration}]
+
+    def get_calibration_expiration(self, obj):
+        if obj.cal_freq == 0: return "Uncalibratable."
+        elif not obj.most_recent_calibration: return "Instrument not calibrated."
+        return obj.calibration_expiration_date
+
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'item_model', 'comment', 'calibration_event', 'calibration_expiration')
+
+
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):
     # use when viewing detail page for instrument
     item_model = ItemModelSerializer()

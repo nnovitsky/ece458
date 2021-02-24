@@ -48,7 +48,7 @@ class ItemModelList(ListAPIView):
     filter_class = ItemModelFilter
 
     def list(self, request, *args, **kwargs):
-        return list_override(self, request, "model_search")
+        return list_override(self, request)
 
 
 class InstrumentList(ListAPIView):
@@ -59,6 +59,9 @@ class InstrumentList(ListAPIView):
         model_number_lower=Func(F('item_model__model_number'), function='LOWER')).annotate(
         description_lower=Func(F('item_model__description'), function='LOWER')).annotate(
         serial_number_lower=Func(F('serial_number'), function='LOWER'))
+    queryset = queryset.annotate(vendor=F('item_model__vendor')).annotate(model_number=F('item_model__model_number')).annotate(
+        description=F('item_model__description')
+    )
 
     # uncomment the multiplication if using sqlite bc sqlite DurationField defaults to milliseconds
     duration_expression = F('item_model__calibration_frequency') #* 86400000000
@@ -74,12 +77,12 @@ class InstrumentList(ListAPIView):
                                          default=min_date,
                                          output_field=DateField(), ))
 
-    serializer_class = ListInstrumentReadSerializer
+    serializer_class = InstrumentSearchSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = InstrumentFilter
 
     def list(self, request, *args, **kwargs):
-        return list_override(self, request, "instrument_search")
+        return list_override(self, request)
 
 
 class CalibrationEventList(ListAPIView):

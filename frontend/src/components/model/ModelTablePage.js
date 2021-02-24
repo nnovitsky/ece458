@@ -6,6 +6,8 @@ import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import GenericLoader from '../generic/GenericLoader.js';
+
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -20,6 +22,7 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
+            isLoading: false,
             pagination: {
                 resultCount: 0,
                 numPages: 1,
@@ -81,6 +84,7 @@ class ModelTablePage extends Component {
         </div>)
         return (
             <div>
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addModelPopup}
                 <div className="background">
                     <div className="row mainContent">
@@ -268,9 +272,16 @@ class ModelTablePage extends Component {
     }
 
     async updateModelTable() {
+        this.setState({
+            isLoading: true,
+        })
         modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
+            this.setState({
+                isLoading: false,
+            })
             if (result.success) {
                 this.updateData(result.data)
+
             } else {
                 console.log("error loading model table data")
             }

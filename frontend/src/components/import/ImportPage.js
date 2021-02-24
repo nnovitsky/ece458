@@ -8,6 +8,7 @@ import ImportPagePopup from './ImportPagePopup';
 import ModelTable from "./ImportModelTable.js";
 import InstrumentTable from "./ImportInstrumentTable.js";
 import Button from 'react-bootstrap/Button';
+import GenericLoader from '../generic/GenericLoader.js';
 
 
 const modelServices = new ModelServices();
@@ -34,6 +35,7 @@ class ImportPage extends Component {
             },
             showModelTable: false,
             showInstrumentTable: false,
+            isLoading: false,
         }
         this.onShowInstructionsClosed = this.onShowInstructionsClosed.bind(this);
 
@@ -58,7 +60,7 @@ class ImportPage extends Component {
                     isShown={this.state.showInstructionsPopup.isShown}
                     onClose={this.onShowInstructionsClosed}
                 />
-
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
             <div className="background">
                 <div className="row mainContent">
                     <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
@@ -137,7 +139,8 @@ class ImportPage extends Component {
     importModelClicked = (e) => {
         if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
             this.setState({
-                status_message: 'Uploding Model File...'
+                status_message: 'Uploding Model File...',
+                isLoading: true
             })
             const formData = new FormData();
                 formData.append('FILE', this.state.selectedFile);
@@ -151,12 +154,14 @@ class ImportPage extends Component {
                             tableData: res.data.upload_list,
                             showModelTable: true,
                             showInstrumentTable: false,
+                            isLoading: false
                         })
                     }
                     else {
                         this.setState({
                             status_message: "Upload Errors",
-                            records_count: res.errors["Upload error"][0]
+                            records_count: res.errors["Upload error"][0],
+                            isLoading: false
                         })
                     }
 
@@ -173,7 +178,8 @@ class ImportPage extends Component {
     importInstrumentClicked = (e) => {
         if (this.state.selectedFile !== null && typeof (this.state.selectedFile) !== 'undefined') {
             this.setState({
-                status_message: 'Uploding Instrument File...'
+                status_message: 'Uploding Instrument File...',
+                isLoading: true,
             })
             const formData = new FormData();
                 formData.append('FILE', this.state.selectedFile);
@@ -187,12 +193,14 @@ class ImportPage extends Component {
                             tableData: res.data.upload_list,
                             showModelTable: false,
                             showInstrumentTable: true,
+                            isLoading: false,
                         })
                     }
                     else {
                         this.setState({
                             status_message: "Upload Errors",
-                            records_count: res.errors["Upload error"][0]
+                            records_count: res.errors["Upload error"][0],
+                            isLoading: false,
                         })
                     }
 

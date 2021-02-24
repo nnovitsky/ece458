@@ -12,6 +12,7 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../gene
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import GenericLoader from '../generic/GenericLoader.js';
 
 
 
@@ -45,6 +46,7 @@ class InstrumentTablePage extends Component {
                 isShown: false,
                 errors: []
             },
+            isLoading: false,
         }
 
         //need to bind any event callbacks
@@ -83,6 +85,7 @@ class InstrumentTablePage extends Component {
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
@@ -129,6 +132,9 @@ class InstrumentTablePage extends Component {
 
     async updateTable() {
         let params = this.state.instrumentSearchParams;
+        this.setState({
+            isLoading: true,
+        })
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
@@ -136,7 +142,8 @@ class InstrumentTablePage extends Component {
                     pagination: {
                         ...this.state.pagination,
                         resultCount: result.data.count,
-                    }
+                    },
+                    isLoading: false
                 })
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
@@ -149,6 +156,9 @@ class InstrumentTablePage extends Component {
                     })
                 }
             } else {
+                this.setState({
+                    isLoading: false,
+                })
                 console.log("error")
             }
         })

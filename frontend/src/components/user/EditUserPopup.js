@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 
 import GenericPopup from '../generic/GenericPopup';
+import { useState } from 'react';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -9,82 +10,121 @@ import GenericPopup from '../generic/GenericPopup';
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
 //'errors' an array of formatted errors to display
 
-let newUser = {
-    username: '',
-    password: '',
-    first_name: '',
-    last_name: '',
-    pk: null
-}
 
 const username = "username";
 const password = "password";
+const password_confirm = "password_confirm";
 const first_name = "first_name";
 const last_name = "last_name";
 
-const editUserPopup = (props) => {
-    let body = makeBody();
-    return (
-        <GenericPopup
-            show={props.isShown}
-            body={body}
-            headerText="Edit User"
-            closeButtonText="Cancel"
-            submitButtonText="Apply"
-            onClose={props.onClose}
-            onSubmit={(e) => onSubmit(e, props.onSubmit)}
-            submitButtonVariant="primary"
-            errors={props.errors}
-        />
-    )
-}
+class EditUserPopup extends Component {
 
-const makeBody = () => {
-    return (
-        <Form className="popup">
-            <Form.Label>Username</Form.Label>
-            <Form.Control required type="text" name={username} onChange={onTextInput} placeholder="Enter Username" />
+    constructor(props) {
+        super(props);
 
-            <Form.Label>Password</Form.Label>
-            <Form.Control required type="password" name={password} onChange={onTextInput} placeholder="Enter Password" />
+        this.state = {
+            newUser: {
+                username: '',
+                password: '',
+                password_confirm: '',
+                first_name: '',
+                last_name: '',
+            }
+        }
 
-            <Form.Label>First Name</Form.Label>
-            <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter Your First Name" />
+        this.onSubmit = this.onSubmit.bind(this);
+        this.onTextInput = this.onTextInput.bind(this);
+    }
+    render() {
+        let body = this.makeBody();
+        return (
+            <GenericPopup
+                show={this.props.isShown}
+                body={body}
+                headerText="Edit User"
+                closeButtonText="Cancel"
+                submitButtonText="Apply"
+                onClose={this.props.onClose}
+                onSubmit={this.onSubmit}
+                submitButtonVariant="primary"
+                errors={this.props.errors}
+            />
+        );
+    }
+    makeBody() {
+        return (
+            <Form className="popup">
+                <h5>Please enter all fields</h5>
+                <Form.Label>Username</Form.Label>
+                <Form.Control required type="text" name={username} onChange={this.onTextInput} placeholder="Enter Username" />
 
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control required type="text" name={last_name} onChange={onTextInput} placeholder="Enter Your Last Name" />
-        </Form>
-    )
-}
+                <Form.Label>Password</Form.Label>
+                <Form.Control required type="password" name={password} onChange={this.onTextInput} placeholder="Enter Password" />
 
-const onTextInput = (e) => {
-    let val = e.target.value;
-    switch (e.target.name) {
-        case username:
-            newUser.username = val
-            return;
-        case password:
-            newUser.password = val;
-            return;
-        case first_name:
-            newUser.first_name = val;
-            return;
-        case last_name:
-            newUser.last_name = val;
-            return
-        default:
-            return;
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control required type="password" name={password_confirm} onChange={this.onTextInput} placeholder="Re-enter Password" />
+
+                <Form.Label>First Name</Form.Label>
+                <Form.Control required type="text" name={first_name} onChange={this.onTextInput} placeholder="Enter Your First Name" />
+
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control required type="text" name={last_name} onChange={this.onTextInput} placeholder="Enter Your Last Name" />
+            </Form>
+        )
+    }
+
+    onTextInput(e) {
+        let val = e.target.value;
+        switch (e.target.name) {
+            case username:
+                this.setState({
+                    newUser: {
+                        ...this.state.newUser,
+                        username: val,
+                    }
+                })
+                return;
+            case password:
+                this.setState({
+                    newUser: {
+                        ...this.state.newUser,
+                        password: val,
+                    }
+                })
+                return;
+            case password_confirm:
+                this.setState({
+                    newUser: {
+                        ...this.state.newUser,
+                        password_confirm: val,
+                    }
+                })
+                return;
+            case first_name:
+                this.setState({
+                    newUser: {
+                        ...this.state.newUser,
+                        first_name: val,
+                    }
+                })
+                return;
+            case last_name:
+                this.setState({
+                    newUser: {
+                        ...this.state.newUser,
+                        last_name: val,
+                    }
+                })
+                return
+            default:
+                return;
+        }
+    }
+
+    onSubmit() {
+        this.props.onSubmit(this.state.newUser);
+
     }
 }
 
-const onSubmit = (e, parentHandler) => {
-    if (isValid) {
-        parentHandler(newUser);
-    }
-}
-
-const isValid = () => {
-    return true;
-}
-
-export default editUserPopup;
+export default EditUserPopup;

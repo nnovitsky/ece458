@@ -1,14 +1,4 @@
-button{
-    margin: 10px;
+.alignButton{
+    margin-left: -22px;
     margin-bottom: 10px;
-    padding: 20px;
-    width: 90%;
-    border-radius: 5px;
-    background-color: white;
-    border: 2px solid rgb(214, 214, 214);
-}
-
-button:hover{
-    color: white;
-    background-color: rgb(147, 196, 127);
 }

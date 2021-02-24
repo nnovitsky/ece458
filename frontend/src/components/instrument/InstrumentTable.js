@@ -1,114 +1,53 @@
 import React from 'react';
-import Table from 'react-bootstrap/Table';
+import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
+import '../generic/ColumnSizeFormatting.css';
 
 import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
 import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
 import GoodIcon from "../../assets/CalibrationIcons/Good.png";
 import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
 
-const keys = ["vendor", "model number", "serial", "short description", "most recent callibration date"];
-const headerTextArr = ["Vendor", "Model", "Serial", "Description", "Latest Calibration", "Calibration Expiration", "Status", "More", "Calibration Certificate"];
-let lastSortedId = null;
+// props
+// data: json data object to be displayed
 
-//Props
-let data;   //prop array of data to display
-let countStart; //prop int of the starting number to list for the first data point
-//'onDetailRequested': function passed in prop that will be called on a more details button click
-//'onCertificateRequested': function passed in prop that will be called on certificate button clicked
-//'sortData' handler to call when a header is clicked for sorting
+// onTableChange: event handler that will be passed information about sorting and pagination
+// the handler function should accept inputs like: onTableChange(type, { sortField, sortOrder, page, sizePerPage })
+// sortfield/sortOrder can be omit if none of the fields are sortable
+
+// pagination: {
+//     page: 1,    //current page
+//     sizePerPage: 10, //results per page
+//     totalSize: 12   //total num results
+// }
+
+// onCertificateRequested: handler for when a calibration certificate is requested
+// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
+// inlineElements: elements to be inline withe pagination components on the top of the screen
+const keyField = 'pk';
 
 const instrumentTable = (props) => {
-    data = props.data;
-    countStart = props.countStart;
-    let header = createHeader(props.sortData);
-    let body = createBody(props.onDetailRequested, props.onCertificateRequested);
-
+    let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
+    let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
     return (
-        <div className="data-table">
-            <Table striped bordered size="sm">
-                <thead>
-                    {header}
-                </thead>
-                {body}
+        <DataTable
+            data={props.data}
+            onTableChange={props.onTableChange}
+            pagination={props.pagination}
+            keyField={keyField}
+            config={config}
+            noResults='No Instrument Results'
+            inlineElements={props.inlineElements}
+        />
 
-            </Table>
-        </div>
-    )
 
-}
-
-const onSortCalled = (e, parentHandler, h) => {
-    if (lastSortedId !== null) {
-        document.getElementById(lastSortedId).style.backgroundColor = "white";
-    }
-    document.getElementById(e.target.id).style.backgroundColor = "rgb(147, 196, 127)";
-    lastSortedId = e.target.id;
-    parentHandler(h);
-}
-
-const createHeader = (onSortData) => {
-    let header = [];
-    header.push(
-        <th>#</th>
-    )
-    headerTextArr.forEach(h => {
-        header.push(
-            <th onClick={(e) => onSortCalled(e, onSortData, h)} id={h}>{h}</th>
-        )
-    })
-    return (
-        <tr>
-            {header}
-        </tr>
     )
 }
 
-const createBody = (onDetailRequested, onCertificateRequested) => {
-    let rows = [];
-    let count = countStart + 1;
-    data.forEach(currentData => {
-        let rowElements = []
-        rowElements.push(
-            <td>{count}</td>
-        )
-        count++;
-        rowElements.push(<td>{currentData.item_model.vendor}</td>);
-        rowElements.push(<td>{currentData.item_model.model_number}</td>)
-        rowElements.push(<td>{currentData.serial_number}</td>)
-        rowElements.push(<td>{currentData.item_model.description}</td>)
-        rowElements.push(<td>{getLatestCalibration(currentData)}</td>)
-
-        rowElements.push(
-            <td>{currentData.calibration_expiration}</td>
-        )
-        rowElements.push(
-            <td>{getCalStatus(currentData)}</td>
-        )
-        rowElements.push(
-            <td><Button value={currentData["pk"]} onClick={onDetailRequested}>More</Button></td>
-        )
-        rowElements.push(
-            <td><Button value={currentData["pk"]} onClick={onCertificateRequested} disabled={currentData.calibration_event.length === 0}>Download</Button></td>
-        )
-        let currentRow = (
-            <tr>
-                {rowElements}
-            </tr>
-        )
-        rows.push(currentRow);
-    })
-    return (
-        <tbody>
-            {rows}
-        </tbody>
-    );
-}
-
-const getLatestCalibration = (currentData) => {
-    if (currentData.item_model.calibration_frequency > 0) {
-        if (currentData.calibration_event.length > 0) {
-            return currentData.calibration_event[0].date;
+const getLatestCalText = (data) => {
+    if (data.item_model.calibration_frequency > 0) {
+        if (data.calibration_event.length > 0) {
+            return data.calibration_event[0].date;
         } else {
             return "No History";
         }
@@ -117,8 +56,12 @@ const getLatestCalibration = (currentData) => {
     }
 }
 
-const getCalStatus = (currentData) => {
-    let icon;
+
+const getCalStatusIcon = (currentData) => {
+    let result ={
+        icon: '',
+        text: '',
+    }
     if (currentData.item_model.calibration_frequency > 0) {
         let expireDateString = currentData.calibration_expiration;
         if (currentData.calibration_event.length > 0) {
@@ -127,24 +70,140 @@ const getCalStatus = (currentData) => {
             let timeDifference = expireDate.getTime() - lasCalDate.getTime();
             let daysDifference = timeDifference / (1000 * 3600 * 24);
             if (daysDifference > 30) {
-                icon = GoodIcon;
+                result.icon = GoodIcon;
+                result.text = `Good: expires in ${daysDifference} days`;
             }
             else if (daysDifference <= 30) {
-                icon = WarningIcon;
+                result.icon = WarningIcon;
+                result.text = `Warning: expires in ${daysDifference} days`;
             } else {
-                icon = ExpiredIcon;
+                result.icon = ExpiredIcon;
+                result.text = `Warning: this calibration is expired`;
             }
         } else {
-            icon = ExpiredIcon;
+            result.icon = ExpiredIcon;
+            result.text = `Warning: this calibration is expired`;
         }
     } else {
-        icon = NonCalibratableIcon;
+        result.icon = NonCalibratableIcon;
+        result.text = `Instrument is not calibratable`;
     }
-    return (<img src={icon} className='calibration-status-icon' />)
+    
+    return (result)
 }
 
-instrumentTable.defaultProps = {
-    data: []
-}
+let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
+    return (
+        [
+            // this is a column for a number for the table
+            {
+                dataField: '#', //json data key for this column
+                text: '#',      //displayed column header text
+                formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
+                    let rowNumber = (countStart + rowIndex);
+                    return <span>{rowNumber}</span>;
+                },
+                formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
+                headerClasses: 'num-column'
+            },
+            {
+                dataField: 'item_model.vendor',
+                text: 'Vendor',
+                sort: true,
+                title: (cell) => `Vendor: ${cell}`,
+                headerClasses: 'vendor-column'
+            },
+            {
+                dataField: 'item_model.model_number',
+                text: 'Model #',
+                sort: true,
+                title: (cell) => `Model Number: ${cell}`,
+                headerClasses: 'model-number-column'
+            },
+            {
+                dataField: 'serial_number',
+                text: 'Serial #',
+                sort: true,
+                title: (cell) => `Serial Number: ${cell}`,
+                headerClasses: 'serial-number-column',
+            },
+            {
+                dataField: 'item_model.description',
+                text: 'Description',
+                sort: true,
+                title: (cell) => `Model Description: ${cell}`,
+                headerClasses: 'description-column',
+            },
+            {
+                dataField: 'latest_calibration',
+                text: 'Latest Calibration',
+                sort: true,
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    let display = getLatestCalText(row);
+                    return <span>{display}</span>;
+                },
+                title: (cell, row) => `Latest Calibration: ${getLatestCalText(row)}`,
+                headerClasses: 'latest-calibration-column',
+            },
+            {
+                dataField: 'calibration_expiration',
+                text: 'Calibration Expiration',
+                sort: true,
+                title: (cell) => `Calibration Expiration: ${cell}`,
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    let display = cell;
+                    
+                    if(cell === 'Instrument not calibrated.') {
+                        display = 'Never Calibrated';
+                    }
+                    
+                    return <span>{display}</span>;
+                },
+                headerClasses: 'calibration-expiration-column',
+            },
+            {
+                dataField: 'icon',
+                text: 'Status',
+                sort: false,
+                title: (cell, row) => {return(getCalStatusIcon(row).text)},
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    let result = getCalStatusIcon(row);
+                    return <span><img src={result.icon} className='calibration-status-icon' /></span>;
+                },
+                headerClasses: 'status-column',   
+            },
+            {
+                isKey: true,
+                dataField: 'pk',
+                text: 'Details',
+                sort: false,
+                headerClasses: 'more-column',
+                title: (cell) => 'Go to instrument detail view',
+                formatter: (pk) => {
+                    return (
+                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
+                    )
+                }
+            },
+            {
+                dataField: 'b',
+                text: 'Calibration Certificate',
+                sort: false,
+                headerClasses: 'calibration-certificate-column',
+                title: (cell) => 'Download Instrument Calibration Certificate',
+                formatter: (cell, row) => {
+                    return (
+                        <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>Download</Button>
+                    )
+                }
+            }
+        ]
+    )
+};
+
 
 export default instrumentTable;
+
+instrumentTable.defaultProps = {
+    data: [],
+}

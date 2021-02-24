@@ -67,12 +67,17 @@ class ModelTablePage extends Component {
     }
 
     render(
-        adminButtons = <Button onClick={this.onAddModelClicked}>Add Model</Button>
+        adminButtons = <Button onClick={this.onAddModelClicked}>Create</Button>
     ) {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
+        let buttonRow = (<div className="table-button-row">
+            {this.props.is_admin ? adminButtons : null}
+            <Button onClick={this.onExportModelsClicked}>Export</Button>
+            {/* <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button> */}
+        </div>)
         return (
             <div>
                 {addModelPopup}
@@ -88,16 +93,13 @@ class ModelTablePage extends Component {
                         </div>
                         <div className="col-10">
                             <h1>Models</h1>
-                            <div className="table-button-row">
-                                {this.props.is_admin ? adminButtons : null}
-                                <Button onClick={this.onExportModelsClicked}>Export Models</Button>
-                                <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button>
-                            </div>
+                            
                             <ModelTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.modelSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onMoreClicked={this.onDetailClicked}
+                                inlineElements={buttonRow}
                             />
                             <hr />
                         </div>

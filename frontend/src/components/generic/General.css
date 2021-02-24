@@ -71,13 +71,13 @@ be made to be more specific */
 
 /* class applied to the button rows on top of the model/instrument data tables */
 .table-button-row {
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
 }
 .table-button-row button{
-    margin: 10px;
-    display: inline-block;
-    flex: 1;
+    /* margin: 10px; */
+    /* display: inline-block; */
+    margin-left: 5px;
+    max-width: 150px;
 
 }
 
@@ -135,11 +135,13 @@ form.popup input[type=text] {
     display: flex;
     width: 100%;
     flex-direction: row;
+    justify-content: center;
 }
 
 .popup-button-row button {
     margin: 5px;
     padding: 15px;
+    width: 100%;
 }
 
 /* Calibration status icons on the instrument table oage are formatted using this tag */
@@ -152,49 +154,3 @@ form.popup input[type=text] {
   height: auto; */
 }
 
-/* generic pagination element styling */
-/* ONCE THE NEW TABLE IS DONE, THIS IS DEPRECATED AND CAN BE DELETED */
-.pagination.row {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-} 
-
-.pagination button {
-    width: 150px;
-    padding: 6px;
-    margin: 5px;
-}
-
-.pagination p {
-    margin: 5px 15px 5px 15px;
-}
-
-.pagination ul {
-    margin: 5px 20px 5px 20px;
-}
-
-/* model/instrument table formatting */
-/* .data-table {
-    overflow-y: scroll;
-    max-height: 40vh;
-    max-width: 100vw;
-}
-
-.data-table th {
-    cursor: pointer;
-}
-
-.data-table::-webkit-scrollbar {
-    -webkit-appearance: none;
-}
-
-.data-table::-webkit-scrollbar:vertical {
-    width: 15px;
-}
-
-.data-table::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    border: 2px solid white; 
-    background-color: rgba(0, 0, 0, .5);
-} */

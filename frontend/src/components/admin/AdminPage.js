@@ -1,14 +1,14 @@
 import React from 'react';
 import UserServices from "../../api/userServices";
-import GenericTable from '../generic/GenericTable';
 import AddUserPopup from "./AddUserPopup";
 
 import './Admin.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
-import GenericPagination from "../generic/GenericPagination";
 import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
 import { rawErrorsToDisplayed } from '../generic/Util';
+import UserTable from './UserTable';
+import Button from 'react-bootstrap/Button';
 
 const userServices = new UserServices();
 
@@ -29,19 +29,18 @@ class AdminPage extends React.Component {
                 errors: []
             },
             user_pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
-                currentPageNum: '',
-                desiredPage: '1',
+                currentPageNum: 1,
+                desiredPage: 1,
                 showAll: false
             }
         };
 
         this.onAddUserClosed = this.onAddUserClosed.bind(this);
         this.onAddUserSubmit = this.onAddUserSubmit.bind(this);
-        this.onPaginationClick = this.onPaginationClick.bind(this);
-        this.onToggleShowAll = this.onToggleShowAll.bind(this);
+        this.onUserTableChange = this.onUserTableChange.bind(this);
     }
 
     
@@ -51,6 +50,11 @@ class AdminPage extends React.Component {
     }
 
     render() {
+
+        let buttonRow = (<div className="table-button-row">
+            <Button onClick={this.onAddUserClicked}>Add New User</Button>
+        </div>)
+
         return (
             <div>
                 <AddUserPopup
@@ -67,18 +71,12 @@ class AdminPage extends React.Component {
                         </div>
                         <div className="col-10">
                             <h2>Hello, Admin</h2>
-                            <GenericTable data={this.state.tableData} keys={keys} headers={headers} buttonText={[]} buttonFunctions={[]} />
-                            <GenericPagination
-                                currentPageNum={this.state.user_pagination.currentPageNum}
-                                numPages={this.state.user_pagination.numPages}
-                                numResults={this.state.user_pagination.resultCount}
-                                resultsPerPage={this.state.user_pagination.resultsPerPage}
-                                onPageClicked={this.onPaginationClick}
-                                onShowAllToggle={this.onToggleShowAll}
-                                isShown={!this.state.user_pagination.showAll}
-                                buttonText={(this.state.user_pagination.showAll) ? "Limit Results" : "Show All"}
+                            <UserTable
+                                data={this.state.tableData}
+                                onTableChange={this.onUserTableChange}
+                                pagination={{ page: this.state.user_pagination.currentPageNum, sizePerPage: (this.state.user_pagination.showAll ? this.state.user_pagination.resultCount : this.state.user_pagination.resultsPerPage), totalSize: this.state.user_pagination.resultCount }}
+                                inlineElements={buttonRow}
                             />
-                            <button onClick={this.onAddUserClicked}>Add New User</button>
                         </div>
                     </div>
                 </div>
@@ -130,6 +128,37 @@ class AdminPage extends React.Component {
         console.log("Delete user");
     }
 
+    // event handler for the User Table, it handles pagination
+    onUserTableChange(type, { page, sizePerPage }) {
+        switch (type) {
+            case 'pagination':
+                if (sizePerPage === this.state.user_pagination.resultCount) {
+                    this.setState({
+                        user_pagination: {
+                            ...this.state.user_pagination,
+                            desiredPage: 1,
+                            showAll: true,
+                        }
+                    }, () => {
+                        this.updateUserTable();
+                    })
+                } else {
+                    this.setState({
+                        user_pagination: {
+                            ...this.state.user_pagination,
+                            desiredPage: page,
+                            showAll: false,
+                        }
+                    }, () => {
+                        this.updateUserTable();
+                    })
+                }
+            default:
+                console.log(`User table does not support this: ${type} feature`);
+                return;
+        }
+    }
+
     async updateUserTable() {
         userServices.getUsers(this.state.user_pagination.desiredPage, this.state.user_pagination.showAll).then((result) => {
             if (result.success) {
@@ -158,31 +187,6 @@ class AdminPage extends React.Component {
         }
         )
     }
-
-    async onPaginationClick(num) {
-        this.setState({
-            user_pagination: {
-                ...this.state.user_pagination,
-                desiredPage: num
-            }
-        }, () => {
-            this.updateUserTable();
-        })
-    }
-
-    async onToggleShowAll() {
-        this.setState((prevState) => {
-            return {
-                user_pagination: {
-                    ...this.state.user_pagination,
-                    showAll: !prevState.user_pagination.showAll
-                }
-            }
-        }, () => {
-            this.updateUserTable();
-        })
-    }
-
 }
 
 export default AdminPage;

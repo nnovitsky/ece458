@@ -15,6 +15,7 @@ import { rawErrorsToDisplayed, nameAndDownloadFile } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
+import "./InstrumentDetailView.css";
 
 const instrumentServices = new InstrumentServices();
 
@@ -75,9 +76,9 @@ class InstrumentDetailView extends Component {
     }
 
     render(
-        adminButtons = <div>
-            <Button onClick={this.onEditInstrumentClicked}>Edit Instrument</Button>
-            <Button onClick={this.onDeleteClicked}>Delete Instrument</Button>
+        adminButtons = <div className="detail-header-buttons-div">
+            <Button onClick={this.onEditInstrumentClicked}>Edit</Button>
+            <Button onClick={this.onDeleteClicked}>Delete</Button>
         </div>
     ) {
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
@@ -91,17 +92,21 @@ class InstrumentDetailView extends Component {
             </div>
         )
         let calTable = (
-            <CalHistoryTable
-                data={this.state.instrument_info.calibration_history}
-                onTableChange={this.onCalHistoryTableChange}
-                pagination={
-                    {
-                        page: this.state.calibration_pagination.currentPageNum,
-                        sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
-                        totalSize: this.state.calibration_pagination.resultCount
-                    }}
-                inlineElements={calButtonRow}
-            />
+            <div className="cal-history-table">
+
+
+                <CalHistoryTable
+                    data={this.state.instrument_info.calibration_history}
+                    onTableChange={this.onCalHistoryTableChange}
+                    pagination={
+                        {
+                            page: this.state.calibration_pagination.currentPageNum,
+                            sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
+                            totalSize: this.state.calibration_pagination.resultCount
+                        }}
+                    inlineElements={calButtonRow}
+                />
+            </div>
         )
 
         let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calTable : null;
@@ -114,33 +119,45 @@ class InstrumentDetailView extends Component {
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
                 <div className="background">
-                    <div className="row mainContent">
-                        <div className="col-2 text-center button-col">
-                            <img src={logo} alt="Logo" />
-                            {this.props.is_admin ? adminButtons : null}
-                        </div>
-                        <div className="col-10">
-                            <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
-                            <Row>
-                                <Col className="col-6">{this.makeDetailsTable()}</Col>
-                                <Col className="col-6">
-                                    <Table size="sm">
-                                        <tr>
-                                            <td>Comments</td>
-                                        </tr>
-                                        <tr >
-                                            <td rowSpan={3} style={{ wordWrap:"break-word", overflowWrap:"break-word", hyphens: "auto", maxWidth:"200px"}}>
-                                                {this.state.instrument_info.comment}
-                                            </td>
-                                            
-                                        </tr>
-                                    </Table>
-                                </Col>
-                            </Row>
+                    <div className="mainContent">
+                        <div className="detail-view">
+
+
+                            {/* <div className="col-2 text-center button-col">
+                            
+                            
+                            </div> */}
+                            <div className="instrument-info-block">
+                                <Row className="detail-header">
+                                    <img src={logo} alt="Logo" className="detail-logo" />
+                                    <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
+                                    {this.props.is_admin ? adminButtons : null}
+                                </Row>
+
+                                <Row>
+                                    <Col className="col-5">{this.makeDetailsTable()}</Col>
+                                    <Col className="col-7">
+                                        <Table size="sm">
+                                            <tr>
+                                                <td>Comments</td>
+                                            </tr>
+                                            <tr >
+                                                <td rowSpan={3} style={{ wordWrap: "break-word", overflowWrap: "break-word", hyphens: "auto", maxWidth: "200px" }}>
+                                                    {this.state.instrument_info.comment}
+                                                </td>
+
+                                            </tr>
+                                        </Table>
+                                    </Col>
+                                </Row>
+
+                            </div>
+                            <hr />
                             {displayedCalibrationData}
                         </div>
                         
                     </div>
+
                 </div>
             </div>
 
@@ -228,7 +245,7 @@ class InstrumentDetailView extends Component {
                         <td><strong>Next Calibration</strong></td>
                         <td>{this.state.instrument_info.calibration_expiration}</td>
                     </tr>
-                    <tr hidden={!hasHistory}> 
+                    <tr hidden={!hasHistory}>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
                     </tr>

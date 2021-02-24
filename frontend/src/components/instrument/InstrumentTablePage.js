@@ -13,7 +13,7 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 
-
+let date = '';
 
 const instrumentServices = new InstrumentServices();
 
@@ -128,8 +128,10 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
+        console.log(`Data being requested: ${Date.now() - date}`);
         let params = this.state.instrumentSearchParams;
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
+            console.log(`Data back now and being displayed: ${Date.now() - date}`)
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -137,7 +139,7 @@ class InstrumentTablePage extends Component {
                         ...this.state.pagination,
                         resultCount: result.data.count,
                     }
-                })
+                }, () => console.log(`Updated state: ${Date.now() - date}`))
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
                         pagination: {
@@ -148,6 +150,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 }
+                
             } else {
                 console.log("error")
             }
@@ -156,6 +159,8 @@ class InstrumentTablePage extends Component {
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
+        date = Date.now();
+        console.log(`Table change: ${date}`);
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);

@@ -36,8 +36,9 @@ add 'button-col' to the classname for the div acting as the column
     padding: 5px !important;
 }
 .button-col button {
-    padding: 15px;
+    /* padding: 5px; */
     margin: 10px;
+    height: min-content;
 }
 
 /* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 

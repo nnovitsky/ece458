@@ -122,7 +122,20 @@ class InstrumentDetailView extends Component {
                         <div className="col-10">
                             <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
                             <Row>
-                                <Col>{this.makeDetailsTable()}</Col>
+                                <Col className="col-6">{this.makeDetailsTable()}</Col>
+                                <Col className="col-6">
+                                    <Table size="sm">
+                                        <tr>
+                                            <td>Comments</td>
+                                        </tr>
+                                        <tr >
+                                            <td rowSpan={3} style={{ wordWrap:"break-word", overflowWrap:"break-word", hyphens: "auto", maxWidth:"200px"}}>
+                                                {this.state.instrument_info.comment}
+                                            </td>
+                                            
+                                        </tr>
+                                    </Table>
+                                </Col>
                             </Row>
                             {displayedCalibrationData}
                         </div>
@@ -198,10 +211,10 @@ class InstrumentDetailView extends Component {
         let hasHistory = this.state.instrument_info.calibration_frequency !== 0;
 
         return (
-            <Table bordered>
-                <tr className="text-center">
+            <Table size="sm">
+                {/* <tr className="text-center">
                     <th colSpan={2}>Instrument Information</th>
-                </tr>
+                </tr> */}
                 <tbody>
                     <tr>
                         <td><strong>Serial Number</strong></td>
@@ -223,10 +236,10 @@ class InstrumentDetailView extends Component {
                         <td><strong>Calibration</strong></td>
                         <td>This model isn't calibratable</td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                         <td><strong>Comment</strong></td>
                         <td>{detailData.comment}</td>
-                    </tr>
+                    </tr> */}
 
                 </tbody>
             </Table>

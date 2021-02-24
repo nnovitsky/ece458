@@ -30,12 +30,16 @@ class ModelTablePage extends Component {
                 filters: {
                     model_number: '',
                     vendor: '',
-                    description: ''
+                    description: '',
+                    categories: [
+
+                    ]
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
             },
+            modelCategories: [],
             addModelPopup: {
                 isShown: false,
                 errors: []
@@ -65,6 +69,7 @@ class ModelTablePage extends Component {
         }
         )
         this.updateModelTable();
+        this.getModelCategories();
     }
 
     render(
@@ -91,6 +96,7 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                                 onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
+                                modelCategories={this.state.modelCategories}
                             />
 
                         </div>
@@ -277,6 +283,24 @@ class ModelTablePage extends Component {
 
         }
         )
+    }
+
+    async getModelCategories() {
+        this.setState({
+            modelCategories: [
+            {
+                pk: 1,
+                category: "new"
+            },
+            {
+                pk: 2,
+                category: "old"
+            },
+            {
+                pk: 3,
+                category: "red"
+            }
+        ]})
     }
 
     // method called with the data from a successful api hit for getting the model table,

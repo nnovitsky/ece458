@@ -51,6 +51,7 @@ class ModelTablePage extends Component {
         }
 
         //binding
+        this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onFilterChange = this.onFilterChange.bind(this);
@@ -72,16 +73,16 @@ class ModelTablePage extends Component {
         this.getModelCategories();
     }
 
-    render(
-        adminButtons = <Button onClick={this.onAddModelClicked}>Create</Button>
-    ) {
+    render() {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">
-            {this.props.is_admin ? adminButtons : null}
+            <Button onClick={this.onAddModelClicked} hidden={!this.props.is_admin}>Create</Button>
             <Button onClick={this.onExportModelsClicked}>Export</Button>
+            <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
+
             {/* <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button> */}
         </div>)
         return (
@@ -168,6 +169,12 @@ class ModelTablePage extends Component {
                     })
                 }
         }
+    }
+
+    onCategoriesClicked() {
+        this.setState({
+            redirect: '/categories'
+        });
     }
 
     onDetailClicked(e) {

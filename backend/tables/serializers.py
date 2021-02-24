@@ -180,7 +180,7 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'comment', 'calibration_event', 'calibration_expiration')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration')
 
 
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):

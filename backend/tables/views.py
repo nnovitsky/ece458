@@ -432,6 +432,7 @@ class UserCreate(APIView):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=True)
+        # TODO: make username w @ illegal
         if error_check: return error_check
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():

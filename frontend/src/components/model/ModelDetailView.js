@@ -84,6 +84,8 @@ class ModelDetailView extends React.Component {
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }
+
+        let comment = (this.state.model_info.comment === '' ? 'No Comment Entered' : this.state.model_info.comment);
         return (
             <div>
                 {deletePopup}
@@ -93,7 +95,7 @@ class ModelDetailView extends React.Component {
                     title={`${this.state.model_info.vendor} ${this.state.model_info.model_number}`}
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
-                    comments={this.state.model_info.comment}
+                    comments={comment}
                     bottomElement={this.makeSerialTable()}
                 />
                 {/* <div className="col-2 text-center button-col">

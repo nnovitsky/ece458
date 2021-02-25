@@ -16,6 +16,7 @@ import { rawErrorsToDisplayed, nameAndDownloadFile } from '../generic/Util';
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
 import "./InstrumentDetailView.css";
+import DetailView from '../generic/DetailView';
 
 const instrumentServices = new InstrumentServices();
 
@@ -85,89 +86,56 @@ class InstrumentDetailView extends Component {
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
+
+        let calTable = (
+            <div className="cal-history-table">
+
+
+
+            </div>
+        )
+        if (this.state.redirect != null) {
+            return <Redirect to={this.state.redirect} />
+        }
+
+        let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
+        return (
+            <div>
+                {addCalibrationPopup}
+                {editInstrumentPopup}
+                {deleteInstrumentPopup}
+                <DetailView
+                    title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}
+                    headerButtons={this.props.is_admin ? adminButtons : null}
+                    col5={this.makeDetailsTable()}
+                    comments={comment}
+                    bottomElement={this.makeCalHistoryTable()}
+                />
+            </div>
+
+        );
+    }
+
+    makeCalHistoryTable = () => {
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )
-        let calTable = (
-            <div className="cal-history-table">
-
-
-                <CalHistoryTable
-                    data={this.state.instrument_info.calibration_history}
-                    onTableChange={this.onCalHistoryTableChange}
-                    pagination={
-                        {
-                            page: this.state.calibration_pagination.currentPageNum,
-                            sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
-                            totalSize: this.state.calibration_pagination.resultCount
-                        }}
-                    inlineElements={calButtonRow}
-                />
-            </div>
-        )
-
-        let displayedCalibrationData = (this.state.instrument_info.calibration_frequency !== 0) ? calTable : null;
-        if (this.state.redirect != null) {
-            return <Redirect to={this.state.redirect} />
-        }
         return (
-            <div>
-                {addCalibrationPopup}
-                {editInstrumentPopup}
-                {deleteInstrumentPopup}
-                <div className="background">
-                    <div className="mainContent">
-                        <div className="detail-view">
-
-
-                            {/* <div className="col-2 text-center button-col">
-                            
-                            
-                            </div> */}
-                            <div className="instrument-info-block">
-                                <Row className="detail-header">
-                                    <img src={logo} alt="Logo" className="detail-logo" />
-                                    <h1>{`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}</h1>
-                                    {this.props.is_admin ? adminButtons : null}
-                                </Row>
-
-                                <Row>
-                                    <Col className="col-5">{this.makeDetailsTable()}</Col>
-                                    <Col className="col-7">
-                                        <Table size="sm" bordered>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Comments</strong>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div className="detail-view-comment">
-                                                        {this.state.instrument_info.comment}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </Table>
-                                    </Col>
-                                </Row>
-
-                            </div>
-                                <hr />
-                                {displayedCalibrationData}
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-
-        );
+            <CalHistoryTable
+                data={this.state.instrument_info.calibration_history}
+                onTableChange={this.onCalHistoryTableChange}
+                pagination={
+                    {
+                        page: this.state.calibration_pagination.currentPageNum,
+                        sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
+                        totalSize: this.state.calibration_pagination.resultCount
+                    }}
+                inlineElements={calButtonRow}
+            />
+        )
     }
 
     async getInstrumentInfo() {
@@ -229,7 +197,7 @@ class InstrumentDetailView extends Component {
 
 
     makeDetailsTable() {
-                    let detailData = this.state.instrument_info;
+        let detailData = this.state.instrument_info;
         let hasHistory = this.state.instrument_info.calibration_frequency !== 0;
 
         return (

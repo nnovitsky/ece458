@@ -130,7 +130,7 @@ class InstrumentDetailView extends Component {
                             <div className="instrument-info-block">
                                 <Row className="detail-header">
                                     <img src={logo} alt="Logo" className="detail-logo" />
-                                    <h1>{`Instrument: ${this.state.instrument_info.serial_number}`}</h1>
+                                    <h1>{`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}</h1>
                                     {this.props.is_admin ? adminButtons : null}
                                 </Row>
 
@@ -234,12 +234,20 @@ class InstrumentDetailView extends Component {
                 </tr> */}
                 <tbody>
                     <tr>
+                        <td><strong>Vendor</strong></td>
+                        <td>{this.state.instrument_info.vendor}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Model Number</strong></td>
+                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                    </tr>
+                    <tr>
                         <td><strong>Serial Number</strong></td>
                         <td>{detailData.serial_number}</td>
                     </tr>
                     <tr>
-                        <td><strong>Model</strong></td>
-                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                        <td><strong>Asset Tag</strong></td>
+                        <td>ASSET TAG</td>
                     </tr>
                     <tr hidden={!hasHistory}>
                         <td><strong>Next Calibration</strong></td>

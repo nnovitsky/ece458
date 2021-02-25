@@ -11,6 +11,7 @@ import ModelTablePage from './components/model/ModelTablePage';
 import ModelDetailPage from './components/model/ModelDetailView';
 import InstrumentTablePage from './components/instrument/InstrumentTablePage';
 import InstrumentDetailView from './components/instrument/InstrumentDetailView';
+import CategoriesPage from './components/categories/CategoriesPage';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -110,6 +111,7 @@ class App extends Component {
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />
+            <AdminRoute is_admin={this.state.admin} path="/categories" component={CategoriesPage} exact />
           </Switch>
           {this.state.logged_in ? null : form}
           {this.state.redirect ? (<Redirect to="/user-profile"/>) : null}

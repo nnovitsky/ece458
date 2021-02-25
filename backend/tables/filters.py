@@ -2,37 +2,25 @@ import django_filters
 from backend.tables.models import *
 
 
-class CategoryFilter(django_filters.Filter):
-
-    def filter(self, qs, value):
-        if not value:
-            return qs
-        values = value.split(',')
-        for pk in values:
-            qs = qs.filter(itemmodelcategory__pk=pk)
+def category_filter(qs, name, value):
+    lookup = '__'.join([name, 'pk'])
+    if not value:
         return qs
+    values = set(value.split(','))
+    for pk in values:
+        qs = qs.filter(**{lookup: pk})
+    return qs
 
 
 class ItemModelFilter(django_filters.rest_framework.FilterSet):
     vendor = django_filters.CharFilter(lookup_expr='icontains')
     model_number = django_filters.CharFilter(lookup_expr='icontains')
     description = django_filters.CharFilter(lookup_expr='icontains')
-    categories = CategoryFilter()
-
-    def filter_models(self, queryset, name, value):
-        if not value:
-            return queryset
-        print('VAL')
-        print(value)
-
-        print(name)
-        print(queryset)
-
-        return queryset
+    model_categories = django_filters.Filter(field_name='itemmodelcategory', method=category_filter)
 
     class Meta:
         model = ItemModel
-        fields = ['vendor', 'model_number', 'comment', 'description', 'calibration_frequency', 'categories']
+        fields = ['vendor', 'model_number', 'comment', 'description', 'calibration_frequency', 'model_categories']
 
 
 class InstrumentFilter(django_filters.rest_framework.FilterSet):
@@ -41,6 +29,8 @@ class InstrumentFilter(django_filters.rest_framework.FilterSet):
     serial_number = django_filters.CharFilter(lookup_expr='icontains')
     model_pk = django_filters.NumberFilter(field_name='item_model__pk', lookup_expr='exact')
     description = django_filters.CharFilter(field_name='item_model__description', lookup_expr='icontains')
+    instrument_categories = django_filters.Filter(field_name='instrumentcategory', method=category_filter)
+    model_categories = django_filters.Filter(field_name='item_model__itemmodelcategory', method=category_filter)
 
     class Meta:
         model = Instrument

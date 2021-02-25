@@ -179,7 +179,7 @@ def models_list(request):
         nextPage = 1
         previousPage = 1
         models = ItemModel.objects.all()
-        return get_page_response(models, request, ItemModelSerializer, nextPage, previousPage)
+        return get_page_response(models, request, ItemModelReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not request.user.is_staff:
@@ -205,7 +205,7 @@ def models_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ItemModelSerializer(model, context={'request': request})
+        serializer = ItemModelReadSerializer(model, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
@@ -541,14 +541,14 @@ def edit_model_categories(request, pk):
         for cat in categories:
             if model in cat.item_models.all(): continue
             cat.item_models.add(model)
-        serializer = ItemModelSerializer(model)
+        serializer = ItemModelReadSerializer(model)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'DELETE':
         for cat in categories:
             if model not in cat.item_models.all(): continue
             cat.item_models.remove(model)
-        serializer = ItemModelSerializer(model)
+        serializer = ItemModelReadSerializer(model)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

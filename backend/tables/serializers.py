@@ -59,7 +59,19 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'itemmodelcategory_set')
+
+
+class ItemModelReadSerializer(serializers.ModelSerializer):
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.itemmodelcategory_set.all()]
+        return cats
+
+    class Meta:
+        model = ItemModel
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
@@ -74,6 +86,12 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
     item_model = ItemModelSerializer()
     calibration_event = serializers.SerializerMethodField('_get_most_recent_calibration')
     calibration_expiration = serializers.SerializerMethodField('_get_calibration_expiration')
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
+        model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
+        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     def _get_most_recent_calibration(self, obj):
         cal_event = obj.calibrationevent_set.order_by('-date')[:1]
@@ -94,7 +112,7 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration', 'categories')
 
 
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):
@@ -102,6 +120,12 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
     item_model = ItemModelSerializer()
     calibration_events = serializers.SerializerMethodField('_get_all_calibrations')
     calibration_expiration = serializers.SerializerMethodField('_get_calibration_expiration')
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
+        model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
+        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     def _get_all_calibrations(self, obj):
         cal_events = obj.calibrationevent_set.order_by('-date')
@@ -122,7 +146,7 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_expiration', 'calibration_events')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_expiration', 'calibration_events', 'categories')
 
 
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
@@ -138,7 +162,7 @@ class InstrumentWriteSerializer(serializers.ModelSerializer):
     # use when writing instrument with serializer
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'instrumentcategory_set')
 
 
 class CalibrationEventReadSerializer(serializers.ModelSerializer):

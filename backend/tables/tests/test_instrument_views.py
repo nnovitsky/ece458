@@ -33,7 +33,8 @@ class InstrumentTests(TestCase):
         cls.instrument_data = {
             "item_model": ItemModel.objects.all()[0].pk,
             "serial_number": "s2",
-            "comment": "my comment"
+            "comment": "my comment",
+            "instrumentcategory_set": []
         }
 
     def test_instrument_create_auth(self):

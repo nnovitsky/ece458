@@ -43,7 +43,7 @@ class InstrumentExport(ListAPIView):
 class ItemModelList(ListAPIView):
     queryset = ItemModel.objects.all().annotate(vendor_lower=Func(F('vendor'), function='LOWER')).annotate(
         model_number_lower=Func(F('model_number'), function='LOWER')).annotate(description_lower=Func(F('description'), function='LOWER'))
-    serializer_class = ItemModelSerializer
+    serializer_class = ItemModelReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = ItemModelFilter
 

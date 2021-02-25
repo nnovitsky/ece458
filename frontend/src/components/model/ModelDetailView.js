@@ -164,7 +164,7 @@ class ModelDetailView extends React.Component {
     makeDetailsTable() {
         let modelInfo = this.state.model_info;
         return (
-            <Table bordered hover>
+            <Table size="sm" bordered>
                 <tbody>
                     <tr>
                         <td><strong>Vendor</strong></td>

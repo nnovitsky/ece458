@@ -86,14 +86,6 @@ class InstrumentDetailView extends Component {
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
-
-        let calTable = (
-            <div className="cal-history-table">
-
-
-
-            </div>
-        )
         if (this.state.redirect != null) {
             return <Redirect to={this.state.redirect} />
         }
@@ -124,6 +116,7 @@ class InstrumentDetailView extends Component {
             </div>
         )
         return (
+            <div className="cal-history-table">
             <CalHistoryTable
                 data={this.state.instrument_info.calibration_history}
                 onTableChange={this.onCalHistoryTableChange}
@@ -135,6 +128,7 @@ class InstrumentDetailView extends Component {
                     }}
                 inlineElements={calButtonRow}
             />
+            </div>
         )
     }
 

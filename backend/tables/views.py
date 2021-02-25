@@ -585,3 +585,16 @@ def edit_instrument_categories(request, pk):
             cat.instruments.remove(instrument)
         serializer = InstrumentWriteSerializer(instrument)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def category_list(request, type):
+    if type == 'instrument':
+        categories = InstrumentCategory.objects.all()
+    elif type == 'item_model':
+        categories = ItemModelCategory.objects.all()
+    else:
+        return Response({"category_error": ["Invalid category type."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
+    return Response(data, status=status.HTTP_200_OK)

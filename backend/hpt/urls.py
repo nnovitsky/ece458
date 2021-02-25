@@ -51,5 +51,6 @@ urlpatterns = [
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
     path('api/edit_instrument_categories/<int:pk>/', views.edit_instrument_categories),
+    path('api/category_list/<str:type>/', views.category_list)
 
 ]

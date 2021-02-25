@@ -1,7 +1,13 @@
 import React from 'react';
 import './DetailView.css';
+import LogoTitleHeader from './LogoTitleHeader';
 
-
+// props
+// title: a string to be displayed at the top of the page
+// headerButtons: a list or object of buttons to be displayed next to the header
+// col5: an element (likely a detail table) displayed in the column of 5
+// comments: a string of comments that will be displayed next to col 5
+// bottomElement: an element that will be on the bottom of the page, eg a calibration history table
 const detailView = (props) => {
 
     return (
@@ -15,14 +21,15 @@ const detailView = (props) => {
                             
                             </div> */}
                     <div className="instrument-info-block">
-                        <Row className="detail-header">
-                            <img src={logo} alt="Logo" className="detail-logo" />
-                            <h1>{`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}</h1>
-                            {this.props.is_admin ? adminButtons : null}
-                        </Row>
+                        <LogoTitleHeader
+                            title={props.title}
+                            buttons={props.headerButtons}
+                        />
 
                         <Row>
-                            <Col className="col-5">{this.makeDetailsTable()}</Col>
+                            <Col className="col-5">
+                                {props.col5}
+                            </Col>
                             <Col className="col-7">
                                 <Table size="sm" bordered>
                                     <tbody>
@@ -34,7 +41,7 @@ const detailView = (props) => {
                                         <tr>
                                             <td>
                                                 <div className="detail-view-comment">
-                                                    {this.state.instrument_info.comment}
+                                                    {props.comments}
                                                 </div>
                                             </td>
                                         </tr>

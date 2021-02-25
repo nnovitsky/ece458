@@ -153,6 +153,7 @@ def instruments_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         # disable changing instrument's model
         request.data['item_model'] = instrument.item_model.pk
+        request.data['instrumentcategory_set'] = [cat.pk for cat in instrument.instrumentcategory_set.all()]
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -214,6 +215,8 @@ def models_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'vendor' not in request.data: request.data['vendor'] = model.vendor
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
+        if 'description' not in request.data: request.data['description'] = model.description
+        request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()

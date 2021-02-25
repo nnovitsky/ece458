@@ -34,7 +34,7 @@ class ModelTablePage extends Component {
             modelCategories: {
                 data: [],
                 pagination: {
-                    resultCount: 0,
+                    resultCount: 2,
                     numPages: 1,
                     resultsPerPage: 10,
                     currentPageNum: 1,
@@ -45,7 +45,7 @@ class ModelTablePage extends Component {
             instrumentCategories: {
                 data: [],
                 pagination: {
-                    resultCount: 0,
+                    resultCount: 2,
                     numPages: 1,
                     resultsPerPage: 10,
                     currentPageNum: 1,
@@ -78,7 +78,7 @@ class ModelTablePage extends Component {
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
 
         let buttonRow = (<div className="table-button-row">
-            <Button onClick={this.onCreateCategoryClicked} hidden={!this.props.is_admin}>Create</Button>
+            <Button onClick={this.onCreateCategoryClicked}>Create</Button>
         </div>)
         return (
             <div className="background">
@@ -92,16 +92,20 @@ class ModelTablePage extends Component {
                         />
                         <Tabs defaultActiveKey={this.state.currentTab} onSelect={this.onTabChange}>
                             <Tab eventKey="model" title="Model Categories">
-                                <CategoriesTable
-                                    data={this.state.modelCategories.data}
-                                    onTableChange={this.onModelTableChange}
-                                    pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
-                                    onCategoryEdit={this.onEditClicked}
-                                    onCategoryDelete={this.onDeleteClick}
-                                    inlineElements={buttonRow}
-                                />
+                                <div className="categories-table">
+                                    <CategoriesTable
+                                        data={this.state.modelCategories.data}
+                                        onTableChange={this.onModelTableChange}
+                                        pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
+                                        onCategoryEdit={this.onEditClicked}
+                                        onCategoryDelete={this.onDeleteClick}
+                                        inlineElements={buttonRow}
+                                    />
+                                </div>
+
                             </Tab>
                             <Tab eventKey="instrument" title="Instrument Categories">
+                                <div className="categories-table">
                                 <CategoriesTable
                                     data={this.state.instrumentCategories.data}
                                     onTableChange={this.onInstrumentTableChange}
@@ -110,6 +114,7 @@ class ModelTablePage extends Component {
                                     onCategoryDelete={this.onDeleteClick}
                                     inlineElements={buttonRow}
                                 />
+                                </div>
                             </Tab>
 
                         </Tabs>

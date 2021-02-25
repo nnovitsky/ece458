@@ -18,3 +18,7 @@
 .category-page-content .nav-link {
     color: rgb(96, 153, 74) !important;
 }
+
+.categories-table {
+    margin-top: 10px;
+}

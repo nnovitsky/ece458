@@ -1,15 +1,16 @@
 import django_filters
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent
+from backend.tables.models import *
 
 
 class ItemModelFilter(django_filters.rest_framework.FilterSet):
     vendor = django_filters.CharFilter(lookup_expr='icontains')
     model_number = django_filters.CharFilter(lookup_expr='icontains')
     description = django_filters.CharFilter(lookup_expr='icontains')
+    # categories = django_filters.ModelMultipleChoiceFilter(field_name='itemmodelcategory', queryset=ItemModelCategory.objects.all())
 
     class Meta:
         model = ItemModel
-        fields = ['vendor', 'model_number', 'comment', 'description', 'calibration_frequency']
+        fields = ['vendor', 'model_number', 'comment', 'description', 'calibration_frequency', 'categories']
 
 
 class InstrumentFilter(django_filters.rest_framework.FilterSet):

@@ -47,6 +47,9 @@ urlpatterns = [
     path('api/export_example_instrument_csv/', views.get_example_instrument_csv),
     path('api/model_categories/', views.model_category_list),
     path('api/model_categories/<int:pk>/', views.model_category_detail),
+    path('api/edit_model_categories/<int:pk>/', views.edit_model_categories),
     path('api/instrument_categories/', views.instrument_category_list),
-    path('api/instrument_categories/<int:pk>/', views.instrument_category_detail)
+    path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
+    path('api/edit_instrument_categories/<int:pk>/', views.edit_instrument_categories),
+
 ]

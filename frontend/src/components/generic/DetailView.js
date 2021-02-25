@@ -1,6 +1,9 @@
 import React from 'react';
 import './DetailView.css';
 import LogoTitleHeader from './LogoTitleHeader';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
 
 // props
 // title: a string to be displayed at the top of the page
@@ -52,7 +55,7 @@ const detailView = (props) => {
 
                     </div>
                     <hr />
-                    {displayedCalibrationData}
+                    {props.bottomElement}
                 </div>
 
             </div>

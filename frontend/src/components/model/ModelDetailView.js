@@ -16,6 +16,7 @@ import InstrumentServices from '../../api/instrumentServices';
 import { rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 import SerialTable from './SerialTable';
+import DetailView from '../generic/DetailView';
 
 const modelServices = new ModelServices();
 const instrumentServices = new InstrumentServices();
@@ -87,9 +88,15 @@ class ModelDetailView extends React.Component {
             <div>
                 {deletePopup}
                 {editPopup}
-            <div className="background">
-                <div className="row mainContent">
-                        <div className="col-2 text-center button-col">
+
+                <DetailView
+                    title={`${this.state.model_info.vendor} ${this.state.model_info.model_number}`}
+                    headerButtons={this.props.is_admin ? adminButtons : null}
+                    col5={this.makeDetailsTable()}
+                    comments={this.state.model_info.comment}
+                    bottomElement={this.makeSerialTable()}
+                />
+                {/* <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             {this.props.is_admin ? adminButtons : null}
                         </div>
@@ -102,19 +109,23 @@ class ModelDetailView extends React.Component {
                                 </Col>
                                 <Col xs={6}>
                                     <h2>Instrument Instances</h2>
-                                    <SerialTable 
-                                        data={this.state.instruments}
-                                        onTableChange={this.onSerialTableChange}
-                                        pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount}}
-                                        onMoreClicked={this.onMoreClicked}
-                                    />
+
                                 </Col>
                             </Row>
-                        </div>
-                    </div>
-                </div>
-            </div >
+        </div>*/}
+            </div>
         );
+    }
+
+    makeSerialTable() {
+        return (
+            <SerialTable
+                data={this.state.instruments}
+                onTableChange={this.onSerialTableChange}
+                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                onMoreClicked={this.onMoreClicked}
+            />
+        )
     }
 
     makeDeletePopup() {

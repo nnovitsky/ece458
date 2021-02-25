@@ -60,3 +60,20 @@
 .status-column {
     max-width: 30px;
 }
+
+/* category management page columns */
+/* .cm-category-column {
+not defined so it gets the leftover
+} */
+
+.cm-count-column {
+    width: 15%;
+}
+
+.cm-edit-column {
+    width: 10%;
+}
+
+.cm-delete-column {
+    width: 10%;
+}

@@ -58,20 +58,20 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 text: 'Category',
                 sort: false,
                 title: (cell) => `${cell}`,
-                headerClasses: 'category-column'
+                headerClasses: 'cm-category-column'
             },
             {
                 dataField: 'count',
                 text: 'Count',
                 sort: false,
                 title: (cell) => `Count of this category: ${cell}`,
-                headerClasses: 'model-count-column'
+                headerClasses: 'cm-count-column'
             },
             {
                 dataField: 'edit',
                 text: 'Edit',
                 sort: false,
-                headerClasses: 'edit-column',
+                headerClasses: 'cm-edit-column',
                 title: (cell, row) => `Rename '${row.category}'`,
                 formatter: (cell, row) => {
                     return (
@@ -83,7 +83,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 dataField: 'delete',
                 text: 'Delete',
                 sort: false,
-                headerClasses: 'delete-column',
+                headerClasses: 'cm-delete-column',
                 title: (cell, row) => `Delete '${row.category}'`,
                 formatter: (cell, row) => {
                     return (

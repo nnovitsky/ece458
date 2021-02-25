@@ -14,6 +14,7 @@ import InstrumentDetailView from './components/instrument/InstrumentDetailView';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import OauthRoute from './components/OauthRoute';
 
 import AuthServices from './api/authServices';
 const authServices = new AuthServices();
@@ -110,6 +111,7 @@ class App extends Component {
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />
+            <OauthRoute path="/oauth/consume" component={UserProfilePage} exact />
           </Switch>
           {this.state.logged_in ? null : form}
           {this.state.redirect ? (<Redirect to="/user-profile"/>) : null}

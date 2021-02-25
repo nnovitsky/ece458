@@ -12,7 +12,7 @@ class login extends React.Component {
         username: '',
         password: '',
         redirect: null,
-        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=http%3A//localhost%3A8000/oauth/consume&response_type=code',
+        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=http%3A//localhost%3A3000/oauth/consume&response_type=code',
     };
 
     async componentDidMount() {

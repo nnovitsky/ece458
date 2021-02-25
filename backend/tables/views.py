@@ -408,3 +408,65 @@ class UserCreate(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#CATEGORIES
+@api_view(['GET', 'POST'])
+def model_category_list(request):
+
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        categories = ItemModelCategory.objects.all()
+        return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
+
+    elif request.method == 'POST':
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = ItemModelCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def categories_detail(request, pk):
+#     """
+#     Retrieve, update or delete a model by pk.
+#     Returns 404 if model does not exist, 200 on successful GET or PUT, 400 on bad PUT request data,
+#     204 on successful DELETE.
+#     """
+#     try:
+#         model = ItemModel.objects.get(pk=pk)
+#     except ItemModel.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+#
+#     if request.method == 'GET':
+#         serializer = ItemModelSerializer(model, context={'request': request})
+#         return Response(serializer.data)
+#
+#     elif request.method == 'PUT':
+#         if not request.user.is_staff:
+#             return Response(
+#                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+#         if 'vendor' not in request.data: request.data['vendor'] = model.vendor
+#         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
+#         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     elif request.method == 'DELETE':
+#         if not request.user.is_staff:
+#             return Response(
+#                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+#         if len(model.instrument_set.all()) > 0:
+#             return Response(
+#                 {"delete_error": ["Cannot delete model with instrument instances."]}, status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             model.delete()
+#             return Response(status=status.HTTP_204_NO_CONTENT)
+#

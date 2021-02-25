@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent
+from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 import datetime
@@ -173,3 +173,21 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
         return data
+
+
+class ItemModelCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemModelCategory
+        fields = ('pk', 'name', 'item_models')
+
+
+class ListItemModelCategorySerializer(serializers.ModelSerializer):
+    count = serializers.SerializerMethodField()
+
+    def get_count(self, obj):
+        return len(obj.item_models.all())
+
+    class Meta:
+        model = ItemModelCategory
+        fields = ('pk', 'name', 'count', 'item_models')

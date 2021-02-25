@@ -50,5 +50,6 @@ hr {
   /* width: 110px;
   height: 110px; */
   overflow: scroll;
+  overflow-wrap: anywhere;
 
 }

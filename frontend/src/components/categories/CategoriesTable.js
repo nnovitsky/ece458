@@ -18,6 +18,8 @@ import Button from 'react-bootstrap/Button';
 
 // onCategoryEdit: event handler for editing category, the event.target.value passed in is the pk, event.target.currentName is the current category name
 // onCategoryDelete: event handler for deleting category, the event.target.value passed in is the pk, event.target.currentName is the current category name
+
+// inlineElements: optional prop that will put elements inline with the pagination
 const keyField = 'pk';
 
 const modelCategoriesTable = (props) => {
@@ -99,4 +101,5 @@ export default modelCategoriesTable;
 
 modelCategoriesTable.defaultProps = {
     data: [],
+    inlineElements: null
 }

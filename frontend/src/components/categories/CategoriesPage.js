@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import '../generic/General.css';
 import './CategoriesPage.css';
 
@@ -62,6 +63,7 @@ class ModelTablePage extends Component {
         this.onDeleteClick = this.onDeleteClick.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteCancel = this.onDeleteCancel.bind(this);
+        this.onCreateCategoryClicked = this.onCreateCategoryClicked.bind(this);
         this.onInstrumentTableChange = this.onInstrumentTableChange.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
     }
@@ -74,6 +76,10 @@ class ModelTablePage extends Component {
     render() {
         let renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
+
+        let buttonRow = (<div className="table-button-row">
+            <Button onClick={this.onCreateCategoryClicked} hidden={!this.props.is_admin}>Create</Button>
+        </div>)
         return (
             <div className="background">
                 {renamePopup}
@@ -92,6 +98,7 @@ class ModelTablePage extends Component {
                                     pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
                                     onCategoryEdit={this.onEditClicked}
                                     onCategoryDelete={this.onDeleteClick}
+                                    inlineElements={buttonRow}
                                 />
                             </Tab>
                             <Tab eventKey="instrument" title="Instrument Categories">
@@ -101,6 +108,7 @@ class ModelTablePage extends Component {
                                     pagination={{ page: this.state.instrumentCategories.pagination.currentPageNum, sizePerPage: (this.state.instrumentCategories.pagination.showAll ? this.state.instrumentCategories.pagination.resultCount : this.state.instrumentCategories.pagination.resultsPerPage), totalSize: this.state.instrumentCategories.pagination.resultCount }}
                                     onCategoryEdit={this.onEditClicked}
                                     onCategoryDelete={this.onDeleteClick}
+                                    inlineElements={buttonRow}
                                 />
                             </Tab>
 
@@ -256,6 +264,10 @@ class ModelTablePage extends Component {
                 pk: null
             }
         })
+    }
+
+    onCreateCategoryClicked() {
+
     }
 
     onInstrumentTableChange(type, { page, sizePerPage }) {

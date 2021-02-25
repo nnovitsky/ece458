@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
-import Button from 'react-bootstrap/Button';
+import "../generic/General.css";
 
 // props
 // data: json data object to be displayed
@@ -43,7 +43,8 @@ let makeConfig = (countStart, onMoreClicked) => {
         [
             // this is a column for a number for the table
             {
-                dataField: '#', //json data key for this column
+                isKey: true,
+                dataField: 'pk', //json data key for this column
                 text: '#',      //displayed column header text
                 formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                     let rowNumber = (countStart + rowIndex);
@@ -63,8 +64,13 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'model_number',
                 text: 'Model #',
                 sort: true,
-                title: (cell) => `Model Number: ${cell}`,
-                headerClasses: 'model-number-column'
+                title: (cell) => `Model Number: ${cell}, click to see more`,
+                headerClasses: 'model-number-column',
+                formatter: (cell, row) => {
+                    return (
+                        <span><a href={`/models/${row.pk}`} className="green-link">{cell}</a></span>
+                    )
+                }
             },
             {
                 dataField: 'description',
@@ -81,19 +87,6 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerTitle: () => `Calibration Frequency`,
                 headerClasses: 'cal-column',
             },
-            {
-                isKey: true,
-                dataField: 'pk',
-                text: 'Details',
-                sort: false,
-                headerClasses: 'more-column',
-                title: (cell) => `Go to model detail view`,
-                formatter: (pk) => {
-                    return (
-                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-                    )
-                }
-            }
         ]
     )
 };

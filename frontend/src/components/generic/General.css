@@ -29,6 +29,17 @@
     margin-bottom: 25px;
 }
 
+/* add 'green-link' to any <a> element to get a green hyperlink */
+a.green-link {
+    color: rgb(57, 127, 60) !important;
+}
+
+a.green-link:hover {
+    color: rgb(57, 127, 60) !important;
+    text-decoration: underline;
+    
+}
+
 /* apply this css to any logo columns that will have buttons
 add 'button-col' to the classname for the div acting as the column
 */

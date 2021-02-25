@@ -20,20 +20,22 @@ let filters = {
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
-
+// 'onFilterChange' a handler that will be passed ^filters
+// 'currentFilter' must match filters ^ 
 const InstrumentFilterBar = (props) => {
+    filters = props.currentFilter;
     return (
         <Container className="filter-column">
             <Col>
                 <h3>Filters</h3>
 
-                <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={onTextInput} />
+                <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
-                <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={onTextInput} />
+                <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
-                <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={onTextInput} />
+                <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
-                <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={onTextInput} />
+                <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
@@ -44,19 +46,23 @@ const InstrumentFilterBar = (props) => {
     )
 }
 
-const onTextInput = (e) => {
+const onTextInput = (e, filterChange) => {
     switch (e.target.name) {
         case modelName:
             filters.model_number = e.target.value;
+            filterChange(filters);
             break;
         case vendorName:
             filters.vendor = e.target.value;
+            filterChange(filters);
             break;
         case serialName:
             filters.serial_number = e.target.value;
+            filterChange(filters);
             break;
         case descriptionName:
             filters.description = e.target.value;
+            filterChange(filters);
             break;
         default:
             break;

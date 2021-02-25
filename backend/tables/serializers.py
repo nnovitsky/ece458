@@ -191,3 +191,21 @@ class ListItemModelCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModelCategory
         fields = ('pk', 'name', 'count', 'item_models')
+
+
+class InstrumentCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = InstrumentCategory
+        fields = ('pk', 'name', 'instruments')
+
+
+class ListInstrumentCategorySerializer(serializers.ModelSerializer):
+    count = serializers.SerializerMethodField()
+
+    def get_count(self, obj):
+        return len(obj.instruments.all())
+
+    class Meta:
+        model = InstrumentCategory
+        fields = ('pk', 'name', 'count', 'instruments')

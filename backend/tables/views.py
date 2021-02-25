@@ -431,6 +431,26 @@ def model_category_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET', 'POST'])
+def instrument_category_list(request):
+
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        categories = InstrumentCategory.objects.all()
+        return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
+
+    elif request.method == 'POST':
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = InstrumentCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # @api_view(['GET', 'PUT', 'DELETE'])
 # def categories_detail(request, pk):
 #     """

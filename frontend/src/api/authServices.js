@@ -3,7 +3,6 @@ const API_URL = Configs
 
 
 export default class AuthServices {
-  constructor() { }
 
   async login(data) {
 
@@ -58,5 +57,37 @@ export default class AuthServices {
           })
       }
       })
+    }
+
+
+    async getOauthToken(code) {
+      
+      const url = `${API_URL}/api/oauth/consume/?code=${code}`;
+
+      let result = {
+        success: false,
+        data: [],
+      }
+      
+      console.log("Calling get oath token");
+
+      return fetch(url).then(res =>{
+        console.log(res);
+        if(res.ok){
+          return res.json().then(json => {
+            result.success = true;
+            result.data = json;
+            console.log("Auth working");
+            console.log(result.data)
+            return result;
+          });
+        }
+        else{
+          result.success = false;
+          console.log("Auth not working");
+          return result;
+        }
+      }
+      )
     }
 }

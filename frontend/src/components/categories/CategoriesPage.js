@@ -5,12 +5,14 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import CategoriesTable from './ModelCategoriesTable';
 import RenamePopup from './RenamePopup';
+import DeletePopup from '../generic/GenericPopup';
 
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            currentTab: 'model',
             renamePopup: {
                 pk: null,
                 currentName: '',
@@ -18,7 +20,13 @@ class ModelTablePage extends Component {
                 isShown: false,
                 errors: []
             },
-            currentTab: 'model',
+            deletePopup: {
+                pk: null,
+                isShown: false,
+                errors: [],
+                name: '',
+            },
+
             modelCategories: {
                 data: [],
                 pagination: {
@@ -48,6 +56,9 @@ class ModelTablePage extends Component {
         this.onEditClicked = this.onEditClicked.bind(this);
         this.onEditClose = this.onEditClose.bind(this);
         this.onEditSubmit = this.onEditSubmit.bind(this);
+        this.onDeleteClick = this.onDeleteClick.bind(this);
+        this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
+        this.onDeleteCancel = this.onDeleteCancel.bind(this);
         this.onInstrumentTableChange = this.onInstrumentTableChange.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
     }
@@ -58,10 +69,12 @@ class ModelTablePage extends Component {
     }
 
     render() {
-        let renamePopup = this.makeRenamePopup();    //will return null if not being displayed
+        let renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
+        let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         return (
             <div className="background">
                 {renamePopup}
+                {deletePopup}
                 <div className="row mainContent">
                     <div className="col-2 text-center button-col">
                         <img src={logo} alt="Logo" />
@@ -74,6 +87,7 @@ class ModelTablePage extends Component {
                                     onTableChange={this.onModelTableChange}
                                     pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
                                     onCategoryEdit={this.onEditClicked}
+                                    onCategoryDelete={this.onDeleteClick}
                                 />
                             </Tab>
                             <Tab eventKey="instrument" title="Instrument Categories">
@@ -82,6 +96,7 @@ class ModelTablePage extends Component {
                                     onTableChange={this.onInstrumentTableChange}
                                     pagination={{ page: this.state.instrumentCategories.pagination.currentPageNum, sizePerPage: (this.state.instrumentCategories.pagination.showAll ? this.state.instrumentCategories.pagination.resultCount : this.state.instrumentCategories.pagination.resultsPerPage), totalSize: this.state.instrumentCategories.pagination.resultCount }}
                                     onCategoryEdit={this.onEditClicked}
+                                    onCategoryDelete={this.onDeleteClick}
                                 />
                             </Tab>
 
@@ -94,7 +109,6 @@ class ModelTablePage extends Component {
     }
 
     makeRenamePopup() {
-        if (this.state.renamePopup.isShown) {
             return (
                 <RenamePopup
                     isShown={this.state.renamePopup.isShown}
@@ -104,9 +118,24 @@ class ModelTablePage extends Component {
                     currentName={this.state.renamePopup.currentName}
                 />
             )
-        } else {
-            return null;
-        }
+    }
+
+    makeDeletePopup() {
+        let body = (
+            <p>Are you sure you want to delete category '{this.state.deletePopup.name}'?</p>
+        )
+        return(
+            <DeletePopup
+                show={this.state.deletePopup.isShown}
+                body={body}
+                headerText="Warning!"
+                closeButtonText="Cancel"
+                submitButtonText="Delete"
+                onClose={this.onDeleteCancel}
+                onSubmit={this.onDeleteSubmit}
+                submitButtonVariant="danger"
+            />
+        )
     }
 
     async updateModelCategories() {
@@ -184,7 +213,44 @@ class ModelTablePage extends Component {
 
     onEditSubmit(newName) {
         console.log(`New name: ${newName}`);
+        switch (this.state.currentTab) {
+            case 'model':
+                console.log('renaming model category')
+                return;
+            case 'instrument':
+                console.log('renaming instrument category');
+                return;
+        }
         this.onEditClose();
+    }
+
+    onDeleteClick(e) {
+        console.log("clicked")
+        this.setState({
+            deletePopup: {
+                ...this.state.deletePopup,
+                isShown: true,
+                name: e.target.name,
+                pk: e.target.value
+            }
+        })
+        console.log(`Click delete ${e.target.name}`);
+    }
+
+    onDeleteSubmit(e) {
+        console.log(`Wants to delete ${this.state.deletePopup.name}`);
+        this.onDeleteCancel();
+    }
+
+    onDeleteCancel() {
+        this.setState({
+            deletePopup: {
+                ...this.state.deletePopup,
+                isShown: false,
+                name: '',
+                pk: null
+            }
+        })
     }
 
     onInstrumentTableChange(type, { page, sizePerPage }) {

@@ -49,6 +49,7 @@ class InstrumentTablePage extends Component {
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
+        this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
@@ -65,9 +66,7 @@ class InstrumentTablePage extends Component {
         await this.updateTable();
     }
 
-    render(
-        adminButtons = <Button onClick={this.onAddInstrumentClicked} style={{width: "75px", float:"left"}}>Create</Button>
-    ) {
+    render() {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -76,8 +75,9 @@ class InstrumentTablePage extends Component {
         }
         let buttonRow = (
             <div className="table-button-row">
-                {this.props.is_admin ? adminButtons : null}
+                <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
+                <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         )
@@ -155,6 +155,12 @@ class InstrumentTablePage extends Component {
                 console.log("error")
             }
         })
+    }
+
+    onCategoriesClicked() {
+        this.setState({
+            redirect: '/categories'
+        });
     }
 
     // event handler for the NewModelTable, it handles sorting and pagination

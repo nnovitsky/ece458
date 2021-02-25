@@ -17,11 +17,12 @@ import Button from 'react-bootstrap/Button';
 // }
 
 // onCategoryEdit: event handler for editing category, the event.target.value passed in is the pk, event.target.currentName is the current category name
+// onCategoryDelete: event handler for deleting category, the event.target.value passed in is the pk, event.target.currentName is the current category name
 const keyField = 'pk';
 
 const modelCategoriesTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onCategoryEdit);
+    let config = makeConfig(countStart, props.onCategoryEdit, props.onCategoryDelete);
     return (
         <DataTable
             data={props.data}
@@ -37,7 +38,7 @@ const modelCategoriesTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, onCategoryEdit) => {
+let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
     return (
         [
             // this is a column for a number for the table
@@ -75,6 +76,18 @@ let makeConfig = (countStart, onCategoryEdit) => {
                 formatter: (cell, row) => {
                     return (
                         <Button onClick={onCategoryEdit} value={row.pk} name={row.category} className="data-table-button">Rename</Button>
+                    )
+                }
+            },
+            {
+                dataField: 'delete',
+                text: 'Delete',
+                sort: false,
+                headerClasses: 'delete-column',
+                title: (cell, row) => `Delete '${row.category}'`,
+                formatter: (cell, row) => {
+                    return (
+                        <Button onClick={onCategoryDelete} value={row.pk} name={row.category} className="data-table-button">Delete</Button>
                     )
                 }
             }

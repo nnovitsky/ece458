@@ -42,6 +42,7 @@
     "bootstrap": "^4.6.0",
     "jsonpath": "^1.1.0",
     "prop-types": "^15.7.2",
+    "react-beforeunload": "^2.4.0",
     "react-bootstrap": "^1.4.3",
     "react-bootstrap-table-next": "^4.0.3",
     "react-bootstrap-table2-paginator": "^2.1.2",

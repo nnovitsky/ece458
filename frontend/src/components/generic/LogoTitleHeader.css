@@ -1,26 +1,30 @@
 /* defines the css for the Logo title header */
-.detail-header {
+.logo-title-header {
     margin: 10px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.detail-header-buttons-div {
+.logo-title-header-buttons-div {
     width: 50%;
     float: right;
     margin: auto;
 }
 
-.detail-header-buttons-div button {
+.logo-title-header-buttons-div button {
     float: right;
 }
 
-.detail-header h1 {
+.logo-title-header h1 {
   margin-bottom: 20px;
   margin-left: 15px;
-  margin: auto;
+  margin-top: auto;
+  margin-bottom: auto;
   text-align: center;
+  height: 100%;
 }
 
-.detail-header img {
+.logo-title-header img {
   max-width: 90px;
   max-height: 90px;
 }

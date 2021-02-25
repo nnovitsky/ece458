@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
+import Col from 'react-bootstrap/Col';
 import '../generic/General.css';
-import logo from '../../assets/HPT_logo_crop.png';
-import CategoriesTable from './ModelCategoriesTable';
+import './CategoriesPage.css';
+
+import LogoHeader from '../generic/LogoTitleHeader';
+import CategoriesTable from './CategoriesTable';
 import RenamePopup from './RenamePopup';
 import DeletePopup from '../generic/GenericPopup';
 
@@ -76,10 +79,11 @@ class ModelTablePage extends Component {
                 {renamePopup}
                 {deletePopup}
                 <div className="row mainContent">
-                    <div className="col-2 text-center button-col">
-                        <img src={logo} alt="Logo" />
-                    </div>
-                    <div className="col-10">
+
+                    <Col className="category-page-content">
+                        <LogoHeader
+                            title="Category Management"
+                        />
                         <Tabs defaultActiveKey={this.state.currentTab} onSelect={this.onTabChange}>
                             <Tab eventKey="model" title="Model Categories">
                                 <CategoriesTable
@@ -102,7 +106,7 @@ class ModelTablePage extends Component {
 
                         </Tabs>
 
-                    </div>
+                    </Col>
                 </div>
             </div>
         )
@@ -215,10 +219,11 @@ class ModelTablePage extends Component {
         console.log(`New name: ${newName}`);
         switch (this.state.currentTab) {
             case 'model':
-                console.log('renaming model category')
                 return;
             case 'instrument':
-                console.log('renaming instrument category');
+                return;
+            default:
+                console.log(`Edit unspoorted for this tab: ${this.state.currentTab}`)
                 return;
         }
         this.onEditClose();

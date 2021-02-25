@@ -1,5 +1,4 @@
 import React from 'react';
-import Row from 'react-bootstrap/Row';
 
 import './LogoTitleHeader.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -11,13 +10,13 @@ import logo from '../../assets/HPT_logo_crop.png';
 // buttons: can be an array or some button element, will have some styling to have it float right
 const logoTitleHeader = (props) => {
     return (
-        <Row className="detail-header">
-            <img src={logo} alt="Logo" className="detail-logo" />
+        <div className="logo-title-header">
+            <img src={logo} alt="Logo" />
             <h1>{props.title}</h1>
-            <div className="detail-header-buttons-div">
+            <div className="logo-title-header-buttons-div">
                 {props.buttons}
             </div>
-        </Row>
+        </div>
     )
 }
 

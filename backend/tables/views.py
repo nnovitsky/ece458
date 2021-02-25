@@ -20,6 +20,8 @@ class OauthConsume(APIView):
 
     def get(self, request, format=None):
         code = request.GET['code']
+        print("!!!!!!")
+        print(code)
         try:
             auth_token = get_token(code)
             user_details = get_user_details(auth_token)

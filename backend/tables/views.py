@@ -410,7 +410,7 @@ class UserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-#CATEGORIES
+# CATEGORIES
 @api_view(['GET', 'POST'])
 def model_category_list(request):
 

@@ -13,6 +13,8 @@ from backend.tables.serializers import UserSerializerWithToken
 
 def validate_user(request, create=False):
     if 'username' in request.data:
+        if '@' in request.data['username']:
+            return Response({'input_error': ["Username cannot contain '@' symbol."]}, status.HTTP_400_BAD_REQUEST)
         if len(request.data['username']) > USERNAME_MAX_LENGTH:
             return Response({'input_error': [f"Username must be less than {USERNAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
         elif len(request.data['username']) == 0:

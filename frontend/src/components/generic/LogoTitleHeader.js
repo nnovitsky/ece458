@@ -2,6 +2,7 @@ import React from 'react';
 import Row from 'react-bootstrap/Row';
 
 import './LogoTitleHeader.css';
+import logo from '../../assets/HPT_logo_crop.png';
 
 // Creates a header row with the logo and a title next to the logo, with an optional button row floating to the right
 

@@ -20,10 +20,13 @@ class OauthConsume(APIView):
 
     def get(self, request, format=None):
         code = request.GET['code']
-        auth_token = get_token(code)
-        user_details = get_user_details(auth_token)
-        id_token = parse_id_token(auth_token)
-        return login_oauth_user(id_token, user_details)
+        try:
+            auth_token = get_token(code)
+            user_details = get_user_details(auth_token)
+            id_token = parse_id_token(auth_token)
+            return login_oauth_user(id_token, user_details)
+        except KeyError:
+            return Response({"oauth_error": ["OAuth login failed."]}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

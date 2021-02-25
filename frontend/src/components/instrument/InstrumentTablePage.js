@@ -12,6 +12,7 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../gene
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import GenericLoader from '../generic/GenericLoader.js';
 
 let date = '';
 
@@ -45,13 +46,16 @@ class InstrumentTablePage extends Component {
                 isShown: false,
                 errors: []
             },
+            isLoading: false,
         }
 
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
+        this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
@@ -64,9 +68,7 @@ class InstrumentTablePage extends Component {
         await this.updateTable();
     }
 
-    render(
-        adminButtons = <Button onClick={this.onAddInstrumentClicked} style={{width: "75px", float:"left"}}>Create</Button>
-    ) {
+    render() {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -75,14 +77,16 @@ class InstrumentTablePage extends Component {
         }
         let buttonRow = (
             <div className="table-button-row">
-                {this.props.is_admin ? adminButtons : null}
+                <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
+                <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         )
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addInstrumentPopup}
                 <div className="background">
                     <div className="row mainContent">
@@ -92,6 +96,8 @@ class InstrumentTablePage extends Component {
                             <FilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
+                                currentFilter={this.state.instrumentSearchParams.filters}
+                                onFilterChange={this.onFilterChange}
                             />
                         </div>
                         <div className="col-10">
@@ -130,6 +136,9 @@ class InstrumentTablePage extends Component {
     async updateTable() {
         console.log(`Data being requested: ${Date.now() - date}`);
         let params = this.state.instrumentSearchParams;
+        this.setState({
+            isLoading: true,
+        })
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             console.log(`Data back now and being displayed: ${Date.now() - date}`)
             if (result.success) {
@@ -138,8 +147,9 @@ class InstrumentTablePage extends Component {
                     pagination: {
                         ...this.state.pagination,
                         resultCount: result.data.count,
-                    }
-                }, () => console.log(`Updated state: ${Date.now() - date}`))
+                    },
+                    isLoading: false
+                })
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
                         pagination: {
@@ -152,9 +162,18 @@ class InstrumentTablePage extends Component {
                 }
                 
             } else {
+                this.setState({
+                    isLoading: false,
+                })
                 console.log("error")
             }
         })
+    }
+
+    onCategoriesClicked() {
+        this.setState({
+            redirect: '/categories'
+        });
     }
 
     // event handler for the NewModelTable, it handles sorting and pagination
@@ -217,6 +236,15 @@ class InstrumentTablePage extends Component {
                     nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
                 }
             })
+    }
+
+    onFilterChange(newFilter) {
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                filters: newFilter,
+            }
+        })
     }
 
     async onFilteredSearch(newFilter) {

@@ -6,6 +6,8 @@ import ModelTable from "./ModelTable";
 import AddModelPopup from "./AddModelPopup";
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
+import GenericLoader from '../generic/GenericLoader.js';
+
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -20,6 +22,7 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
+            isLoading: false,
             pagination: {
                 resultCount: 0,
                 numPages: 1,
@@ -30,12 +33,16 @@ class ModelTablePage extends Component {
                 filters: {
                     model_number: '',
                     vendor: '',
-                    description: ''
+                    description: '',
+                    categories: [
+
+                    ]
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
             },
+            modelCategories: [],
             addModelPopup: {
                 isShown: false,
                 errors: []
@@ -47,8 +54,10 @@ class ModelTablePage extends Component {
         }
 
         //binding
+        this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
@@ -64,22 +73,24 @@ class ModelTablePage extends Component {
         }
         )
         this.updateModelTable();
+        this.getModelCategories();
     }
 
-    render(
-        adminButtons = <Button onClick={this.onAddModelClicked}>Create</Button>
-    ) {
+    render() {
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">
-            {this.props.is_admin ? adminButtons : null}
+            <Button onClick={this.onAddModelClicked} hidden={!this.props.is_admin}>Create</Button>
             <Button onClick={this.onExportModelsClicked}>Export</Button>
+            <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
+
             {/* <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button> */}
         </div>)
         return (
             <div>
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addModelPopup}
                 <div className="background">
                     <div className="row mainContent">
@@ -88,6 +99,9 @@ class ModelTablePage extends Component {
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
+                                onFilterChange={this.onFilterChange}
+                                currentFilter={this.state.modelSearchParams.filters}
+                                modelCategories={this.state.modelCategories}
                             />
 
                         </div>
@@ -161,9 +175,24 @@ class ModelTablePage extends Component {
         }
     }
 
+    onCategoriesClicked() {
+        this.setState({
+            redirect: '/categories'
+        });
+    }
+
     onDetailClicked(e) {
         this.setState({
             redirect: `/models/${e.target.value}`
+        })
+    }
+
+    onFilterChange(newFilter) {
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                filters: newFilter,
+            }
         })
     }
 
@@ -256,15 +285,40 @@ class ModelTablePage extends Component {
     }
 
     async updateModelTable() {
+        this.setState({
+            isLoading: true,
+        })
         modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
+            this.setState({
+                isLoading: false,
+            })
             if (result.success) {
                 this.updateData(result.data)
+
             } else {
                 console.log("error loading model table data")
             }
 
         }
         )
+    }
+
+    async getModelCategories() {
+        this.setState({
+            modelCategories: [
+            {
+                pk: 1,
+                category: "new"
+            },
+            {
+                pk: 2,
+                category: "old"
+            },
+            {
+                pk: 3,
+                category: "red"
+            }
+        ]})
     }
 
     // method called with the data from a successful api hit for getting the model table,

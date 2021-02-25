@@ -11,6 +11,22 @@ one_line = 100
 two_line = 200
 
 
+class UserType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    users = models.ManyToManyField(User, blank=True)
+
+    @classmethod
+    def contains_user(cls, user, type_name):
+        try:
+            group = UserType.objects.get(name=type_name)
+        except UserType.DoesNotExist:
+            return False
+        return user in group.users.all()
+
+    def __str__(self):
+        return self.name
+
+
 class ItemModel(models.Model):
     """
     Equipment model with unique vendor + model number pair.

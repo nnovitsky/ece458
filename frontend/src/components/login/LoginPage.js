@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import "./Login.css";
 import AuthServices from '../../api/authServices';
+import Button from 'react-bootstrap/Button';
+
 import { Redirect } from "react-router-dom";
 const authServices = new AuthServices();
 
@@ -9,7 +11,8 @@ class login extends React.Component {
     state = {
         username: '',
         password: '',
-        redirect: null
+        redirect: null,
+        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=http%3A//localhost%3A3000/oauth/consume&response_type=code',
     };
 
     async componentDidMount() {
@@ -33,6 +36,7 @@ class login extends React.Component {
             <div style={{textAlign: "center"}}>
             <form className="login" onSubmit={e => this.props.handle_login(e, this.state)}>
                 <h2>Log In</h2>
+                <br></br>
                 <label htmlFor="username">Username</label>
                 <input
                     type="text"
@@ -49,6 +53,10 @@ class login extends React.Component {
                 />
                 <input type="submit" />
                 <h5>{this.props.error_message}</h5>
+                <p>
+                <h6> or </h6>
+                <Button id="duke-button" href={this.state.oauthLink}>Log in with Duke NetId</Button>
+                </p>
             </form>
             </div>
         );

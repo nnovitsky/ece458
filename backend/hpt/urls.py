@@ -23,7 +23,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/current_user/', views.current_user, name='current_user'),
-    path('api/token_auth/', obtain_jwt_token, name='token_auth'),
+    path('api/token_auth/', views.TokenAuth.as_view(), name='token_auth'),
     path('api/token_refresh/', refresh_jwt_token, name='token_refresh'),
     path('api/create_user/', views.UserCreate.as_view(), name='create_user'),
     path('api/users/', views.user_list, name='user_list'),
@@ -45,5 +45,5 @@ urlpatterns = [
     path('api/export_instruments_csv/', api_views.InstrumentExport.as_view()),
     path('api/export_example_model_csv/', views.get_example_model_csv),
     path('api/export_example_instrument_csv/', views.get_example_instrument_csv),
-
+    path('api/oauth/consume/', views.OauthConsume.as_view()),
 ]

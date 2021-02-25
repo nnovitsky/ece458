@@ -300,8 +300,9 @@ def import_models_csv(request):
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
-                        status=status.HTTP_200_OK)
+        nextPage = 1
+        previousPage = 1
+        return get_page_response(upload_list, request, ItemModelSerializer, nextPage, previousPage)
 
 
 @api_view(['PUT'])
@@ -335,8 +336,9 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({"description": [f"{format_response}", upload_summary], "upload_list": upload_list},
-                        status=status.HTTP_200_OK)
+        nextPage = 1
+        previousPage = 1
+        return get_page_response(upload_list, request, ListInstrumentReadSerializer, nextPage, previousPage)
 
 
 @api_view(['GET'])

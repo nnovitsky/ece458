@@ -21,8 +21,8 @@ CAL_COMMENT_INDEX = 5
 def upload_instrument(current_row, item_model):
 
     instrument_info = [item_model.pk, current_row[SERIAL_NUM_INDEX], current_row[COMMENT_INDEX]]
-    instrument_data = dict(zip(instrument_keys, instrument_info))
-    instrument_upload = InstrumentWriteSerializer(data=instrument_data)
+    instrument_raw_data = dict(zip(instrument_keys, instrument_info))
+    instrument_upload = InstrumentWriteSerializer(data=instrument_raw_data)
     if instrument_upload.is_valid():
         current_instrument = instrument_upload.save()
         return True, current_instrument
@@ -51,7 +51,8 @@ def upload_cal_event(current_row, current_instrument, user):
 
 
 def get_instrument_list(file, user):
-    instrument_data = []
+    instrument_raw_data = []
+    instruments = []
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
@@ -60,7 +61,7 @@ def get_instrument_list(file, user):
         if is_blank_row(row):
             continue
 
-        instrument_data.append(dict(zip(record_keys, row)))
+        instrument_raw_data.append(dict(zip(record_keys, row)))
 
         item_model = ItemModel.objects.filter(vendor=row[VENDOR_INDEX]).filter(model_number=row[MODEL_NUM_INDEX])[0]
         instrument_upload_success, current_instrument = upload_instrument(row, item_model)
@@ -73,10 +74,12 @@ def get_instrument_list(file, user):
             if not cal_event_upload_success:
                 return False, [], "Failed to upload cal events to db"
 
-    return True, instrument_data, f"Uploaded {len(instrument_data)} records to db"
+        instruments.append(current_instrument)
+
+    return True, instruments, f"Uploaded {len(instrument_raw_data)} records to db"
 
 
 def handler(verified_file, request):
     user = request.user
-    successful_upload, instrument_data, upload_summary = get_instrument_list(verified_file, user)
-    return successful_upload, instrument_data, upload_summary
+    successful_upload, instruments, upload_summary = get_instrument_list(verified_file, user)
+    return successful_upload, instruments, upload_summary

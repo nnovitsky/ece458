@@ -45,7 +45,7 @@ const ModelFilterBar = (props) => {
                     options={modelCategories}
                     isSearchable={true}
                     onChange={(e) => {onCategoryInput(e, props.onFilterChange)}}
-                    // defaultInputValue={''}
+                    placeholder='Model Categories...'
                     isMulti
                 />
                 <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>

@@ -5,8 +5,8 @@ import logo from '../../assets/HPT_logo_crop.png';
 import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
-import ModelTable from "./ImportModelTable.js";
-import InstrumentTable from "./ImportInstrumentTable.js";
+import ModelTable from "../model/ModelTable.js";
+import InstrumentTable from "../instrument/InstrumentTable.js";
 import Button from 'react-bootstrap/Button';
 import GenericLoader from '../generic/GenericLoader.js';
 
@@ -25,8 +25,8 @@ class ImportPage extends Component {
             records_count: '',
             tableData: [],
             pagination: {
-                resultCount: '',
-                numPages: '',
+                resultCount: 0,
+                numPages: 1,
                 resultsPerPage: 10,
                 currentPageNum: 1,
             },
@@ -42,68 +42,76 @@ class ImportPage extends Component {
     }
 
     render(
-        modelTable = <ModelTable
-                        data={this.state.tableData}
-                        countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-                        onDetailRequested={this.onDetailViewRequested}
-                        sortData={() => {}}/>, 
-        instrumentTable = <InstrumentTable
-                            data={this.state.tableData}
-                            countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-                            onDetailRequested={this.onDetailViewRequested}
-                            onCertificateRequested={this.onCertificateRequested}
-                            sortData={() => {}}/>
+        modelTable =
+            <div>
+                <ModelTable
+                    data={this.state.tableData}
+                    onTableChange={null}
+                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                    onMoreClicked={null}
+                    inlineElements={null}
+                />
+            </div>,
+
+
+        instrumentTable = 
+            <div>
+                <InstrumentTable
+                    data={this.state.tableData}
+                    onTableChange={null}
+                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                    onCertificateRequested={this.onCertificateRequested}
+                    onMoreClicked={null}
+                    inlineElements={null}
+                />
+            </div>
     ) {
         return (
             <div>
-            <ImportPagePopup
+                <ImportPagePopup
                     isShown={this.state.showInstructionsPopup.isShown}
                     onClose={this.onShowInstructionsClosed}
                 />
                 <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-            <div className="background">
-                <div className="row mainContent">
-                    <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
-                    <div className="col-5"><h2>Import</h2>
-                        <form className="text-center" method="post" action="#" id="#">
-                            <div className="form-group files">
-                                <label>Upload Your File</label>
-                                <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                <div className="background">
+                    <div className="row mainContent">
+                        <div className="col-2 text-center"><img src={logo} alt="Logo" /></div>
+                        <div className="col-5"><h2>Import</h2>
+                            <form className="text-center" method="post" action="#" id="#">
+                                <div className="form-group files">
+                                    <label>Upload Your File</label>
+                                    <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                                </div>
+                            </form>
+                            <div className="popup-button-row lowerMargin">
+                                <Button onClick={this.importModelClicked}>Import Model</Button>
+                                <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
                             </div>
-                        </form>
-                        <div className="popup-button-row lowerMargin">
-                            <Button onClick={this.importModelClicked}>Import Model</Button>
-                            <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
-                        </div>
-                        <div className="popup-button-row" >
-                            <Button variant="secondary" style={{width: "100%"}} onClick={this.onShowInstructionsClicked}>How to Import</Button>
+                            <div className="popup-button-row" >
+                                <Button variant="secondary" style={{ width: "100%" }} onClick={this.onShowInstructionsClicked}>How to Import</Button>
 
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-4 leftText">
-                        <h2>Summary</h2>
-                        <div className="summary overflow-auto">
-                            <p>
-                                Status: <b>{this.state.status_message}</b>
-                                <br></br>
-                                <br></br>
-                                Records: <b>{this.state.records_count}</b>
-                            </p>
+                        <div className="col-4 leftText">
+                            <h2>Summary</h2>
+                            <div className="summary overflow-auto">
+                                <p>
+                                    Status: <b>{this.state.status_message}</b>
+                                    <br></br>
+                                    <br></br>
+                                    Records: <b>{this.state.records_count}</b>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="container">
-                    <div className="row">
-                    <div className="col-2"></div>
-                    <div className="col-9">
-                            {(this.state.showModelTable || this.state.showInstrumentTable) ? <h3>Data Added:</h3> : null}
-                            {this.state.showModelTable ? modelTable : null}
-                            {this.state.showInstrumentTable ? instrumentTable : null} 
-                    </div>                       
-                    </div>
+                            <div className="row">
+                            <div className="col-2"></div>
+                                <div className="col-9">
+                                    {this.state.showModelTable ? modelTable : null}
+                                    {this.state.showInstrumentTable ? instrumentTable : null}
+                                </div>
+                            </div>
                     </div>
                 </div>
-            </div>
             </div>
         );
     }
@@ -143,7 +151,7 @@ class ImportPage extends Component {
                 isLoading: true
             })
             const formData = new FormData();
-                formData.append('FILE', this.state.selectedFile);
+            formData.append('FILE', this.state.selectedFile);
 
             modelServices.importModelCSV(formData)
                 .then(res => {
@@ -151,7 +159,7 @@ class ImportPage extends Component {
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,
-                            tableData: res.data.upload_list,
+                            tableData: res.data.data,
                             showModelTable: true,
                             showInstrumentTable: false,
                             isLoading: false
@@ -182,7 +190,7 @@ class ImportPage extends Component {
                 isLoading: true,
             })
             const formData = new FormData();
-                formData.append('FILE', this.state.selectedFile);
+            formData.append('FILE', this.state.selectedFile);
 
             instrumentServices.importInstrumentCSV(formData)
                 .then(res => {
@@ -190,7 +198,7 @@ class ImportPage extends Component {
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,
-                            tableData: res.data.upload_list,
+                            tableData: res.data.data,
                             showModelTable: false,
                             showInstrumentTable: true,
                             isLoading: false,

@@ -5,7 +5,7 @@ export default class CategoryServices {
 
     // type is either 'instrument' or 'model'
     // showAll is a boolean
-    async getCategories(type, showAll) {
+    async getCategories(type, showAll, desiredPage) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -30,6 +30,8 @@ export default class CategoryServices {
         let url = `${API_URL}/api/${path}/`;
         if (showAll) {
             url += '?get_all';
+        } else {
+            url += `?page=${desiredPage}`
         }
 
         return fetch(url, {

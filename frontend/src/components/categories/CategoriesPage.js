@@ -199,9 +199,12 @@ class CategoriesPage extends Component {
     }
 
     async updateModelCategories() {
-        await categoryServices.getCategories('model', this.state.modelCategories.pagination.showAll).then(
+        let pagination = this.state.modelCategories.pagination;
+        console.log(`Desired page: ${pagination.desiredPage}, ${pagination.showAll}`)
+        await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage).then(
             (result) => {
                 if (result.success) {
+                    let showAll = this.state.modelCategories.pagination.showAll;
                     this.setState({
                         modelCategories: {
                             ...this.state.modelCategories,
@@ -210,7 +213,7 @@ class CategoriesPage extends Component {
                                 ...this.state.modelCategories.pagination,
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
-                                currentPageNum: result.data.currentpage
+                                currentPageNum: showAll ? 1 : result.data.currentpage
                             }
                         }
                     })
@@ -220,9 +223,11 @@ class CategoriesPage extends Component {
     }
 
     async updateInstrumentCategories() {
-        await categoryServices.getCategories('instrument', this.state.instrumentCategories.pagination.showAll).then(
+        let pagination = this.state.instrumentCategories.pagination;
+        await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage).then(
             (result) => {
                 if (result.success) {
+                    let showAll = this.state.instrumentCategories.pagination.showAll;
                     this.setState({
                         instrumentCategories: {
                             ...this.state.instrumentCategories,
@@ -231,7 +236,7 @@ class CategoriesPage extends Component {
                                 ...this.state.instrumentCategories.pagination,
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
-                                currentPageNum: result.data.currentpage
+                                currentPageNum: showAll ? 1 : result.data.currentpage
                             }
                         }
                     })
@@ -243,11 +248,49 @@ class CategoriesPage extends Component {
     onTabChange(e) {
         this.setState({
             currentTab: e
+        }, () => {
+            this.updateTabCategory();
         })
     }
 
     onModelTableChange(type, { page, sizePerPage }) {
-        console.log(type);
+        switch (type) {
+            case 'pagination':
+                let showAll = (sizePerPage === this.state.modelCategories.pagination.resultCount);
+                this.setState({
+                    modelCategories: {
+                        ...this.state.modelCategories,
+                        pagination: {
+                            ...this.state.modelCategories.pagination,
+                            desiredPage: (showAll ? 1 : page),
+                            showAll: showAll
+                        }
+                    }
+                }, () => this.updateModelCategories());
+                return;
+            default:
+                console.log(`Model category table ${type} not supported`);
+        }
+    }
+
+    onInstrumentTableChange(type, { page, sizePerPage }) {
+        switch (type) {
+            case 'pagination':
+                let showAll = (sizePerPage === this.state.instrumentCategories.pagination.resultCount);
+                this.setState({
+                    instrumentCategories: {
+                        ...this.state.instrumentCategories,
+                        pagination: {
+                            ...this.state.instrumentCategories.pagination,
+                            desiredPage: (showAll ? 1 : page),
+                            showAll: showAll
+                        }
+                    }
+                }, () => this.updateInstrumentCategories());
+                return;
+            default:
+                console.log(`Instrument category table ${type} not supported`);
+        }
     }
 
 
@@ -283,7 +326,6 @@ class CategoriesPage extends Component {
     }
 
     onEditClicked(e) {
-        console.log(`Rename requested for ${e.target.name} with pk ${e.target.value}`);
         this.setState({
             renamePopup: {
                 ...this.state.renamePopup,
@@ -306,7 +348,6 @@ class CategoriesPage extends Component {
     }
 
     async onEditSubmit(newName) {
-        console.log(`New name: ${newName}`);
         categoryServices.editCategory(this.state.currentTab, newName, this.state.renamePopup.pk).then(
             (result) => {
                 if (result.success) {
@@ -319,7 +360,6 @@ class CategoriesPage extends Component {
     }
 
     onDeleteClick(e) {
-        console.log(e.target.value)
         this.setState({
             deletePopup: {
                 ...this.state.deletePopup,
@@ -351,13 +391,6 @@ class CategoriesPage extends Component {
             }
         })
     }
-
-
-    onInstrumentTableChange(type, { page, sizePerPage }) {
-        console.log(type);
-    }
-
-
 
 }
 

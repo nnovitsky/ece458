@@ -27,13 +27,15 @@ class InstrumentTablePage extends Component {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
             modelCategories: [],
+            instrumentCategories: [],
             instrumentSearchParams: {
                 filters: {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
                     description: '',
-                    model_categories: []
+                    model_categories: [],
+                    instrument_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
@@ -75,6 +77,7 @@ class InstrumentTablePage extends Component {
         )
         this.updateTable();
         this.getModelCategories();
+        this.getInstrumentCategories();
     }
 
     render() {
@@ -109,6 +112,7 @@ class InstrumentTablePage extends Component {
                                 currentFilter={this.state.instrumentSearchParams.filters}
                                 onFilterChange={this.onFilterChange}
                                 modelCategories={this.state.modelCategories}
+                                instrumentCategories={this.state.instrumentCategories}
                             />
                         </div>
                         <div className="col-10">
@@ -149,8 +153,23 @@ class InstrumentTablePage extends Component {
         let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
-        })
-        instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
+        });
+
+        let modelCats = params.filters.model_categories.map(el => el.pk);
+        let instrumentCats = params.filters.instrument_categories.map(el => el.pk);
+
+        let filters = {
+            model_number: params.filters.model_number,
+            vendor: params.filters.vendor,
+            serial_number: params.filters.serial_number,
+            description: params.filters.description,
+            model_categories: modelCats.join(","),
+            instrument_categories: instrumentCats.join(",")
+        }
+
+        console.log(filters)
+
+        instrumentServices.getInstruments(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             console.log(`Data back now and being displayed: ${Date.now() - date}`)
             if (result.success) {
                 this.setState({
@@ -280,7 +299,9 @@ class InstrumentTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
-                    description: ''
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: [],
                 }
             }
         }, () => {
@@ -322,6 +343,18 @@ class InstrumentTablePage extends Component {
                 if (result.success) {
                     this.setState({
                         modelCategories: result.data.data
+                    })
+                }
+            }
+        )
+    }
+
+    async getInstrumentCategories() {
+        await categoryServices.getCategories('instrument', true, 1).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        instrumentCategories: result.data.data
                     })
                 }
             }

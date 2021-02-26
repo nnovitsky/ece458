@@ -16,19 +16,24 @@ let filters = {
     model_number: '',
     vendor: '',
     serial_number: '',
-    description: ''
+    description: '',
+    model_categories: [],
+    instrument_categories: []
 }
 
 let modelCategories = [];
+let instrumentCategories = [];
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
 // 'onFilterChange' a handler that will be passed ^filters
 // 'currentFilter' must match filters ^ 
 // modelCategories  an array of pk/category pairs
+// instrumentCategories: an array of pk/category pairs
 const InstrumentFilterBar = (props) => {
     filters = props.currentFilter;
     modelCategories = formatCategories(props.modelCategories);
+    instrumentCategories = formatCategories(props.instrumentCategories);
     return (
         <Container className="filter-column">
             <Col>
@@ -46,8 +51,17 @@ const InstrumentFilterBar = (props) => {
                     value={formatCategories(props.currentFilter.model_categories)}
                     options={modelCategories}
                     isSearchable={true}
-                    onChange={(e) => { onCategoryInput(e, props.onFilterChange) }}
+                    onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'model') }}
                     placeholder='Model Categories...'
+                    isMulti
+                />
+
+                <Select
+                    value={formatCategories(props.currentFilter.instrument_categories)}
+                    options={instrumentCategories}
+                    isSearchable={true}
+                    onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'instrument') }}
+                    placeholder='Instrument Categories...'
                     isMulti
                 />
 
@@ -87,9 +101,18 @@ const onTextInput = (e, filterChange) => {
     }
 }
 
-const onCategoryInput = (e, filterChange) => {
+const onCategoryInput = (e, filterChange, type) => {
     let formatted = e.map(el => ({ name: el.label, pk: el.value }));
-    filters.categories = formatted;
+    switch (type) {
+        case 'model':
+            filters.model_categories = formatted;
+            break;
+        case 'instrument':
+            filters.instrument_categories = formatted;
+            break;
+        default:
+            break;
+    }
     filterChange(filters);
 }
 

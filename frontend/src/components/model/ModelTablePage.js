@@ -37,9 +37,7 @@ class ModelTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     description: '',
-                    model_categories: [
-
-                    ]
+                    model_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
@@ -105,7 +103,7 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                                 onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
-                                modelCategories={this.state.modelCategories}
+                                modelCategories={this.state.model_categories}
                             />
 
                         </div>
@@ -306,6 +304,7 @@ class ModelTablePage extends Component {
 
             } else {
                 console.log("error loading model table data")
+
             }
 
         }
@@ -317,7 +316,7 @@ class ModelTablePage extends Component {
             (result) => {
                 if (result.success) {
                     this.setState({
-                        modelCategories: result.data.data
+                        model_categories: result.data.data
                     })
                 }
             }

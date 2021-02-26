@@ -184,6 +184,20 @@ class CategoriesPage extends Component {
         )
     }
 
+    // will only update the category of the current tab
+    async updateTabCategory() {
+        switch (this.state.currentTab) {
+            case ('instrument'):
+                await this.updateInstrumentCategories();
+                return;
+            case 'model':
+                await this.updateModelCategories();
+                return;
+            default:
+                return;
+        }
+    }
+
     async updateModelCategories() {
         await categoryServices.getCategories('model', this.state.modelCategories.pagination.showAll).then(
             (result) => {
@@ -250,15 +264,9 @@ class CategoriesPage extends Component {
         categoryServices.addCategory(this.state.currentTab, categoryName).then(
             (result) => {
                 if (result.success) {
-                    this.setState({
-                        createPopup: {
-                            ...this.state.createPopup,
-                            isShown: false
-                        }
-                    }, () => {
-                        this.updateInstrumentCategories();
-                        this.updateModelCategories();
-                    })
+                    this.onCreateCancel();
+                    this.updateTabCategory();
+
                 }
             }
         )
@@ -299,15 +307,14 @@ class CategoriesPage extends Component {
 
     onEditSubmit(newName) {
         console.log(`New name: ${newName}`);
-        switch (this.state.currentTab) {
-            case 'model':
-                return;
-            case 'instrument':
-                return;
-            default:
-                console.log(`Edit unspoorted for this tab: ${this.state.currentTab}`)
-                return;
-        }
+        categoryServices.editCategory(this.state.currentTab, newName, this.state.renamePopup.pk).then(
+            (result) => {
+                if (result.success) {
+                    this.onEditClose();
+                    this.updateTabCategory();
+                }
+            }
+        )
         this.onEditClose();
     }
 

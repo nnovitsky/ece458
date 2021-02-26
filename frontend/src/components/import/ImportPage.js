@@ -6,7 +6,7 @@ import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
 import ModelTable from "../model/ModelTable.js";
-import InstrumentTable from "./ImportInstrumentTable.js";
+import InstrumentTable from "../instrument/InstrumentTable.js";
 import Button from 'react-bootstrap/Button';
 import GenericLoader from '../generic/GenericLoader.js';
 
@@ -44,7 +44,6 @@ class ImportPage extends Component {
     render(
         modelTable =
             <div>
-                <h1>Models</h1>
                 <ModelTable
                     data={this.state.tableData}
                     onTableChange={null}
@@ -52,16 +51,20 @@ class ImportPage extends Component {
                     onMoreClicked={null}
                     inlineElements={null}
                 />
-                <hr />
             </div>,
 
 
-        instrumentTable = <InstrumentTable
-            data={this.state.tableData}
-            countStart={(this.state.pagination.resultsPerPage) * (this.state.pagination.currentPageNum - 1)}
-            onDetailRequested={this.onDetailViewRequested}
-            onCertificateRequested={this.onCertificateRequested}
-            sortData={() => { }} />
+        instrumentTable = 
+            <div>
+                <InstrumentTable
+                    data={this.state.tableData}
+                    onTableChange={null}
+                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                    onCertificateRequested={this.onCertificateRequested}
+                    onMoreClicked={null}
+                    inlineElements={null}
+                />
+            </div>
     ) {
         return (
             <div>
@@ -100,16 +103,13 @@ class ImportPage extends Component {
                                 </p>
                             </div>
                         </div>
-
-                        <div className="container">
                             <div className="row">
-                                <div className="col-2"></div>
-                                <div className="col-10">
+                            <div className="col-2"></div>
+                                <div className="col-9">
                                     {this.state.showModelTable ? modelTable : null}
                                     {this.state.showInstrumentTable ? instrumentTable : null}
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -198,7 +198,7 @@ class ImportPage extends Component {
                         this.setState({
                             status_message: "Success",
                             records_count: res.data.description,
-                            tableData: res.data.upload_list,
+                            tableData: res.data.data,
                             showModelTable: false,
                             showInstrumentTable: true,
                             isLoading: false,

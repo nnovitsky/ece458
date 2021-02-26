@@ -12,6 +12,7 @@ from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
+from backend.config.admin_config import ADMIN_USERNAME
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 
 
@@ -390,6 +391,37 @@ class TokenAuth(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return error
+
+
+@api_view(['PUT', 'DELETE'])
+def toggle_admin(request, user_pk):
+    try:
+        admin_group = UserType.objects.get(name="admin")
+    except UserType.DoesNotExist:
+        admin_group = UserType(name="admin").save()
+
+    if not UserType.contains_user(request.user, "admin"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        other_user = User.objects.get(pk=user_pk)
+    except User.DoesNotExist:
+        return Response({"description": ["User does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        if not UserType.contains_user(other_user, "admin"):
+            admin_group.users.add(other_user)
+        serializer = UserSerializer(other_user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        if other_user.username == ADMIN_USERNAME:
+            return Response({"description": ["Cannot revoke this user's admin privileges."]}, status=status.HTTP_400_BAD_REQUEST)
+        if UserType.contains_user(other_user, "admin"):
+            admin_group.users.remove(other_user)
+        serializer = UserSerializer(other_user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 @api_view(['GET', 'PUT'])

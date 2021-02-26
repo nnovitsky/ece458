@@ -18,7 +18,7 @@ export default class ModelServices {
             if (count > 0) {
                 url += '&';
             }
-            url += (key + `= ${filters[key]}`);
+            url += (key + `=${filters[key]}`);
             count++;
         }
 

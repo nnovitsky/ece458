@@ -103,7 +103,7 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                                 onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
-                                modelCategories={this.state.model_categories}
+                                modelCategories={this.state.modelCategories}
                             />
 
                         </div>
@@ -295,7 +295,18 @@ class ModelTablePage extends Component {
         this.setState({
             isLoading: true,
         })
-        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
+
+        let params = this.state.modelSearchParams;
+        let modelCats = params.filters.model_categories.map(el => el.pk);
+
+        let filters = {
+            model_number: params.filters.model_number,
+            vendor: params.filters.vendor,
+            description: params.filters.description,
+            model_categories: modelCats.join(","),
+        }
+        console.log(filters)
+        modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,
             })
@@ -304,7 +315,6 @@ class ModelTablePage extends Component {
 
             } else {
                 console.log("error loading model table data")
-
             }
 
         }
@@ -316,7 +326,7 @@ class ModelTablePage extends Component {
             (result) => {
                 if (result.success) {
                     this.setState({
-                        model_categories: result.data.data
+                        modelCategories: result.data.data
                     })
                 }
             }
@@ -340,7 +350,7 @@ class ModelTablePage extends Component {
                     ...this.state.pagination,
                     resultCount: data.count,
                     numPages: data.numpages,
-                    currentPageNum: data.currentpage
+                    currentPageNum: data.currentpage,
                 },
 
             })

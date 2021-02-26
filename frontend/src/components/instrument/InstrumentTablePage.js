@@ -81,7 +81,6 @@ class InstrumentTablePage extends Component {
     }
 
     render() {
-        console.log(this.state)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -149,7 +148,6 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
-        console.log(`Data being requested: ${Date.now() - date}`);
         let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
@@ -167,10 +165,7 @@ class InstrumentTablePage extends Component {
             instrument_categories: instrumentCats.join(",")
         }
 
-        console.log(filters)
-
         instrumentServices.getInstruments(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
-            console.log(`Data back now and being displayed: ${Date.now() - date}`)
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -210,7 +205,6 @@ class InstrumentTablePage extends Component {
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
         date = Date.now();
-        console.log(`Table change: ${date}`);
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);

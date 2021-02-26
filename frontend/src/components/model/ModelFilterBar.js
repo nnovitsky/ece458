@@ -15,6 +15,7 @@ let filters = {
     model_number: '',
     vendor: '',
     description: '',
+    model_categories: [],
 }
 
 let modelCategories = [];
@@ -83,7 +84,7 @@ const onTextInput = (e, filterChange) => {
 
 const onCategoryInput = (e, filterChange) => {
     let formatted = e.map(el => ({ name: el.label, pk: el.value }));
-    filters.categories = formatted;
+    filters.model_categories = formatted;
     filterChange(filters);
 }
 

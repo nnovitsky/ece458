@@ -459,7 +459,7 @@ def model_category_list(request):
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not request.user.is_staff:
+        if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemModelCategorySerializer(data=request.data)
@@ -479,7 +479,7 @@ def instrument_category_list(request):
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not request.user.is_staff:
+        if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = InstrumentCategorySerializer(data=request.data)
@@ -500,7 +500,7 @@ def model_category_detail(request, pk):
         category = ItemModelCategory.objects.get(pk=pk)
     except ItemModelCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if not request.user.is_staff:
+    if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -533,7 +533,7 @@ def instrument_category_detail(request, pk):
         category = InstrumentCategory.objects.get(pk=pk)
     except InstrumentCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if not request.user.is_staff:
+    if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -562,7 +562,7 @@ def edit_model_categories(request, pk):
     except ItemModel.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if not request.user.is_staff:
+    if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -597,7 +597,7 @@ def edit_instrument_categories(request, pk):
     except Instrument.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if not request.user.is_staff:
+    if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 

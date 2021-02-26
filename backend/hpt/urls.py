@@ -48,10 +48,8 @@ urlpatterns = [
     path('api/oauth/consume/', views.OauthConsume.as_view()),
     path('api/model_categories/', views.model_category_list),
     path('api/model_categories/<int:pk>/', views.model_category_detail),
-    path('api/edit_model_categories/<int:pk>/', views.edit_model_categories),
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
-    path('api/edit_instrument_categories/<int:pk>/', views.edit_instrument_categories),
     path('api/category_list/<str:type>/', views.category_list)
 
 ]

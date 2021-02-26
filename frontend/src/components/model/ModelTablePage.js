@@ -84,7 +84,7 @@ class ModelTablePage extends Component {
         let buttonRow = (<div className="table-button-row">
             <Button onClick={this.onAddModelClicked} hidden={!this.props.is_admin}>Create</Button>
             <Button onClick={this.onExportModelsClicked}>Export</Button>
-            <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
+            <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
 
             {/* <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button> */}
         </div>)

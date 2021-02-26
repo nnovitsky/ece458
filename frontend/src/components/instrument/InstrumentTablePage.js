@@ -79,7 +79,7 @@ class InstrumentTablePage extends Component {
             <div className="table-button-row">
                 <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
-                <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Categories</Button>
+                <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         )

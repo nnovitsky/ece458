@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Container from 'react-bootstrap/Container';
+import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 
@@ -18,12 +19,16 @@ let filters = {
     description: ''
 }
 
+let modelCategories = [];
+
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
 // 'onFilterChange' a handler that will be passed ^filters
 // 'currentFilter' must match filters ^ 
+// modelCategories  an array of pk/category pairs
 const InstrumentFilterBar = (props) => {
     filters = props.currentFilter;
+    modelCategories = formatCategories(props.modelCategories);
     return (
         <Container className="filter-column">
             <Col>
@@ -37,6 +42,15 @@ const InstrumentFilterBar = (props) => {
 
                 <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
+                <Select
+                    value={formatCategories(props.currentFilter.model_categories)}
+                    options={modelCategories}
+                    isSearchable={true}
+                    onChange={(e) => { onCategoryInput(e, props.onFilterChange) }}
+                    placeholder='Model Categories...'
+                    isMulti
+                />
+
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
 
@@ -44,6 +58,10 @@ const InstrumentFilterBar = (props) => {
             </Col>
         </Container>
     )
+}
+
+const formatCategories = (arr) => {
+    return arr.map(el => ({ label: el.name, value: el.pk }));
 }
 
 const onTextInput = (e, filterChange) => {
@@ -69,6 +87,12 @@ const onTextInput = (e, filterChange) => {
     }
 }
 
+const onCategoryInput = (e, filterChange) => {
+    let formatted = e.map(el => ({ name: el.label, pk: el.value }));
+    filters.categories = formatted;
+    filterChange(filters);
+}
+
 const onSearch = (e, parentHandler) => {
     parentHandler(filters)
 }
@@ -84,3 +108,7 @@ const onClear = (parentHandler) => {
 }
 
 export default InstrumentFilterBar;
+
+InstrumentFilterBar.defaultProps = {
+    modelCategories: [],
+}

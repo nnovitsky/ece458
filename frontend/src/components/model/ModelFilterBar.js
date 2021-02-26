@@ -2,7 +2,7 @@ import React from 'react';
 
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Select from 'react-select/creatable';
+import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 
 import Button from 'react-bootstrap/Button';
@@ -41,7 +41,7 @@ const ModelFilterBar = (props) => {
 
 
                 <Select
-                    value={formatCategories(props.currentFilter.categories)}
+                    value={formatCategories(props.currentFilter.model_categories)}
                     options={modelCategories}
                     isSearchable={true}
                     onChange={(e) => {onCategoryInput(e, props.onFilterChange)}}
@@ -59,7 +59,7 @@ const ModelFilterBar = (props) => {
 }
 
 const formatCategories = (modelsArr) => {
-    return modelsArr.map(el => ({ label: el.category, value: el.pk }));
+    return modelsArr.map(el => ({ label: el.name, value: el.pk }));
 }
 
 const onTextInput = (e, filterChange) => {
@@ -82,8 +82,7 @@ const onTextInput = (e, filterChange) => {
 }
 
 const onCategoryInput = (e, filterChange) => {
-    console.log(e)
-    let formatted = e.map(el => ({category: el.label, pk: el.value}));
+    let formatted = e.map(el => ({ name: el.label, pk: el.value }));
     filters.categories = formatted;
     filterChange(filters);
 }

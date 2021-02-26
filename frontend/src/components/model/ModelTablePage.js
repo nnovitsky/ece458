@@ -13,8 +13,10 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
+import CategoryServices from '../../api/categoryServices';
 
 const modelServices = new ModelServices();
+const categoryServices = new CategoryServices();
 
 class ModelTablePage extends Component {
     constructor(props) {
@@ -22,6 +24,7 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
+            modelCategories: [],
             isLoading: false,
             pagination: {
                 resultCount: 0,
@@ -34,7 +37,7 @@ class ModelTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     description: '',
-                    categories: [
+                    model_categories: [
 
                     ]
                 },
@@ -42,7 +45,6 @@ class ModelTablePage extends Component {
                 desiredPage: 1,
                 showAll: false
             },
-            modelCategories: [],
             addModelPopup: {
                 isShown: false,
                 errors: []
@@ -69,6 +71,7 @@ class ModelTablePage extends Component {
 
     async componentDidMount() {
         this.setState({
+            ...this.state,
             redirect: null
         }
         )
@@ -77,6 +80,7 @@ class ModelTablePage extends Component {
     }
 
     render() {
+        console.log(this.state.modelCategories)
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -172,17 +176,21 @@ class ModelTablePage extends Component {
                         this.updateModelTable();
                     })
                 }
+            default:
+                console.log(`Model table does not support ${type}`);
         }
     }
 
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
 
     onDetailClicked(e) {
         this.setState({
+            ...this.state,
             redirect: `/models/${e.target.value}`
         })
     }
@@ -231,6 +239,7 @@ class ModelTablePage extends Component {
                     this.updateModelTable();
                     this.onAddModelClosed();
                     this.setState({
+                        ...this.state,
                         redirect: `/models/${res.data.pk}`
                     })
                 } else {
@@ -304,21 +313,15 @@ class ModelTablePage extends Component {
     }
 
     async getModelCategories() {
-        this.setState({
-            modelCategories: [
-            {
-                pk: 1,
-                category: "new"
-            },
-            {
-                pk: 2,
-                category: "old"
-            },
-            {
-                pk: 3,
-                category: "red"
+        await categoryServices.getCategories('model', true, 1).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        modelCategories: result.data.data
+                    })
+                }
             }
-        ]})
+        )
     }
 
     // method called with the data from a successful api hit for getting the model table,

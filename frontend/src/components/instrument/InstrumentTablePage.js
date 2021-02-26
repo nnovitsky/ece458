@@ -13,10 +13,12 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
+import CategoryServices from '../../api/categoryServices';
 
 let date = '';
 
 const instrumentServices = new InstrumentServices();
+const categoryServices = new CategoryServices();
 
 class InstrumentTablePage extends Component {
     constructor(props) {
@@ -24,13 +26,14 @@ class InstrumentTablePage extends Component {
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
-            url: '',
+            modelCategories: [],
             instrumentSearchParams: {
                 filters: {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
-                    description: ''
+                    description: '',
+                    model_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
@@ -65,10 +68,17 @@ class InstrumentTablePage extends Component {
     }
     //make async calls here
     async componentDidMount() {
-        await this.updateTable();
+        this.setState({
+            ...this.state,
+            redirect: null
+        }
+        )
+        this.updateTable();
+        this.getModelCategories();
     }
 
     render() {
+        console.log(this.state)
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
@@ -98,6 +108,7 @@ class InstrumentTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFilters}
                                 currentFilter={this.state.instrumentSearchParams.filters}
                                 onFilterChange={this.onFilterChange}
+                                modelCategories={this.state.modelCategories}
                             />
                         </div>
                         <div className="col-10">
@@ -172,6 +183,7 @@ class InstrumentTablePage extends Component {
 
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
@@ -224,6 +236,7 @@ class InstrumentTablePage extends Component {
 
     onDetailViewRequested(e) {
         this.setState({
+            ...this.state,
             redirect: `/instruments/${e.target.value}`
         });
     }
@@ -303,6 +316,18 @@ class InstrumentTablePage extends Component {
         )
     }
 
+    async getModelCategories() {
+        await categoryServices.getCategories('model', true, 1).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        modelCategories: result.data.data
+                    })
+                }
+            }
+        )
+    }
+
     async onAddInstrumentSubmit(newInstrument) {
         await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
             (result) => {
@@ -310,6 +335,7 @@ class InstrumentTablePage extends Component {
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
+                        ...this.state,
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []

@@ -294,6 +294,10 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
 
 
 class ItemModelCategorySerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if " " in data['name']:
+            raise serializers.ValidationError("Category name cannot have spaces.")
+        return data
 
     class Meta:
         model = ItemModelCategory
@@ -312,6 +316,10 @@ class ListItemModelCategorySerializer(serializers.ModelSerializer):
 
 
 class InstrumentCategorySerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if " " in data['name']:
+            raise serializers.ValidationError("Category name cannot have spaces.")
+        return data
 
     class Meta:
         model = InstrumentCategory

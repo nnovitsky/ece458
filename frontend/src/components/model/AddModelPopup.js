@@ -48,7 +48,7 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                 },
-                vendorsArr: null
+                vendorsArr: null,
             }
         } else {
             this.state = {

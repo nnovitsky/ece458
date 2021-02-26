@@ -6,16 +6,22 @@ import datetime
 
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.SerializerMethodField('_get_groups')
+
+    def _get_groups(self, obj):
+        grps = [utype.name for utype in obj.usertype_set.all()]
+        return grps
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'is_staff')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'groups')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
 
     token = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
+    groups = serializers.SerializerMethodField('_add_to_groups')
 
     def get_token(self, obj):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -24,6 +30,19 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         payload = jwt_payload_handler(obj)
         token = jwt_encode_handler(payload)
         return token
+
+    def _add_to_groups(self, obj):
+        if 'groups' not in self.initial_data: return []
+        for groupname in self.initial_data['groups']:
+            if UserType.contains_user(obj, groupname):
+                continue
+            try:
+                group = UserType.objects.get(name=groupname)
+            except UserType.DoesNotExist:
+                group = UserType(name=groupname)
+                group.save()
+            group.users.add(obj)
+        return self.initial_data['groups']
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -35,14 +54,15 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email')
+        fields = ('token', 'username', 'password', 'first_name', 'last_name', 'email', 'groups')
 
 
 class UserEditSerializer(serializers.ModelSerializer):
 
-    token = serializers.SerializerMethodField()
+    token = serializers.SerializerMethodField('_get_token')
+    groups = serializers.SerializerMethodField('_add_to_groups')
 
-    def get_token(self, obj):
+    def _get_token(self, obj):
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -50,9 +70,45 @@ class UserEditSerializer(serializers.ModelSerializer):
         token = jwt_encode_handler(payload)
         return token
 
+    def _add_to_groups(self, obj):
+        if 'groups' not in self.initial_data: return []
+        for groupname in self.initial_data['groups']:
+            if UserType.contains_user(obj, groupname):
+                continue
+            try:
+                group = UserType.objects.get(name=groupname)
+            except UserType.DoesNotExist:
+                group = UserType(name=groupname)
+                group.save()
+            group.users.add(obj)
+        return self.initial_data['groups']
+
     class Meta:
         model = User
-        fields = ('token', 'username', 'first_name', 'last_name', 'email')
+        fields = ('token', 'username', 'first_name', 'last_name', 'email', 'groups')
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField('_get_token')
+    password = serializers.CharField(write_only=True)
+    username = serializers.CharField(write_only=True)
+    user = serializers.SerializerMethodField('_get_user_data')
+
+    def _get_token(self, obj):
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(obj)
+        token = jwt_encode_handler(payload)
+        return token
+
+    def _get_user_data(self, obj):
+        serializer = UserSerializer(obj)
+        return serializer.data
+
+    class Meta:
+        model = User
+        fields = ('token', 'username', 'password', 'user')
 
 
 class ItemModelSerializer(serializers.ModelSerializer):
@@ -109,6 +165,34 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
             last_cal = last_cal[0]
             exp_date = last_cal.date + datetime.timedelta(cal_frequency)
             return exp_date
+
+    class Meta:
+        model = Instrument
+        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration')
+
+
+class InstrumentSearchSerializer(serializers.ModelSerializer):
+    item_model = serializers.SerializerMethodField()
+    calibration_event = serializers.SerializerMethodField()
+    calibration_expiration = serializers.SerializerMethodField()
+
+    def get_item_model(self, obj):
+        return {
+            "vendor": obj.vendor,
+            "model_number": obj.model_number,
+            "description": obj.description
+        }
+
+    def get_calibration_event(self, obj):
+        if obj.cal_freq == 0: return []
+        elif not obj.most_recent_calibration: return []
+        return [{"date": obj.most_recent_calibration}]
+
+    def get_calibration_expiration(self, obj):
+        if obj.cal_freq == 0: return "Uncalibratable."
+        elif not obj.most_recent_calibration: return "Instrument not calibrated."
+        return obj.calibration_expiration_date
+
 
     class Meta:
         model = Instrument

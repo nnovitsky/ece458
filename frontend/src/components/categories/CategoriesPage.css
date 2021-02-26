@@ -1,0 +1,24 @@
+/* styling for the categories page */
+
+/* contains the page's content */
+.category-page-content {
+    margin: 0px 5px 0px 5px;
+}
+
+/* spaces out the tabs from the title */
+.category-page-content .nav {
+    margin-top: 20px;
+}
+
+/* sets the tab colors to match the site color scheme */
+.category-page-content .nav-link.active {
+    color: #495057 !important;
+}
+
+.category-page-content .nav-link {
+    color: rgb(96, 153, 74) !important;
+}
+
+.categories-table {
+    margin-top: 10px;
+}

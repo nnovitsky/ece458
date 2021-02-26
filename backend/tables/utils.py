@@ -3,14 +3,18 @@ from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from django.core.exceptions import FieldError
+from django.db.models import Max, F, DurationField, DateField, ExpressionWrapper, Case, When, Func
 from django.test import Client
 from django.urls import reverse
 from backend.tables.models import *
 from backend.config.character_limits import *
+from backend.tables.serializers import UserSerializerWithToken
 
 
 def validate_user(request, create=False):
     if 'username' in request.data:
+        if '@' in request.data['username']:
+            return Response({'input_error': ["Username cannot contain '@' symbol."]}, status.HTTP_400_BAD_REQUEST)
         if len(request.data['username']) > USERNAME_MAX_LENGTH:
             return Response({'input_error': [f"Username must be less than {USERNAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
         elif len(request.data['username']) == 0:
@@ -48,7 +52,36 @@ def validate_user(request, create=False):
     return None
 
 
-def list_override(list_view, request, name):
+def annotate_instruments(queryset):
+    # annotate list with most recent calibration and calibration expiration date
+    max_date = datetime.date(9999, 12, 31)
+    min_date = datetime.date(1, 1, 1)
+    queryset = queryset.annotate(vendor_lower=Func(F('item_model__vendor'), function='LOWER')).annotate(
+        model_number_lower=Func(F('item_model__model_number'), function='LOWER')).annotate(
+        description_lower=Func(F('item_model__description'), function='LOWER')).annotate(
+        serial_number_lower=Func(F('serial_number'), function='LOWER'))
+    queryset = queryset.annotate(vendor=F('item_model__vendor')).annotate(
+        model_number=F('item_model__model_number')).annotate(
+        description=F('item_model__description')
+    )
+
+    # uncomment the multiplication if using sqlite bc sqlite DurationField defaults to milliseconds
+    duration_expression = F('item_model__calibration_frequency')  # * 86400000000
+    duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
+    expiration_expression = F('most_recent_calibration') + F('cal_freq')
+    queryset = queryset.annotate(most_recent_calibration=Case(
+        When(item_model__calibration_frequency__lte=0, then=max_date),
+        default=Max('calibrationevent__date'),
+    )).annotate(
+        cal_freq=duration_wrapped_expression).annotate(
+        calibration_expiration_date=Case(When(item_model__calibration_frequency__lte=0, then=max_date),
+                                         When(most_recent_calibration__isnull=False, then=expiration_expression),
+                                         default=min_date,
+                                         output_field=DateField(), ))
+    return queryset
+
+
+def list_override(list_view, request):
     queryset = list_view.filter_queryset(list_view.get_queryset())
     if "sort_by" in request.GET:
         try:
@@ -90,29 +123,33 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
 def setUpTestAuth(class_object):
     class_object.client = Client()
     User.objects.all().delete()
+    try:
+        admin = UserType.objects.get(name="admin")
+    except UserType.DoesNotExist:
+        admin = UserType(name="admin").save()
     class_object.user_data = {
         'username': "newUser",
         'password': "pw123",
         'first_name': "fname",
         'last_name': "lname",
-        'email': "e@g.com"
+        'email': "e@g.com",
+        'groups': []
     }
     class_object.login_data = {
         'username': class_object.user_data['username'],
         'password': class_object.user_data['password']
     }
-    class_object.token_staff, class_object.user_staff = make_user(username="newUser", is_staff=True, data=class_object.user_data,
-                                                    login=class_object.login_data, client=class_object.client)
-    class_object.token_non_staff, class_object.user_non_staff = make_user(username="newUser2", is_staff=False, data=class_object.user_data,
-                                                            login=class_object.login_data, client=class_object.client)
+    class_object.token_staff, class_object.user_staff = make_user(username="newUser", groups=['admin'], data=class_object.user_data,
+                                                    login=class_object.login_data)
+    class_object.token_non_staff, class_object.user_non_staff = make_user(username="newUser2", data=class_object.user_data,
+                                                            login=class_object.login_data)
 
 
-def make_user(username, is_staff, data, login, client):
+def make_user(username, data, login, groups=[]):
     data['username'] = username
     login['username'] = username
-    u = User(**data)
-    u.set_password("pw123")
-    u.is_staff = is_staff
-    u.save()
-    response = client.post(reverse('token_auth'), data=json.dumps(login), content_type='application/json')
-    return response.data['token'], u
+    data['groups'] = groups
+    serializer = UserSerializerWithToken(data=data)
+    if serializer.is_valid():
+        u = serializer.save()
+    return serializer.data['token'], u

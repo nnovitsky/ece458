@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from backend.tables.models import *
 from backend.tables.serializers import *
-from backend.tables.utils import setUpTestAuth
+from backend.tables.utils import setUpTestAuth, annotate_instruments
 
 
 """
@@ -77,7 +77,8 @@ class InstrumentTests(TestCase):
         response = self.client.get(reverse('instrument_search'), {'model_number': model_number, 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         instruments = Instrument.objects.filter(item_model__model_number=model_number)
-        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        instruments = annotate_instruments(instruments)
+        serializer = InstrumentSearchSerializer(instruments, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])
 
@@ -86,7 +87,8 @@ class InstrumentTests(TestCase):
         response = self.client.get(reverse('instrument_search'), {'model_pk': model_pk, 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         instruments = Instrument.objects.filter(item_model__pk=model_pk)
-        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        instruments = annotate_instruments(instruments)
+        serializer = InstrumentSearchSerializer(instruments, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])
 
@@ -104,6 +106,7 @@ class InstrumentTests(TestCase):
         response = self.client.get(reverse('instrument_search'), {'sort_by': 'model_number_lower', 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         instruments = Instrument.objects.order_by('item_model__model_number')
-        serializer = ListInstrumentReadSerializer(instruments, many=True)
+        instruments = annotate_instruments(instruments)
+        serializer = InstrumentSearchSerializer(instruments, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])

@@ -158,7 +158,7 @@ class ImportPage extends Component {
                     if (res.success) {
                         this.setState({
                             status_message: "Success",
-                            records_count: res.data.description,
+                            records_count: "Imported " + res.data.data.count + " models",
                             tableData: res.data.data,
                             showModelTable: true,
                             showInstrumentTable: false,
@@ -197,7 +197,7 @@ class ImportPage extends Component {
                     if (res.success) {
                         this.setState({
                             status_message: "Success",
-                            records_count: res.data.description,
+                            records_count: "Imported " + res.data.data.count + " instruments",
                             tableData: res.data.data,
                             showModelTable: false,
                             showInstrumentTable: true,

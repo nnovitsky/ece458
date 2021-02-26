@@ -10,8 +10,11 @@ import LogoHeader from '../generic/LogoTitleHeader';
 import CategoriesTable from './CategoriesTable';
 import RenamePopup from './RenamePopup';
 import DeletePopup from '../generic/GenericPopup';
+import CategoryServices from '../../api/categoryServices';
 
-class ModelTablePage extends Component {
+const categoryServices = new CategoryServices();
+
+class CategoriesPage extends Component {
     constructor(props) {
         super(props);
 
@@ -156,43 +159,62 @@ class ModelTablePage extends Component {
     }
 
     async updateModelCategories() {
-        this.setState({
-            modelCategories: {
-                ...this.state.modelCategories,
-                data: [
-                    {
-                        category: "red",
-                        pk: 1,
-                        count: 23
-                    },
-                    {
-                        category: "green",
-                        pk: 2,
-                        count: 10
-                    }
-                ]
+        await categoryServices.getCategories('model').then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        modelCategories: {
+                            ...this.state.modelCategories,
+                            data: result.data.data,
+                            pagination: {
+                                ...this.state.modelCategories.pagination,
+                                resultCount: result.data.count,
+                                numPages: result.data.numpages,
+                                currentPageNum: result.data.currentpage
+                            }
+                        }
+                    })
+                }
             }
-        })
+        )
+        // this.setState({
+        //     modelCategories: {
+        //         ...this.state.modelCategories,
+        //         data: [
+        //             {
+        //                 category: "red",
+        //                 pk: 1,
+        //                 count: 23
+        //             },
+        //             {
+        //                 category: "green",
+        //                 pk: 2,
+        //                 count: 10
+        //             }
+        //         ]
+        //     }
+        // })
     }
 
     async updateInstrumentCategories() {
-        this.setState({
-            instrumentCategories: {
-                ...this.state.instrumentCategories,
-                data: [
-                    {
-                        category: "van1",
-                        pk: 1,
-                        count: 7
-                    },
-                    {
-                        category: "van2",
-                        pk: 2,
-                        count: 6
-                    }
-                ]
+        await categoryServices.getCategories('instrument').then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        instrumentCategories: {
+                            ...this.state.instrumentCategories,
+                            data: result.data.data,
+                            pagination: {
+                                ...this.state.instrumentCategories.pagination,
+                                resultCount: result.data.count,
+                                numPages: result.data.numpages,
+                                currentPageNum: result.data.currentpage
+                            }
+                        }
+                    })
+                }
             }
-        })
+        )
     }
 
     onTabChange(e) {
@@ -283,4 +305,4 @@ class ModelTablePage extends Component {
 
 }
 
-export default ModelTablePage;
+export default CategoriesPage;

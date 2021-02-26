@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import EditModelPopup from './AddModelPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Table from 'react-bootstrap/Table';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
 import '../generic/General.css';
-import logo from '../../assets/HPT_logo_crop.png';
 import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
@@ -307,6 +304,7 @@ class ModelDetailView extends React.Component {
                         this.getInstruments();
                     })
                 }
+                return;
             default:
                 return;
         }

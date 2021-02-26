@@ -56,7 +56,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 headerClasses: 'num-column'
             },
             {
-                dataField: 'category',
+                dataField: 'name',
                 text: 'Category',
                 sort: false,
                 title: (cell) => `${cell}`,

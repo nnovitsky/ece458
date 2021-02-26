@@ -2,7 +2,6 @@ import Configs from './config.js';
 const API_URL = Configs
 
 export default class InstrumentServices {
-    constructor() { }
 
     // handled modified/expired tokens
     async getInstruments(filters, sort_by, show_all, pageNum) {

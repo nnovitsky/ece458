@@ -14,6 +14,8 @@ import "../generic/ColumnSizeFormatting.css";
 //     sizePerPage: 10, //results per page
 //     totalSize: 12   //total num results
 // }
+
+//inlineElements: elements to be displayed next to the pagination component
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
@@ -27,6 +29,7 @@ const calHistoryTable = (props) => {
             keyField={keyField}
             config={config}
             noResults='No Instrument Results'
+            inlineElements={props.inlineElements}
         />
 
 
@@ -87,4 +90,5 @@ export default calHistoryTable;
 
 calHistoryTable.defaultProps = {
     data: [],
+    inlineElements: <></>
 }

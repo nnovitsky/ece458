@@ -14,7 +14,7 @@ import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
 
-
+let date = '';
 
 const instrumentServices = new InstrumentServices();
 
@@ -134,11 +134,13 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
+        console.log(`Data being requested: ${Date.now() - date}`);
         let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
         })
         instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
+            console.log(`Data back now and being displayed: ${Date.now() - date}`)
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -158,6 +160,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 }
+                
             } else {
                 this.setState({
                     isLoading: false,
@@ -175,6 +178,8 @@ class InstrumentTablePage extends Component {
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
+        date = Date.now();
+        console.log(`Table change: ${date}`);
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);

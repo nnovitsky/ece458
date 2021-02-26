@@ -19,6 +19,7 @@ class OauthConsume(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
+        print("hello")
         code = request.GET['code']
         try:
             auth_token = get_token(code)

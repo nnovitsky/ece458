@@ -33,6 +33,7 @@ class ModelDetailView extends React.Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
+                categories: []
             },
             instruments: [],
             editPopup: {
@@ -67,6 +68,7 @@ class ModelDetailView extends React.Component {
     async componentDidMount() {
         await this.updateModelInfo();
         await this.getInstruments();
+        console.log(this.state.model_info)
     }
 
     render(
@@ -175,13 +177,14 @@ class ModelDetailView extends React.Component {
                         <td><strong>Description</strong></td>
                         <td>{modelInfo.description}</td>
                     </tr>
-                    <tr>
-                        <td><strong>Comment</strong></td>
-                        <td>{modelInfo.comment}</td>
-                    </tr>
+
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{modelInfo.calibration_frequency}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Model Categories</strong></td>
+                        <td>{modelInfo.categories.map(el => el.name).join(', ')}</td>
                     </tr>
                 </tbody>
             </Table>

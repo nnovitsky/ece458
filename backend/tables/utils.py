@@ -73,7 +73,7 @@ def annotate_instruments(queryset):
     duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
     expiration_expression = F('most_recent_calibration') + F('cal_freq')
     queryset = queryset.annotate(most_recent_calibration=Case(
-        When(item_model__calibration_frequency__lte=0, then=max_date),
+        When(item_model__calibration_frequency__lte=0, then=min_date),
         default=Max('calibrationevent__date'),
     )).annotate(
         cal_freq=duration_wrapped_expression).annotate(

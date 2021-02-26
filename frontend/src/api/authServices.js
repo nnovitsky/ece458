@@ -24,6 +24,7 @@ export default class AuthServices {
     let result = {
       success: true,
       data: [],
+      admin: false,
     }
 
     const url = `${API_URL}/api/current_user/`;
@@ -37,6 +38,7 @@ export default class AuthServices {
         if (res.ok) {
           return res.json().then(json => {
             result.data = json;
+            result.admin = json.groups.includes("admin");
             return result;
           });
         } else {
@@ -67,6 +69,7 @@ export default class AuthServices {
       let result = {
         success: false,
         data: [],
+        admin: false,
       }
       
       console.log("Calling get oath token");
@@ -77,6 +80,7 @@ export default class AuthServices {
           return res.json().then(json => {
             result.success = true;
             result.data = json;
+            result.admin = json.user.groups.includes("admin")
             console.log("Auth working");
             console.log(result.data)
             return result;

@@ -176,6 +176,55 @@ export default class CategoryServices {
             })
     }
 
+    async deleteCategory(type, pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            errors: {}
+        }
+
+        let path = this.typeToPath(type);
+        if (path === '') {
+            console.error(`Can't get ${type} category, check the getCategories method in categoryServices`);
+            let result = {
+                success: false,
+                data: [],
+                errors: []
+            }
+            return result;
+        }
+
+        return fetch(`${API_URL}/api/${path}/${pk}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return result;
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
 
     typeToPath(type) {
         switch (type) {

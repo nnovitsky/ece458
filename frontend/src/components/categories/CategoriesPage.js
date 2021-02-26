@@ -305,21 +305,21 @@ class CategoriesPage extends Component {
         })
     }
 
-    onEditSubmit(newName) {
+    async onEditSubmit(newName) {
         console.log(`New name: ${newName}`);
         categoryServices.editCategory(this.state.currentTab, newName, this.state.renamePopup.pk).then(
             (result) => {
                 if (result.success) {
-                    this.onEditClose();
                     this.updateTabCategory();
+                    this.onEditClose();
+
                 }
             }
         )
-        this.onEditClose();
     }
 
     onDeleteClick(e) {
-        console.log("clicked")
+        console.log(e.target.value)
         this.setState({
             deletePopup: {
                 ...this.state.deletePopup,
@@ -328,12 +328,17 @@ class CategoriesPage extends Component {
                 pk: e.target.value
             }
         })
-        console.log(`Click delete ${e.target.name}`);
     }
 
-    onDeleteSubmit(e) {
-        console.log(`Wants to delete ${this.state.deletePopup.name}`);
-        this.onDeleteCancel();
+    onDeleteSubmit() {
+        categoryServices.deleteCategory(this.state.currentTab, this.state.deletePopup.pk).then(
+            (result) => {
+                if (result.success) {
+                    this.updateTabCategory();
+                    this.onDeleteCancel();
+                }
+            }
+        )
     }
 
     onDeleteCancel() {

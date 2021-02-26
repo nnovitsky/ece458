@@ -88,7 +88,7 @@ def calibration_event_detail(request, pk):
 
     if request.method == 'GET':
         serializer = CalibrationEventReadSerializer(calibration_event, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "admin"):
@@ -110,7 +110,7 @@ def calibration_event_detail(request, pk):
         serializer = CalibrationEventWriteSerializer(calibration_event, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -159,7 +159,7 @@ def instruments_detail(request, pk):
 
     if request.method == 'GET':
         serializer = ListInstrumentReadSerializer(instrument, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "admin"):
@@ -167,11 +167,12 @@ def instruments_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         # disable changing instrument's model
         request.data['item_model'] = instrument.item_model.pk
+        request.data['instrumentcategory_set'] = [cat.pk for cat in instrument.instrumentcategory_set.all()]
         if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -193,7 +194,7 @@ def models_list(request):
         nextPage = 1
         previousPage = 1
         models = ItemModel.objects.all()
-        return get_page_response(models, request, ItemModelSerializer, nextPage, previousPage)
+        return get_page_response(models, request, ItemModelReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
         if not UserType.contains_user(request.user, "admin"):
@@ -219,8 +220,8 @@ def models_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ItemModelSerializer(model, context={'request': request})
-        return Response(serializer.data)
+        serializer = ItemModelReadSerializer(model, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "admin"):
@@ -228,10 +229,12 @@ def models_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'vendor' not in request.data: request.data['vendor'] = model.vendor
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
+        if 'description' not in request.data: request.data['description'] = model.description
+        request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -397,7 +400,7 @@ def current_user(request):
     """
     if request.method == 'GET':
         serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         error_check = validate_user(request, create=False)
@@ -410,7 +413,7 @@ def current_user(request):
         serializer = UserEditSerializer(request.user, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -443,3 +446,193 @@ class UserCreate(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# CATEGORIES
+@api_view(['GET', 'POST'])
+def model_category_list(request):
+
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        categories = ItemModelCategory.objects.all()
+        return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
+
+    elif request.method == 'POST':
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = ItemModelCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def instrument_category_list(request):
+
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        categories = InstrumentCategory.objects.all()
+        return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
+
+    elif request.method == 'POST':
+        if not request.user.is_staff:
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = InstrumentCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT', 'DELETE'])
+def model_category_detail(request, pk):
+    """
+    Update or delete a category by pk.
+    Returns 404 if category does not exist, 200 on successful PUT, 400 on bad PUT request data,
+    204 on successful DELETE.
+    """
+    try:
+        category = ItemModelCategory.objects.get(pk=pk)
+    except ItemModelCategory.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if not request.user.is_staff:
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if request.method == 'PUT':
+        if 'name' not in request.data: request.data['name'] = category.name
+        if 'item_models' in request.data: request.data.pop('item_models')
+        serializer = ItemModelCategorySerializer(category, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        if len(category.item_models.all()) > 0:
+            return Response(
+                {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            category.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['PUT', 'DELETE'])
+def instrument_category_detail(request, pk):
+    """
+    Update or delete a category by pk.
+    Returns 404 if category does not exist, 200 on successful PUT, 400 on bad PUT request data,
+    204 on successful DELETE.
+    """
+    try:
+        category = InstrumentCategory.objects.get(pk=pk)
+    except InstrumentCategory.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if not request.user.is_staff:
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if request.method == 'PUT':
+        if 'name' not in request.data: request.data['name'] = category.name
+        if 'instruments' in request.data: request.data.pop('instruments')
+        serializer = InstrumentCategorySerializer(category, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        if len(category.instruments.all()) > 0:
+            return Response(
+                {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            category.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['PUT', 'DELETE'])
+def edit_model_categories(request, pk):
+    try:
+        model = ItemModel.objects.get(pk=pk)
+    except ItemModel.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if not request.user.is_staff:
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if 'categories' not in request.data:
+        return Response({"category_error": ["Categories are required."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    cat_pks = request.data['categories']
+    try:
+        categories = [ItemModelCategory.objects.get(pk=cat_pk) for cat_pk in cat_pks]
+    except ItemModelCategory.DoesNotExist:
+        return Response({"category_error": ["Invalid category key."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'PUT':
+        for cat in categories:
+            if model in cat.item_models.all(): continue
+            cat.item_models.add(model)
+        serializer = ItemModelReadSerializer(model)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        for cat in categories:
+            if model not in cat.item_models.all(): continue
+            cat.item_models.remove(model)
+        serializer = ItemModelReadSerializer(model)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT', 'DELETE'])
+def edit_instrument_categories(request, pk):
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if not request.user.is_staff:
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if 'categories' not in request.data:
+        return Response({"category_error": ["Categories are required."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    cat_pks = request.data['categories']
+    try:
+        categories = [InstrumentCategory.objects.get(pk=cat_pk) for cat_pk in cat_pks]
+    except InstrumentCategory.DoesNotExist:
+        return Response({"category_error": ["Invalid category key."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'PUT':
+        for cat in categories:
+            if instrument in cat.instruments.all(): continue
+            cat.instruments.add(instrument)
+        serializer = InstrumentWriteSerializer(instrument)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        for cat in categories:
+            if instrument not in cat.instruments.all(): continue
+            cat.instruments.remove(instrument)
+        serializer = InstrumentWriteSerializer(instrument)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def category_list(request, type):
+    if type == 'instrument':
+        categories = InstrumentCategory.objects.all()
+    elif type == 'item_model':
+        categories = ItemModelCategory.objects.all()
+    else:
+        return Response({"category_error": ["Invalid category type."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
+    return Response(data, status=status.HTTP_200_OK)

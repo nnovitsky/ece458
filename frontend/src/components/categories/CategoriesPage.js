@@ -27,6 +27,10 @@ class CategoriesPage extends Component {
                 isShown: false,
                 errors: []
             },
+            createPopup: {
+                isShown: false,
+                errors: [],
+            },
             deletePopup: {
                 pk: null,
                 isShown: false,
@@ -66,7 +70,9 @@ class CategoriesPage extends Component {
         this.onDeleteClick = this.onDeleteClick.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteCancel = this.onDeleteCancel.bind(this);
-        this.onCreateCategoryClicked = this.onCreateCategoryClicked.bind(this);
+        this.onCreateClicked = this.onCreateClicked.bind(this);
+        this.onCreateSubmit = this.onCreateSubmit.bind(this);
+        this.onCreateCancel = this.onCreateCancel.bind(this);
         this.onInstrumentTableChange = this.onInstrumentTableChange.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
     }
@@ -77,14 +83,16 @@ class CategoriesPage extends Component {
     }
 
     render() {
+        let createPopup = (this.state.createPopup.isShown) ? this.makeCreatePopup() : null;
         let renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
 
         let buttonRow = (<div className="table-button-row">
-            <Button onClick={this.onCreateCategoryClicked}>Create</Button>
+            <Button onClick={this.onCreateClicked}>Create</Button>
         </div>)
         return (
             <div className="background">
+                {createPopup}
                 {renamePopup}
                 {deletePopup}
                 <div className="row mainContent">
@@ -128,17 +136,35 @@ class CategoriesPage extends Component {
         )
     }
 
+    makeCreatePopup() {
+        return (
+            <RenamePopup
+                title='Create Category'
+                isShown={this.state.createPopup.isShown}
+                onClose={this.onCreateCancel}
+                onSubmit={this.onCreateSubmit}
+                errors={this.state.createPopup.errors}
+                currentName=''
+                submitText='Create'
+            />
+        )
+    }
+
     makeRenamePopup() {
             return (
                 <RenamePopup
+                    title='Rename Category'
                     isShown={this.state.renamePopup.isShown}
                     onClose={this.onEditClose}
                     onSubmit={this.onEditSubmit}
                     errors={this.state.renamePopup.errors}
                     currentName={this.state.renamePopup.currentName}
+                    submitText='Rename'
                 />
             )
     }
+
+
 
     makeDeletePopup() {
         let body = (
@@ -159,7 +185,7 @@ class CategoriesPage extends Component {
     }
 
     async updateModelCategories() {
-        await categoryServices.getCategories('model').then(
+        await categoryServices.getCategories('model', this.state.modelCategories.pagination.showAll).then(
             (result) => {
                 if (result.success) {
                     this.setState({
@@ -177,27 +203,10 @@ class CategoriesPage extends Component {
                 }
             }
         )
-        // this.setState({
-        //     modelCategories: {
-        //         ...this.state.modelCategories,
-        //         data: [
-        //             {
-        //                 category: "red",
-        //                 pk: 1,
-        //                 count: 23
-        //             },
-        //             {
-        //                 category: "green",
-        //                 pk: 2,
-        //                 count: 10
-        //             }
-        //         ]
-        //     }
-        // })
     }
 
     async updateInstrumentCategories() {
-        await categoryServices.getCategories('instrument').then(
+        await categoryServices.getCategories('instrument', this.state.instrumentCategories.pagination.showAll).then(
             (result) => {
                 if (result.success) {
                     this.setState({
@@ -225,6 +234,44 @@ class CategoriesPage extends Component {
 
     onModelTableChange(type, { page, sizePerPage }) {
         console.log(type);
+    }
+
+
+    onCreateClicked() {
+        this.setState({
+            createPopup: {
+                ...this.state.createPopup,
+                isShown: true
+            }
+        })
+    }
+
+    async onCreateSubmit(categoryName) {
+        categoryServices.addCategory(this.state.currentTab, categoryName).then(
+            (result) => {
+                if (result.success) {
+                    this.setState({
+                        createPopup: {
+                            ...this.state.createPopup,
+                            isShown: false
+                        }
+                    }, () => {
+                        this.updateInstrumentCategories();
+                        this.updateModelCategories();
+                    })
+                }
+            }
+        )
+    }
+
+    onCreateCancel() {
+        this.setState({
+            createPopup: {
+                ...this.state.createPopup,
+                isShown: false,
+                errors: []
+            }
+        })
     }
 
     onEditClicked(e) {
@@ -293,9 +340,6 @@ class CategoriesPage extends Component {
         })
     }
 
-    onCreateCategoryClicked() {
-
-    }
 
     onInstrumentTableChange(type, { page, sizePerPage }) {
         console.log(type);

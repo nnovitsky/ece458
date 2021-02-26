@@ -40,7 +40,7 @@ jobs:
         
         
       - name: Start venv and Download Requirements.txt
-      - run: ssh test_server 'cd /home/jay18/evo2/ece458/backend && source venv/bin/activate && export PYTHONPATH=/home/jay18/evo2/ece458 && cd /home/jay18/evo2/ece458 && pip3 install -r requirements.txt'
+        run: ssh test_server 'cd /home/jay18/evo2/ece458/backend && source venv/bin/activate && export PYTHONPATH=/home/jay18/evo2/ece458 && cd /home/jay18/evo2/ece458 && pip3 install -r requirements.txt'
         
 
       - name: Perform migrations

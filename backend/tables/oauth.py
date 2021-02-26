@@ -20,7 +20,12 @@ def login_oauth_user(id_token, user_details):
                     email=user_details['email'])
         user.set_password(oauth_pw)
         user.save()
-        UserType.objects.get(name="oauth").users.add(user)
+        try:
+            UserType.objects.get(name="oauth").users.add(user)
+        except UserType.DoesNotExist:
+            group = UserType(name="oauth")
+            group.save()
+            group.users.add(user)
     serializer = UserTokenSerializer(user, data={'username': username, 'password': oauth_pw})
     if serializer.is_valid():
         return Response(serializer.data, status=status.HTTP_200_OK)

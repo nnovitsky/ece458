@@ -36,7 +36,8 @@ class ItemModelTests(TestCase):
             "model_number": "m3",
             "description": "a test model",
             "comment": "my comment",
-            "calibration_frequency": 180
+            "calibration_frequency": 180,
+            "itemmodelcategory_set": []
         }
 
     def test_model_create_auth(self):
@@ -48,7 +49,7 @@ class ItemModelTests(TestCase):
     def test_get_model_list(self):
         response = self.client.get(reverse('models_list'), {'get_all': 'true'}, HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         models = ItemModel.objects.all()
-        serializer = ItemModelSerializer(models, many=True)
+        serializer = ItemModelReadSerializer(models, many=True)
         self.assertEqual(serializer.data, response.data['data'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -56,7 +57,7 @@ class ItemModelTests(TestCase):
         pk = ItemModel.objects.all()[0].pk
         response = self.client.get(reverse('model_detail', args=[pk]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         model = ItemModel.objects.get(pk=pk)
-        serializer = ItemModelSerializer(model)
+        serializer = ItemModelReadSerializer(model)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -95,7 +96,7 @@ class ItemModelTests(TestCase):
         response = self.client.get(reverse('model_search'), {'vendor': vendor, 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         models = ItemModel.objects.filter(vendor=vendor)
-        serializer = ItemModelSerializer(models, many=True)
+        serializer = ItemModelReadSerializer(models, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])
 
@@ -103,6 +104,6 @@ class ItemModelTests(TestCase):
         response = self.client.get(reverse('model_search'), {'sort_by': '-model_number_lower', 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         models = ItemModel.objects.order_by('-model_number')
-        serializer = ItemModelSerializer(models, many=True)
+        serializer = ItemModelReadSerializer(models, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])

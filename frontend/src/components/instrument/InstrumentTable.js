@@ -2,6 +2,7 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
 import '../generic/ColumnSizeFormatting.css';
+import '../generic/General.css';
 
 import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
 import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
@@ -107,6 +108,15 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 headerClasses: 'num-column'
             },
             {
+                dataField: 'asset_number',
+                text: 'Asset #',
+                sort: true,
+                title: (cell) => `Asset Number: ${cell}. Click to see more`,
+                formatter: (cell, row) => {
+                    return <span><a className="green-link" href={`/instruments/${row.pk}`}>ASSET</a></span>
+                },
+            },
+            {
                 dataField: 'item_model.vendor',
                 text: 'Vendor',
                 sort: true,
@@ -171,19 +181,6 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                     return <span><img src={result.icon} className='calibration-status-icon' /></span>;
                 },
                 headerClasses: 'status-column',   
-            },
-            {
-                isKey: true,
-                dataField: 'pk',
-                text: 'Details',
-                sort: false,
-                headerClasses: 'more-column',
-                title: (cell) => 'Go to instrument detail view',
-                formatter: (pk) => {
-                    return (
-                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-                    )
-                }
             },
             {
                 dataField: 'b',

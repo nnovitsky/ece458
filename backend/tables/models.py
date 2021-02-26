@@ -4,11 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from ..config.character_limits import VENDOR_MAX_LENGTH, MODEL_NUM_MAX_LENGTH, SERIAL_NUM_MAX_LENGTH, DESC_MAX_LENGTH, \
-    COMMENT_MAX_LENGTH, CAL_FREQUENCY_MAX_DURATION
-
-one_line = 100
-two_line = 200
+from ..config.character_limits import *
 
 
 class UserType(models.Model):
@@ -71,3 +67,25 @@ class CalibrationEvent(models.Model):
 
     def __str__(self):
         return str(self.instrument) + " " + str(self.date)
+
+
+class ItemModelCategory(models.Model):
+    """
+    Category for item models.
+    """
+    name = models.CharField(max_length=CATEGORY_NAME_MAX_LENGTH, unique=True)
+    item_models = models.ManyToManyField(ItemModel, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class InstrumentCategory(models.Model):
+    """
+    Category for instruments.
+    """
+    name = models.CharField(max_length=CATEGORY_NAME_MAX_LENGTH, unique=True)
+    instruments = models.ManyToManyField(Instrument, blank=True)
+
+    def __str__(self):
+        return self.name

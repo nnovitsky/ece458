@@ -129,7 +129,7 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         disablePageTitle: true,
         sizePerPageRenderer,
         sizePerPageList: [{
-            text: '10', value: 10
+            text: 'Show 10', value: 10
         }, {
             text: 'Show All', value: totalResults
         }] // A numeric array is also available. the purpose of above example is custom the text

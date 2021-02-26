@@ -43,7 +43,7 @@ class App extends Component {
         if (result.success) {
           this.setState({
             username: result.data.username,
-            admin: result.data.is_staff,
+            admin: result.admin,
           })
         } else {
           this.emptyLocalStorage();
@@ -108,7 +108,7 @@ class App extends Component {
             this.setState({
               logged_in: true,
               username: json.user.username,
-              admin: json.user.is_staff,
+              admin: json.user.groups.includes("admin"),
               redirect: true
             });
             this.setState({ error_message: '' });

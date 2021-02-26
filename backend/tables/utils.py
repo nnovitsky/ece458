@@ -4,6 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from django.core.exceptions import FieldError
 from django.db.models import Max, F, DurationField, DateField, ExpressionWrapper, Case, When, Func
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.test import Client
 from django.urls import reverse
 from backend.tables.models import *
@@ -64,6 +65,8 @@ def annotate_instruments(queryset):
         model_number=F('item_model__model_number')).annotate(
         description=F('item_model__description')
     )
+    queryset = queryset.annotate(instrument_cats=ArrayAgg("instrumentcategory__name", distinct=True))
+    queryset = queryset.annotate(model_cats=ArrayAgg("item_model__itemmodelcategory__name", distinct=True))
 
     # uncomment the multiplication if using sqlite bc sqlite DurationField defaults to milliseconds
     duration_expression = F('item_model__calibration_frequency')  # * 86400000000

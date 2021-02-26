@@ -58,7 +58,7 @@ def get_token(code):
     if "OAUTH_REDIRECT_URI" in os.environ:
         redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
     else:
-        redirect_uri = "http://localhost:3000/oauth/consume"
+        redirect_uri = "https://vcm-18868.vm.duke.edu/oauth/consume"
 
     payload = urllib.parse.urlencode({
         'grant_type': "authorization_code",

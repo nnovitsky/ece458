@@ -172,8 +172,9 @@ class ModelTablePage extends Component {
                         }
                     }, () => {
                         this.updateModelTable();
-                    })
+                    });
                 }
+                return;
             default:
                 console.log(`Model table does not support ${type}`);
         }

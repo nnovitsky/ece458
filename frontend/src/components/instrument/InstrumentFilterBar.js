@@ -6,8 +6,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 
 import Button from 'react-bootstrap/esm/Button';
-import ModelCategoriesPicklist from '../categories/Picklist/ModelCategoriesPicklist';
-import InstrumentCategoriesPicklist from '../categories/Picklist/InstrumentCategoriesPicklist';
+import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
+import InstrumentCategoriesPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 
 const modelName = "model";
 const vendorName = "vendor";

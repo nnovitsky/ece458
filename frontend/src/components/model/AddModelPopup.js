@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Select from 'react-select/creatable';
 import ModelServices from '../../api/modelServices';
-
 import GenericPopup from '../generic/GenericPopup';
 
 //props

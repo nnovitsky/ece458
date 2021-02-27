@@ -7,10 +7,11 @@ import Select from 'react-select';
 // placeholderText; text to be displayed in the dropdown
 // displayField: a string that is the data field of the name to be displayed in the picklist
 // valueField: a string that is the data field of the value to be linked to the name
+// isMulti: optional, defaults to false if not entered
 
 let displayField;
 let valueField;
-function BaseCategoryPicklist(props) {
+function BasePicklist(props) {
     const [allCategories, setAllCategories] = useState(null);
     displayField = props.displayField
     valueField = props.valueField;
@@ -35,7 +36,7 @@ function BaseCategoryPicklist(props) {
             isSearchable={true}
             onChange={(filterList) => { props.onFilterChange(returnFormatCategory(filterList)) }}
             placeholder={props.placeholderText}
-            isMulti
+            isMulti={props.isMulti}
         />
     )
 }
@@ -57,4 +58,9 @@ const returnFormatCategory = (arr) => {
     }
 }
 
-export default BaseCategoryPicklist;
+export default BasePicklist;
+
+BasePicklist.defaultProps = {
+    isMulti: false,
+}
+

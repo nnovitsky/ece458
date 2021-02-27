@@ -4,23 +4,24 @@ import BaseCategoryPicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onFilterChange: an event handler that will be passed the array of selected name/pk pairs
-function ModelCategoriesPicklist(props) {
+function InstrumentCategoriesPicklist(props) {
     return (
         <BaseCategoryPicklist
             selectedCategories={props.selectedCategories}
             onFilterChange={props.onFilterChange}
-            getCategories={getModelCategories}
-            placeholderText="Model Categories..."
+            getCategories={getInstrumentCategories}
+            placeholderText="Instrument Categories..."
             displayField="name"
             valueField="pk"
+            isMulti={true}
         />
     )
 }
 
 
-async function getModelCategories() {
+async function getInstrumentCategories() {
     let categoryServices = new CategoryServices();
-    return await categoryServices.getCategories('model', true, 1).then(
+    return await categoryServices.getCategories('instrument', true, 1).then(
         (result) => {
             if (result.success) {
                 return result.data.data;
@@ -31,4 +32,4 @@ async function getModelCategories() {
     )
 }
 
-export default ModelCategoriesPicklist;
+export default InstrumentCategoriesPicklist;

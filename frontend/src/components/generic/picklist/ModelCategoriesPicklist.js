@@ -1,26 +1,27 @@
 import React from 'react';
 import CategoryServices from '../../../api/categoryServices';
-import BaseCategoryPicklist from './BasePicklist';
+import BasePicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onFilterChange: an event handler that will be passed the array of selected name/pk pairs
-function InstrumentCategoriesPicklist(props) {
+function ModelCategoriesPicklist(props) {
     return (
-        <BaseCategoryPicklist
+        <BasePicklist
             selectedCategories={props.selectedCategories}
             onFilterChange={props.onFilterChange}
-            getCategories={getInstrumentCategories}
-            placeholderText="Instrument Categories..."
+            getCategories={getModelCategories}
+            placeholderText="Model Categories..."
             displayField="name"
             valueField="pk"
+            isMulti={true}
         />
     )
 }
 
 
-async function getInstrumentCategories() {
+async function getModelCategories() {
     let categoryServices = new CategoryServices();
-    return await categoryServices.getCategories('instrument', true, 1).then(
+    return await categoryServices.getCategories('model', true, 1).then(
         (result) => {
             if (result.success) {
                 return result.data.data;
@@ -31,4 +32,4 @@ async function getInstrumentCategories() {
     )
 }
 
-export default InstrumentCategoriesPicklist;
+export default ModelCategoriesPicklist;

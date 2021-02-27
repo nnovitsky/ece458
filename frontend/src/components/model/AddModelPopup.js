@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import Select from 'react-select/creatable';
 import ModelServices from '../../api/modelServices';
 import GenericPopup from '../generic/GenericPopup';
+import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -46,6 +47,7 @@ class AddModelPopup extends Component {
                     description: props.currentModel.description,
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
+                    categories: props.currentModel.categories,
                 },
                 vendorsArr: null,
             }
@@ -62,7 +64,7 @@ class AddModelPopup extends Component {
                     description: '',
                     comment: '',
                     calibration_frequency: '',
-
+                    categories: [],
                 },
                 vendorsArr: null
             }
@@ -70,6 +72,7 @@ class AddModelPopup extends Component {
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
+        this.onCategoryInput = this.onCategoryInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onClose = this.onClose.bind(this);
         this.getVendorsArr = this.getVendorsArr.bind(this);
@@ -125,6 +128,12 @@ class AddModelPopup extends Component {
                 <Form.Label>Calibration Frequency (days)</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
+
+                <Form.Label>Model Categories</Form.Label>
+                <ModelCategoriesPicklist
+                    selectedCategories={this.state.newModel.categories}
+                    onChange={this.onCategoryInput}
+                />
             </Form>
         )
     }
@@ -152,6 +161,16 @@ class AddModelPopup extends Component {
                     label: e.label,
                     value: e.value
                 }
+            }
+        })
+    }
+
+    onCategoryInput(categoryList) {
+        console.log(categoryList);
+        this.setState({
+            newModel: {
+                ...this.state.newModel,
+                categories: categoryList
             }
         })
     }
@@ -216,6 +235,7 @@ class AddModelPopup extends Component {
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
+                categories: this.state.newModel.categories
             }
 
             if (newModel.calibration_frequency === '') {

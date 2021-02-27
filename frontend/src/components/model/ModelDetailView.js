@@ -207,7 +207,8 @@ class ModelDetailView extends React.Component {
     }
 
     async onEditSubmit(editedModel) {
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(result => {
+        console.log(editedModel);
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {

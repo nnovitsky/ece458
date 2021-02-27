@@ -3,12 +3,12 @@ import CategoryServices from '../../../api/categoryServices';
 import BasePicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
-// onFilterChange: an event handler that will be passed the array of selected name/pk pairs
+// onChange: an event handler that will be passed the array of selected name/pk pairs
 function ModelCategoriesPicklist(props) {
     return (
         <BasePicklist
             selectedCategories={props.selectedCategories}
-            onFilterChange={props.onFilterChange}
+            onFilterChange={props.onChange}
             getCategories={getModelCategories}
             placeholderText="Model Categories..."
             displayField="name"

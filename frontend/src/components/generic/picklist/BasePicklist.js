@@ -15,8 +15,6 @@ function BasePicklist(props) {
     const [allCategories, setAllCategories] = useState(null);
     displayField = props.displayField
     valueField = props.valueField;
-
-    console.log(props.selectedCategories)
     // equivalent of componendDidMount
     useEffect(() => {
         async function fetchData() {

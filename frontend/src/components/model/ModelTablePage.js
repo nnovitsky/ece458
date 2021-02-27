@@ -232,10 +232,9 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories)
             .then((res) => {
                 if (res.success) {
-
                     this.updateModelTable();
                     this.onAddModelClosed();
                     this.setState({

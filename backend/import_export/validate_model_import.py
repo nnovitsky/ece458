@@ -9,6 +9,8 @@ column_types = [
     'Model-Number',
     'Short-Description',
     'Comment',
+    'Model-Categories',
+    'Load-Bank-Support',
     'Calibration-Frequency',
 ]
 
@@ -29,8 +31,6 @@ def validate_row(current_row):
 
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
 
-
-
     for item, column_type in zip(current_row, column_types):
 
         if column_type == 'Vendor':
@@ -41,6 +41,10 @@ def validate_row(current_row):
             valid_cell, info = field_validators.is_valid_description(item)
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
+        elif column_type == 'Model-Categories':
+            valid_cell, info = field_validators.is_valid_model_categories(item)
+        elif column_type == 'Load-Bank-Support':
+            valid_cell, info = field_validators.is_valid_load_bank(item)
         elif column_type == 'Calibration-Frequency':
             valid_cell, info = field_validators.is_valid_calibration_freq(item)
 

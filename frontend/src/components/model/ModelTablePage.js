@@ -221,7 +221,8 @@ class ModelTablePage extends Component {
                 filters: {
                     model_number: '',
                     vendor: '',
-                    description: ''
+                    description: '',
+                    model_categories: []
                 }
             }
         }, () => {

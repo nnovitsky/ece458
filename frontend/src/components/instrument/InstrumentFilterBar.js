@@ -53,29 +53,10 @@ const InstrumentFilterBar = (props) => {
                     selectedCategories={props.currentFilter.model_categories}
                     onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
                 />
-                {/* <Select
-                    value={formatCategories(props.currentFilter.model_categories)}
-                    options={modelCategories}
-                    isSearchable={true}
-                    onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'model') }}
-                    placeholder='Model Categories...'
-                    isMulti
-                /> */}
-
                 <InstrumentCategoriesPicklist
                     selectedCategories={props.currentFilter.instrument_categories}
                     onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
                 />
-                {/* 
-                <Select
-                    value={formatCategories(props.currentFilter.instrument_categories)}
-                    options={instrumentCategories}
-                    isSearchable={true}
-                    onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'instrument') }}
-                    placeholder='Instrument Categories...'
-                    isMulti
-                /> */}
-
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
 

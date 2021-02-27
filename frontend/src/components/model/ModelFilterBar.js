@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
+import ModelCategoriesPicklist from '../categories/Picklist/ModelCategoriesPicklist';
 
 import Button from 'react-bootstrap/Button';
 
@@ -18,8 +19,6 @@ let filters = {
     model_categories: [],
 }
 
-let modelCategories = [];
-
 // 'onSearch" a prop handler that is called when search is clicked, it will be passed a filters object^
 // 'onRemoveFilters' a prop that will be called when user wants to remove filters
 // 'onFilterChange' a handler that will be passed ^filters
@@ -27,7 +26,7 @@ let modelCategories = [];
 // modelCategories  an array of pk/category pairs
 const ModelFilterBar = (props) => {
     filters = props.currentFilter;
-    modelCategories = formatCategories(props.modelCategories)
+
     return (
 
         <Container className="filter-column">
@@ -41,13 +40,9 @@ const ModelFilterBar = (props) => {
                 <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
 
-                <Select
-                    value={formatCategories(props.currentFilter.model_categories)}
-                    options={modelCategories}
-                    isSearchable={true}
-                    onChange={(e) => {onCategoryInput(e, props.onFilterChange)}}
-                    placeholder='Model Categories...'
-                    isMulti
+                <ModelCategoriesPicklist
+                    selectedCategories={props.currentFilter.model_categories}
+                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
                 />
                 <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
                 <Button onClick={props.onRemoveFilters}>Clear</Button>
@@ -57,10 +52,6 @@ const ModelFilterBar = (props) => {
         </Container>
 
     )
-}
-
-const formatCategories = (modelsArr) => {
-    return modelsArr.map(el => ({ label: el.name, value: el.pk }));
 }
 
 const onTextInput = (e, filterChange) => {
@@ -83,8 +74,7 @@ const onTextInput = (e, filterChange) => {
 }
 
 const onCategoryInput = (e, filterChange) => {
-    let formatted = e.map(el => ({ name: el.label, pk: el.value }));
-    filters.model_categories = formatted;
+    filters.model_categories = e;
     filterChange(filters);
 }
 

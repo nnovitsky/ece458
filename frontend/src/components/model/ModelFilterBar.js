@@ -42,7 +42,7 @@ const ModelFilterBar = (props) => {
 
                 <ModelCategoriesPicklist
                     selectedCategories={props.currentFilter.model_categories}
-                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
+                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
                 />
                 <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
                 <Button onClick={props.onRemoveFilters}>Clear</Button>

@@ -80,6 +80,18 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'description-column',
             },
             {
+                dataField: 'categories',
+                text: 'Model Categories',
+                sort: true,
+                title: (cell) => `Model Categories: ${formatCategories(cell)}`,
+                headerClasses: 'model-category-column',
+                formatter: (cell) => {
+                    return (
+                        <span>{formatCategories(cell)}</span>
+                    )
+                }
+            },
+            {
                 dataField: 'calibration_frequency',
                 text: 'Cal. Frequency',
                 sort: false,
@@ -90,6 +102,10 @@ let makeConfig = (countStart, onMoreClicked) => {
         ]
     )
 };
+
+const formatCategories = (categories) => {
+    return categories.map(el => el.name).join(', ');
+}
 
 export default NewModelTable;
 

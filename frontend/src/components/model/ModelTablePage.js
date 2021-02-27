@@ -24,7 +24,6 @@ class ModelTablePage extends Component {
         this.state = {
             redirect: null,
             tableData: [],
-            modelCategories: [],
             isLoading: false,
             pagination: {
                 resultCount: 0,
@@ -74,11 +73,9 @@ class ModelTablePage extends Component {
         }
         )
         this.updateModelTable();
-        this.getModelCategories();
     }
 
     render() {
-        console.log(this.state.modelCategories)
         if (this.state.redirect !== null) {
             return (<Redirect to={this.state.redirect} />)
         }
@@ -319,18 +316,6 @@ class ModelTablePage extends Component {
             }
 
         }
-        )
-    }
-
-    async getModelCategories() {
-        await categoryServices.getCategories('model', true, 1).then(
-            (result) => {
-                if (result.success) {
-                    this.setState({
-                        modelCategories: result.data.data
-                    })
-                }
-            }
         )
     }
 

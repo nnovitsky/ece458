@@ -26,8 +26,6 @@ class InstrumentTablePage extends Component {
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
-            modelCategories: [],
-            instrumentCategories: [],
             instrumentSearchParams: {
                 filters: {
                     model_number: '',
@@ -76,8 +74,6 @@ class InstrumentTablePage extends Component {
         }
         )
         this.updateTable();
-        this.getModelCategories();
-        this.getInstrumentCategories();
     }
 
     render() {
@@ -326,30 +322,6 @@ class InstrumentTablePage extends Component {
                 if (result.success) {
                     let date = dateToString(new Date());
                     nameAndDownloadFile(result.url, `${date}-instrument-export`);
-                }
-            }
-        )
-    }
-
-    async getModelCategories() {
-        await categoryServices.getCategories('model', true, 1).then(
-            (result) => {
-                if (result.success) {
-                    this.setState({
-                        modelCategories: result.data.data
-                    })
-                }
-            }
-        )
-    }
-
-    async getInstrumentCategories() {
-        await categoryServices.getCategories('instrument', true, 1).then(
-            (result) => {
-                if (result.success) {
-                    this.setState({
-                        instrumentCategories: result.data.data
-                    })
                 }
             }
         )

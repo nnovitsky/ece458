@@ -68,7 +68,6 @@ class ModelDetailView extends React.Component {
     async componentDidMount() {
         await this.updateModelInfo();
         await this.getInstruments();
-        console.log(this.state.model_info)
     }
 
     render(

@@ -82,7 +82,7 @@ let makeConfig = (countStart, onMoreClicked) => {
             {
                 dataField: 'categories',
                 text: 'Model Categories',
-                sort: true,
+                sort: false,
                 title: (cell) => `Model Categories: ${formatCategories(cell)}`,
                 headerClasses: 'model-category-column',
                 formatter: (cell) => {

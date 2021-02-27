@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
+import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
 
@@ -142,6 +143,10 @@ class AddInstrumentPopup extends Component {
                     <Form.Text muted>
                         The serial number must be unique to the model.
   </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Instrument Categories</Form.Label>
+
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Comments</Form.Label>

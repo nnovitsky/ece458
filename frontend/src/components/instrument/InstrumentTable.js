@@ -28,6 +28,7 @@ import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
+    console.log(props.data)
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
     return (
@@ -59,7 +60,7 @@ const getLatestCalText = (data) => {
 
 
 const getCalStatusIcon = (currentData) => {
-    let result ={
+    let result = {
         icon: '',
         text: '',
     }
@@ -89,7 +90,7 @@ const getCalStatusIcon = (currentData) => {
         result.icon = NonCalibratableIcon;
         result.text = `Instrument is not calibratable`;
     }
-    
+
     return (result)
 }
 
@@ -131,19 +132,44 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 headerClasses: 'model-number-column'
             },
             {
-                dataField: 'serial_number',
-                text: 'Serial #',
-                sort: true,
-                title: (cell) => `Serial Number: ${cell}`,
-                headerClasses: 'serial-number-column',
-            },
-            {
                 dataField: 'item_model.description',
                 text: 'Description',
                 sort: true,
                 title: (cell) => `Model Description: ${cell}`,
                 headerClasses: 'description-column',
             },
+            // {
+            //     dataField: 'categories.item_model_categories',
+            //     text: 'Model Categories',
+            //     sort: false,
+            //     title: (cell) => `Model Categories: ${formatCategories(cell)}`,
+            //     headerClasses: 'model-category-column',
+            //     formatter: (cell) => {
+            //         return (
+            //             <span>{formatCategories(cell)}</span>
+            //         )
+            //     }
+            // },
+            {
+                dataField: 'serial_number',
+                text: 'Serial #',
+                sort: true,
+                title: (cell) => `Serial Number: ${cell}`,
+                headerClasses: 'serial-number-column',
+            },
+
+            // {
+            //     dataField: 'categories.instrument_categories',
+            //     text: 'Instrument Categories',
+            //     sort: false,
+            //     title: (cell) => `Instrument Categories: ${formatCategories(cell)}`,
+            //     headerClasses: 'instrument-category-column',
+            //     formatter: (cell) => {
+            //         return (
+            //             <span>{formatCategories(cell)}</span>
+            //         )
+            //     }
+            // },
             {
                 dataField: 'latest_calibration',
                 text: 'Latest Calibration',
@@ -162,11 +188,11 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 title: (cell) => `Calibration Expiration: ${cell}`,
                 formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                     let display = cell;
-                    
-                    if(cell === 'Instrument not calibrated.') {
+
+                    if (cell === 'Instrument not calibrated.') {
                         display = 'Never Calibrated';
                     }
-                    
+
                     return <span>{display}</span>;
                 },
                 headerClasses: 'calibration-expiration-column',
@@ -175,12 +201,12 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 dataField: 'icon',
                 text: 'Status',
                 sort: false,
-                title: (cell, row) => {return(getCalStatusIcon(row).text)},
+                title: (cell, row) => { return (getCalStatusIcon(row).text) },
                 formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                     let result = getCalStatusIcon(row);
-                    return <span><img src={result.icon} className='calibration-status-icon' /></span>;
+                    return <span><img src={result.icon} alt={result.text} className='calibration-status-icon' /></span>;
                 },
-                headerClasses: 'status-column',   
+                headerClasses: 'status-column',
             },
             {
                 dataField: 'b',
@@ -196,7 +222,11 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
             }
         ]
     )
-};
+}
+
+const formatCategories = (categories) => {
+    return categories.map(el => el.name).join(', ');
+}
 
 
 export default instrumentTable;

@@ -38,6 +38,10 @@ jobs:
       - name: Check out the source
         run: ssh test_server 'cd /home/jay18/evo2/ece458 && git pull'
         
+        
+      - name: Start venv and Download Requirements.txt
+        run: ssh test_server 'cd /home/jay18/evo2/ece458/backend && source venv/bin/activate && export PYTHONPATH=/home/jay18/evo2/ece458 && cd /home/jay18/evo2/ece458 && pip3 install -r requirements.txt'
+        
 
       - name: Perform migrations
         run: ssh test_server 'cd /home/jay18/evo2/ece458/backend && source venv/bin/activate && export PYTHONPATH=/home/jay18/evo2/ece458 && cd /home/jay18/evo2/ece458/backend && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py collectstatic --noinput'

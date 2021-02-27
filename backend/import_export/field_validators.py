@@ -8,6 +8,8 @@ CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
 CALIBRATION_DATE_MAX_LENGTH = 20
+MODEL_CATEGORIES_MAX_LENGTH = 100
+LOAD_BANK_SUPPORT_MAX_LENGTH = 1
 EXPECTED_DATE_FORMAT = '%m/%d/%Y'
 
 
@@ -104,7 +106,7 @@ def is_valid_serial_num(serial_num):
 
 def is_valid_username(calibration_username):
     if len(calibration_username) > USERNAME_MAX_LENGTH:
-        return False, f"Username length too long." \
+        return False, f"Username length too long. " \
                       f"{len(calibration_username)} chars long, " \
                       f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
     elif len(calibration_username) == 0:
@@ -131,6 +133,30 @@ def is_valid_calibration_date(calibration_date, calibratable_instrument):
         return False, "Incorrect date format, should be MM/DD/YYYY."
 
     return True, "Correct date format."
+
+
+def is_valid_model_categories(model_categories):
+
+    if len(model_categories) > MODEL_CATEGORIES_MAX_LENGTH:
+        return False, f"Model categories entry \'{model_categories}\' too long, " \
+                      f"Max: {MODEL_CATEGORIES_MAX_LENGTH} chars long"
+
+    return True, "Valid set of model categories."
+
+
+def is_valid_load_bank(load_bank_field):
+
+    stripped_field = load_bank_field.strip()
+
+    if len(stripped_field) > LOAD_BANK_SUPPORT_MAX_LENGTH:
+        return False, f"Load-bank-support entry \'{stripped_field}\' too long, " \
+                      f"Max: {LOAD_BANK_SUPPORT_MAX_LENGTH} chars long"
+
+    if stripped_field == 'Y' or stripped_field == '':
+        return True, "Valid load-bank-support entry"
+
+    return False, f"\'{load_bank_field}\' is not a valid load-bank-support entry. " \
+                  f"Must be \'Y\' or blank."
 
 
 def is_blank_row(row):

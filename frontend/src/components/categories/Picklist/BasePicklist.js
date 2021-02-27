@@ -5,8 +5,16 @@ import Select from 'react-select';
 // onFilterChange: an event handler that will be passed the array of selected name/pk pairs
 // getCategories: an async function that can be called and will return all the categories in name/pk form
 // placeholderText; text to be displayed in the dropdown
+// displayField: a string that is the data field of the name to be displayed in the picklist
+// valueField: a string that is the data field of the value to be linked to the name
+
+let displayField;
+let valueField;
 function BaseCategoryPicklist(props) {
     const [allCategories, setAllCategories] = useState(null);
+    displayField = props.displayField
+    valueField = props.valueField;
+
     console.log(props.selectedCategories)
     // equivalent of componendDidMount
     useEffect(() => {
@@ -34,7 +42,7 @@ function BaseCategoryPicklist(props) {
 
 const formatCategories = (arr) => {
     if (arr) {
-        return arr.map(el => ({ label: el.name, value: el.pk }));
+        return arr.map(el => ({ label: el[displayField], value: el[valueField] }));
     } else {
         return [];
     }
@@ -43,7 +51,7 @@ const formatCategories = (arr) => {
 const returnFormatCategory = (arr) => {
     console.log(arr)
     if (arr) {
-        return arr.map(el => ({ name: el.label, pk: el.value }));
+        return arr.map(el => ({ [displayField]: el.label, [valueField]: el.value }));
     } else {
         return [];
     }

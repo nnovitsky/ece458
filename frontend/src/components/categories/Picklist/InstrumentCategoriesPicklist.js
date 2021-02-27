@@ -1,6 +1,6 @@
 import React from 'react';
 import CategoryServices from '../../../api/categoryServices';
-import BaseCategoryPicklist from './BaseCategoryPicklist';
+import BaseCategoryPicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onFilterChange: an event handler that will be passed the array of selected name/pk pairs
@@ -11,6 +11,8 @@ function InstrumentCategoriesPicklist(props) {
             onFilterChange={props.onFilterChange}
             getCategories={getInstrumentCategories}
             placeholderText="Instrument Categories..."
+            displayField="name"
+            valueField="pk"
         />
     )
 }

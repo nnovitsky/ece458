@@ -6,6 +6,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 
 import Button from 'react-bootstrap/esm/Button';
+import ModelCategoriesPicklist from '../categories/Picklist/ModelCategoriesPicklist';
+import InstrumentCategoriesPicklist from '../categories/Picklist/InstrumentCategoriesPicklist';
 
 const modelName = "model";
 const vendorName = "vendor";
@@ -32,8 +34,8 @@ let instrumentCategories = [];
 // instrumentCategories: an array of pk/category pairs
 const InstrumentFilterBar = (props) => {
     filters = props.currentFilter;
-    modelCategories = formatCategories(props.modelCategories);
-    instrumentCategories = formatCategories(props.instrumentCategories);
+    // modelCategories = formatCategories(props.modelCategories);
+    // instrumentCategories = formatCategories(props.instrumentCategories);
     return (
         <Container className="filter-column">
             <Col>
@@ -47,15 +49,24 @@ const InstrumentFilterBar = (props) => {
 
                 <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
-                <Select
+                <ModelCategoriesPicklist
+                    selectedCategories={props.currentFilter.model_categories}
+                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
+                />
+                {/* <Select
                     value={formatCategories(props.currentFilter.model_categories)}
                     options={modelCategories}
                     isSearchable={true}
                     onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'model') }}
                     placeholder='Model Categories...'
                     isMulti
-                />
+                /> */}
 
+                <InstrumentCategoriesPicklist
+                    selectedCategories={props.currentFilter.instrument_categories}
+                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
+                />
+                {/* 
                 <Select
                     value={formatCategories(props.currentFilter.instrument_categories)}
                     options={instrumentCategories}
@@ -63,7 +74,7 @@ const InstrumentFilterBar = (props) => {
                     onChange={(e) => { onCategoryInput(e, props.onFilterChange, 'instrument') }}
                     placeholder='Instrument Categories...'
                     isMulti
-                />
+                /> */}
 
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
@@ -72,10 +83,6 @@ const InstrumentFilterBar = (props) => {
             </Col>
         </Container>
     )
-}
-
-const formatCategories = (arr) => {
-    return arr.map(el => ({ label: el.name, value: el.pk }));
 }
 
 const onTextInput = (e, filterChange) => {
@@ -102,13 +109,13 @@ const onTextInput = (e, filterChange) => {
 }
 
 const onCategoryInput = (e, filterChange, type) => {
-    let formatted = e.map(el => ({ name: el.label, pk: el.value }));
+    console.log(e);
     switch (type) {
         case 'model':
-            filters.model_categories = formatted;
+            filters.model_categories = e;
             break;
         case 'instrument':
-            filters.instrument_categories = formatted;
+            filters.instrument_categories = e;
             break;
         default:
             break;

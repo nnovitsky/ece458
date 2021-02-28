@@ -11,6 +11,7 @@ import CategoriesTable from './CategoriesTable';
 import RenamePopup from './RenamePopup';
 import DeletePopup from '../generic/GenericPopup';
 import CategoryServices from '../../api/categoryServices';
+import GenericLoader from '../generic/GenericLoader';
 
 const categoryServices = new CategoryServices();
 
@@ -20,6 +21,7 @@ class CategoriesPage extends Component {
 
         this.state = {
             currentTab: 'model',
+            isLoading: false,
             renamePopup: {
                 pk: null,
                 currentName: '',
@@ -95,6 +97,9 @@ class CategoriesPage extends Component {
                 {createPopup}
                 {renamePopup}
                 {deletePopup}
+                <GenericLoader
+                    isShown={this.state.isLoading}
+                />
                 <div className="row mainContent">
 
                     <Col className="category-page-content">
@@ -199,13 +204,16 @@ class CategoriesPage extends Component {
     }
 
     async updateModelCategories() {
+        this.setState({
+            isLoading: true
+        })
         let pagination = this.state.modelCategories.pagination;
-        console.log(`Desired page: ${pagination.desiredPage}, ${pagination.showAll}`)
         await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.modelCategories.pagination.showAll;
                     this.setState({
+                        isLoading: false,
                         modelCategories: {
                             ...this.state.modelCategories,
                             data: result.data.data,
@@ -223,12 +231,16 @@ class CategoriesPage extends Component {
     }
 
     async updateInstrumentCategories() {
+        this.setState({
+            isLoading: true
+        })
         let pagination = this.state.instrumentCategories.pagination;
         await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.instrumentCategories.pagination.showAll;
                     this.setState({
+                        isLoading: false,
                         instrumentCategories: {
                             ...this.state.instrumentCategories,
                             data: result.data.data,
@@ -304,13 +316,18 @@ class CategoriesPage extends Component {
     }
 
     async onCreateSubmit(categoryName) {
+        this.setState({
+            isLoading: true
+        })
         categoryServices.addCategory(this.state.currentTab, categoryName).then(
             (result) => {
                 if (result.success) {
                     this.onCreateCancel();
                     this.updateTabCategory();
-
                 }
+                this.setState({
+                    isLoading: false
+                })
             }
         )
     }
@@ -348,6 +365,9 @@ class CategoriesPage extends Component {
     }
 
     async onEditSubmit(newName) {
+        this.setState({
+            isLoading: true
+        })
         categoryServices.editCategory(this.state.currentTab, newName, this.state.renamePopup.pk).then(
             (result) => {
                 if (result.success) {
@@ -355,6 +375,9 @@ class CategoriesPage extends Component {
                     this.onEditClose();
 
                 }
+                this.setState({
+                    isLoading: false
+                })
             }
         )
     }
@@ -371,12 +394,18 @@ class CategoriesPage extends Component {
     }
 
     onDeleteSubmit() {
+        this.setState({
+            isLoading: true
+        })
         categoryServices.deleteCategory(this.state.currentTab, this.state.deletePopup.pk).then(
             (result) => {
                 if (result.success) {
                     this.updateTabCategory();
                     this.onDeleteCancel();
                 }
+                this.setState({
+                    isLoading: false
+                })
             }
         )
     }

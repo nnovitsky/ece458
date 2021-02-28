@@ -13,12 +13,9 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
-import CategoryServices from '../../api/categoryServices';
 
-let date = '';
 
 const instrumentServices = new InstrumentServices();
-const categoryServices = new CategoryServices();
 
 class InstrumentTablePage extends Component {
     constructor(props) {
@@ -200,7 +197,6 @@ class InstrumentTablePage extends Component {
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
-        date = Date.now();
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);

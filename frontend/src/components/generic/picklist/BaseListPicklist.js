@@ -3,7 +3,6 @@ import Select from 'react-select';
 
 // selectedCategories: an array of objects that are selected OR an array
 // getOptions: an async function that can be called and will return all the options
-// type: either 'string' or 'object' acceptable inputs. this corresponds to the selected categories and what getOptions returns, these will both be arrays but either of 'string' or 'object'
 // onFilterChange: an event handler that will be passed the array of the selected objects
 // placeholderText; text to be displayed in the dropdown
 // isMulti: optional, defaults to false if not entered
@@ -12,14 +11,9 @@ import Select from 'react-select';
 // displayField: a string that is the data field of the name to be displayed in the picklist
 // valueField: a string that is the data field of the value to be linked to the name
 
-let displayField;
-let valueField;
 let isMulti;
-function BasePicklist(props) {
-    console.log(props);
+function BaseListPicklist(props) {
     const [allOptions, setAllOptions] = useState(null);
-    displayField = props.displayField
-    valueField = props.valueField;
     isMulti = props.isMulti;
 
     // equivalent of componendDidMount
@@ -52,19 +46,19 @@ const formatSelected = (input) => {
 
     if (isMulti) {
         let formatted = [];
-        input.map(el => (formatted.push({ label: el[displayField], value: el[valueField] })));
+        input.map(el => (formatted.push({ label: el, value: el })));
         return formatted;
     } else {
-        return { label: input[displayField], value: input[valueField] }
+        return { label: input, value: input }
     }
-
 }
 
 const formatOptions = (input) => {
 
-    let formatted = [];
-    input.map(el => (formatted.push({ label: el[displayField], value: el[valueField] })));
-    return formatted;
+    console.log('made it to the right place')
+    let stringFormatted = [];
+    input.map(el => (stringFormatted.push({ label: el, value: el })));
+    return stringFormatted;
 
 }
 
@@ -72,27 +66,18 @@ const returnFormatOptions = (input) => {
 
     if (isMulti) {
         let result = [];
-        input.map(el => {
-            result.push({
-                [displayField]: el.label,
-                [valueField]: el.value
-            })
-        });
+        input.map(el => result.push(el.value));
         return result;
     } else {
-        return {
-            [displayField]: input.label,
-            [valueField]: input.value
-        }
+        return input.value;
     }
 
 }
 
-export default BasePicklist;
+export default BaseListPicklist;
 
-BasePicklist.defaultProps = {
+BaseListPicklist.defaultProps = {
     isMulti: false,
-    displayField: '',
-    valueField: ''
+
 }
 

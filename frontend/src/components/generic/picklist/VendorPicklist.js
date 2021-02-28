@@ -1,18 +1,16 @@
 import React from 'react';
 import ModelServices from '../../../api/modelServices';
-import BasePicklist from './BasePicklist';
+import BaseListPicklist from './BaseListPicklist';
 
 // selectedVendor: an array of name to pk pairs of the selected categories
 // onChange: an event handler that will be passed the array of selected name/pk pairs
 function VendorPicklist(props) {
-    console.log(props);
     return (
-        <BasePicklist
+        <BaseListPicklist
             selectedCategories={props.selectedVendor}
             onFilterChange={props.onChange}
             getOptions={getVendors}
             placeholderText="Vendors..."
-            type="string"
         />
     )
 }

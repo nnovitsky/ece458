@@ -107,9 +107,7 @@ class AddModelPopup extends Component {
                 onChange={this.onCategoryInput}
             />
         )
-        console.log(this.state.newModel.vendor)
         return (
-
             <Form className="popup">
                 <Form.Label>Vendor</Form.Label>
                 {/* <Select
@@ -144,6 +142,7 @@ class AddModelPopup extends Component {
     }
 
     onVendorInput(e) {
+        console.log(`vendor change: ${e}`)
         this.setState({
             newModel: {
                 ...this.state.newModel,
@@ -217,7 +216,7 @@ class AddModelPopup extends Component {
             let newModel = {
                 pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
-                vendor: this.state.newModel.vendor.label,
+                vendor: this.state.newModel.vendor,
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,

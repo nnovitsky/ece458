@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 
+// BaseListPicklist is for if you just have an array of strings
+// to choose from, the other BasePicklist is for when you have
+// an array of objects to choose from
+
 // selectedCategories: an array of objects that are selected OR an array
 // getOptions: an async function that can be called and will return all the options
 // onFilterChange: an event handler that will be passed the array of the selected objects

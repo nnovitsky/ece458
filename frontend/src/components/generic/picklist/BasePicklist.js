@@ -4,7 +4,7 @@ import Select from 'react-select';
 // selectedCategories: an array of objects that are selected OR an array
 // getOptions: an async function that can be called and will return all the options
 // type: either 'string' or 'object' acceptable inputs. this corresponds to the selected categories and what getOptions returns, these will both be arrays but either of 'string' or 'object'
-// onFilterChange: an event handler that will be passed the array of the selected objects
+// onChange: an event handler that will be passed the array of the selected objects
 // placeholderText; text to be displayed in the dropdown
 // isMulti: optional, defaults to false if not entered
 
@@ -41,7 +41,7 @@ function BasePicklist(props) {
             value={formatSelected(props.selectedCategories)}
             options={allOptions}
             isSearchable={true}
-            onChange={(filterList) => { props.onFilterChange(returnFormatOptions(filterList)) }}
+            onChange={(filterList) => { props.onChange(returnFormatOptions(filterList)) }}
             placeholder={props.placeholderText}
             isMulti={props.isMulti}
         />

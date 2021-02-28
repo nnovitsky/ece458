@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 
 // selectedCategories: an array of objects that are selected OR an array
@@ -17,7 +17,7 @@ function BaseListPicklist(props) {
     isMulti = props.isMulti;
 
     // equivalent of componendDidMount
-    useLayoutEffect(() => {
+    useEffect(() => {
         async function fetchData() {
             await props.getOptions().then(result => {
                 console.log(result);

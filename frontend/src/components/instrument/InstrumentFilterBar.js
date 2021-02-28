@@ -51,11 +51,11 @@ const InstrumentFilterBar = (props) => {
 
                 <ModelCategoriesPicklist
                     selectedCategories={props.currentFilter.model_categories}
-                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
+                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
                 />
                 <InstrumentCategoriesPicklist
                     selectedCategories={props.currentFilter.instrument_categories}
-                    onFilterChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
+                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
                 />
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>

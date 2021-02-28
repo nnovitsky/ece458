@@ -3,15 +3,14 @@ import CategoryServices from '../../../api/categoryServices';
 import BaseCategoryPicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
-// onFilterChange: an event handler that will be passed the array of selected name/pk pairs
+// onChange: an event handler that will be passed the array of selected name/pk pairs
 function InstrumentCategoriesPicklist(props) {
     return (
         <BaseCategoryPicklist
             selectedCategories={props.selectedCategories}
-            onFilterChange={props.onFilterChange}
+            onChange={props.onChange}
             getOptions={getInstrumentCategories}
             placeholderText="Instrument Categories..."
-            type="object"
             displayField="name"
             valueField="pk"
             isMulti={true}

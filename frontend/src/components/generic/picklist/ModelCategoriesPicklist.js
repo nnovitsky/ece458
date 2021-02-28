@@ -8,7 +8,7 @@ function ModelCategoriesPicklist(props) {
     return (
         <BasePicklist
             selectedCategories={props.selectedCategories}
-            onFilterChange={props.onChange}
+            onChange={props.onChange}
             getOptions={getModelCategories}
             placeholderText="Model Categories..."
             type="object"

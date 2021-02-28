@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from backend.tables.models import *
 from backend.tables.serializers import *
-from backend.tables.utils import setUpTestAuth
+from backend.tables.utils import setUpTestAuth, annotate_models
 
 
 """
@@ -96,7 +96,8 @@ class ItemModelTests(TestCase):
         response = self.client.get(reverse('model_search'), {'vendor': vendor, 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         models = ItemModel.objects.filter(vendor=vendor)
-        serializer = ItemModelReadSerializer(models, many=True)
+        models = annotate_models(models)
+        serializer = ItemModelSearchSerializer(models, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])
 
@@ -104,6 +105,7 @@ class ItemModelTests(TestCase):
         response = self.client.get(reverse('model_search'), {'sort_by': '-model_number_lower', 'get_all': True},
                                    HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff), content_type='application/json')
         models = ItemModel.objects.order_by('-model_number')
-        serializer = ItemModelReadSerializer(models, many=True)
+        models = annotate_models(models)
+        serializer = ItemModelSearchSerializer(models, many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, response.data['data'])

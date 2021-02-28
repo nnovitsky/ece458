@@ -100,7 +100,6 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                                 onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
-                                modelCategories={this.state.modelCategories}
                             />
 
                         </div>

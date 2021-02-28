@@ -9,8 +9,9 @@ function InstrumentCategoriesPicklist(props) {
         <BaseCategoryPicklist
             selectedCategories={props.selectedCategories}
             onFilterChange={props.onFilterChange}
-            getCategories={getInstrumentCategories}
+            getOptions={getInstrumentCategories}
             placeholderText="Instrument Categories..."
+            type="object"
             displayField="name"
             valueField="pk"
             isMulti={true}

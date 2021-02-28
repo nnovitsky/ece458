@@ -22,7 +22,6 @@ let filters = {
 // 'onRemoveFilters' a prop that will be called when user wants to remove filters
 // 'onFilterChange' a handler that will be passed ^filters
 // 'currentFilter' must match filters ^ 
-// modelCategories  an array of pk/category pairs
 const ModelFilterBar = (props) => {
     filters = props.currentFilter;
 

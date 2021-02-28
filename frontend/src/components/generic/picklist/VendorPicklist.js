@@ -4,15 +4,15 @@ import BasePicklist from './BasePicklist';
 
 // selectedVendor: an array of name to pk pairs of the selected categories
 // onChange: an event handler that will be passed the array of selected name/pk pairs
-function ModelCategoriesPicklist(props) {
+function VendorPicklist(props) {
+    console.log(props);
     return (
         <BasePicklist
             selectedCategories={props.selectedVendor}
             onFilterChange={props.onChange}
-            getCategories={getVendors}
+            getOptions={getVendors}
             placeholderText="Vendors..."
-            displayField="vendor"
-            valueField="vendor"
+            type="string"
         />
     )
 }
@@ -22,13 +22,11 @@ async function getVendors() {
     const modelServices = new ModelServices();
     return await modelServices.getVendors().then((result) => {
         if (result.success) {
-            return result.data.data;
+            return result.data.vendors;
         } else {
-            this.setState({
-                vendorsArr: []
-            })
+            return []
         }
     })
 }
 
-export default ModelCategoriesPicklist;
+export default VendorPicklist;

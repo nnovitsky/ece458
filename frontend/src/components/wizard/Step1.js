@@ -72,7 +72,7 @@ class Step1 extends React.Component {
                     <Form.Control type="text" name={shuntModel} value={this.state.shuntmeter.model_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-1 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={shuntAsset} value={this.state.shuntmeter.asset_tag} onChange={this.onTextInput} />
-                    <Button>Validate</Button>
+                    <Button className="form-block">Validate</Button>
                 </Form.Group>
             </Form>
 

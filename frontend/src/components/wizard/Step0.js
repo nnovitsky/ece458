@@ -56,22 +56,21 @@ class Step0 extends React.Component {
             <Form className="wizard">
                 <h3>Calibration Info</h3>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-2 col-form-label">Vendor:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Vendor:</Form.Label>
                     <Form.Control type="text" name={vendorName} value={this.state.calInfo.vendor} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-2 col-form-label">Model Number:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Model Number:</Form.Label>
                     <Form.Control type="text" name={modelName} value={this.state.calInfo.model_number} onChange={this.onTextInput} />
                 </Form.Group>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-2 col-form-label">Serial Number:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Serial Number:</Form.Label>
                     <Form.Control type="text" name={serial} value={this.state.calInfo.serial_number} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-2 col-form-label">Asset Tag:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={asset} value={this.state.calInfo.asset_tag} onChange={this.onTextInput} />
-
                 </Form.Group>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-2 col-form-label">Engineer:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
                     <Form.Control type="text" name={engineer} value={this.state.calInfo.engineer} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-2 col-form-label">Select a Date:</Form.Label>
+                    <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
                     <DatePicker onSelect={null} selected={calDate} />
                 </Form.Group>
             </Form>

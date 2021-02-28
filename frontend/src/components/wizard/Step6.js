@@ -48,15 +48,15 @@ class Step6 extends React.Component {
 
     makeBody() {
         return <div>
-            <Form>
+            <Form className="wizard">
                 <h3>Check Voltages</h3>
                 <h5>Voltage with all load steps on:</h5>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-2 col-form-label">Voltage Reported (display):</Form.Label>
                     <Form.Control type="text" placeholder={"input #"} name={vr} value={this.state.voltage_reported} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-2 col-form-label">Voltage Actual (voltmeter)</Form.Label>
+                    <Form.Label className="col-sm-2 col-form-label">Voltage Actual (voltmeter):</Form.Label>
                     <Form.Control type="text" placeholder={"input #"} name={va} value={this.state.voltage_actual} onChange={this.onTextInput} />
-                    <Button>Validate Voltages</Button>
+                    <Button>Validate</Button>
                 </Form.Group>
                 <h5>Output</h5>
                 <Form.Group >
@@ -86,8 +86,6 @@ class Step6 extends React.Component {
                 return;
             default:
                 return;
-
-
         }
 
     }

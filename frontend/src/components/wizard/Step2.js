@@ -12,7 +12,10 @@ class Step2 extends React.Component {
 
         this.state = {
             errors: [],
+            checked: false
         }
+
+        this.toggleCheck = this.toggleCheck.bind(this);
 
     }
 
@@ -28,6 +31,7 @@ class Step2 extends React.Component {
                 body={body}
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
+                disableContinue={!this.state.checked}
             />
         );
     }
@@ -38,10 +42,17 @@ class Step2 extends React.Component {
                 <h2>Perform Visual Inspection of Resistors</h2>
                 <br></br>
                 <h4>Check Box When Completed</h4>
-                <Form.Check></Form.Check>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checked}></Form.Check>
             </Form>
 
         </div>
+    }
+
+    toggleCheck(e) {
+        this.setState({
+            checked: !this.state.checked
+        })
+
     }
 
 }

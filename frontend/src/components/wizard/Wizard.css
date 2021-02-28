@@ -1,0 +1,11 @@
+form.wizard .form-control{
+    width: 12vw;
+}
+
+form.wizard .form-label{
+    font-size: 1.3vw;
+}
+form.wizard {
+    text-align: left;
+    align-content: left;
+}

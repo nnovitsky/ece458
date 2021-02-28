@@ -26,7 +26,7 @@ class Base extends React.Component {
                     </Alert>
                     <Button variant="secondary" className="mr-auto" onClick={this.props.onClose}>Cancel</Button>
                     <Button variant="primary" onClick={this.props.decrementStep}>Back</Button>
-                    <Button variant="primary" onClick={this.props.incrementStep}>Continue</Button>
+                    <Button variant="primary" disabled={this.props.disableContinue} onClick={this.props.incrementStep}>Continue</Button>
                 </Modal.Footer>
             </Modal>
         );

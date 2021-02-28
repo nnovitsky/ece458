@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from backend.tables import views
 from backend.tables import api_views
+from backend.tables import loadbank_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
@@ -51,6 +52,9 @@ urlpatterns = [
     path('api/model_categories/<int:pk>/', views.model_category_detail),
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
-    path('api/category_list/<str:type>/', views.category_list)
+    path('api/category_list/<str:type>/', views.category_list),
+    path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
+    path('api/get_asset_nums/<int:model_pk>/', loadbank_views.get_asset_numbers),
+    path('api/update_lb_cal/<int:lb_cal_pk>/', loadbank_views.update_lb_cal_field),
 
 ]

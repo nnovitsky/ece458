@@ -164,3 +164,24 @@ def make_user(username, data, login, groups=[]):
     if serializer.is_valid():
         u = serializer.save()
     return serializer.data['token'], u
+
+
+def check_instrument_is_calibrated(instrument_pk):
+    try:
+        instrument = Instrument.objects.get(pk=instrument_pk)
+    except Instrument.DoesNotExist:
+        return "Instrument does not exist."
+
+    cal_frequency = instrument.item_model.calibration_frequency
+    if cal_frequency < 1:
+        return "Instrument not calibratable."
+    last_cal = instrument.calibrationevent_set.order_by('-date')[:1]
+    if len(last_cal) > 0:
+        last_cal = last_cal[0]
+        exp_date = last_cal.date + datetime.timedelta(cal_frequency)
+        if exp_date >= datetime.date.today():
+            return None
+        else:
+            return "Instrument out of calibration."
+    else:
+        return "Instrument not calibrated."

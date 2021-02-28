@@ -346,3 +346,10 @@ class ListInstrumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = InstrumentCategory
         fields = ('pk', 'name', 'count', 'instruments')
+
+
+class LBCalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LoadBankCalibration
+        fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')

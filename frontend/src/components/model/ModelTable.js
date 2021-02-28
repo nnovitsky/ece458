@@ -23,6 +23,7 @@ const keyField = 'pk';
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
+    console.log(props.data)
     return (
         <DataTable
             data={props.data}
@@ -80,14 +81,14 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'description-column',
             },
             {
-                dataField: 'categories',
+                dataField: 'categories.item_model_categories',
                 text: 'Model Categories',
                 sort: false,
-                title: (cell) => `Model Categories: ${formatCategories(cell)}`,
+                title: (cell) => `Model Categories: ${cell.join(', ')}`,
                 headerClasses: 'model-category-column',
                 formatter: (cell) => {
                     return (
-                        <span>{formatCategories(cell)}</span>
+                        <span>{cell.join(', ')}</span>
                     )
                 }
             },
@@ -102,10 +103,6 @@ let makeConfig = (countStart, onMoreClicked) => {
         ]
     )
 };
-
-const formatCategories = (categories) => {
-    return categories.map(el => el.name).join(', ');
-}
 
 export default NewModelTable;
 

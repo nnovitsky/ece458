@@ -215,7 +215,9 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>
-                        <td>{this.state.instrument_info.model_categories.map(el => el.name).join(', ')}</td>
+                        <div className="detail-view-categories">
+                            <td>{this.state.instrument_info.model_categories.map(el => el.name).join(', ')}</td>
+                        </div>
                     </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>
@@ -227,8 +229,12 @@ class InstrumentDetailView extends Component {
                     </tr>
 
                     <tr>
-                        <td><strong>Instrument Categories</strong></td>
-                        <td>{this.state.instrument_info.instrument_categories.map(el => el.name).join(', ')}</td>
+                        <td className="table-view-bold-td"><strong>Instrument Categories</strong></td>
+                        <td>
+                            <div className="detail-view-categories">
+                                {this.state.instrument_info.instrument_categories.map(el => el.name).join(', ')}
+                            </div>
+                        </td>
                     </tr>
                     <tr hidden={!hasHistory}>
                         <td><strong>Next Calibration</strong></td>

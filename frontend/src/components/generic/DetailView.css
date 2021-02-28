@@ -51,5 +51,18 @@ hr {
   height: 110px; */
   overflow: scroll;
   overflow-wrap: anywhere;
+}
 
+/* used by instrument/model detail views for creating the cell for categories */
+.detail-view-categories {
+  max-height: 75px;
+  /* width: 110px;
+  height: 110px; */
+  overflow: scroll;
+  overflow-wrap: anywhere;
+}
+
+/* used by instrument/model detail views for having the label cells be wider */
+.table-view-bold-td {
+  width: 200px;
 }

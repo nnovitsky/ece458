@@ -182,8 +182,10 @@ class ModelDetailView extends React.Component {
                         <td>{modelInfo.calibration_frequency}</td>
                     </tr>
                     <tr>
-                        <td><strong>Model Categories</strong></td>
-                        <td>{modelInfo.categories.map(el => el.name).join(', ')}</td>
+                        <td className="table-view-bold-td"><strong>Model Categories</strong></td>
+                        <div className="detail-view-categories">
+                            <td>{modelInfo.categories.map(el => el.name).join(', ')}</td>
+                        </div>
                     </tr>
                 </tbody>
             </Table>

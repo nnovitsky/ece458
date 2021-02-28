@@ -4,7 +4,7 @@
     white-space:nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0  .1rem 0 .1rem !important;
+    padding: .1rem .1rem .1rem .1rem !important;
 }
 
 /* formats the pagination show all/total results components */

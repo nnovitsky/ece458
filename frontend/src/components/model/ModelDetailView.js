@@ -187,7 +187,7 @@ class ModelDetailView extends React.Component {
                         <td>
                             <div className="detail-view-categories">
                                 {modelInfo.categories.map(el => el.name).join(', ')}
-                                </div>
+                            </div>
                         </td>
 
                     </tr>

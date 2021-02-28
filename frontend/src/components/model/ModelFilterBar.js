@@ -7,6 +7,8 @@ import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist
 
 import Button from 'react-bootstrap/Button';
 
+import '../generic/FilterBar.css';
+
 const modelName = "model";
 const vendorName = "vendor";
 const descriptionName = "description";
@@ -37,11 +39,13 @@ const ModelFilterBar = (props) => {
 
                 <Form.Control name={descriptionName} type="text" placeholder="Enter Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
+                <div className="filter-picklist">
+                    <ModelCategoriesPicklist
+                        selectedCategories={props.currentFilter.model_categories}
+                        onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
+                    />
+                </div>
 
-                <ModelCategoriesPicklist
-                    selectedCategories={props.currentFilter.model_categories}
-                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
-                />
                 <Button onClick={(e) => onSearch(props.onSearch)}>Apply</Button>
                 <Button onClick={props.onRemoveFilters}>Clear</Button>
             </Col>

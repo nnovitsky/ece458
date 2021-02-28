@@ -49,14 +49,20 @@ const InstrumentFilterBar = (props) => {
 
                 <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => onTextInput(e, props.onFilterChange)} />
 
-                <ModelCategoriesPicklist
-                    selectedCategories={props.currentFilter.model_categories}
-                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
-                />
-                <InstrumentCategoriesPicklist
-                    selectedCategories={props.currentFilter.instrument_categories}
-                    onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
-                />
+                <div className="filter-picklist">
+                    <ModelCategoriesPicklist
+                        selectedCategories={props.currentFilter.model_categories}
+                        onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'model')}
+                    />
+                </div>
+                <div className="filter-picklist">
+                    <InstrumentCategoriesPicklist
+                        selectedCategories={props.currentFilter.instrument_categories}
+                        onChange={(filterList) => onCategoryInput(filterList, props.onFilterChange, 'instrument')}
+                    />
+                </div>
+
+
                 <Button className="filter-button" onClick={(e) => onSearch(e, props.onSearch)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters)}>Clear</Button>
 

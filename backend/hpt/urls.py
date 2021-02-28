@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/token_refresh/', refresh_jwt_token, name='token_refresh'),
     path('api/create_user/', views.UserCreate.as_view(), name='create_user'),
     path('api/users/', views.user_list, name='user_list'),
+    path('api/toggle_admin/<int:user_pk>/', views.toggle_admin),
     path('api/vendors/', views.vendor_list, name='vendor_list'),
     path('api/models_by_vendor/<str:vendor>/', views.model_by_vendor_list, name='models_by_vendor'),
     path('api/models/', views.models_list, name='models_list'),
@@ -48,10 +49,8 @@ urlpatterns = [
     path('api/oauth/consume/', views.OauthConsume.as_view()),
     path('api/model_categories/', views.model_category_list),
     path('api/model_categories/<int:pk>/', views.model_category_detail),
-    path('api/edit_model_categories/<int:pk>/', views.edit_model_categories),
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
-    path('api/edit_instrument_categories/<int:pk>/', views.edit_instrument_categories),
     path('api/category_list/<str:type>/', views.category_list)
 
 ]

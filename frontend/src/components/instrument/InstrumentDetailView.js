@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import logo from '../../assets/HPT_logo_crop.png';
 import { Redirect, withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 
@@ -332,6 +329,7 @@ class InstrumentDetailView extends Component {
                         this.getCalHistory();
                     })
                 }
+                return;
             default:
                 return;
         }

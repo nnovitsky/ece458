@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Container from 'react-bootstrap/Container';
-import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 
@@ -22,9 +21,6 @@ let filters = {
     model_categories: [],
     instrument_categories: []
 }
-
-let modelCategories = [];
-let instrumentCategories = [];
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed

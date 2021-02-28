@@ -183,9 +183,13 @@ class ModelDetailView extends React.Component {
                     </tr>
                     <tr>
                         <td className="table-view-bold-td"><strong>Model Categories</strong></td>
-                        <div className="detail-view-categories">
-                            <td>{modelInfo.categories.map(el => el.name).join(', ')}</td>
-                        </div>
+
+                        <td>
+                            <div className="detail-view-categories">
+                                {modelInfo.categories.map(el => el.name).join(', ')}
+                                </div>
+                        </td>
+
                     </tr>
                 </tbody>
             </Table>

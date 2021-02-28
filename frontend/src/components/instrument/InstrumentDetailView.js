@@ -215,9 +215,12 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>
-                        <div className="detail-view-categories">
-                            <td>{this.state.instrument_info.model_categories.map(el => el.name).join(', ')}</td>
-                        </div>
+
+                        <td>
+                            <div className="detail-view-categories">
+                                {this.state.instrument_info.model_categories.map(el => el.name).join(', ')}
+                                </div>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>

@@ -138,18 +138,18 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 title: (cell) => `Model Description: ${cell}`,
                 headerClasses: 'description-column',
             },
-            // {
-            //     dataField: 'categories.item_model_categories',
-            //     text: 'Model Categories',
-            //     sort: false,
-            //     title: (cell) => `Model Categories: ${formatCategories(cell)}`,
-            //     headerClasses: 'model-category-column',
-            //     formatter: (cell) => {
-            //         return (
-            //             <span>{formatCategories(cell)}</span>
-            //         )
-            //     }
-            // },
+            {
+                dataField: 'categories.item_model_categories',
+                text: 'Model Categories',
+                sort: false,
+                title: (cell) => `Model Categories: ${cell.join(', ')}`,
+                headerClasses: 'model-category-column',
+                formatter: (cell) => {
+                    return (
+                        <span>{cell.join(', ')}</span>
+                    )
+                }
+            },
             {
                 dataField: 'serial_number',
                 text: 'Serial #',
@@ -158,18 +158,18 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 headerClasses: 'serial-number-column',
             },
 
-            // {
-            //     dataField: 'categories.instrument_categories',
-            //     text: 'Instrument Categories',
-            //     sort: false,
-            //     title: (cell) => `Instrument Categories: ${formatCategories(cell)}`,
-            //     headerClasses: 'instrument-category-column',
-            //     formatter: (cell) => {
-            //         return (
-            //             <span>{formatCategories(cell)}</span>
-            //         )
-            //     }
-            // },
+            {
+                dataField: 'categories.instrument_categories',
+                text: 'Instrument Categories',
+                sort: false,
+                title: (cell) => `Instrument Categories: ${cell.join(', ')}`,
+                headerClasses: 'instrument-category-column',
+                formatter: (cell) => {
+                    return (
+                        <span>{cell.join(', ')}</span>
+                    )
+                }
+            },
             {
                 dataField: 'latest_calibration',
                 text: 'Latest Calibration',
@@ -222,10 +222,6 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
             }
         ]
     )
-}
-
-const formatCategories = (categories) => {
-    return categories.map(el => el.name).join(', ');
 }
 
 

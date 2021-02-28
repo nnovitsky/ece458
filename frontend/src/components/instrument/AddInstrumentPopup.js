@@ -146,7 +146,9 @@ class AddInstrumentPopup extends Component {
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Instrument Categories</Form.Label>
-
+                    {/* <InstrumentCategoryPicklist
+                        selectedCategories={this.state.newInstrument}
+                    /> */}
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Comments</Form.Label>

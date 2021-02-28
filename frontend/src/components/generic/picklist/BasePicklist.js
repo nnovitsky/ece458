@@ -20,7 +20,6 @@ let displayField;
 let valueField;
 let isMulti;
 function BasePicklist(props) {
-    console.log(props);
     const [allOptions, setAllOptions] = useState(null);
     displayField = props.displayField
     valueField = props.valueField;
@@ -30,7 +29,6 @@ function BasePicklist(props) {
     useLayoutEffect(() => {
         async function fetchData() {
             await props.getOptions().then(result => {
-                console.log(result);
                 setAllOptions(formatOptions(result));
             })
         }
@@ -39,7 +37,6 @@ function BasePicklist(props) {
         }
     }, [allOptions, props]);
 
-    console.log(allOptions)
     return (
         <Select
             value={formatSelected(props.selectedCategories)}

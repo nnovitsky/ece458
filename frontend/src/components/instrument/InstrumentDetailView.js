@@ -267,7 +267,8 @@ class InstrumentDetailView extends Component {
             model_number: this.state.instrument_info.model_number,
             vendor: this.state.instrument_info.vendor,
             serial_number: this.state.instrument_info.serial_number,
-            comment: this.state.instrument_info.comment
+            comment: this.state.instrument_info.comment,
+            instrument_categories: this.state.instrument_info.instrument_categories
         }
         return (
             <EditInstrumentPopop
@@ -382,7 +383,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onEditInstrumentSubmit(newInstrument) {
-        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment)
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories)
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();

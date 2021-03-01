@@ -384,16 +384,46 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
         ca_error = self.get_ca_error(obj)
         return abs(ca_error) < CA_THRESHOLD
 
-    def validate(self, data):
-        ideal = data['ideal']
-        if ideal == 0 and (data['cr'] != 0 or data['ca'] != 0):
-            raise serializers.ValidationError(NO_LOAD_ERROR_MESSAGE)
-        if not self.get_cr_ok(obj=None):
-            raise serializers.ValidationError(CR_ERROR_MESSAGE)
-        if not self.get_ca_ok(obj=None):
-            raise serializers.ValidationError(CA_ERROR_MESSAGE)
-        return data
-
     class Meta:
         model = LoadCurrent
         fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
+
+
+class LoadVoltageWriteSerializer(serializers.ModelSerializer):
+    vr_error = serializers.SerializerMethodField()
+    va_error = serializers.SerializerMethodField()
+    vr_ok = serializers.SerializerMethodField()
+    va_ok = serializers.SerializerMethodField()
+
+    def get_vr_error(self, obj):
+        vr = self.initial_data['vr']
+        va = self.initial_data['va']
+        return (vr-va)/va
+
+    def get_va_error(self, obj):
+        test = self.initial_data['test_voltage']
+        va = self.initial_data['va']
+        return (va-test)/test
+
+    def get_vr_ok(self, obj):
+        vr_error = self.get_vr_error(obj)
+        return abs(vr_error) < VR_THRESHOLD
+
+    def get_va_ok(self, obj):
+        va_error = self.get_va_error(obj)
+        return abs(va_error) < VA_THRESHOLD
+
+    # def validate(self, data):
+    #     vr_ok = self.get_vr_ok(obj=None)
+    #     va_ok = self.get_ca_ok(obj=None)
+    #     if not vr_ok and not va_ok:
+    #         raise serializers.ValidationError(VR_AND_VA_ERROR)
+    #     elif not vr_ok:
+    #         raise serializers.ValidationError(VR_ERROR_MESSAGE)
+    #     elif not va_ok:
+    #         raise serializers.ValidationError(VA_ERROR_MESSAGE)
+    #     return data
+
+    class Meta:
+        model = LoadVoltage
+        fields = ('pk', 'lb_cal', 'vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')

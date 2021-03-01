@@ -1,8 +1,19 @@
 CR_THRESHOLD = 0.03
 CA_THRESHOLD = 0.05
+CR_AND_CA_ERROR = "Measured current is >3% off and actual current is >5% off. Adjust ppm settings, check and repair or replace load cell, then restart."
 CR_ERROR_MESSAGE = "Measured current is >3% off. Adjust ppm settings to fix, then restart."
-CA_ERROR_MESSAGE = "Actual current is >5% off. Check and repair/replace load cell, then restart."
+CA_ERROR_MESSAGE = "Actual current is >5% off. Check and repair or replace load cell, then restart."
 NO_LOAD_ERROR_MESSAGE = "Current with no load must be zero."
+VR_THRESHOLD = 0.01
+VA_THRESHOLD = 0.1
+VR_AND_VA_ERROR = "Measured voltage is >1% off and actual voltage is below 43.2V. Adjust ppm settings, check DC source, and redo calibration."
+VR_ERROR_MESSAGE = "Measured voltage is >1% off. Adjust ppm settings to fix, then check again."
+VA_ERROR_MESSAGE = "Actual voltage is below 43.2V--that’s too much sag. Check DC source and redo calibration."
+
+VOLTAGE_TEST = {
+    'voltage_text': "Voltages with all banks on:",
+    'test_voltage': 48
+}
 
 LOAD_LEVELS = {
     1: [

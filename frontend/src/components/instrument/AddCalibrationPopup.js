@@ -53,7 +53,7 @@ const makeBody = (calDate, setCalDate) => {
                     </Form.Text>
                 </Form.Group>
                 <Form.Group>
-                    <Form.File label="Supplement files" onChange={onFileChange} />
+                    <Form.File label="Supplement files" onChange={onFileChange} accept=".jpg,.png,.gif,.pdf,.xlsx" />
                 </Form.Group>
             </Form>
         </div>

@@ -164,7 +164,8 @@ JWT_AUTH = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+# 32MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 33554432
 
-# Data = size of request
+# Max size of request = max file size + 2.5MB (Django default value)
 DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE + 2621440

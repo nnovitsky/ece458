@@ -295,11 +295,14 @@ export default class InstrumentServices {
 
     // Note: the date needs to be a string
     // Error handling in place for future dates
-    async addCalibrationEvent(instrument_pk, date, comment) {
-        let data = {
-            instrument: instrument_pk,
-            date: date,
-            comment: comment
+    async addCalibrationEvent(instrument_pk, date, comment, file) {
+        const formData = new FormData();
+        formData.append('instrument', instrument_pk);
+        formData.append('data', date);
+        formData.append('comment', comment);
+
+        if (file !== '') {
+            formData.append('file', file);
         }
 
         let result = {
@@ -315,7 +318,7 @@ export default class InstrumentServices {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-            body: JSON.stringify(data)
+            body: formData
         })
             .then(res => {
                 if (res.ok) {

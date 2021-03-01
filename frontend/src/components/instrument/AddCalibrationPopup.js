@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 let newCalibration = {
     date: dateToString(new Date()),
     comment: '',
+    file: '',
 }
 
 const AddCalibrationPopup = (props) => {
@@ -51,6 +52,9 @@ const makeBody = (calDate, setCalDate) => {
                         Max 2000 characters
                     </Form.Text>
                 </Form.Group>
+                <Form.Group>
+                    <Form.File label="Supplement files" onChange={onFileChange} />
+                </Form.Group>
             </Form>
         </div>
     )
@@ -60,6 +64,7 @@ const preClose = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
+        file: ''
     }
     parentHandler();
 }
@@ -69,6 +74,7 @@ const preSubmit = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
+        file: ''
     }
 }
 
@@ -79,6 +85,11 @@ const onCommentChange = (e) => {
 const onDateChange = (date, setCalDate) => {
     newCalibration.date = dateToString(date)
     setCalDate(date);
+}
+
+const onFileChange = (e) => {
+    newCalibration.file = e.target.files[0];
+    console.log(newCalibration)
 }
 
 export default AddCalibrationPopup;

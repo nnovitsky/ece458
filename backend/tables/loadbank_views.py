@@ -130,3 +130,14 @@ def add_voltage_reading(request, lb_cal_pk):
         return Response({'data': data, 'error': error}, status=status.HTTP_200_OK)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def cancel_lb_cal(request, lb_cal_pk):
+    try:
+        lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
+        cal_event = CalibrationEvent.objects.get(pk=lb_cal.cal_event.pk)
+    except LoadBankCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
+        return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+    cal_event.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

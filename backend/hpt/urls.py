@@ -56,5 +56,7 @@ urlpatterns = [
     path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
     path('api/get_asset_nums/<int:model_pk>/', loadbank_views.get_asset_numbers),
     path('api/update_lb_cal/<int:lb_cal_pk>/', loadbank_views.update_lb_cal_field),
+    path('api/load_levels/<int:page>/', loadbank_views.get_load_levels),
+    path('api/add_current_reading/<int:lb_cal_pk>/', loadbank_views.add_current_reading),
 
 ]

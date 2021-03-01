@@ -114,8 +114,11 @@ class LoadCurrent(models.Model):
     cr = models.FloatField()
     ca = models.FloatField()
     ideal = models.FloatField()
-    cr_error = models.FloatField()
-    ca_error = models.FloatField()
+    cr_error = models.FloatField(null=True)
+    ca_error = models.FloatField(null=True)
+    index = models.IntegerField()
+    cr_ok = models.BooleanField(default=False)
+    ca_ok = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.lb_cal) + ' ' + str(self.load)

@@ -3,6 +3,7 @@ from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 import datetime
+from backend.config.load_bank_config import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -353,3 +354,46 @@ class LBCalSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoadBankCalibration
         fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+
+
+class LoadCurrentWriteSerializer(serializers.ModelSerializer):
+    cr_error = serializers.SerializerMethodField()
+    ca_error = serializers.SerializerMethodField()
+    cr_ok = serializers.SerializerMethodField()
+    ca_ok = serializers.SerializerMethodField()
+
+    def get_cr_error(self, obj):
+        if self.initial_data['ideal'] == 0: return None
+        cr = self.initial_data['cr']
+        ca = self.initial_data['ca']
+        return (cr-ca)/ca
+
+    def get_ca_error(self, obj):
+        ideal = self.initial_data['ideal']
+        if ideal == 0: return None
+        ca = self.initial_data['ca']
+        return (ca-ideal)/ideal
+
+    def get_cr_ok(self, obj):
+        if self.initial_data['ideal'] == 0 and self.initial_data['cr'] != 0: return False
+        cr_error = self.get_cr_error(obj)
+        return abs(cr_error) < CR_THRESHOLD
+
+    def get_ca_ok(self, obj):
+        if self.initial_data['ideal'] == 0 and self.initial_data['ca'] != 0: return False
+        ca_error = self.get_ca_error(obj)
+        return abs(ca_error) < CA_THRESHOLD
+
+    def validate(self, data):
+        ideal = data['ideal']
+        if ideal == 0 and (data['cr'] != 0 or data['ca'] != 0):
+            raise serializers.ValidationError(NO_LOAD_ERROR_MESSAGE)
+        if not self.get_cr_ok(obj=None):
+            raise serializers.ValidationError(CR_ERROR_MESSAGE)
+        if not self.get_ca_ok(obj=None):
+            raise serializers.ValidationError(CA_ERROR_MESSAGE)
+        return data
+
+    class Meta:
+        model = LoadCurrent
+        fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')

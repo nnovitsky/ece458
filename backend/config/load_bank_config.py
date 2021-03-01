@@ -1,3 +1,9 @@
+CR_THRESHOLD = 0.03
+CA_THRESHOLD = 0.05
+CR_ERROR_MESSAGE = "Measured current is >3% off. Adjust ppm settings to fix, then restart."
+CA_ERROR_MESSAGE = "Actual current is >5% off. Check and repair/replace load cell, then restart."
+NO_LOAD_ERROR_MESSAGE = "Current with no load must be zero."
+
 LOAD_LEVELS = {
     1: [
         {

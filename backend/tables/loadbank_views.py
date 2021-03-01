@@ -5,6 +5,7 @@ from rest_framework import status
 from backend.tables.models import *
 from backend.tables.serializers import *
 from backend.tables.utils import check_instrument_is_calibrated
+from backend.config.load_bank_config import LOAD_LEVELS
 
 
 @api_view(['POST'])
@@ -52,5 +53,30 @@ def update_lb_cal_field(request, lb_cal_pk):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def get_load_levels(request, page):
+    try:
+        data = LOAD_LEVELS[page]
+    except KeyError:
+        return Response({"loadbank_error": ["Invalid page number."]}, status=status.HTTP_400_BAD_REQUEST)
+    data = sorted(data, key=lambda i: i['index'])
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def add_current_reading(request, lb_cal_pk):
+    try:
+        lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
+    except LoadBankCalibration.DoesNotExist:
+        return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    request.data['lb_cal'] = lb_cal.pk
+    serializer = LoadCurrentWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

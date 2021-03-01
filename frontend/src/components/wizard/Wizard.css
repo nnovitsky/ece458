@@ -9,3 +9,15 @@ form.wizard {
     text-align: left;
     align-content: left;
 }
+
+.format-width {
+    width: 100px
+}
+
+.validated{
+    background-color: rgba(200, 255, 187, 0.411)
+}
+
+.notValidated{
+    background-color: whitesmoke
+}

@@ -1,13 +1,13 @@
 import React from 'react'
 import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import './Wizard.css'
 
 
-
-const vr = "vr";
-const va = "va";
+const checkOne = "checkOne"
+const checkTwo = "checkTwo"
+const checkThree = "checkThree"
+const checkFour = "checkFour"
 
 class Step6 extends React.Component {
 
@@ -16,17 +16,13 @@ class Step6 extends React.Component {
 
         this.state = {
             errors: [],
-            voltage_reported: '',
-            voltage_actual: '',
-            test_voltage: 48,
-            vr_error: 1,
-            vr_ok: 'Yes',
-            va_error: 10,
-            va_ok: 'No'
-
+            allChecked: false,
+            checkOne: false,
+            checkTwo: false,
+            checkThree: false,
+            checkFour: false,
         }
-
-        this.onTextInput = this.onTextInput.bind(this);
+        this.toggleCheck = this.toggleCheck.bind(this);
 
     }
 
@@ -42,46 +38,59 @@ class Step6 extends React.Component {
                 body={body}
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
+                disableContinue={!(this.state.checkOne&&this.state.checkTwo&&this.state.checkThree&&this.state.checkFour)}
             />
         );
     }
 
     makeBody() {
         return <div>
-            <Form className="wizard">
-                <h3>Check Voltages</h3>
-                <h5>Voltage with all load steps on:</h5>
-                <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-2 col-form-label">Voltage Reported (display):</Form.Label>
-                    <Form.Control type="text" placeholder={"input #"} name={vr} value={this.state.voltage_reported} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-2 col-form-label">Voltage Actual (voltmeter):</Form.Label>
-                    <Form.Control type="text" placeholder={"input #"} name={va} value={this.state.voltage_actual} onChange={this.onTextInput} />
-                    <Button>Validate</Button>
-                </Form.Group>
-                <h5>Output</h5>
-                <Form.Group >
-                    <Form.Label style={{display: "block"}}>Test Voltage: &nbsp;{this.state.test_voltage}V</Form.Label>
-                    <Form.Label style={{display: "block"}}>VR Error: &nbsp;{this.state.vr_error}%</Form.Label>
-                    <Form.Label style={{display: "block"}}>VR Ok?: &nbsp;{this.state.vr_ok}</Form.Label>
-                    <Form.Label style={{display: "block"}}>VA Error: &nbsp;{this.state.va_error}%</Form.Label>
-                    <Form.Label style={{display: "block"}}>VR Ok?: &nbsp;{this.state.va_ok}</Form.Label>
-                </Form.Group>
+            <Form className="wizard" style={{ textAlign: "center" }}>
+                <h3>Final Functional Checks</h3>
+                <br></br>
+                <h5>Lower DC source voltage and check auto-shut off when voltage is less than 43V</h5>
+                <h7>Check Box When Completed</h7>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkOne} name={checkOne}></Form.Check>
+                <br></br>
+                <h5>Lift cell voltage lead and confirm buzzer sounds</h5>
+                <h7>Check Box When Completed</h7>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkTwo} name={checkTwo}></Form.Check>
+                <br></br>
+                <h5>Verify load bank's recorded data on computer</h5>
+                <h7>Check Box When Completed</h7>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkThree} name={checkThree}></Form.Check>
+                <br></br>
+                <h5>Verify printer works</h5>
+                <h7>Check Box When Completed</h7>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkFour} name={checkFour}></Form.Check>
+                <br></br>
             </Form>
 
         </div>
     }
 
-    onTextInput(e) {
-        let val = e.target.value;
+    toggleCheck(e) {
+        console.log()
+
         switch (e.target.name) {
-            case vr:
+            case checkOne:
                 this.setState({
-                    voltage_reported: val
+                    checkOne: !this.state.checkOne,
                 })
                 return;
-            case va:
+            case checkTwo:
                 this.setState({
-                    voltage_actual: val
+                    checkTwo: !this.state.checkTwo,
+                })
+                return;
+            case checkThree:
+                this.setState({
+                    checkThree: !this.state.checkThree,
+                })
+                return;
+            case checkFour:
+                this.setState({
+                    checkFour: !this.state.checkFour,
                 })
                 return;
             default:

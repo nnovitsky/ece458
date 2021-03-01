@@ -4,12 +4,16 @@ import io
 from backend.tables.serializers import ItemModelSerializer
 from backend.import_export.field_validators import is_blank_row
 
-model_keys = ['vendor', 'model_number', 'description', 'comment', 'calibration_frequency']
+model_keys = ['vendor', 'model_number', 'description', 'comment', 'itemmodelcategory_set',
+              'load_bank_support', 'calibration_frequency']
+
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
 DESC_INDEX = 2
 COMMENT_INDEX = 3
-CAL_FREQUENCY_INDEX = 4
+MODEL_CATEGORIES_INDEX = 4
+LOAD_BANK_INDEX = 5
+CAL_FREQUENCY_INDEX = 6
 
 
 def get_model_list(file):
@@ -27,7 +31,8 @@ def get_model_list(file):
         else:
             cal_freq = int(row[CAL_FREQUENCY_INDEX])
 
-        model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX], row[COMMENT_INDEX], cal_freq]
+        model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
+                      row[COMMENT_INDEX], row[MODEL_CATEGORIES_INDEX], row[LOAD_BANK_INDEX], cal_freq]
         model_record = dict(zip(model_keys, model_info))
         model_records.append(model_record)
 

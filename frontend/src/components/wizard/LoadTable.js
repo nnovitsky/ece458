@@ -41,6 +41,7 @@ const loadTable = (props) => {
                             }
                             if(row.validate)
                             {
+                                props.updateAllValidated(false)
                                 row.validate = false
                             }
                         }
@@ -81,7 +82,7 @@ let makeConfig = (onValidate) => {
             },
             {
                 dataField: 'ca',
-                text: 'Actual Current',
+                text: 'Current Actual',
             },
             {
                 dataField: 'button',

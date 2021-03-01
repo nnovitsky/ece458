@@ -6,6 +6,7 @@ import Step3 from './Step3.js';
 import Step4 from './Step4.js';
 import Step5 from './Step5.js';
 import Step6 from './Step6.js';
+import Step7 from './Step7.js';
 
 class Wizard extends React.Component {
 
@@ -43,8 +44,10 @@ class Wizard extends React.Component {
                 return <Step4 index={1} isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
             case 5:
                 return <Step5 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
-            default:
+            case 6:
                 return <Step6 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
+            default:
+                return <Step7 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
 
         }
 

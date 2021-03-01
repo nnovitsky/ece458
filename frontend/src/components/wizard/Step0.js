@@ -32,6 +32,7 @@ class Step0 extends React.Component {
         }
 
         this.onTextInput = this.onTextInput.bind(this);
+        this.validateAndContinue = this.validateAndContinue.bind(this);
 
     }
 
@@ -40,12 +41,11 @@ class Step0 extends React.Component {
         let body = this.makeBody();
         return (
             <Base
-                title="Calibration Wizard"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
-                incrementStep={this.props.incrementStep}
+                incrementStep={this.validateAndContinue}
                 decrementStep={this.props.decrementStep}
             />
         );
@@ -55,6 +55,7 @@ class Step0 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
+                <p>Please enter all fields then click continue to validate.</p>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Vendor:</Form.Label>
                     <Form.Control type="text" name={vendorName} value={this.state.calInfo.vendor} onChange={this.onTextInput} />
@@ -125,6 +126,24 @@ class Step0 extends React.Component {
             default:
                 return;
         }
+    }
+
+    async validateAndContinue()
+    {
+        if(this.state.calInfo.model_number === '')
+        {
+            this.setState({
+                errors: ["Please fill in a model number"],
+            })
+        }
+        else
+        {
+            this.setState({
+                errors: [],
+            })
+            this.props.incrementStep()
+        }
+
     }
 
 }

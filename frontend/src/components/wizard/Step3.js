@@ -24,7 +24,6 @@ class Step3 extends React.Component {
         let body = this.makeBody();
         return (
             <Base
-                title="Calibration Wizard"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
                 onClose={this.props.onClose}

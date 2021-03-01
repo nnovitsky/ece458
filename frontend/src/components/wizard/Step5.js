@@ -22,11 +22,13 @@ class Step5 extends React.Component {
             vr_error: 1,
             vr_ok: 'Yes',
             va_error: 10,
-            va_ok: 'No'
+            va_ok: 'No',
+            validated: false,
 
         }
 
         this.onTextInput = this.onTextInput.bind(this);
+        this.validateVoltages = this.validateVoltages.bind(this);
 
     }
 
@@ -35,13 +37,14 @@ class Step5 extends React.Component {
         let body = this.makeBody();
         return (
             <Base
-                title="Calibration Wizard"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
+                disableContinue={!this.state.validated}
+
             />
         );
     }
@@ -56,7 +59,7 @@ class Step5 extends React.Component {
                     <Form.Control type="text" placeholder={"input #"} name={vr} value={this.state.voltage_reported} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-2 col-form-label">Voltage Actual (voltmeter):</Form.Label>
                     <Form.Control type="text" placeholder={"input #"} name={va} value={this.state.voltage_actual} onChange={this.onTextInput} />
-                    <Button>Validate</Button>
+                    <Button onClick={this.validateVoltages}>Validate</Button>
                 </Form.Group>
                 <h5>Output</h5>
                 <Form.Group >
@@ -88,6 +91,21 @@ class Step5 extends React.Component {
                 return;
         }
 
+    }
+
+    async validateVoltages()
+    {
+        if(false)
+        {
+
+        }
+        else 
+        {
+            this.setState({
+                errors: [],
+                validated: true
+            })
+        }
     }
 }
 

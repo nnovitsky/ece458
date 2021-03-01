@@ -23,6 +23,7 @@ class Step6 extends React.Component {
             checkFour: false,
         }
         this.toggleCheck = this.toggleCheck.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
 
     }
 
@@ -36,10 +37,11 @@ class Step6 extends React.Component {
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
-                incrementStep={this.props.incrementStep}
+                incrementStep={this.onSubmit}
                 decrementStep={this.props.decrementStep}
                 disableContinue={!(this.state.checkOne&&this.state.checkTwo&&this.state.checkThree&&this.state.checkFour)}
-            />
+                continueButtonText="Submit Final Step and Create Calibration Event"
+                />
         );
     }
 
@@ -97,6 +99,11 @@ class Step6 extends React.Component {
                 return;
         }
 
+    }
+
+    async onSubmit(){
+        // do something .then
+        this.props.incrementStep()
     }
 }
 

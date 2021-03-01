@@ -21,17 +21,25 @@ class Step1 extends React.Component {
         this.state = {
             errors: [],
             voltmeter: {
+                validated: false,
+                validated_text: '',
                 vendor: '',
                 model_number: '',
                 asset_tag: '',
+
             },
             shuntmeter: {
+                validated: false,
+                validated_text: '',
                 vendor: '',
                 model_number: '',
                 asset_tag: '',
             }
         }
         this.onTextInput = this.onTextInput.bind(this);
+        this.continue = this.continue.bind(this);
+        this.validateVoltmeter = this.validateVoltmeter.bind(this);
+        this.validateShuntmeter = this.validateShuntmeter.bind(this);
     }
 
 
@@ -39,12 +47,12 @@ class Step1 extends React.Component {
         let body = this.makeBody();
         return (
             <Base
-                title="Calibration Wizard"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.props.incrementStep}
+                disableContinue={!(this.state.voltmeter.validated && this.state.shuntmeter.validated)}
                 decrementStep={this.props.decrementStep}
             />
         );
@@ -54,7 +62,8 @@ class Step1 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
-                <h5>Voltmeter:</h5>
+                <p>For each device, enter all fields then validate to continue.</p>
+                <h5>Voltmeter: {this.state.voltmeter.validated_text}</h5>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
                     <Form.Control type="text" name={vmVendor} value={this.state.voltmeter.vendor} onChange={this.onTextInput} />
@@ -62,9 +71,9 @@ class Step1 extends React.Component {
                     <Form.Control type="text" name={vmModel} value={this.state.voltmeter.model_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-1 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={vmAsset} value={this.state.voltmeter.asset_tag} onChange={this.onTextInput} />
-                    <Button>Validate</Button>
+                    <Button onClick={this.validateVoltmeter}>Validate</Button>
                 </Form.Group>
-                <h5>Current Shuntmeter:</h5>
+                <h5>Current Shuntmeter: {this.state.shuntmeter.validated_text}</h5>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
                     <Form.Control type="text" name={shuntVendor} value={this.state.shuntmeter.vendor} onChange={this.onTextInput} />
@@ -72,7 +81,7 @@ class Step1 extends React.Component {
                     <Form.Control type="text" name={shuntModel} value={this.state.shuntmeter.model_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-1 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={shuntAsset} value={this.state.shuntmeter.asset_tag} onChange={this.onTextInput} />
-                    <Button className="form-block">Validate</Button>
+                    <Button onClick={this.validateShuntmeter}>Validate</Button>
                 </Form.Group>
             </Form>
 
@@ -133,6 +142,81 @@ class Step1 extends React.Component {
             default:
                 return;
         }
+    }
+
+    async validateVoltmeter()
+    {
+        if(this.state.voltmeter.vendor === '')
+        {
+            this.setState({
+                errors: ["Voltmeter vendor empty"],
+                voltmeter: {
+                    validated: false,
+                    validated_text: 'Invalid',
+                }
+            })
+        }
+        else 
+        {
+            this.setState({
+                errors: [],
+                voltmeter: {
+                    validated: true,
+                    validated_text: 'Valid',
+                }
+            })
+        }
+    }
+
+
+    async validateShuntmeter()
+    {
+        if(this.state.shuntmeter.vendor === '')
+        {
+            this.setState({
+                errors: ["Shuntmeter vendor empty"],
+                shuntmeter: {
+                    validated: false,
+                    validated_text: 'Invalid',
+                }
+            })
+        }
+        else 
+        {
+            this.setState({
+                errors: [],
+                shuntmeter: {
+                    validated: true,
+                    validated_text: 'Valid',
+                }
+            })
+        }
+    }
+
+
+
+
+
+
+
+
+    async continue()
+    {
+        console.log(this.state.calInfo)
+        if(this.state.voltmeter.validated === true && this.state.shuntmeter.validated === true )
+        {
+            this.setState({
+                errors: []
+            })
+        }
+        else
+        {
+            this.props.incrementStep();
+            this.setState({
+                errors: ["Voltmeter vendor empty"]
+            })
+        }
+
     }
 
 }

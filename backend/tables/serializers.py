@@ -293,7 +293,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():
@@ -301,6 +301,16 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         item_model = data['instrument'].item_model
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
+
+        print("\t\tdata: ", data)
+        # for file_name in file.iteritems():
+        #     file_type = file[file_name].content_type
+        #
+        # valid_file_types = ['image/jpg', 'image/png', 'image/gif', 'application/pdf',
+        #                     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        # if file_type not in valid_file_types:
+        #     raise serializers.ValidationError("Illegal file type.")
+
         return data
 
 

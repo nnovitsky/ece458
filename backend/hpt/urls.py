@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from backend.tables import views
 from backend.tables import api_views
+from backend.tables import loadbank_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
@@ -27,6 +28,7 @@ urlpatterns = [
     path('api/token_refresh/', refresh_jwt_token, name='token_refresh'),
     path('api/create_user/', views.UserCreate.as_view(), name='create_user'),
     path('api/users/', views.user_list, name='user_list'),
+    path('api/toggle_admin/<int:user_pk>/', views.toggle_admin),
     path('api/vendors/', views.vendor_list, name='vendor_list'),
     path('api/models_by_vendor/<str:vendor>/', views.model_by_vendor_list, name='models_by_vendor'),
     path('api/models/', views.models_list, name='models_list'),
@@ -48,10 +50,11 @@ urlpatterns = [
     path('api/oauth/consume/', views.OauthConsume.as_view()),
     path('api/model_categories/', views.model_category_list),
     path('api/model_categories/<int:pk>/', views.model_category_detail),
-    path('api/edit_model_categories/<int:pk>/', views.edit_model_categories),
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
-    path('api/edit_instrument_categories/<int:pk>/', views.edit_instrument_categories),
-    path('api/category_list/<str:type>/', views.category_list)
+    path('api/category_list/<str:type>/', views.category_list),
+    path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
+    path('api/get_asset_nums/<int:model_pk>/', loadbank_views.get_asset_numbers),
+    path('api/update_lb_cal/<int:lb_cal_pk>/', loadbank_views.update_lb_cal_field),
 
 ]

@@ -125,6 +125,17 @@ class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
 
 
+class ItemModelSearchSerializer(serializers.ModelSerializer):
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        return {'item_model_categories': obj.model_cats}
+
+    class Meta:
+        model = ItemModel
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
+
+
 class ItemModelReadSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
 
@@ -294,6 +305,10 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
 
 
 class ItemModelCategorySerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if " " in data['name']:
+            raise serializers.ValidationError("Category name cannot have spaces.")
+        return data
 
     class Meta:
         model = ItemModelCategory
@@ -312,6 +327,10 @@ class ListItemModelCategorySerializer(serializers.ModelSerializer):
 
 
 class InstrumentCategorySerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if " " in data['name']:
+            raise serializers.ValidationError("Category name cannot have spaces.")
+        return data
 
     class Meta:
         model = InstrumentCategory
@@ -327,3 +346,10 @@ class ListInstrumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = InstrumentCategory
         fields = ('pk', 'name', 'count', 'instruments')
+
+
+class LBCalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LoadBankCalibration
+        fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')

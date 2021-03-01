@@ -69,6 +69,7 @@ class InstrumentDetailView extends Component {
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
+        this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
     }
 
     async componentDidMount() {
@@ -127,6 +128,7 @@ class InstrumentDetailView extends Component {
                         totalSize: this.state.calibration_pagination.resultCount
                     }}
                 inlineElements={calButtonRow}
+                    onSupplementDownload={this.onSupplementDownloadClicked}
             />
             </div>
         )
@@ -354,6 +356,9 @@ class InstrumentDetailView extends Component {
                         }
                     })
                 }
+    async onSupplementDownloadClicked(e) {
+        console.log(`Attempted to download for ${e.target.value}`);
+    }
 
     onModelLinkClicked() {
                     this.setState({

@@ -2,7 +2,6 @@ import Configs from './config.js';
 const API_URL = Configs
 
 export default class InstrumentServices {
-    constructor() { }
 
     // handled modified/expired tokens
     async getInstruments(filters, sort_by, show_all, pageNum) {
@@ -162,11 +161,12 @@ export default class InstrumentServices {
 
     // Error handling in place for bad input
     // handled modified/expired tokens
-    async addInstrument(model_pk, serial_number, comment) {
+    async addInstrument(model_pk, serial_number, comment, categories) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
-            comment: comment
+            comment: comment,
+            instrumentcategory_set: categories.map(el => el.pk)
         }
 
         let result = {
@@ -210,11 +210,12 @@ export default class InstrumentServices {
     }
 
     // handling field errors and modification/expiration of tokens
-    async editInstrument(instrumentPk, model_pk, serial_number, comment) {
+    async editInstrument(instrumentPk, model_pk, serial_number, comment, categories) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
-            comment: comment
+            comment: comment,
+            instrumentcategory_set: categories.map(el => el.pk)
         }
 
         let result = {

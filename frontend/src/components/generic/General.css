@@ -126,7 +126,7 @@ form.popup .form-control {
 
 form.popup input[type=file]  {
     margin: 0px;
-    padding-bottom: 0px;
+    padding: 5px 0px 5px 0px;
 }
 
 form.popup input[type=text] {

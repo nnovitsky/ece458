@@ -40,7 +40,13 @@ const makeBody = (calDate, setCalDate) => {
             <Form className="popup">
                 <Form.Group>
                     <Form.Label>Calibration Date</Form.Label>
-                    <DatePicker onSelect={(e) => onDateChange(e, setCalDate)} selected={calDate} />
+                    <div style={{ display: 'block' }}>
+                        <DatePicker
+                            onSelect={(e) => onDateChange(e, setCalDate)}
+                            selected={calDate}
+                        />
+                    </div>
+
                     <Form.Text muted>
                         Cannot be in the future
                     </Form.Text>

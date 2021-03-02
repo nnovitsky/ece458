@@ -4,7 +4,10 @@ import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import LoadTable from './LoadTable.js'
 import data from './LoadLevel.json'
-import Button from 'react-bootstrap/Button';
+
+import WizardServices from "../../api/wizardServices.js";
+
+const wizardServices = new WizardServices();
 
 
 
@@ -18,7 +21,8 @@ class Step4 extends React.Component {
             index: props.index,
             initialData: data[props.index],
             validationData: data[props.index],
-            allValidated: false
+            allValidated: false,
+            loadbank_pk: this.props.loadbank_pk,
         }
 
         this.updateTable = this.updateTable.bind(this);
@@ -78,24 +82,42 @@ class Step4 extends React.Component {
             validate: false
         }
 
-        this.state.validationData.forEach(el => {
+        this.state.validationData.forEach(element => {
             total++
-            if (el.load_level === load_level) {
-                // try to validate that one
-                console.log("Validate LL = " + load_level + " cr = " + el.cr + " ca = " + el.ca)
-                if (typeof (el.cr) !== 'undefined' && typeof (el.ca) !== 'undefined') {
-                    el.validate = true
-                    res.validate = true
-                    valid_count++
-                }
-                else {
-                    this.setState({
-                        errors: ["On or more inputs are undefined"]
-                    })
-                }
-            }
-            else {
-                if(el.validate) valid_count++;
+            if (element.load_level === load_level) {
+                console.log(element)
+                return wizardServices.addCurrentReading(element.load_level, element.cr, element.ca, element.ideal_current, element.index, this.state.loadbank_pk)
+                .then(result => {
+                    if(result.success){
+                        if(result.error === null)
+                        {
+                            element.ca_error = result.data.ca_error
+                            element.cr_error = result.data.cr_error
+                            element.cr_ok = result.data.cr_ok
+                            element.ca_ok = result.data.ca_ok
+                            element.validate = (result.data.cr_ok && result.data.ca_ok)
+                            if(element.validate)
+                            {
+                                valid_count++
+                                res.validate = true
+                            }
+                            return res;
+
+                        } else{
+                            this.setState({
+                                errors: [result.error]
+                            })
+                            return res;
+                        }
+
+                    }
+                    else{
+                        this.setState({
+                            errors: [result.error]
+                        })
+                        return res;
+                    }
+                })
             }
         })
         console.log(valid_count + " vs. " + total)

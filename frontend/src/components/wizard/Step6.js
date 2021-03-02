@@ -21,6 +21,7 @@ class Step6 extends React.Component {
             checkTwo: false,
             checkThree: false,
             checkFour: false,
+            loadbank_pk: this.props.loadbank_pk,
         }
         this.toggleCheck = this.toggleCheck.bind(this);
         this.onSubmit = this.onSubmit.bind(this);

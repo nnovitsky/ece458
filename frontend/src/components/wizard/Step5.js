@@ -24,6 +24,7 @@ class Step5 extends React.Component {
             va_error: 10,
             va_ok: 'No',
             validated: false,
+            loadbank_pk: this.props.loadbank_pk,
 
         }
 

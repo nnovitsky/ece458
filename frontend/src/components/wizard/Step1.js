@@ -34,7 +34,8 @@ class Step1 extends React.Component {
                 vendor: '',
                 model_number: '',
                 asset_tag: '',
-            }
+            },
+            loadbank_pk: this.props.loadbank_pk,
         }
         this.onTextInput = this.onTextInput.bind(this);
         this.continue = this.continue.bind(this);

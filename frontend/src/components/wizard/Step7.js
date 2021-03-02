@@ -18,6 +18,7 @@ class Step3 extends React.Component {
                 voltmeter: '33',
                 shuntmeter: '56',
             },
+            loadbank_pk: this.props.loadbank_pk,
         }
 
 

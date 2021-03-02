@@ -72,6 +72,7 @@ class InstrumentDetailView extends Component {
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.onWizardClicked = this.onWizardClicked.bind(this);
         this.onWizardClose = this.onWizardClose.bind(this);
+        this.makeWizardPopup = this.makeWizardPopup.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
@@ -252,6 +253,10 @@ class InstrumentDetailView extends Component {
             <Wizard
                 isShown={this.state.wizardPopup.isShown}
                 onClose={this.onWizardClose}
+                model_number={this.state.instrument_info.model_number}
+                vendor={this.state.instrument_info.vendor}
+                serial_number={this.state.instrument_info.serial_number}
+                model_pk={this.state.instrument_info.model_pk}
             />
         )
     }

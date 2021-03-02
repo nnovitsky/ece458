@@ -31,8 +31,6 @@ class AddInstrumentPopup extends Component {
     constructor(props) {
         super(props);
 
-
-
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
             this.state = {
@@ -49,7 +47,8 @@ class AddInstrumentPopup extends Component {
                     },
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
-                    instrument_categories: props.currentInstrument.instrument_categories
+                    instrument_categories: props.currentInstrument.instrument_categories,
+                    asset_number: props.currentInstrument.asset_number
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -69,6 +68,7 @@ class AddInstrumentPopup extends Component {
                     },
                     serial_number: '',
                     comment: '',
+                    asset_number: '',
                     instrument_categories: []
                 },
                 vendorsArr: null,
@@ -80,6 +80,7 @@ class AddInstrumentPopup extends Component {
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onAssetChange = this.onAssetChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
@@ -141,11 +142,18 @@ class AddInstrumentPopup extends Component {
             <Form className="popup">
                 {vendorModel}
                 <Form.Group>
+                    <Form.Label>Asset Number</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Asset Number" value={this.state.newInstrument.asset_number} onChange={this.onAssetChange} />
+                    <Form.Text muted>
+                        If left blank, this will be auto-generated.
+                    </Form.Text>
+                </Form.Group>
+                <Form.Group>
                     <Form.Label>Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.
-  </Form.Text>
+                    </Form.Text>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Instrument Categories</Form.Label>
@@ -252,6 +260,15 @@ class AddInstrumentPopup extends Component {
         })
     }
 
+    onAssetChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                asset_number: e.target.value
+            }
+        })
+    }
+
     onClose = (e) => {
         this.props.onClose(e);
         if (!this.state.isEdit) {
@@ -266,8 +283,8 @@ class AddInstrumentPopup extends Component {
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
                 serial_number: this.state.newInstrument.serial_number,
-                instrument_categories: this.state.newInstrument.instrument_categories
-
+                instrument_categories: this.state.newInstrument.instrument_categories,
+                asset_number: this.state.newInstrument.asset_number
             }
             this.props.onSubmit(returnedInstrument);
         }

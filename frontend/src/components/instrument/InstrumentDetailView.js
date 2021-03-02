@@ -31,6 +31,7 @@ class InstrumentDetailView extends Component {
                 vendor: '',
                 serial_number: '',
                 comment: '',
+                asset_number: '',
                 calibration_frequency: '',
                 calibration_expiration: '',
                 calibration_history: [],
@@ -96,7 +97,7 @@ class InstrumentDetailView extends Component {
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
                 <DetailView
-                    title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}
+                    title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_number})`}
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
                     comments={comment}
@@ -149,7 +150,9 @@ class InstrumentDetailView extends Component {
                             calibration_frequency: data.item_model.calibration_frequency,
                             calibration_expiration: data.calibration_expiration,
                             model_categories: data.categories.item_model_categories,
-                            instrument_categories: data.categories.instrument_categories
+                            instrument_categories: data.categories.instrument_categories,
+                            // TODO: set the asset number
+                            asset_number: 'SET ME'
 
                         }
                     })
@@ -221,7 +224,7 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>
-                        <td>ASSET TAG</td>
+                        <td>{this.state.instrument_info.asset_number}</td>
                     </tr>
                     <tr>
                         <td><strong>Serial Number</strong></td>

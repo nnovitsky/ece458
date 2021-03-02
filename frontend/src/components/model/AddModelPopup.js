@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Select from 'react-select/creatable';
 import ModelServices from '../../api/modelServices';
-
 import GenericPopup from '../generic/GenericPopup';
+import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
+import VendorPicklist from '../generic/picklist/VendorPicklist';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -32,6 +33,7 @@ const modelServices = new ModelServices();
 class AddModelPopup extends Component {
     constructor(props) {
         super(props);
+        console.log('made it to add model popup')
 
         //for whatever reason the select compne
         if (props.currentModel != null) {
@@ -40,13 +42,11 @@ class AddModelPopup extends Component {
                 newModel: {
                     model_pk: props.currentModel.pk,
                     model_number: props.currentModel.model_number,
-                    vendor: {
-                        label: props.currentModel.vendor,
-                        value: props.currentModel.vendor
-                    },
+                    vendor: props.currentModel.vendor,
                     description: props.currentModel.description,
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
+                    categories: props.currentModel.categories,
                 },
                 vendorsArr: null,
             }
@@ -56,14 +56,11 @@ class AddModelPopup extends Component {
                 newModel: {
                     model_pk: '',
                     model_number: '',
-                    vendor: {
-                        label: '',
-                        value: ''
-                    },
+                    vendor: '',
                     description: '',
                     comment: '',
                     calibration_frequency: '',
-
+                    categories: [],
                 },
                 vendorsArr: null
             }
@@ -71,22 +68,22 @@ class AddModelPopup extends Component {
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
+        this.onCategoryInput = this.onCategoryInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onClose = this.onClose.bind(this);
-        this.getVendorsArr = this.getVendorsArr.bind(this);
+        //this.getVendorsArr = this.getVendorsArr.bind(this);
     }
 
     async componentDidMount() {
-        await this.getVendorsArr();
+
     }
 
     render() {
-        if (this.state.vendorsArr === null) {
-            this.getVendorsArr();
-        }
+        console.log(this.state.newModel);
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
+
         return (
             <GenericPopup
                 show={this.props.isShown}
@@ -103,15 +100,19 @@ class AddModelPopup extends Component {
     }
 
     makeBody() {
+        console.log(this.state.newModel)
+        let categoryPicklist = (
+            <ModelCategoriesPicklist
+                selectedCategories={this.state.newModel.categories}
+                onChange={this.onCategoryInput}
+            />
+        )
         return (
             <Form className="popup">
                 <Form.Label className="required-field">Vendor</Form.Label>
-                <Select
-                    value={this.state.newModel.vendor}
-                    options={this.state.vendorsArr}
-                    isSearchable={true}
+                <VendorPicklist
+                    selectedVendor={this.state.newModel.vendor}
                     onChange={this.onVendorInput}
-                    defaultInputValue={''}
                 />
                 <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
@@ -126,33 +127,28 @@ class AddModelPopup extends Component {
                 <Form.Label>Calibration Frequency (days)</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
+
+                <Form.Label>Model Categories</Form.Label>
+                {categoryPicklist}
             </Form>
         )
     }
 
-    async getVendorsArr() {
-        modelServices.getVendors().then((result) => {
-            if (result.success) {
-                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
-                this.setState({
-                    vendorsArr: formatted
-                })
-            } else {
-                this.setState({
-                    vendorsArr: []
-                })
+    onVendorInput(e) {
+        console.log(`vendor change: ${e}`)
+        this.setState({
+            newModel: {
+                ...this.state.newModel,
+                vendor: e
             }
         })
     }
 
-    onVendorInput(e) {
+    onCategoryInput(categoryList) {
         this.setState({
             newModel: {
                 ...this.state.newModel,
-                vendor: {
-                    label: e.label,
-                    value: e.value
-                }
+                categories: categoryList
             }
         })
     }
@@ -213,10 +209,11 @@ class AddModelPopup extends Component {
             let newModel = {
                 pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
-                vendor: this.state.newModel.vendor.label,
+                vendor: this.state.newModel.vendor,
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
+                categories: this.state.newModel.categories
             }
 
             if (newModel.calibration_frequency === '') {

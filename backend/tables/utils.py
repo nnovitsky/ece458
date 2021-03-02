@@ -53,6 +53,14 @@ def validate_user(request, create=False):
     return None
 
 
+def annotate_models(queryset):
+    queryset = queryset.annotate(vendor_lower=Func(F('vendor'), function='LOWER')).annotate(
+        model_number_lower=Func(F('model_number'), function='LOWER')).annotate(
+        description_lower=Func(F('description'), function='LOWER'))
+    queryset = queryset.annotate(model_cats=ArrayAgg("itemmodelcategory__name", distinct=True))
+    return queryset
+
+
 def annotate_instruments(queryset):
     # annotate list with most recent calibration and calibration expiration date
     max_date = datetime.date(9999, 12, 31)

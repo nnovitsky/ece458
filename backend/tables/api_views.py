@@ -5,7 +5,7 @@ from django.utils import timezone
 from backend.tables.serializers import *
 from backend.tables.models import ItemModel, Instrument
 from backend.tables.filters import *
-from backend.tables.utils import list_override, get_page_response, annotate_instruments
+from backend.tables.utils import list_override, get_page_response, annotate_instruments, annotate_models
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.import_export.export_csv import handler
 
@@ -41,9 +41,8 @@ class InstrumentExport(ListAPIView):
 
 
 class ItemModelList(ListAPIView):
-    queryset = ItemModel.objects.all().annotate(vendor_lower=Func(F('vendor'), function='LOWER')).annotate(
-        model_number_lower=Func(F('model_number'), function='LOWER')).annotate(description_lower=Func(F('description'), function='LOWER'))
-    serializer_class = ItemModelReadSerializer
+    queryset = annotate_models(ItemModel.objects.all())
+    serializer_class = ItemModelSearchSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = ItemModelFilter
 

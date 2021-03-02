@@ -64,7 +64,7 @@ class CalibrationEvent(models.Model):
     date = models.DateField(default=datetime.date.today)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
-    file = models.FileField(upload_to='cal_event_artifacts', blank=True)
+    file = models.FileField(upload_to='cal_event_artifacts')
 
     def __str__(self):
         return str(self.instrument) + " " + str(self.date)

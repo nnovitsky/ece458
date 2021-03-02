@@ -2,6 +2,7 @@ from rest_framework import serializers
 from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+from django.forms.fields import FileField
 import datetime
 
 
@@ -291,6 +292,8 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
+    file = FileField(allow_empty_file=True)
+
     class Meta:
         model = CalibrationEvent
         fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file')

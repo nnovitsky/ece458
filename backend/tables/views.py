@@ -66,9 +66,10 @@ def calibration_event_list(request):
 
     elif request.method == 'POST':
         # set user to current user
-        request.data['user'] = request.user.pk
+        request_data = request.data.dict()
+        request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
-        serializer = CalibrationEventWriteSerializer(data=request.data)
+        serializer = CalibrationEventWriteSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

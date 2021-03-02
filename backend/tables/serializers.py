@@ -305,14 +305,11 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
 
-        print("\t\tdata: ", data)
-        # for file_name in file.iteritems():
-        #     file_type = file[file_name].content_type
-        #
-        # valid_file_types = ['image/jpg', 'image/png', 'image/gif', 'application/pdf',
-        #                     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
-        # if file_type not in valid_file_types:
-        #     raise serializers.ValidationError("Illegal file type.")
+        if data['file'] is not None:
+            valid_file_types = ['image/jpg', 'image/png', 'image/gif', 'application/pdf',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            if data['file'].content_type not in valid_file_types:
+                raise serializers.ValidationError("Illegal file type.")
 
         return data
 

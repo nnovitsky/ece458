@@ -114,11 +114,28 @@ class LoadCurrent(models.Model):
     cr = models.FloatField()
     ca = models.FloatField()
     ideal = models.FloatField()
-    cr_error = models.FloatField()
-    ca_error = models.FloatField()
+    cr_error = models.FloatField(null=True)
+    ca_error = models.FloatField(null=True)
+    index = models.IntegerField()
+    cr_ok = models.BooleanField(default=False)
+    ca_ok = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.lb_cal) + ' ' + str(self.load)
 
     class Meta:
         unique_together = (("lb_cal", "load"),)
+
+
+class LoadVoltage(models.Model):
+    lb_cal = models.OneToOneField(LoadBankCalibration, on_delete=models.CASCADE)
+    vr = models.FloatField()
+    va = models.FloatField()
+    test_voltage = models.FloatField()
+    vr_error = models.FloatField(null=True)
+    va_error = models.FloatField(null=True)
+    vr_ok = models.BooleanField(default=False)
+    va_ok = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.lb_cal) + ' Voltage Test'

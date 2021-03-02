@@ -183,6 +183,13 @@ class InstrumentDetailView extends Component {
                                 currentPageNum: result.data.currentpage,
                             }
                         });
+                    } else {
+                        this.setState({
+                            calibration_pagination: {
+                                ...this.state.calibration_pagination,
+                                currentPageNum: 1
+                            }
+                        })
                     }
                 } else {
                     console.log("failed to get cal history");

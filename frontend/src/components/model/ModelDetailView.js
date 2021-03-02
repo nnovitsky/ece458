@@ -354,6 +354,13 @@ class ModelDetailView extends React.Component {
                                 currentPageNum: result.data.currentpage
                             }
                         })
+                    } else {
+                        this.setState({
+                            pagination: {
+                                ...this.state.pagination,
+                                currentPageNum: 1
+                            }
+                        })
                     }
                 } else {
                     console.log("failed to get instrument instances");

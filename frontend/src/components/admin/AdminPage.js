@@ -180,6 +180,13 @@ class AdminPage extends React.Component {
                             currentPageNum: result.data.currentpage
                         }
                     })
+                } else {
+                    this.setState({
+                        user_pagination: {
+                            ...this.state.user_pagination,
+                            currentPageNum: 1
+                        }
+                    })
                 }
             } else {
                 console.log("error")

@@ -375,12 +375,14 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
         return (ca-ideal)/ideal
 
     def get_cr_ok(self, obj):
-        if self.initial_data['ideal'] == 0 and self.initial_data['cr'] != 0: return False
+        if self.initial_data['ideal'] == 0:
+            return self.initial_data['cr'] == 0
         cr_error = self.get_cr_error(obj)
         return abs(cr_error) < CR_THRESHOLD
 
     def get_ca_ok(self, obj):
-        if self.initial_data['ideal'] == 0 and self.initial_data['ca'] != 0: return False
+        if self.initial_data['ideal'] == 0:
+            return self.initial_data['ca'] == 0
         ca_error = self.get_ca_error(obj)
         return abs(ca_error) < CA_THRESHOLD
 
@@ -412,17 +414,6 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     def get_va_ok(self, obj):
         va_error = self.get_va_error(obj)
         return abs(va_error) < VA_THRESHOLD
-
-    # def validate(self, data):
-    #     vr_ok = self.get_vr_ok(obj=None)
-    #     va_ok = self.get_ca_ok(obj=None)
-    #     if not vr_ok and not va_ok:
-    #         raise serializers.ValidationError(VR_AND_VA_ERROR)
-    #     elif not vr_ok:
-    #         raise serializers.ValidationError(VR_ERROR_MESSAGE)
-    #     elif not va_ok:
-    #         raise serializers.ValidationError(VA_ERROR_MESSAGE)
-    #     return data
 
     class Meta:
         model = LoadVoltage

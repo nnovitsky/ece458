@@ -28,8 +28,9 @@ import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
-    console.log(props.data)
+    console.log(props);
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
+    console.log(countStart);
     let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
     return (
         <DataTable

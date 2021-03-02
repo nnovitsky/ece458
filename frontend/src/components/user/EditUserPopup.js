@@ -54,20 +54,19 @@ class EditUserPopup extends Component {
     makeBody() {
         return (
             <Form className="popup">
-                <h5>Please enter all fields</h5>
-                <Form.Label>Username</Form.Label>
+                <Form.Label className="required-field">Username</Form.Label>
                 <Form.Control required type="text" name={username} onChange={this.onTextInput} placeholder="Enter Username" />
 
-                <Form.Label>Password</Form.Label>
+                <Form.Label className="required-field">Password</Form.Label>
                 <Form.Control required type="password" name={password} onChange={this.onTextInput} placeholder="Enter Password" />
 
-                <Form.Label>Confirm Password</Form.Label>
+                <Form.Label className="required-field">Confirm Password</Form.Label>
                 <Form.Control required type="password" name={password_confirm} onChange={this.onTextInput} placeholder="Re-enter Password" />
 
-                <Form.Label>First Name</Form.Label>
+                <Form.Label className="required-field">First Name</Form.Label>
                 <Form.Control required type="text" name={first_name} onChange={this.onTextInput} placeholder="Enter Your First Name" />
 
-                <Form.Label>Last Name</Form.Label>
+                <Form.Label className="required-field">Last Name</Form.Label>
                 <Form.Control required type="text" name={last_name} onChange={this.onTextInput} placeholder="Enter Your Last Name" />
             </Form>
         )

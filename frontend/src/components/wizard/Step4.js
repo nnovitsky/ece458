@@ -84,9 +84,9 @@ class Step4 extends React.Component {
 
         this.state.validationData.forEach(element => {
             total++
+            if(element.validate) valid_count++;
             if (element.load_level === load_level) {
-                console.log(element)
-                return wizardServices.addCurrentReading(element.load_level, element.cr, element.ca, element.ideal_current, element.index, this.state.loadbank_pk)
+                wizardServices.addCurrentReading(element.load_level, Number(element.cr), Number(element.ca), Number(element.ideal_current), Number(element.index), this.state.loadbank_pk)
                 .then(result => {
                     if(result.success){
                         if(result.error === null)
@@ -101,27 +101,28 @@ class Step4 extends React.Component {
                                 valid_count++
                                 res.validate = true
                             }
-                            return res;
+                            this.setState({
+                                validationData: this.state.validationData,
+                            })
 
                         } else{
                             this.setState({
                                 errors: [result.error]
                             })
-                            return res;
                         }
 
                     }
                     else{
                         this.setState({
-                            errors: [result.error]
+                            errors: result.error
                         })
-                        return res;
                     }
                 })
             }
         })
         console.log(valid_count + " vs. " + total)
         this.updateAllValidated((valid_count === total))
+
         this.setState({
             validationData: this.state.validationData,
         })

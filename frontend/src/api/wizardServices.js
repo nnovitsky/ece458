@@ -150,7 +150,6 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
-                    console.log(json)
                     result.success = false;
                     result.data = json;
                     result.error = json;

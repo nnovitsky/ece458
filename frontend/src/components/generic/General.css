@@ -94,6 +94,12 @@ be made to be more specific */
 
 }
 
+/* class applied to required fields of forms to have the red asterick*/
+.required-field:after {
+    content:" *";
+    color: rgb(238, 68, 68);
+  }
+
 /* popup is a classname that is used for some of the body's of the popups */
 
 form.popup{

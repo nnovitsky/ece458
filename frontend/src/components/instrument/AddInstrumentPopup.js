@@ -111,7 +111,7 @@ class AddInstrumentPopup extends Component {
     makeBody = () => {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
-                <Form.Label>Vendor</Form.Label>
+                <Form.Label className="required-field">Vendor</Form.Label>
                 <Select
                     value={this.state.newInstrument.vendor}
                     options={this.state.vendorsArr}
@@ -119,7 +119,7 @@ class AddInstrumentPopup extends Component {
                     isSearchable
 
                 />
-                <Form.Label>Model</Form.Label>
+                <Form.Label className="required-field">Model</Form.Label>
                 <Select
                     value={this.state.newInstrument.model}
                     options={this.state.modelsFromVendorArr}
@@ -137,7 +137,7 @@ class AddInstrumentPopup extends Component {
             <Form className="popup">
                 {vendorModel}
                 <Form.Group>
-                    <Form.Label>Serial Number</Form.Label>
+                    <Form.Label >Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.

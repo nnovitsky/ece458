@@ -105,7 +105,7 @@ class AddModelPopup extends Component {
     makeBody() {
         return (
             <Form className="popup">
-                <Form.Label>Vendor</Form.Label>
+                <Form.Label className="required-field">Vendor</Form.Label>
                 <Select
                     value={this.state.newModel.vendor}
                     options={this.state.vendorsArr}
@@ -113,11 +113,11 @@ class AddModelPopup extends Component {
                     onChange={this.onVendorInput}
                     defaultInputValue={''}
                 />
-                <Form.Label>Model Number</Form.Label>
+                <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
                 
-                <Form.Label>Description</Form.Label>
+                <Form.Label className="required-field">Description</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
                 <Form.Label>Comments</Form.Label>

@@ -198,7 +198,7 @@ class ModelDetailView extends React.Component {
 
     onMoreClicked(e) {
         this.setState({
-            redirect: `/instruments/${e.target.value}`
+            redirect: `/instruments-detail/${e.target.value}`
         })
     }
 

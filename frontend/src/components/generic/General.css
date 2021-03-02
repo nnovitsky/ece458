@@ -124,10 +124,16 @@ form.popup .form-control {
     margin: 0px;
 }
 
+form.popup input[type=file]  {
+    margin: 0px;
+    padding-bottom: 0px;
+}
+
 form.popup input[type=text] {
     width: 100%;
     margin: 0px;
 }
+
 /* The Generic popup has alerts, this is where they are formatted */
 
 .popup-alert{

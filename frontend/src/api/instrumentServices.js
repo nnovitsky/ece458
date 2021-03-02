@@ -161,7 +161,7 @@ export default class InstrumentServices {
 
     // Error handling in place for bad input
     // handled modified/expired tokens
-    async addInstrument(model_pk, serial_number, comment, categories) {
+    async addInstrument(model_pk, serial_number, comment, categories, asset_number) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,

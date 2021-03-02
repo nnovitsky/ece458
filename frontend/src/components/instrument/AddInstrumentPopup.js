@@ -115,7 +115,7 @@ class AddInstrumentPopup extends Component {
     makeBody = () => {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
-                <Form.Label>Vendor</Form.Label>
+                <Form.Label className="required-field">Vendor</Form.Label>
                 <Select
                     value={this.state.newInstrument.vendor}
                     options={this.state.vendorsArr}
@@ -123,7 +123,7 @@ class AddInstrumentPopup extends Component {
                     isSearchable
 
                 />
-                <Form.Label>Model</Form.Label>
+                <Form.Label className="required-field">Model</Form.Label>
                 <Select
                     value={this.state.newInstrument.model}
                     options={this.state.modelsFromVendorArr}

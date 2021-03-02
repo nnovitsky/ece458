@@ -302,7 +302,6 @@ class ModelTablePage extends Component {
             description: params.filters.description,
             model_categories: modelCats.join(","),
         }
-        console.log(filters)
         modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,

@@ -24,7 +24,6 @@ function BaseListPicklist(props) {
     useEffect(() => {
         async function fetchData() {
             await props.getOptions().then(result => {
-                console.log(result);
                 setAllOptions(formatOptions(result));
             })
         }
@@ -33,7 +32,6 @@ function BaseListPicklist(props) {
         }
     }, [allOptions, props]);
 
-    console.log(allOptions)
     return (
         <Select
             value={formatSelected(props.selectedCategories)}
@@ -58,8 +56,6 @@ const formatSelected = (input) => {
 }
 
 const formatOptions = (input) => {
-
-    console.log('made it to the right place')
     let stringFormatted = [];
     input.map(el => (stringFormatted.push({ label: el, value: el })));
     return stringFormatted;

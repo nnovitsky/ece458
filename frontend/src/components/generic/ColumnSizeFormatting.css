@@ -61,6 +61,55 @@
     max-width: 30px;
 }
 
+/* instrument table page columns */
+.it-num-column {
+    width: 30px;
+}
+
+.it-asset-column {
+    width: 50px;
+}
+
+.it-vendor-column {
+    width: 10%;
+}
+
+.it-model-number-column {
+    width: 7%;
+}
+
+.it-description-column {
+    width: 10%;
+}
+
+.it-model-category-column {
+    width: 10%;
+}
+
+.it-serial-number-column {
+    width: 7%;
+}
+
+.it-instrument-category-column {
+    width: 10%;
+}
+
+.it-latest-calibration-column {
+    width: 8%;
+}
+
+.it-calibration-expiration-column {
+    width: 8%;
+}
+
+.it-status-column {
+    width: 50px;
+}
+
+/* .it-calibration-certificate-column {
+    width: 3%;
+} */
+
 /* category management page columns */
 /* .cm-category-column {
 not defined so it gets the leftover

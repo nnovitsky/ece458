@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
+import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
 
@@ -48,6 +49,7 @@ class AddInstrumentPopup extends Component {
                     },
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
+                    instrument_categories: props.currentInstrument.instrument_categories
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -67,6 +69,7 @@ class AddInstrumentPopup extends Component {
                     },
                     serial_number: '',
                     comment: '',
+                    instrument_categories: []
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -76,6 +79,7 @@ class AddInstrumentPopup extends Component {
         this.onModelInput = this.onModelInput.bind(this);
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
+        this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
@@ -142,6 +146,13 @@ class AddInstrumentPopup extends Component {
                     <Form.Text muted>
                         The serial number must be unique to the model.
   </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Instrument Categories</Form.Label>
+                    <InstrumentCategoryPicklist
+                        selectedCategories={this.state.newInstrument.instrument_categories}
+                        onChange={this.onCategoryChange}
+                    />
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Comments</Form.Label>
@@ -214,6 +225,15 @@ class AddInstrumentPopup extends Component {
         })
     }
 
+    onCategoryChange = (categoryList) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                instrument_categories: categoryList
+            }
+        })
+    }
+
     onSerialChange = (e) => {
         this.setState({
             newInstrument: {
@@ -245,7 +265,8 @@ class AddInstrumentPopup extends Component {
                 model_pk: this.state.newInstrument.model_pk,
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
-                serial_number: this.state.newInstrument.serial_number
+                serial_number: this.state.newInstrument.serial_number,
+                instrument_categories: this.state.newInstrument.instrument_categories
 
             }
             this.props.onSubmit(returnedInstrument);

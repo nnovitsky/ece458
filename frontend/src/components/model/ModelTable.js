@@ -23,6 +23,7 @@ const keyField = 'pk';
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
+    console.log(props.data)
     return (
         <DataTable
             data={props.data}
@@ -78,6 +79,18 @@ let makeConfig = (countStart, onMoreClicked) => {
                 sort: true,
                 title: (cell) => `Description: ${cell}`,
                 headerClasses: 'description-column',
+            },
+            {
+                dataField: 'categories.item_model_categories',
+                text: 'Model Categories',
+                sort: false,
+                title: (cell) => `Model Categories: ${cell.join(', ')}`,
+                headerClasses: 'model-category-column',
+                formatter: (cell) => {
+                    return (
+                        <span>{cell.join(', ')}</span>
+                    )
+                }
             },
             {
                 dataField: 'calibration_frequency',

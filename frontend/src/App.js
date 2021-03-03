@@ -146,9 +146,9 @@ class App extends Component {
           <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
           <Switch>
             <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
-            <ProtectedRoute path="/models/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
+              <ProtectedRoute path="/models-detail/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
-            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
+              <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />

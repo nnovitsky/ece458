@@ -69,7 +69,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'model-number-column',
                 formatter: (cell, row) => {
                     return (
-                        <span><a href={`/models/${row.pk}`} className="green-link">{cell}</a></span>
+                        <span><a href={`/models-detail/${row.pk}`} className="green-link">{cell}</a></span>
                     )
                 }
             },

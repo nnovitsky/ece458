@@ -208,7 +208,7 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Number</strong></td>
-                        <td><a href={`/models/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                        <td><a href={`/models-detail/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>
@@ -376,7 +376,7 @@ class InstrumentDetailView extends Component {
 
     onModelLinkClicked() {
         this.setState({
-            redirect: `/models/${this.state.instrument_info.model_pk}`
+            redirect: `/models-detail/${this.state.instrument_info.model_pk}`
         })
     }
 

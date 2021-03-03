@@ -51,13 +51,13 @@ const makeBody = () => {
             <Form.Control required type="password" name={password} onChange={onTextInput} placeholder="Enter Password" />
 
             <Form.Label>First Name</Form.Label>
-            <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter Your First Name" />
+            <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter New User First Name" />
 
             <Form.Label>Last Name</Form.Label>
-            <Form.Control required type="text" name={last_name} onChange={onTextInput} placeholder="Enter Your Last Name" />
+            <Form.Control required type="text" name={last_name} onChange={onTextInput} placeholder="Enter New User Last Name" />
 
             <Form.Label>Email</Form.Label>
-            <Form.Control required type="text" name={email} onChange={onTextInput} placeholder="Enter Your Email" />
+            <Form.Control required type="text" name={email} onChange={onTextInput} placeholder="Enter New User Email" />
         </Form>
     )
 }

@@ -7,7 +7,6 @@ import WizardServices from "../../api/wizardServices.js";
 const wizardServices = new WizardServices();
 
 
-
 const vmVendor = "vmVendor";
 const vmModel = "vmModel";
 const vmAsset = "vmAsset";

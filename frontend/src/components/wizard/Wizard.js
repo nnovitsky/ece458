@@ -22,7 +22,8 @@ class Wizard extends React.Component {
             vendor: this.props.vendor,
             serial_number: this.props.serial_number,
             model_pk: this.props.model_pk,
-            loadbank_pk: null
+            loadbank_pk: null,
+            user: this.props.user,
         }
 
         this.incrementStep = this.incrementStep.bind(this);
@@ -44,14 +45,16 @@ class Wizard extends React.Component {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} model_pk={this.state.model_pk}
-                        setLBNum={this.setLoabankCalEventNumber}/>;
+                        setLBNum={this.setLoabankCalEventNumber} user={this.state.user}/>;
             case 1:
                 return <Step1 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>;
             case 2:
-                return <Step2 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
+                return <Step2 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
+                        loadbank_pk={this.state.loadbank_pk}/>
             case 3:
-                return <Step3 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} />
+                return <Step3 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
+                        loadbank_pk={this.state.loadbank_pk}/>
             case 4:
                 return <Step4 index={1} isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>

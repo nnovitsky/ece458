@@ -59,7 +59,7 @@ class InstrumentDetailView extends Component {
                 isShown: false,
             },
             isDeleteShown: false,
-            currentUser: ''
+            currentUser: this.props.user,
         }
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
@@ -249,6 +249,7 @@ class InstrumentDetailView extends Component {
     }
 
     makeWizardPopup() {
+        console.log(this.state.currentUser)
         return (
             <Wizard
                 isShown={this.state.wizardPopup.isShown}
@@ -257,6 +258,7 @@ class InstrumentDetailView extends Component {
                 vendor={this.state.instrument_info.vendor}
                 serial_number={this.state.instrument_info.serial_number}
                 model_pk={this.state.instrument_info.model_pk}
+                user={this.state.currentUser}
             />
         )
     }
@@ -498,5 +500,6 @@ class InstrumentDetailView extends Component {
 export default withRouter(InstrumentDetailView);
 
 InstrumentDetailView.propTypes = {
-    is_admin: PropTypes.bool.isRequired
+    is_admin: PropTypes.bool.isRequired,
+    user: PropTypes.string.isRequired
 }

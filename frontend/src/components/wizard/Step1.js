@@ -2,6 +2,9 @@ import React from 'react'
 import Base from './Base.js';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import WizardServices from "../../api/wizardServices.js";
+
+const wizardServices = new WizardServices();
 
 
 
@@ -11,6 +14,8 @@ const vmAsset = "vmAsset";
 const shuntVendor = "shuntVendor";
 const shuntModel = "shuntModel";
 const shuntAsset = "shuntAsset";
+const shuntmeter = "shuntmeter"
+const voltmeter = "voltmeter"
 
 
 class Step1 extends React.Component {
@@ -26,6 +31,7 @@ class Step1 extends React.Component {
                 vendor: '',
                 model_number: '',
                 asset_tag: '',
+                pk: '',
 
             },
             shuntmeter: {
@@ -34,11 +40,11 @@ class Step1 extends React.Component {
                 vendor: '',
                 model_number: '',
                 asset_tag: '',
+                pk: '',
             },
             loadbank_pk: this.props.loadbank_pk,
         }
         this.onTextInput = this.onTextInput.bind(this);
-        this.continue = this.continue.bind(this);
         this.validateVoltmeter = this.validateVoltmeter.bind(this);
         this.validateShuntmeter = this.validateShuntmeter.bind(this);
     }
@@ -63,7 +69,7 @@ class Step1 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
-                <p>For each device, enter all fields then validate to continue.</p>
+                <p>For each device, enter all fields then validate the instruments to continue.</p>
                 <h5>Voltmeter: {this.state.voltmeter.validated_text}</h5>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
@@ -96,7 +102,9 @@ class Step1 extends React.Component {
                 this.setState({
                     voltmeter: {
                         ...this.state.voltmeter,
-                        vendor: val
+                        vendor: val,
+                        validated: false,
+                        validated_text: '',
                     }
                 })
                 return;
@@ -104,7 +112,9 @@ class Step1 extends React.Component {
                 this.setState({
                     voltmeter: {
                         ...this.state.voltmeter,
-                        model_number: val
+                        model_number: val,
+                        validated: false,
+                        validated_text: '',
                     }
                 })
                 return;
@@ -112,7 +122,9 @@ class Step1 extends React.Component {
                 this.setState({
                     voltmeter: {
                         ...this.state.voltmeter,
-                        asset_tag: val
+                        asset_tag: val,
+                        validated: false,
+                        validated_text: '',
                     }
                 })
                 return;
@@ -120,7 +132,9 @@ class Step1 extends React.Component {
                 this.setState({
                     shuntmeter: {
                         ...this.state.shuntmeter,
-                        vendor: val
+                        vendor: val,
+                        validated: false,
+                        validated_text: '',
                     }
                 })
                 return
@@ -128,7 +142,10 @@ class Step1 extends React.Component {
                 this.setState({
                     shuntmeter: {
                         ...this.state.shuntmeter,
-                        model_number: val
+                        model_number: val,
+                        validated: false,
+                        validated_text: '',
+                        
                     }
                 })
                 return
@@ -136,7 +153,9 @@ class Step1 extends React.Component {
                 this.setState({
                     shuntmeter: {
                         ...this.state.shuntmeter,
-                        asset_tag: val
+                        asset_tag: val,
+                        validated: false,
+                        validated_text: '',
                     }
                 })
                 return
@@ -147,77 +166,65 @@ class Step1 extends React.Component {
 
     async validateVoltmeter()
     {
-        if(this.state.voltmeter.vendor === '')
-        {
-            this.setState({
-                errors: ["Voltmeter vendor empty"],
-                voltmeter: {
-                    validated: false,
-                    validated_text: 'Invalid',
-                }
-            })
-        }
-        else 
-        {
-            this.setState({
-                errors: [],
-                voltmeter: {
-                    validated: true,
-                    validated_text: 'Valid',
-                }
-            })
-        }
+        //let pk = this.state.voltmeter.pk
+        let pk = 17601
+        wizardServices.updateLBCal(voltmeter, pk, this.state.loadbank_pk)
+        .then(result =>{
+            if(result.success)
+            {
+                this.setState({
+                    errors: [],
+                    voltmeter: {
+                        ...this.state.voltmeter,
+                        validated: true,
+                        validated_text: 'Valid',
+                    }
+                })
+            }
+            else{
+                this.setState({
+                    errors: ["Voltmeter: " + result.data.loadbank_error],
+                    voltmeter: {
+                        ...this.state.voltmeter,
+                        validated: false,
+                        validated_text: 'Invalid',
+                    }
+                })
+
+            }
+        })
     }
 
 
     async validateShuntmeter()
     {
-        if(this.state.shuntmeter.vendor === '')
-        {
-            this.setState({
-                errors: ["Shuntmeter vendor empty"],
-                shuntmeter: {
-                    validated: false,
-                    validated_text: 'Invalid',
-                }
-            })
-        }
-        else 
-        {
-            this.setState({
-                errors: [],
-                shuntmeter: {
-                    validated: true,
-                    validated_text: 'Valid',
-                }
-            })
-        }
-    }
+        //let pk = this.state.shuntmeter.pk
+        let pk = 17601
+        wizardServices.updateLBCal(shuntmeter, pk, this.state.loadbank_pk)
+        .then(result =>{
+            if(result.success)
+            {
+                this.setState({
+                    errors: [],
+                    shuntmeter: {
+                        ...this.state.shuntmeter,
+                        validated: true,
+                        validated_text: 'Valid',
+                    }
+                })
+            }
+            else{
+                this.setState({
+                    errors: ["Shuntmeter: " + result.data.loadbank_error],
+                    shuntmeter: {
+                        ...this.state.shuntmeter,
+                        shuntmeter: false,
+                        validated_text: 'Invalid',
+                    }
+                })
 
-
-
-
-
-
-
-
-    async continue()
-    {
-        console.log(this.state.calInfo)
-        if(this.state.voltmeter.validated === true && this.state.shuntmeter.validated === true )
-        {
-            this.setState({
-                errors: []
-            })
-        }
-        else
-        {
-            this.props.incrementStep();
-            this.setState({
-                errors: ["Voltmeter vendor empty"]
-            })
-        }
-
+            }
+        })
     }
 
 }

@@ -11,7 +11,7 @@ class ProtectedRoute extends React.Component {
         const isAuthenticated = localStorage.getItem('token');
        
         return isAuthenticated && typeof(isAuthenticated)!== 'undefined' ? (
-            <Component is_admin={this.props.is_admin}/>
+            <Component is_admin={this.props.is_admin} user={this.props.user}/>
         ) : (
             <Redirect to={{ pathname: '/' }} />
         );

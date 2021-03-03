@@ -2,8 +2,12 @@ import React from 'react'
 import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
+import WizardServices from "../../api/wizardServices.js";
+
+const wizardServices = new WizardServices();
 
 
+const key = "visual_inspection"
 
 class Step2 extends React.Component {
 
@@ -12,7 +16,8 @@ class Step2 extends React.Component {
 
         this.state = {
             errors: [],
-            checked: false
+            checked: false,
+            loadbank_pk: this.props.loadbank_pk
         }
 
         this.toggleCheck = this.toggleCheck.bind(this);
@@ -48,12 +53,21 @@ class Step2 extends React.Component {
     }
 
     toggleCheck(e) {
-        this.setState({
-            checked: !this.state.checked
+        wizardServices.updateLBCal(key, !this.state.checked, this.state.loadbank_pk).then(result => {
+            if(result.success)
+            {
+                console.log("Visual inspection set to " + result.data.visual_inspection)
+                this.setState({
+                    checked: !this.state.checked,
+                })
+            } else {
+                this.setState({
+                    checked: !this.state.checked,
+                    errors: ["Error sending information"]
+                })
+            }
         })
-
     }
-
 }
 
 

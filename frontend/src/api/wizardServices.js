@@ -78,7 +78,7 @@ export default class WizardServices {
 
     }
 
-    async cancelLoadbankCalEvent(loadCalNum){
+    async cancelLoadbankCalEvent(loadCalNum) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -113,7 +113,7 @@ export default class WizardServices {
 
     }
 
-    async addCurrentReading(load_level, cr, ca, ideal, index, lb_cal_num){
+    async addCurrentReading(load_level, cr, ca, ideal, index, lb_cal_num) {
         const token = localStorage.getItem('token');
         let data = {
             load: load_level,
@@ -150,19 +150,44 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    console.log(json)
                     result.success = false;
-                    result.data = json;
-                    result.error = json;
+                    result.error = this.identifyErrors(json);
                     return result;
                 })
             }
         })
 
+    }
 
+    identifyErrors(json) {
+        let error = []
+        if (json.ca) {
+            error = ['Current actual: ' + json.ca]
+        }
+        else if (json.cr) {
+            error = ['Current reported: ' + json.cr]
+        }
+        else if (json.index) {
+            error = ['Index: ' + json.index]
+        }
+        else if (json.load) {
+            error = ['Load level: ' + json.load]
+        }
+        else if(json.va){
+            error = ["Voltage actual: " + json.va]
+        }
+        else if(json.vr){
+            error = ["Voltage reported: " + json.vr]
+        }
+        else if(json.loadbank_error){
+            error = [json.loadbank_error]
+        }
+        return error
     }
 
 
-    async addVoltageReading(vr, va, test_voltage, lb_cal_num){
+    async addVoltageReading(vr, va, test_voltage, lb_cal_num) {
         const token = localStorage.getItem('token');
         let data = {
             vr: vr,
@@ -173,6 +198,7 @@ export default class WizardServices {
         let result = {
             success: false,
             data: [],
+            errors: [],
         }
 
         let url = `${API_URL}/api/add_voltage_reading/${lb_cal_num}/`;
@@ -184,6 +210,44 @@ export default class WizardServices {
                 Authorization: `JWT ${token}`
             },
             body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json.data;
+                    result.errors = [json.error];
+                    return result;
+                });
+            }
+            else {
+                return res.json().then(json => {
+                    console.log(json)
+                    result.success = false;
+                    result.data = json;
+                    result.errors = this.identifyErrors(json);
+                    return result;
+                })
+            }
+        })
+
+
+    }
+
+
+    async getTestVoltage() {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/voltage_test/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            },
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
@@ -201,7 +265,77 @@ export default class WizardServices {
             }
         })
 
+    }
+
+
+    async updateLBCal(key, value, lb_cal_num) {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let data = this.getUpdateLBJSON(key, value);
+
+
+        let url = `${API_URL}/api/update_lb_cal/${lb_cal_num}/`;
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`,
+            },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    console.log(json)
+                    result.success = true;
+                    result.data = json;
+                    return result;
+                });
+            }
+            else {
+                return res.json().then(json => {
+                    console.log(json)
+                    result.success = false;
+                    result.data = json;
+                    return result;
+                })
+            }
+        })
 
     }
 
+    getUpdateLBJSON(key, value) {
+        console.log("here")
+        let data = {}
+        switch (key) {
+            case "shuntmeter":
+                data = { shuntmeter: value }
+                return data
+            case "voltmeter":
+                data = { voltmeter: value }
+                return data
+            case "visual_inspection":
+                data = { visual_inspection : value}
+                return data
+            case "auto_cutoff":
+                data = { auto_cutoff : value }
+                return data
+            case "alarm":
+                data = { alarm : value }
+                return data
+            case "recorded_data":
+                data = { recorded_data : value }
+                return data
+            case "printer":
+                data = { printer : value }
+                return data
+        }
+    }
+
 }
+
+

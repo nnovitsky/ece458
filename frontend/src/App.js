@@ -136,8 +136,10 @@ class App extends Component {
 
 
   render(
+    
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
+    console.log(this.state.username)
     return (
     <Beforeunload onBeforeunload={this.emptyLocalStorage}>
       <BrowserRouter>
@@ -148,7 +150,7 @@ class App extends Component {
             <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/models/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
-            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
+            <ProtectedRoute path="/instruments/:pk" component={InstrumentDetailView} is_admin={this.state.admin} user={this.state.username} exact />
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
             <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />

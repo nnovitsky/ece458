@@ -2,12 +2,15 @@ import React from 'react'
 import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
+import WizardServices from "../../api/wizardServices.js";
+
+const wizardServices = new WizardServices();
 
 
-const checkOne = "checkOne"
-const checkTwo = "checkTwo"
-const checkThree = "checkThree"
-const checkFour = "checkFour"
+const checkCutoff = "checkCutoff"
+const checkAlarm = "checkAlarm"
+const checkRecordedData = "checkRecordedData"
+const checkPrinter = "checkPrinter"
 
 class Step6 extends React.Component {
 
@@ -17,10 +20,10 @@ class Step6 extends React.Component {
         this.state = {
             errors: [],
             allChecked: false,
-            checkOne: false,
-            checkTwo: false,
-            checkThree: false,
-            checkFour: false,
+            checkCutoff: false,
+            checkAlarm: false,
+            checkRecordedData: false,
+            checkPrinter: false,
             loadbank_pk: this.props.loadbank_pk,
         }
         this.toggleCheck = this.toggleCheck.bind(this);
@@ -40,9 +43,9 @@ class Step6 extends React.Component {
                 body={body}
                 incrementStep={this.onSubmit}
                 decrementStep={this.props.decrementStep}
-                disableContinue={!(this.state.checkOne&&this.state.checkTwo&&this.state.checkThree&&this.state.checkFour)}
+                disableContinue={!(this.state.checkCutoff && this.state.checkAlarm && this.state.checkRecordedData && this.state.checkPrinter)}
                 continueButtonText="Submit Final Step and Create Calibration Event"
-                />
+            />
         );
     }
 
@@ -53,19 +56,19 @@ class Step6 extends React.Component {
                 <br></br>
                 <h5>Lower DC source voltage and check auto-shut off when voltage is less than 43V</h5>
                 <h7>Check Box When Completed</h7>
-                <Form.Check onChange={this.toggleCheck} checked={this.state.checkOne} name={checkOne}></Form.Check>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkCutoff} name={checkCutoff}></Form.Check>
                 <br></br>
                 <h5>Lift cell voltage lead and confirm buzzer sounds</h5>
                 <h7>Check Box When Completed</h7>
-                <Form.Check onChange={this.toggleCheck} checked={this.state.checkTwo} name={checkTwo}></Form.Check>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkAlarm} name={checkAlarm}></Form.Check>
                 <br></br>
                 <h5>Verify load bank's recorded data on computer</h5>
                 <h7>Check Box When Completed</h7>
-                <Form.Check onChange={this.toggleCheck} checked={this.state.checkThree} name={checkThree}></Form.Check>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkRecordedData} name={checkRecordedData}></Form.Check>
                 <br></br>
                 <h5>Verify printer works</h5>
                 <h7>Check Box When Completed</h7>
-                <Form.Check onChange={this.toggleCheck} checked={this.state.checkFour} name={checkFour}></Form.Check>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checkPrinter} name={checkPrinter}></Form.Check>
                 <br></br>
             </Form>
 
@@ -74,26 +77,40 @@ class Step6 extends React.Component {
 
     toggleCheck(e) {
         console.log()
+        let newCheckValue = ''
+        let key = ''
 
         switch (e.target.name) {
-            case checkOne:
+            case checkCutoff:
+                newCheckValue = !this.state.checkCutoff
+                key = "auto_cutoff"
+                this.updateLBCal(key, newCheckValue)
                 this.setState({
-                    checkOne: !this.state.checkOne,
+                    checkCutoff: newCheckValue,
                 })
                 return;
-            case checkTwo:
+            case checkAlarm:
+                newCheckValue = !this.state.checkAlarm
+                key = "alarm"
+                this.updateLBCal(key, newCheckValue)
                 this.setState({
-                    checkTwo: !this.state.checkTwo,
+                    checkAlarm: newCheckValue,
                 })
                 return;
-            case checkThree:
+            case checkRecordedData:
+                    newCheckValue = !this.state.checkRecordedData
+                    key = "recorded_data"
+                    this.updateLBCal(key, newCheckValue)
                 this.setState({
-                    checkThree: !this.state.checkThree,
+                    checkRecordedData: newCheckValue,
                 })
                 return;
-            case checkFour:
+            case checkPrinter:
+                    newCheckValue = !this.state.checkPrinter
+                    key = "printer"
+                    this.updateLBCal(key, newCheckValue)
                 this.setState({
-                    checkFour: !this.state.checkFour,
+                    checkPrinter: newCheckValue,
                 })
                 return;
             default:
@@ -102,9 +119,23 @@ class Step6 extends React.Component {
 
     }
 
-    async onSubmit(){
+    async onSubmit() {
         // do something .then
         this.props.incrementStep()
+    }
+
+    async updateLBCal(key, value) {
+        wizardServices.updateLBCal(key, value, this.state.loadbank_pk).then(result => {
+            if (result.success) {
+                this.setState({
+                    errors: []
+                })
+            } else {
+                this.setState({
+                    errors: ["Error sending information"]
+                })
+            }
+        })
     }
 }
 

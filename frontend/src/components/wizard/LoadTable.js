@@ -16,13 +16,11 @@ const loadTable = (props) => {
             <BootstrapTable
                 remote
                 bootstrap4
-                //striped
                 condensed={true}
                 data={props.data}
                 keyField={loadLevel}
                 columns={config}
                 onTableChange={e => props.updateTable(data)}
-                //onTableChange={onTableChange}
                 headerClasses='data-table-header'
                 bodyClasses='data-table'
                 rowClasses={rowStyle}
@@ -41,8 +39,12 @@ const loadTable = (props) => {
                             }
                             if(row.validate)
                             {
-                                props.updateAllValidated(false)
+                                props.updateAllValidated(-1)
                                 row.validate = false
+                                row.cr_error = ''
+                                row.ca_error = ''
+                                row.cr_ok = ''
+                                row.ca_ok = ''
                             }
                         }
                     })

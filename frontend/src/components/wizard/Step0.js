@@ -15,7 +15,6 @@ const vendorName = "vendor";
 const serial = "description";
 const asset = "comment";
 const engineer = "engineer"
-const calDate = new Date()
 
 class Step0 extends React.Component {
 
@@ -29,8 +28,9 @@ class Step0 extends React.Component {
                 model_number: this.props.model_number,
                 serial_number: this.props.serial_number,
                 asset_tag: '',
-                engineer: '',
-                date: '',
+                engineer: this.props.user,
+                date_string: dateToString(new Date()),
+                date_object: new Date(),
                 model_pk: this.props.model_pk,
                 asset_list: [],
             },
@@ -39,6 +39,7 @@ class Step0 extends React.Component {
         this.onTextInput = this.onTextInput.bind(this);
         this.getAssetNumber = this.getAssetNumber.bind(this);
         this.createNewLoadbankEvent = this.createNewLoadbankEvent.bind(this);
+        this.onDateChange = this.onDateChange.bind(this);
 
     }
 
@@ -49,7 +50,6 @@ class Step0 extends React.Component {
 
     render() {
         let body = this.makeBody();
-
         return (
             <Base
                 isShown={this.props.isShown}
@@ -66,28 +66,38 @@ class Step0 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
-                <p>Please enter all additional fields then click continue to begin the Loadbank Event.</p>
+                <p>Please select a date then click continue to begin the Loadbank Calibration.</p>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Vendor:</Form.Label>
-                    <Form.Control readonly="readonly" type="text" name={vendorName} value={this.state.calInfo.vendor} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" name={vendorName} value={this.state.calInfo.vendor} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-3 col-form-label">Model Number:</Form.Label>
-                    <Form.Control readonly="readonly" type="text" name={modelName} value={this.state.calInfo.model_number} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" name={modelName} value={this.state.calInfo.model_number} onChange={this.onTextInput} />
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Serial Number:</Form.Label>
-                    <Form.Control readonly="readonly" type="text" name={serial} value={this.state.calInfo.serial_number} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" name={serial} value={this.state.calInfo.serial_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-3 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={asset} value={this.state.calInfo.asset_tag} onChange={this.onTextInput} />
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
-                    <Form.Control type="text" name={engineer} value={this.state.calInfo.engineer} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" name={engineer} value={this.state.calInfo.engineer} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
-                    <DatePicker onSelect={null} selected={calDate} />
+                    <DatePicker onSelect={this.onDateChange} selected={this.state.calInfo.date_object} />
                 </Form.Group>
             </Form>
 
         </div>
+    }
+
+    onDateChange(e){
+        this.setState({
+            calInfo: {
+                ...this.state.calInfo,
+                date_string: dateToString(e),
+                date_object: e
+            }
+        })
     }
 
 
@@ -153,7 +163,7 @@ class Step0 extends React.Component {
     }
 
     async createNewLoadbankEvent(){
-        wizardServices.createLoadbankCalEvent(17602, "2020-01-02").then(result => {
+        wizardServices.createLoadbankCalEvent(17602, this.state.calInfo.date_string).then(result => {
             if(result.success){
                 console.log("Created event " + result.data.loadbank_calibration.pk)
                 this.props.setLBNum(result.data.loadbank_calibration.pk)

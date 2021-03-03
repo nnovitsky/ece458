@@ -19,7 +19,7 @@ import '../generic/ColumnSizeFormatting.css';
 
 
 const keyField = 'pk';
-const overallAdminUsername = 'admin_hpt_user'
+const overallAdminUsername = 'admin'
 const adminGroup = 'admin'
 const oauthGroup = 'oauth'
 

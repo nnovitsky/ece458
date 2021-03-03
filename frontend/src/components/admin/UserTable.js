@@ -85,7 +85,7 @@ let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, curr
                 dataField: 'delete',
                 text: 'Delete User',
                 formatter: (cell, row) => {   //TODO change to oauth
-                    let isHidden = (currentUser == row.username || row.groups.includes(adminGroup) || row.username === overallAdminUsername)
+                    let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
                     return <Button hidden={isHidden} className="data-table-button">Delete</Button>;
                 },
             },

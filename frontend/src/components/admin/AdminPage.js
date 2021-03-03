@@ -198,7 +198,6 @@ class AdminPage extends React.Component {
 
     async giveAdminPriviledges(e){
         let pk = e.target.value
-        console.log(pk)
         adminServices.addAdminPriviledges(pk).then(result => {
             if(result.success)
             {

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { CalibrationModeDisplayMap, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 import SerialTable from './SerialTable';
 import DetailView from '../generic/DetailView';
@@ -33,7 +33,8 @@ class ModelDetailView extends React.Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
-                categories: []
+                categories: [],
+                calibration_mode: ''
             },
             instruments: [],
             editPopup: {
@@ -180,6 +181,10 @@ class ModelDetailView extends React.Component {
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{modelInfo.calibration_frequency}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calibration Mode</strong></td>
+                        <td>{CalibrationModeDisplayMap[modelInfo.calibration_mode]}</td>
                     </tr>
                     <tr>
                         <td className="table-view-bold-td"><strong>Model Categories</strong></td>

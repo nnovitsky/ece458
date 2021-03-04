@@ -52,6 +52,6 @@ urlpatterns = [
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
     path('api/category_list/<str:type>/', views.category_list),
-    path('api/calibration_event_file/<int:pk>', views.calibration_event_file)
+    path('api/calibration_event_file/<int:pk>/', views.calibration_event_file)
 
 ]

@@ -140,7 +140,8 @@ def calibration_event_file(request, pk):
                         status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        file_path = MEDIA_ROOT + calibration_event.file
+        print("\tMEDIA_ROOT: ", MEDIA_ROOT)
+        file_path = MEDIA_ROOT + str(calibration_event.file)
         buffer = open(file_path, 'rb')
         return FileResponse(buffer, as_attachment=True, filename=calibration_event.file)
     except IOError:

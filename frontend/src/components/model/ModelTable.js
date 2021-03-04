@@ -83,10 +83,10 @@ let makeConfig = (countStart, onMoreClicked) => {
 
             {
                 dataField: 'calibration_frequency',
-                text: 'Cal. Freq.',
+                text: 'Cal. Freq. (Days)',
                 sort: true,
                 title: (cell) => `Cal. Frequency: ${cell} days`,
-                headerTitle: () => `Calibration Frequency`,
+                headerTitle: () => `Calibration Frequency (Days)`,
                 headerClasses: 'mt-cal-column',
             },
             {

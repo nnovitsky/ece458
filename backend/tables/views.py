@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import User
 from django.http import FileResponse
 from rest_framework.response import Response
@@ -138,12 +140,11 @@ def calibration_event_file(request, pk):
     if calibration_event.file is None:
         return Response({"description": ["Calibration event does not have a associated file"]},
                         status=status.HTTP_400_BAD_REQUEST)
-
     try:
-        print("\tMEDIA_ROOT: ", MEDIA_ROOT)
         file_path = MEDIA_ROOT + str(calibration_event.file)
-        buffer = open(file_path, 'rb')
-        return FileResponse(buffer, as_attachment=True, filename=calibration_event.file)
+        if not os.path.exists(file_path):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=str(calibration_event.file))
     except IOError:
         return Response(status=status.HTTP_418_IM_A_TEAPOT)
 

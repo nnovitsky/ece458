@@ -306,8 +306,6 @@ export default class InstrumentServices {
             formData.append('file', file);
         }
 
-        console.log(formData);
-
         let result = {
             success: true,
             errors: []

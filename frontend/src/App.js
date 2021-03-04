@@ -36,6 +36,8 @@ class App extends Component {
       instrumentPage: null,
       modelPage: null,
     };
+
+    this.setModelPageState = this.setModelPageState.bind(this);
   }
 
   componentDidMount() {
@@ -155,7 +157,7 @@ class App extends Component {
         <GenericLoader isShown={this.state.isLoading}></GenericLoader>
           <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
           <Switch>
-              <ProtectedRoute path="/models" component={ModelTablePage} render={() => <ModelTablePage saveState={this.setModelPageState} oldState={this.state.modelPage} />} is_admin={this.state.admin} exact />
+              <ProtectedRoute path="/models" render={() => <ModelTablePage saveState={this.setModelPageState} oldState={this.state.modelPage} is_admin={this.state.admin} />} is_admin={this.state.admin} exact />
               <ProtectedRoute path="/models-detail/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
               <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />

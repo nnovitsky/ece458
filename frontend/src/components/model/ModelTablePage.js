@@ -21,7 +21,7 @@ const categoryServices = new CategoryServices();
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
-
+        console.log(props);
         this.state = {
             redirect: null,
             tableData: [],
@@ -69,30 +69,34 @@ class ModelTablePage extends Component {
 
     async componentDidMount() {
         if (this.props.oldState) {
+            console.log('old state isnt null');
             let oldState = this.props.oldState;
             this.setState({
                 pagination: oldState.pagination,
-                modelSearchParams: oldState.modelSearchParams
-            })
+                modelSearchParams: oldState.modelSearchParams,
+                redirect: null
+            }, () => this.updateModelTable());
+        } else {
+            this.setState({
+                redirect: null
+            }, () => this.updateModelTable());
         }
-        this.setState({
-            ...this.state,
-            redirect: null
-        })
-        this.updateModelTable();
+    }
+
+    componentWillUnmount() {
+        console.log('unmounting');
+        // before redirecting, save the state
+        let savedState = {
+            pagination: this.state.pagination,
+            modelSearchParams: this.state.modelSearchParams
+        }
+        console.log('calling save state from model page with');
+        console.log(savedState);
+        this.props.saveState(savedState);
     }
 
     render() {
         if (this.state.redirect !== null) {
-            // before redirecting, save the state
-            let savedState = {
-                pagination: this.state.pagination,
-                modelSearchParams: this.state.modelSearchParams
-            }
-            console.log('calling save state from model page with');
-            console.log(savedState);
-            this.props.saveState(savedState);
-
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
@@ -318,7 +322,7 @@ class ModelTablePage extends Component {
             description: params.filters.description,
             model_categories: modelCats.join(","),
         }
-        console.log(filters)
+
         modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,

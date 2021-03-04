@@ -76,8 +76,12 @@ def contains_duplicates():
 def validate_categories():
 
     db_categories = ItemModelCategory.objects.all()
+    db_category_names = []
+    for db_category in db_categories:
+        db_category_names.append(db_category.name)
+    print("db_categories type: ", type(db_category_names))
     for sheet_category in set(sheet_categories):
-        if sheet_category not in db_categories:
+        if sheet_category not in db_category_names:
             return True, f"Model category \'{sheet_category}\' not in database."
 
     return False, "All models exist in database."

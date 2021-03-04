@@ -4,8 +4,11 @@ import io
 from backend.tables.serializers import ItemModelSerializer
 from backend.import_export.field_validators import is_blank_row
 
-model_keys = ['vendor', 'model_number', 'description', 'comment', 'itemmodelcategory_set',
-              'load_bank_support', 'calibration_frequency']
+# model_keys = ['vendor', 'model_number', 'description', 'comment', 'itemmodelcategory_set',
+#               'load_bank_support', 'calibration_frequency']
+
+model_keys = ['vendor', 'model_number', 'description', 'comment', 'calibration_frequency']
+
 
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1

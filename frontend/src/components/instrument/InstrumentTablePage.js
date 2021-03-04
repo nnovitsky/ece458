@@ -242,7 +242,7 @@ class InstrumentTablePage extends Component {
     onDetailViewRequested(e) {
         this.setState({
             ...this.state,
-            redirect: `/instruments/${e.target.value}`
+            redirect: `/instruments-detail/${e.target.value}`
         });
     }
 
@@ -335,7 +335,7 @@ class InstrumentTablePage extends Component {
                             ...this.state.addInstrumentPopup,
                             errors: []
                         },
-                        redirect: `/instruments/${result.data.pk}`
+                        redirect: `/instruments-detail/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);

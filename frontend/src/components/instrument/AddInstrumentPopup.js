@@ -6,6 +6,7 @@ import ModelServices from '../../api/modelServices';
 import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
+import VendorPicklist from '../generic/picklist/VendorPicklist';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -43,10 +44,7 @@ class AddInstrumentPopup extends Component {
                         label: props.currentInstrument.model_number,
                         number: props.currentInstrument.model_pk
                     },
-                    vendor: {
-                        label: props.currentInstrument.vendor,
-                        value: props.currentInstrument.vendor
-                    },
+                    vendor: props.currentInstrument.vendor,
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
                     instrument_categories: props.currentInstrument.instrument_categories
@@ -63,15 +61,11 @@ class AddInstrumentPopup extends Component {
                         label: '',
                         number: ''
                     },
-                    vendor: {
-                        label: '',
-                        value: ''
-                    },
+                    vendor: '',
                     serial_number: '',
                     comment: '',
                     instrument_categories: []
                 },
-                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -85,14 +79,7 @@ class AddInstrumentPopup extends Component {
 
     }
 
-    async componentDidMount() {
-        await this.getVendorsArr();
-    }
-
     render() {
-        if (this.state.vendorsArr === null) {
-            this.getVendorsArr();
-        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
@@ -116,12 +103,9 @@ class AddInstrumentPopup extends Component {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
                 <Form.Label>Vendor</Form.Label>
-                <Select
-                    value={this.state.newInstrument.vendor}
-                    options={this.state.vendorsArr}
+                <VendorPicklist
+                    selectedVendor={this.state.newInstrument.vendor}
                     onChange={this.onVendorInput}
-                    isSearchable
-
                 />
                 <Form.Label>Model</Form.Label>
                 <Select
@@ -165,22 +149,6 @@ class AddInstrumentPopup extends Component {
         )
     }
 
-
-    async getVendorsArr() {
-        modelServices.getVendors().then((result) => {
-            if (result.success) {
-                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
-                this.setState({
-                    vendorsArr: formatted
-                })
-            } else {
-                this.setState({
-                    vendorsArr: []
-                })
-            }
-        })
-    }
-
     //called by the filter field
     async onModelInput(e) {
         this.setState({
@@ -195,14 +163,11 @@ class AddInstrumentPopup extends Component {
         })
     }
 
-    async onVendorInput(e) {
+    async onVendorInput(newVendor) {
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,
-                vendor: {
-                    label: e.value,
-                    value: e.label
-                },
+                vendor: newVendor,
                 model: {
                     label: '',
                     value: ''
@@ -210,7 +175,7 @@ class AddInstrumentPopup extends Component {
                 model_pk: ''
             }
         })
-        await modelServices.getModelByVendor(e.value).then((result) => {
+        await modelServices.getModelByVendor(newVendor).then((result) => {
             if (result.success) {
                 let formatted = result.data.map(opt => ({ label: opt.model_number, value: opt.pk }));
                 this.setState({

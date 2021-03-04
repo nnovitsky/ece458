@@ -13,8 +13,10 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
+import CategoryServices from '../../api/categoryServices';
 
 const modelServices = new ModelServices();
+const categoryServices = new CategoryServices();
 
 class ModelTablePage extends Component {
     constructor(props) {
@@ -34,15 +36,12 @@ class ModelTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     description: '',
-                    categories: [
-
-                    ]
+                    model_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
             },
-            modelCategories: [],
             addModelPopup: {
                 isShown: false,
                 errors: []
@@ -69,11 +68,11 @@ class ModelTablePage extends Component {
 
     async componentDidMount() {
         this.setState({
+            ...this.state,
             redirect: null
         }
         )
         this.updateModelTable();
-        this.getModelCategories();
     }
 
     render() {
@@ -101,7 +100,6 @@ class ModelTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFiltersClicked}
                                 onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
-                                modelCategories={this.state.modelCategories}
                             />
 
                         </div>
@@ -170,20 +168,25 @@ class ModelTablePage extends Component {
                         }
                     }, () => {
                         this.updateModelTable();
-                    })
+                    });
                 }
+                return;
+            default:
+                console.log(`Model table does not support ${type}`);
         }
     }
 
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
 
     onDetailClicked(e) {
         this.setState({
-            redirect: `/models/${e.target.value}`
+            ...this.state,
+            redirect: `/models-detail/${e.target.value}`
         })
     }
 
@@ -215,7 +218,8 @@ class ModelTablePage extends Component {
                 filters: {
                     model_number: '',
                     vendor: '',
-                    description: ''
+                    description: '',
+                    model_categories: []
                 }
             }
         }, () => {
@@ -224,14 +228,14 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories)
             .then((res) => {
                 if (res.success) {
-
                     this.updateModelTable();
                     this.onAddModelClosed();
                     this.setState({
-                        redirect: `/models/${res.data.pk}`
+                        ...this.state,
+                        redirect: `/models-detail/${res.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
@@ -288,7 +292,18 @@ class ModelTablePage extends Component {
         this.setState({
             isLoading: true,
         })
-        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
+
+        let params = this.state.modelSearchParams;
+        let modelCats = params.filters.model_categories.map(el => el.pk);
+
+        let filters = {
+            model_number: params.filters.model_number,
+            vendor: params.filters.vendor,
+            description: params.filters.description,
+            model_categories: modelCats.join(","),
+        }
+        console.log(filters)
+        modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,
             })
@@ -301,24 +316,6 @@ class ModelTablePage extends Component {
 
         }
         )
-    }
-
-    async getModelCategories() {
-        this.setState({
-            modelCategories: [
-            {
-                pk: 1,
-                category: "new"
-            },
-            {
-                pk: 2,
-                category: "old"
-            },
-            {
-                pk: 3,
-                category: "red"
-            }
-        ]})
     }
 
     // method called with the data from a successful api hit for getting the model table,
@@ -338,7 +335,7 @@ class ModelTablePage extends Component {
                     ...this.state.pagination,
                     resultCount: data.count,
                     numPages: data.numpages,
-                    currentPageNum: data.currentpage
+                    currentPageNum: data.currentpage,
                 },
 
             })

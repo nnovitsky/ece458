@@ -3,8 +3,10 @@ import Form from "react-bootstrap/Form";
 import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
+import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
+import VendorPicklist from '../generic/picklist/VendorPicklist';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -42,12 +44,10 @@ class AddInstrumentPopup extends Component {
                         label: props.currentInstrument.model_number,
                         number: props.currentInstrument.model_pk
                     },
-                    vendor: {
-                        label: props.currentInstrument.vendor,
-                        value: props.currentInstrument.vendor
-                    },
+                    vendor: props.currentInstrument.vendor,
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
+                    instrument_categories: props.currentInstrument.instrument_categories
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -61,14 +61,11 @@ class AddInstrumentPopup extends Component {
                         label: '',
                         number: ''
                     },
-                    vendor: {
-                        label: '',
-                        value: ''
-                    },
+                    vendor: '',
                     serial_number: '',
                     comment: '',
+                    instrument_categories: []
                 },
-                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -76,19 +73,13 @@ class AddInstrumentPopup extends Component {
         this.onModelInput = this.onModelInput.bind(this);
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
+        this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
     }
 
-    async componentDidMount() {
-        await this.getVendorsArr();
-    }
-
     render() {
-        if (this.state.vendorsArr === null) {
-            this.getVendorsArr();
-        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
@@ -112,12 +103,9 @@ class AddInstrumentPopup extends Component {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
                 <Form.Label>Vendor</Form.Label>
-                <Select
-                    value={this.state.newInstrument.vendor}
-                    options={this.state.vendorsArr}
+                <VendorPicklist
+                    selectedVendor={this.state.newInstrument.vendor}
                     onChange={this.onVendorInput}
-                    isSearchable
-
                 />
                 <Form.Label>Model</Form.Label>
                 <Select
@@ -144,6 +132,13 @@ class AddInstrumentPopup extends Component {
   </Form.Text>
                 </Form.Group>
                 <Form.Group>
+                    <Form.Label>Instrument Categories</Form.Label>
+                    <InstrumentCategoryPicklist
+                        selectedCategories={this.state.newInstrument.instrument_categories}
+                        onChange={this.onCategoryChange}
+                    />
+                </Form.Group>
+                <Form.Group>
                     <Form.Label>Comments</Form.Label>
                     <Form.Control as="textarea" rows={3} value={this.state.newInstrument.comment} onChange={this.onCommentChange} />
                 </Form.Group>
@@ -152,22 +147,6 @@ class AddInstrumentPopup extends Component {
 
             </Form>
         )
-    }
-
-
-    async getVendorsArr() {
-        modelServices.getVendors().then((result) => {
-            if (result.success) {
-                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
-                this.setState({
-                    vendorsArr: formatted
-                })
-            } else {
-                this.setState({
-                    vendorsArr: []
-                })
-            }
-        })
     }
 
     //called by the filter field
@@ -184,14 +163,11 @@ class AddInstrumentPopup extends Component {
         })
     }
 
-    async onVendorInput(e) {
+    async onVendorInput(newVendor) {
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,
-                vendor: {
-                    label: e.value,
-                    value: e.label
-                },
+                vendor: newVendor,
                 model: {
                     label: '',
                     value: ''
@@ -199,7 +175,7 @@ class AddInstrumentPopup extends Component {
                 model_pk: ''
             }
         })
-        await modelServices.getModelByVendor(e.value).then((result) => {
+        await modelServices.getModelByVendor(newVendor).then((result) => {
             if (result.success) {
                 let formatted = result.data.map(opt => ({ label: opt.model_number, value: opt.pk }));
                 this.setState({
@@ -210,6 +186,15 @@ class AddInstrumentPopup extends Component {
                 this.setState({
                     modelsFromVendorArr: []
                 })
+            }
+        })
+    }
+
+    onCategoryChange = (categoryList) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                instrument_categories: categoryList
             }
         })
     }
@@ -245,7 +230,8 @@ class AddInstrumentPopup extends Component {
                 model_pk: this.state.newInstrument.model_pk,
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
-                serial_number: this.state.newInstrument.serial_number
+                serial_number: this.state.newInstrument.serial_number,
+                instrument_categories: this.state.newInstrument.instrument_categories
 
             }
             this.props.onSubmit(returnedInstrument);

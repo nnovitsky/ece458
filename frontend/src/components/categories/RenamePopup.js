@@ -3,11 +3,13 @@ import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import "react-datepicker/dist/react-datepicker.css";
 //props
+//'title': a string to be displayed as the header
 //'isShown': boolean if popup is shown
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
 //'errors': an array of errors to display
 //'currentName': the initial name
+//'submitText': the text to be displayed on the submit button
 
 const RenamePopup = (props) => {
     const [newName, setNewName] = useState(props.currentName);
@@ -16,9 +18,9 @@ const RenamePopup = (props) => {
         <GenericPopup
             show={props.isShown}
             body={makeBody(newName, setNewName)}
-            headerText="Rename Category"
+            headerText={props.title}
             closeButtonText="Cancel"
-            submitButtonText="Submit Rename"
+            submitButtonText={props.submitText}
             onClose={props.onClose}
             onSubmit={() => props.onSubmit(newName)}
             submitButtonVariant="primary"

@@ -11,6 +11,7 @@ function VendorPicklist(props) {
             onFilterChange={props.onChange}
             getOptions={getVendors}
             placeholderText="Vendors..."
+            isCreatable={true}
         />
     )
 }

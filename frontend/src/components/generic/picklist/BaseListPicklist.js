@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 
 // BaseListPicklist is for if you just have an array of strings
 // to choose from, the other BasePicklist is for when you have
@@ -10,6 +11,7 @@ import Select from 'react-select';
 // onFilterChange: an event handler that will be passed the array of the selected objects
 // placeholderText; text to be displayed in the dropdown
 // isMulti: optional, defaults to false if not entered
+// isCreatable: boolean that defaults to false if not present, if true new items can be created
 
 // the props below can be omitted if the type is of 'string'
 // displayField: a string that is the data field of the name to be displayed in the picklist
@@ -32,16 +34,30 @@ function BaseListPicklist(props) {
         }
     }, [allOptions, props]);
 
-    return (
-        <Select
-            value={formatSelected(props.selectedCategories)}
-            options={allOptions}
-            isSearchable={true}
-            onChange={(filterList) => { props.onFilterChange(returnFormatOptions(filterList)) }}
-            placeholder={props.placeholderText}
-            isMulti={props.isMulti}
-        />
-    )
+    if (props.isCreatable) {
+        return (
+            <CreatableSelect
+                value={formatSelected(props.selectedCategories)}
+                options={allOptions}
+                isSearchable={true}
+                onChange={(filterList) => { props.onFilterChange(returnFormatOptions(filterList)) }}
+                placeholder={props.placeholderText}
+                isMulti={props.isMulti}
+            />
+        )
+    } else {
+        return (
+            <Select
+                value={formatSelected(props.selectedCategories)}
+                options={allOptions}
+                isSearchable={true}
+                onChange={(filterList) => { props.onFilterChange(returnFormatOptions(filterList)) }}
+                placeholder={props.placeholderText}
+                isMulti={props.isMulti}
+            />
+        )
+    }
+
 }
 
 const formatSelected = (input) => {
@@ -78,6 +94,7 @@ export default BaseListPicklist;
 
 BaseListPicklist.defaultProps = {
     isMulti: false,
+    isCreatable: false,
 
 }
 

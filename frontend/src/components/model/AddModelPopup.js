@@ -117,6 +117,7 @@ class AddModelPopup extends Component {
                 <VendorPicklist
                     selectedVendor={this.state.newModel.vendor}
                     onChange={this.onVendorInput}
+                    isCreatable={true}
                 />
                 <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />

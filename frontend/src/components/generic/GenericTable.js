@@ -108,10 +108,6 @@ const createBody = () => {
     );
 }
 
-// const onDetailClicked = (e) => {
-//     history.push(`/models/${e.target.value}`);
-// }
-
 GenericTable.defaultProps = {
     countStart: 1
 }

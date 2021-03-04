@@ -2,8 +2,9 @@ import React from 'react';
 import ModelServices from '../../../api/modelServices';
 import BaseListPicklist from './BaseListPicklist';
 
-// selectedVendor: an array of name to pk pairs of the selected categories
-// onChange: an event handler that will be passed the array of selected name/pk pairs
+// selectedVendor: a string of the selected vendor
+// onChange: an event handler that will be passed a string of the newly selected vendor
+// isCreatable: true if can create new options
 function VendorPicklist(props) {
     return (
         <BaseListPicklist
@@ -11,6 +12,7 @@ function VendorPicklist(props) {
             onFilterChange={props.onChange}
             getOptions={getVendors}
             placeholderText="Vendors..."
+            isCreatable={true}
         />
     )
 }
@@ -28,3 +30,7 @@ async function getVendors() {
 }
 
 export default VendorPicklist;
+
+VendorPicklist.defaultProps = {
+    isCreatable: false
+}

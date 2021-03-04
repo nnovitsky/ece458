@@ -115,7 +115,7 @@ const getLatestCalText = (data) => {
                     sort: true,
                     title: (cell) => `Asset Number: ${cell}. Click to see more`,
                     formatter: (cell, row) => {
-                        return <span><a className="green-link" href={`/instruments/${row.pk}`}>ASSET</a></span>
+                        return <span><a className="green-link" href={`/instruments-detail/${row.pk}`}>ASSET</a></span>
                     },
                     headerClasses: 'it-asset-column'
                 },

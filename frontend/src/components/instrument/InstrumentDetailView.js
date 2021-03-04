@@ -82,6 +82,7 @@ class InstrumentDetailView extends Component {
             <Button onClick={this.onDeleteClicked}>Delete</Button>
         </div>
     ) {
+        console.log(this.state.instrument_info.calibration_history);
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
@@ -377,13 +378,15 @@ class InstrumentDetailView extends Component {
 
     async onSupplementDownloadClicked(e) {
         console.log(`Attempted to download for ${e.target.value}`);
-        this.setState({
-            addCalPopup: {
-                ...this.state.addCalPopup,
-                isShown: false,
-                errors: []
-            }
-        })
+        let cal_pk = e.target.value;
+        instrumentServices.getCalEventFile(cal_pk)
+            .then((result) => {
+                if (result.success) {
+                    nameAndDownloadFile(result.url, `calibration-certificate`);
+                } else {
+                    console.log('no file exists');
+                }
+            })
     }
 
     onModelLinkClicked() {

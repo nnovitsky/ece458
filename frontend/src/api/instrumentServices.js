@@ -304,8 +304,9 @@ export default class InstrumentServices {
 
         if (file !== '') {
             formData.append('file', file);
-            console.log(file);
         }
+
+        console.log(formData);
 
         let result = {
             success: true,
@@ -317,7 +318,6 @@ export default class InstrumentServices {
         return fetch(`${API_URL}/api/calibration_events/`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
             body: formData
@@ -394,6 +394,50 @@ export default class InstrumentServices {
         }
 
         const url = `${API_URL}/api/export_calibration_event_pdf/${pk}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.blob().then(blob => {
+                        return URL.createObjectURL(blob)
+                    })
+                        .then(url => {
+                            result.url = url;
+                            return result;
+                        })
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
+    async getCalEventFile(cal_pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            url: [],
+        }
+
+        const url = `${API_URL}/api/calibration_event_file/${cal_pk}`;
         return fetch(url, {
             method: 'GET',
             headers: {

@@ -79,7 +79,6 @@ class AddModelPopup extends Component {
     }
 
     render() {
-        console.log(this.state.newModel);
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
@@ -100,7 +99,6 @@ class AddModelPopup extends Component {
     }
 
     makeBody() {
-        console.log(this.state.newModel)
         let categoryPicklist = (
             <ModelCategoriesPicklist
                 selectedCategories={this.state.newModel.categories}

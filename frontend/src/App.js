@@ -74,7 +74,7 @@ class App extends Component {
         this.setState({
           logged_in: true,
           username: result.data.user.username,
-          admin: result.data.user.is_staff,
+          admin: result.data.user.groups.includes("admin"),
           redirect: true,
           isLoading: false
         });

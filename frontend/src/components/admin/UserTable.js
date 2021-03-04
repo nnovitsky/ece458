@@ -19,10 +19,13 @@ import '../generic/ColumnSizeFormatting.css';
 
 
 const keyField = 'pk';
+const overallAdminUsername = 'admin'
+const adminGroup = 'admin'
+const oauthGroup = 'oauth'
 
 const userTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
+    let config = makeConfig(countStart, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser);
     return (
         <DataTable
             data={props.data}
@@ -38,7 +41,7 @@ const userTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
+let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, currentUser) => {
     return (
         [
             // this is a column for a number for the table
@@ -77,6 +80,25 @@ let makeConfig = (countStart, onCertificateRequested, onMoreClicked) => {
                 sort: false,
                 title: (cell) => `Email: ${cell}`,
                 headerClasses: 'email-column',
+            },
+            {
+                dataField: 'delete',
+                text: 'Delete User',
+                formatter: (cell, row) => {   //TODO change to oauth
+                    console.log(row)
+                    let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
+                    return <Button hidden={isHidden} className="data-table-button">Delete</Button>;
+                },
+            },
+            {
+                dataField: 'Priviledges',
+                text: 'Administrator Priviledges',
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
+                    let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
+                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Give</Button>
+                    return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
+                },
             },
             // this could be helpful for adding a column that has a button link for deleting users, feel free to use or delete
             // {

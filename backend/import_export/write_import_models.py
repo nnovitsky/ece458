@@ -31,8 +31,9 @@ def get_model_list(file):
         else:
             cal_freq = int(row[CAL_FREQUENCY_INDEX])
 
+        # TODO: handle load bank cell after "calibration-mode" field decided upon for ItemModels
         model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
-                      row[COMMENT_INDEX], row[MODEL_CATEGORIES_INDEX], row[LOAD_BANK_INDEX], cal_freq]
+                      row[COMMENT_INDEX], cal_freq]
         model_record = dict(zip(model_keys, model_info))
         model_records.append(model_record)
 

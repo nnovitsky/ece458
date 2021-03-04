@@ -14,7 +14,6 @@ import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
 
-let date = '';
 
 const instrumentServices = new InstrumentServices();
 
@@ -24,13 +23,14 @@ class InstrumentTablePage extends Component {
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
-            url: '',
             instrumentSearchParams: {
                 filters: {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
-                    description: ''
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
@@ -65,7 +65,12 @@ class InstrumentTablePage extends Component {
     }
     //make async calls here
     async componentDidMount() {
-        await this.updateTable();
+        this.setState({
+            ...this.state,
+            redirect: null
+        }
+        )
+        this.updateTable();
     }
 
     render() {
@@ -98,6 +103,8 @@ class InstrumentTablePage extends Component {
                                 onRemoveFilters={this.onRemoveFilters}
                                 currentFilter={this.state.instrumentSearchParams.filters}
                                 onFilterChange={this.onFilterChange}
+                                modelCategories={this.state.modelCategories}
+                                instrumentCategories={this.state.instrumentCategories}
                             />
                         </div>
                         <div className="col-10">
@@ -134,13 +141,24 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
-        console.log(`Data being requested: ${Date.now() - date}`);
         let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
-        })
-        instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
-            console.log(`Data back now and being displayed: ${Date.now() - date}`)
+        });
+
+        let modelCats = params.filters.model_categories.map(el => el.pk);
+        let instrumentCats = params.filters.instrument_categories.map(el => el.pk);
+
+        let filters = {
+            model_number: params.filters.model_number,
+            vendor: params.filters.vendor,
+            serial_number: params.filters.serial_number,
+            description: params.filters.description,
+            model_categories: modelCats.join(","),
+            instrument_categories: instrumentCats.join(",")
+        }
+
+        instrumentServices.getInstruments(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -172,14 +190,13 @@ class InstrumentTablePage extends Component {
 
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
-        date = Date.now();
-        console.log(`Table change: ${date}`);
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);
@@ -224,7 +241,8 @@ class InstrumentTablePage extends Component {
 
     onDetailViewRequested(e) {
         this.setState({
-            redirect: `/instruments/${e.target.value}`
+            ...this.state,
+            redirect: `/instruments-detail/${e.target.value}`
         });
     }
 
@@ -267,7 +285,9 @@ class InstrumentTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
-                    description: ''
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: [],
                 }
             }
         }, () => {
@@ -304,17 +324,18 @@ class InstrumentTablePage extends Component {
     }
 
     async onAddInstrumentSubmit(newInstrument) {
-        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories).then(
             (result) => {
                 if (result.success) {
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
+                        ...this.state,
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []
                         },
-                        redirect: `/instruments/${result.data.pk}`
+                        redirect: `/instruments-detail/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+from django.forms.fields import FileField
 import datetime
 from backend.config.load_bank_config import *
 
@@ -292,9 +293,11 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
+    file = FileField(allow_empty_file=True)
+
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():
@@ -302,6 +305,13 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         item_model = data['instrument'].item_model
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
+
+        if data['file'] is not None:
+            valid_file_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            if data['file'].content_type not in valid_file_types:
+                raise serializers.ValidationError("Illegal file type.")
+
         return data
 
 

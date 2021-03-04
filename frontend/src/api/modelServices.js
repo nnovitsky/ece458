@@ -18,7 +18,7 @@ export default class ModelServices {
             if (count > 0) {
                 url += '&';
             }
-            url += (key + `= ${filters[key]}`);
+            url += (key + `=${filters[key]}`);
             count++;
         }
 
@@ -110,14 +110,15 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
     // appropriate error handling if the token gets bad
-    async addModel(vendor, modelNumber, description, comment, calFrequency) {
+    async addModel(vendor, modelNumber, description, comment, calFrequency, categories) {
         const token = localStorage.getItem('token');
         let data = {
             vendor: vendor,
             model_number: modelNumber,
             description: description,
             comment: comment,
-            calibration_frequency: calFrequency
+            calibration_frequency: calFrequency,
+            itemmodelcategory_set: categories.map(el => el.pk)
         }
 
         let result = {
@@ -160,7 +161,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
 
-    async editModel(pk, vendor, modelNumber, description, comment, calFrequency) {
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories) {
         const token = localStorage.getItem('token');
 
         let data = {
@@ -168,8 +169,11 @@ export default class ModelServices {
             model_number: modelNumber,
             description: description,
             comment: comment,
-            calibration_frequency: calFrequency
+            calibration_frequency: calFrequency,
+            itemmodelcategory_set: categories.map(el => el.pk)
         }
+
+        console.log(data)
 
         let result = {
             success: true,

@@ -306,7 +306,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Non-calibratable instrument.")
 
         if data['file'] is not None:
-            valid_file_types = ['image/jpg', 'image/png', 'image/gif', 'application/pdf',
+            valid_file_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf',
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
             if data['file'].content_type not in valid_file_types:
                 raise serializers.ValidationError("Illegal file type.")

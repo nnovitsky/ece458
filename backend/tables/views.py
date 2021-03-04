@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import User
 from django.http import FileResponse
 from rest_framework.response import Response
@@ -14,7 +16,7 @@ from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.config.admin_config import ADMIN_USERNAME
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
-
+from backend.hpt.settings import MEDIA_ROOT
 
 class OauthConsume(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -123,6 +125,28 @@ def calibration_event_detail(request, pk):
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         calibration_event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def calibration_event_file(request, pk):
+    """
+    Gets the corresponding file artifact from a cal event specified by its primary key.
+    """
+    try:
+        calibration_event = CalibrationEvent.objects.get(pk=pk)
+    except CalibrationEvent.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if calibration_event.file is None:
+        return Response({"description": ["Calibration event does not have a associated file"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+    try:
+        file_path = MEDIA_ROOT + str(calibration_event.file)
+        if not os.path.exists(file_path):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=str(calibration_event.file))
+    except IOError:
+        return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
 # INSTRUMENTS

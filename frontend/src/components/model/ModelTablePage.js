@@ -364,7 +364,7 @@ class ModelTablePage extends Component {
                 result = 'description_lower';
                 break;
             case 'calibration_frequency':
-                result = 'calibration_frequency_lower';
+                result = 'calibration_frequency';
                 break;
             default:
                 return '';

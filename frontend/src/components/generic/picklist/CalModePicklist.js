@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-
-const valToDisplay = {
-    "regular": "Regular",
-    "load_bank": "Load Bank"
-}
+import { CalibrationModeDisplayMap } from '../Util';
 
 // selectedMode: a string of the selected calibration mode
 // onChange: an event handler that will be passed the new calibration mode
@@ -36,7 +32,7 @@ function CalModePicklist(props) {
 function mapArrayToObject(input) {
     let result = [];
     input.forEach(element => {
-        let display = valToDisplay[element];
+        let display = CalibrationModeDisplayMap[element];
         result.push({
             "label": display,
             "value": element,
@@ -48,7 +44,7 @@ function mapArrayToObject(input) {
 
 function mapStringToObject(input) {
     return {
-        "label": valToDisplay[input],
+        "label": CalibrationModeDisplayMap[input],
         "value": input,
     }
 }

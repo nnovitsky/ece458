@@ -2,6 +2,7 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import "../generic/General.css";
+import { CalibrationModeDisplayMap } from '../generic/Util';
 
 // props
 // data: json data object to be displayed
@@ -51,21 +52,21 @@ let makeConfig = (countStart, onMoreClicked) => {
                     return <span>{rowNumber}</span>;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'num-column'
+                headerClasses: 'mt-num-column'
             },
             {
                 dataField: 'vendor',
                 text: 'Vendor',
                 sort: true,
                 title: (cell) => `Vendor: ${cell}`,
-                headerClasses: 'vendor-column'
+                headerClasses: 'mt-vendor-column'
             },
             {
                 dataField: 'model_number',
                 text: 'Model #',
                 sort: true,
                 title: (cell) => `Model Number: ${cell}, click to see more`,
-                headerClasses: 'model-number-column',
+                headerClasses: 'mt-model-number-column',
                 formatter: (cell, row) => {
                     return (
                         <span><a href={`/models-detail/${row.pk}`} className="green-link">{cell}</a></span>
@@ -77,27 +78,41 @@ let makeConfig = (countStart, onMoreClicked) => {
                 text: 'Description',
                 sort: true,
                 title: (cell) => `Description: ${cell}`,
-                headerClasses: 'description-column',
+                headerClasses: 'mt-description-column',
+            },
+
+            {
+                dataField: 'calibration_frequency',
+                text: 'Cal. Freq.',
+                sort: true,
+                title: (cell) => `Cal. Frequency: ${cell} days`,
+                headerTitle: () => `Calibration Frequency`,
+                headerClasses: 'mt-cal-column',
+            },
+            {
+                dataField: 'calibration_mode',
+                text: 'Cal. Mode',
+                sort: false,
+                title: (cell) => `Calibration Mode: ${CalibrationModeDisplayMap[cell]}`,
+                formatter: (cell) => {
+                    return (
+                        <span>{CalibrationModeDisplayMap[cell]}</span>
+                    )
+                },
+                headerTitle: () => `Calibration Mode`,
+                headerClasses: 'mt-cal-mode-column',
             },
             {
                 dataField: 'categories.item_model_categories',
                 text: 'Model Categories',
                 sort: false,
                 title: (cell) => `Model Categories: ${cell.join(', ')}`,
-                headerClasses: 'model-category-column',
+                headerClasses: 'mt-model-category-column',
                 formatter: (cell) => {
                     return (
                         <span>{cell.join(', ')}</span>
                     )
                 }
-            },
-            {
-                dataField: 'calibration_frequency',
-                text: 'Cal. Frequency',
-                sort: false,
-                title: (cell) => `Cal. Frequency: ${cell} days`,
-                headerTitle: () => `Calibration Frequency`,
-                headerClasses: 'cal-column',
             },
         ]
     )

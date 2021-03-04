@@ -299,11 +299,12 @@ export default class InstrumentServices {
     async addCalibrationEvent(instrument_pk, date, comment, file) {
         const formData = new FormData();
         formData.append('instrument', instrument_pk);
-        formData.append('data', date);
+        formData.append('date', date);
         formData.append('comment', comment);
 
         if (file !== '') {
             formData.append('file', file);
+            console.log(file);
         }
 
         let result = {

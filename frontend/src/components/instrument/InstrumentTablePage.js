@@ -55,7 +55,6 @@ class InstrumentTablePage extends Component {
         this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
@@ -65,12 +64,28 @@ class InstrumentTablePage extends Component {
     }
     //make async calls here
     async componentDidMount() {
-        this.setState({
-            ...this.state,
-            redirect: null
+        if (this.props.oldState) {
+            let oldState = this.props.oldState;
+            this.setState({
+                pagination: oldState.pagination,
+                instrumentSearchParams: oldState.modelSearchParams,
+                redirect: null
+            }, () => this.updateTable());
+        } else {
+            this.setState({
+                redirect: null
+            }, () => this.updateTable());
         }
-        )
-        this.updateTable();
+    }
+
+    componentWillUnmount() {
+        // before redirecting, save the state
+        let savedState = {
+            pagination: this.state.pagination,
+            modelSearchParams: this.state.instrumentSearchParams
+        }
+
+        this.props.saveState(savedState);
     }
 
     render() {
@@ -102,9 +117,6 @@ class InstrumentTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
                                 currentFilter={this.state.instrumentSearchParams.filters}
-                                onFilterChange={this.onFilterChange}
-                                modelCategories={this.state.modelCategories}
-                                instrumentCategories={this.state.instrumentCategories}
                             />
                         </div>
                         <div className="col-10">
@@ -254,15 +266,6 @@ class InstrumentTablePage extends Component {
                     nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
                 }
             })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: newFilter,
-            }
-        })
     }
 
     async onFilteredSearch(newFilter) {

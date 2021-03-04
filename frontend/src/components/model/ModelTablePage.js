@@ -66,7 +66,6 @@ class ModelTablePage extends Component {
 
     async componentDidMount() {
         if (this.props.oldState) {
-            console.log('old state isnt null');
             let oldState = this.props.oldState;
             this.setState({
                 pagination: oldState.pagination,
@@ -81,13 +80,12 @@ class ModelTablePage extends Component {
     }
 
     componentWillUnmount() {
-        console.log('unmounting');
         // before redirecting, save the state
         let savedState = {
             pagination: this.state.pagination,
             modelSearchParams: this.state.modelSearchParams
         }
-        console.log('calling save state from model page with');
+
         console.log(savedState);
         this.props.saveState(savedState);
     }

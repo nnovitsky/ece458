@@ -38,6 +38,7 @@ class App extends Component {
     };
 
     this.setModelPageState = this.setModelPageState.bind(this);
+    this.setInstrumentPageState = this.setInstrumentPageState.bind(this);
   }
 
   componentDidMount() {
@@ -145,6 +146,13 @@ class App extends Component {
     })
   }
 
+  setInstrumentPageState = (newState) => {
+    console.log('set model state called');
+    this.setState({
+      instrumentPage: newState
+    })
+  }
+
 
 
   render(
@@ -159,7 +167,7 @@ class App extends Component {
           <Switch>
               <ProtectedRoute path="/models" render={() => <ModelTablePage saveState={this.setModelPageState} oldState={this.state.modelPage} is_admin={this.state.admin} />} is_admin={this.state.admin} exact />
               <ProtectedRoute path="/models-detail/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
-            <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
+              <ProtectedRoute path="/instruments" render={() => <InstrumentTablePage saveState={this.setInstrumentPageState} oldState={this.state.instrumentPage} is_admin={this.state.admin} />} exact />
               <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />

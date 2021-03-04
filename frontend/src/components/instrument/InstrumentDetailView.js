@@ -136,7 +136,6 @@ class InstrumentDetailView extends Component {
             (result) => {
                 if (result.success) {
                     let data = result.data;
-                    console.log(data)
                     this.setState({
                         ...this.state,
                         instrument_info: {

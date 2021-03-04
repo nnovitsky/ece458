@@ -67,6 +67,11 @@ def calibration_event_list(request):
     elif request.method == 'POST':
         # set user to current user
         request_data = request.data.dict()
+        print("\nRequest data before change: ", request_data)
+        print("\n")
+        if request_data['file'] == '':
+            print("Empty file!")
+            request_data['file'] = None
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
         serializer = CalibrationEventWriteSerializer(data=request_data)

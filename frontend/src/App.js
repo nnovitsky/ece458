@@ -1,7 +1,7 @@
 import './App.css';
 
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { Beforeunload } from 'react-beforeunload';
 
 import LoginPage from './components/login/LoginPage';
@@ -20,7 +20,6 @@ import OauthRoute from './components/OauthRoute';
 import GenericLoader from './components/generic/GenericLoader.js';
 
 import AuthServices from './api/authServices';
-import { isThisISOWeek } from 'date-fns/esm';
 const authServices = new AuthServices();
 
 class App extends Component {
@@ -33,7 +32,9 @@ class App extends Component {
       error_message: '',
       admin: false,
       redirect: null,
-      isLoading: false
+      isLoading: false,
+      instrumentPage: null,
+      modelPage: null,
     };
   }
 
@@ -133,6 +134,15 @@ class App extends Component {
     localStorage.removeItem('oauth');
   }
 
+  // this handler will be called by model page before redirecting
+  // an attempt at preserving state when flipping between pages
+  setModelPageState = (newState) => {
+    console.log('set model state called');
+    this.setState({
+      modelPage: newState
+    })
+  }
+
 
 
   render(
@@ -145,7 +155,7 @@ class App extends Component {
         <GenericLoader isShown={this.state.isLoading}></GenericLoader>
           <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
           <Switch>
-            <ProtectedRoute path="/models" component={ModelTablePage} is_admin={this.state.admin} exact />
+              <ProtectedRoute path="/models" component={ModelTablePage} render={() => <ModelTablePage saveState={this.setModelPageState} oldState={this.state.modelPage} />} is_admin={this.state.admin} exact />
               <ProtectedRoute path="/models-detail/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
             <ProtectedRoute path="/instruments" component={InstrumentTablePage} is_admin={this.state.admin} exact />
               <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />

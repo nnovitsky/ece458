@@ -21,6 +21,7 @@ const categoryServices = new CategoryServices();
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             redirect: null,
             tableData: [],
@@ -67,16 +68,31 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
+        if (this.props.oldState) {
+            let oldState = this.props.oldState;
+            this.setState({
+                pagination: oldState.pagination,
+                modelSearchParams: oldState.modelSearchParams
+            })
+        }
         this.setState({
             ...this.state,
             redirect: null
-        }
-        )
+        })
         this.updateModelTable();
     }
 
     render() {
         if (this.state.redirect !== null) {
+            // before redirecting, save the state
+            let savedState = {
+                pagination: this.state.pagination,
+                modelSearchParams: this.state.modelSearchParams
+            }
+            console.log('calling save state from model page with');
+            console.log(savedState);
+            this.props.saveState(savedState);
+
             return (<Redirect to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;

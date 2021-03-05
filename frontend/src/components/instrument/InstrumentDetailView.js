@@ -79,7 +79,7 @@ class InstrumentDetailView extends Component {
     render(
         adminButtons = <div className="detail-header-buttons-div">
             <Button onClick={this.onEditInstrumentClicked}>Edit</Button>
-            <Button onClick={this.onDeleteClicked}>Delete</Button>
+            <Button onClick={this.onDeleteClicked} variant="danger">Delete</Button>
         </div>
     ) {
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;

@@ -31,9 +31,6 @@ class AddInstrumentPopup extends Component {
 
     constructor(props) {
         super(props);
-
-        console.log(props.currentInstrument);
-
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
             this.state = {
@@ -76,6 +73,7 @@ class AddInstrumentPopup extends Component {
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onAssetChange = this.onAssetChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
@@ -138,7 +136,7 @@ class AddInstrumentPopup extends Component {
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.
-  </Form.Text>
+                    </Form.Text>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Instrument Categories</Form.Label>
@@ -231,6 +229,15 @@ class AddInstrumentPopup extends Component {
             newInstrument: {
                 ...this.state.newInstrument,
                 comment: e.target.value
+            }
+        })
+    }
+
+    onAssetChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                asset_number: e.target.value
             }
         })
     }

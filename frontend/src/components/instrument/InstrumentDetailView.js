@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { Redirect, withRouter } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
@@ -220,7 +220,9 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Number</strong></td>
-                        <td><a href={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.model_number}</a></td>
+                        <td>
+                            <Link to={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.model_number}</Link>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>

@@ -291,7 +291,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -309,7 +309,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():

@@ -11,25 +11,29 @@ from backend.config.load_bank_config import LOAD_LEVELS
 @api_view(['POST'])
 def start_loadbank_cal(request):
     request.data['user'] = request.user.pk
-    serializer = CalibrationEventWriteSerializer(data=request.data)
+    if 'cal_event_pk' in request.data:
+        try:
+            pk = request.data.pop('cal_event_pk')
+            prev_cal_event = CalibrationEvent.objects.get(pk=pk)
+        except CalibrationEvent.DoesNotExist:
+            return Response({"calibration_event_error": ["Invalid calibration ID given."]}, status=status.HTTP_404_NOT_FOUND)
+        if len(prev_cal_event.loadbankcalibration_set.all()) == 0:
+            return Response({"calibration_event_error": ["Calibration event is not a loadbank calibration."]}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CalibrationEventWriteSerializer(prev_cal_event, data=request.data)
+    else:
+        prev_cal_event = None
+        serializer = CalibrationEventWriteSerializer(data=request.data)
+
     if serializer.is_valid():
         cal_event = serializer.save()
-        lb_cal = LoadBankCalibration(cal_event=cal_event)
-        lb_cal.save()
-        return Response({'loadbank_calibration': {'pk': lb_cal.pk}}, status=status.HTTP_201_CREATED)
+        if not prev_cal_event:
+            lb_cal = LoadBankCalibration(cal_event=cal_event)
+            lb_cal.save()
+        else:
+            lb_cal = cal_event.loadbankcalibration_set.all()[0]
+        return Response({'loadbank_calibration': {'pk': lb_cal.pk, 'cal_event_pk': cal_event.pk}}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def get_asset_numbers(request, model_pk):
-    try:
-        model = ItemModel.objects.get(pk=model_pk)
-    except ItemModel.DoesNotExist:
-        return Response({"model_error": ["Model does not exist."]}, status=status.HTTP_404_NOT_FOUND)
-    instruments = model.instrument_set.all()
-    asset_numbers = [{"asset_number": ins.serial_number, "pk": ins.pk} for ins in instruments]
-    return Response(asset_numbers, status=status.HTTP_200_OK)
 
 
 @api_view(['PUT'])
@@ -39,17 +43,23 @@ def update_lb_cal_field(request, lb_cal_pk):
     except LoadBankCalibration.DoesNotExist:
         return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
+    exp_dates = {}
     for instrument_field in ['voltmeter', 'shunt_meter']:
         if instrument_field in request.data:
-            error = check_instrument_is_calibrated(request.data[instrument_field])
+            asset_tag = request.data.pop(instrument_field)
+            error, instrument, exp_date = check_instrument_is_calibrated(asset_tag)
             if error:
                 return Response({"loadbank_error": [error]}, status=status.HTTP_400_BAD_REQUEST)
+            request.data[instrument_field + '_asset_tag'] = asset_tag
+            request.data[instrument_field + '_vendor'] = instrument.item_model.vendor
+            request.data[instrument_field + '_model_num'] = instrument.item_model.model_number
+            exp_dates[instrument_field] = exp_date
 
     request.data['cal_event'] = lb_cal.cal_event.pk
     serializer = LBCalSerializer(lb_cal, data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'data': serializer.data, 'expiration_dates': exp_dates}, status=status.HTTP_200_OK)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -85,8 +95,13 @@ def add_current_reading(request, lb_cal_pk):
         serializer = LoadCurrentWriteSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save()
+        reading = serializer.save()
         data = serializer.data
+        reading.cr_ok = data['cr_ok']
+        reading.ca_ok = data['ca_ok']
+        reading.cr_error = data['cr_error']
+        reading.ca_error = data['ca_error']
+        reading.save()
         if data['ideal'] == 0 and (data['cr'] != 0 or data['ca'] != 0):
             error = NO_LOAD_ERROR_MESSAGE
         elif not data['cr_ok'] and not data['ca_ok']:
@@ -117,8 +132,13 @@ def add_voltage_reading(request, lb_cal_pk):
         serializer = LoadVoltageWriteSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save()
+        reading = serializer.save()
         data = serializer.data
+        reading.vr_ok = data['vr_ok']
+        reading.va_ok = data['va_ok']
+        reading.vr_error = data['vr_error']
+        reading.va_error = data['va_error']
+        reading.save()
         if not data['vr_ok'] and not data['va_ok']:
             error = VR_AND_VA_ERROR
         elif not data['vr_ok']:
@@ -141,3 +161,14 @@ def cancel_lb_cal(request, lb_cal_pk):
         return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
     cal_event.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def lb_cal_details(request, lb_cal_pk):
+    try:
+        lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
+    except LoadBankCalibration.DoesNotExist:
+        return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = LBCalReadSerializer(lb_cal)
+    return Response(serializer.data, status=status.HTTP_200_OK)

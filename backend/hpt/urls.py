@@ -53,7 +53,7 @@ urlpatterns = [
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
     path('api/category_list/<str:type>/', views.category_list),
-    path('api/calibration_event_file/<int:pk>/', views.calibration_event_file)
+    path('api/calibration_event_file/<int:pk>/', views.calibration_event_file),
     path('api/category_list/<str:type>/', views.category_list),
     path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
     path('api/get_asset_nums/<int:model_pk>/', loadbank_views.get_asset_numbers),

@@ -36,7 +36,8 @@ class InstrumentTests(TestCase):
             "instrument": 1,
             "date": "2021-01-10",
             "comment": "my comment",
-            "user": 2
+            "user": 2,
+            "file": None
         }
 
     def test_cal_event_create_auth(self):

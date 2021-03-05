@@ -309,7 +309,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
 
-        if data['file'] is not None:
+        if 'file' in data and data['file'] is not None:
             valid_file_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf',
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
             if data['file'].content_type not in valid_file_types:

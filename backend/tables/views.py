@@ -69,7 +69,7 @@ def calibration_event_list(request):
 
     elif request.method == 'POST':
         # set user to current user
-        request_data = request.data.dict()
+        request_data = request.data
         if request_data['file'] == '':
             request_data['file'] = None
         request_data['user'] = request.user.pk

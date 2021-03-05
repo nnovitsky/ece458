@@ -178,7 +178,7 @@ export default class CategoryServices {
             })
     }
 
-    async deleteCategory(type, pk) {
+    async deleteCategory(type, pk, force_delete) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -197,12 +197,16 @@ export default class CategoryServices {
             return result;
         }
 
+        let body = {
+            force_delete: force_delete
+        }
         return fetch(`${API_URL}/api/${path}/${pk}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
+            body: JSON.stringify(body)
         })
             .then(res => {
                 if (res.ok) {

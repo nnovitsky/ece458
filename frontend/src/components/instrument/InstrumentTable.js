@@ -29,7 +29,6 @@ import { Link } from 'react-router-dom';
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
-    console.log(props.data);
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
     return (

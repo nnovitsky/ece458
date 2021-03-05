@@ -13,6 +13,7 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
     for (var key in errorArr) {
         if (errorBlock[key] === undefined) {
             console.log(`No catch for the following key: ${key}`);
+            console.log(errorArr);
         } else {
             let currentJson = errorBlock[key];
             errorArr[key].forEach(currentErrorKey => {

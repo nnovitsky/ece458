@@ -149,9 +149,6 @@ class AddInstrumentPopup extends Component {
                     <Form.Label>Comments</Form.Label>
                     <Form.Control as="textarea" rows={3} value={this.state.newInstrument.comment} onChange={this.onCommentChange} />
                 </Form.Group>
-
-
-
             </Form>
         )
     }
@@ -216,6 +213,7 @@ class AddInstrumentPopup extends Component {
     }
 
     onAssetChange = (e) => {
+        console.log('asset change')
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,
@@ -229,15 +227,6 @@ class AddInstrumentPopup extends Component {
             newInstrument: {
                 ...this.state.newInstrument,
                 comment: e.target.value
-            }
-        })
-    }
-
-    onAssetChange = (e) => {
-        this.setState({
-            newInstrument: {
-                ...this.state.newInstrument,
-                asset_number: e.target.value
             }
         })
     }

@@ -5,6 +5,8 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import '../generic/General.css';
 import './CategoriesPage.css';
+import ErrorFile from "../../api/ErrorMapping/CategoryErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 import LogoHeader from '../generic/LogoTitleHeader';
 import CategoriesTable from './CategoriesTable';
@@ -324,6 +326,14 @@ class CategoriesPage extends Component {
                 if (result.success) {
                     this.onCreateCancel();
                     this.updateTabCategory();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_categories"]);
+                    this.setState({
+                        createPopup: {
+                            ...this.state.createPopup,
+                            errors: formattedErrors
+                        }
+                    })
                 }
                 this.setState({
                     isLoading: false
@@ -374,6 +384,14 @@ class CategoriesPage extends Component {
                     this.updateTabCategory();
                     this.onEditClose();
 
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_categories"]);
+                    this.setState({
+                        renamePopup: {
+                            ...this.state.renamePopup,
+                            errors: formattedErrors
+                        }
+                    })
                 }
                 this.setState({
                     isLoading: false

@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 let newCalibration = {
     date: dateToString(new Date()),
     comment: '',
+    file: '',
 }
 
 const AddCalibrationPopup = (props) => {
@@ -38,8 +39,14 @@ const makeBody = (calDate, setCalDate) => {
         <div>
             <Form className="popup">
                 <Form.Group>
-                    <Form.Label>Calibration Date</Form.Label>
-                    <DatePicker onSelect={(e) => onDateChange(e, setCalDate)} selected={calDate} />
+                    <Form.Label className="required-field">Calibration Date</Form.Label>
+                    <div style={{ display: 'block' }}>
+                        <DatePicker
+                            onSelect={(e) => onDateChange(e, setCalDate)}
+                            selected={calDate}
+                        />
+                    </div>
+
                     <Form.Text muted>
                         Cannot be in the future
                     </Form.Text>
@@ -51,6 +58,10 @@ const makeBody = (calDate, setCalDate) => {
                         Max 2000 characters
                     </Form.Text>
                 </Form.Group>
+                <Form.Group>
+                    <Form.Label>Supplement file</Form.Label>
+                    <Form.File onChange={onFileChange} accept=".jpg,.png,.gif,.pdf,.xlsx" multiple="" />
+                </Form.Group>
             </Form>
         </div>
     )
@@ -60,6 +71,7 @@ const preClose = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
+        file: ''
     }
     parentHandler();
 }
@@ -69,6 +81,7 @@ const preSubmit = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
+        file: ''
     }
 }
 
@@ -79,6 +92,11 @@ const onCommentChange = (e) => {
 const onDateChange = (date, setCalDate) => {
     newCalibration.date = dateToString(date)
     setCalDate(date);
+}
+
+const onFileChange = (e) => {
+    newCalibration.file = e.target.files[0];
+    console.log(newCalibration)
 }
 
 export default AddCalibrationPopup;

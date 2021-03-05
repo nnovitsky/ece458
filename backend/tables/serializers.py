@@ -188,7 +188,8 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_event',
+                  'calibration_expiration', 'categories')
 
 
 class InstrumentSearchSerializer(serializers.ModelSerializer):
@@ -219,7 +220,8 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_event',
+                  'calibration_expiration', 'categories')
 
 
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):
@@ -253,7 +255,8 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_expiration', 'calibration_events', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_expiration',
+                  'calibration_events', 'categories')
 
 
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
@@ -262,14 +265,14 @@ class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment')
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):
     # use when writing instrument with serializer
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'instrumentcategory_set')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'instrumentcategory_set')
 
 
 class CalibrationEventReadSerializer(serializers.ModelSerializer):

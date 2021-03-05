@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.models import User
 from django.http import FileResponse
+from django.http.request import QueryDict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
@@ -69,8 +70,8 @@ def calibration_event_list(request):
 
     elif request.method == 'POST':
         # set user to current user
-        request_data = request.data
-        if request_data['file'] == '':
+        request_data = request.data.dict() if type(request.data) == QueryDict else request.data
+        if 'file' not in request_data or request_data['file'] == '':
             request_data['file'] = None
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user

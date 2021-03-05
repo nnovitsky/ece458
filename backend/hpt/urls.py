@@ -56,12 +56,12 @@ urlpatterns = [
     path('api/calibration_event_file/<int:pk>/', views.calibration_event_file),
     path('api/category_list/<str:type>/', views.category_list),
     path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
-    path('api/get_asset_nums/<int:model_pk>/', loadbank_views.get_asset_numbers),
     path('api/update_lb_cal/<int:lb_cal_pk>/', loadbank_views.update_lb_cal_field),
     path('api/load_levels/<int:page>/', loadbank_views.get_load_levels),
     path('api/voltage_test/', loadbank_views.get_test_voltage),
     path('api/add_current_reading/<int:lb_cal_pk>/', loadbank_views.add_current_reading),
     path('api/add_voltage_reading/<int:lb_cal_pk>/', loadbank_views.add_voltage_reading),
     path('api/cancel_lb_cal/<int:lb_cal_pk>/', loadbank_views.cancel_lb_cal),
+    path('api/lb_cal_event_details/<int:lb_cal_pk>/', loadbank_views.lb_cal_details),
 
 ]

@@ -109,8 +109,12 @@ class LoadBankCalibration(models.Model):
     Details on load bank calibration event.
     """
     cal_event = models.ForeignKey(CalibrationEvent, on_delete=models.CASCADE)
-    voltmeter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_voltmeter")
-    shunt_meter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_shunt")
+    voltmeter_model_num = models.CharField(blank=True, null=True, max_length=MODEL_NUM_MAX_LENGTH)
+    voltmeter_vendor = models.CharField(blank=True, null=True, max_length=VENDOR_MAX_LENGTH)
+    voltmeter_asset_tag = models.IntegerField(blank=True, null=True) #models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_voltmeter")
+    shunt_meter_model_num = models.CharField(blank=True, null=True, max_length=MODEL_NUM_MAX_LENGTH)
+    shunt_meter_vendor = models.CharField(blank=True, null=True, max_length=VENDOR_MAX_LENGTH)
+    shunt_meter_asset_tag = models.IntegerField(blank=True, null=True) #models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_shunt")
     visual_inspection = models.BooleanField(blank=True, default=False)
     auto_cutoff = models.BooleanField(blank=True, default=False)
     alarm = models.BooleanField(blank=True, default=False)

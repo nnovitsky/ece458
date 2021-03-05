@@ -366,7 +366,31 @@ class LBCalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LoadBankCalibration
-        fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+        fields = ('pk', 'cal_event', 'voltmeter_vendor', 'voltmeter_model_num', 'voltmeter_asset_tag',
+                  'shunt_meter_vendor', 'shunt_meter_model_num', 'shunt_meter_asset_tag', 'visual_inspection',
+                  'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+
+
+class LBCalReadSerializer(serializers.ModelSerializer):
+    current_tests = serializers.SerializerMethodField()
+    voltage_test = serializers.SerializerMethodField()
+    cal_event = CalibrationEventReadSerializer()
+
+    def get_current_tests(self, obj):
+        current_readings = obj.loadcurrent_set.order_by('index')
+        serializer = LoadCurrentReadSerializer(current_readings, many=True)
+        return serializer.data
+
+    def get_voltage_test(self, obj):
+        v_test = obj.loadvoltage
+        serializer = LoadVoltageReadSerializer(v_test)
+        return serializer.data
+
+    class Meta:
+        model = LoadBankCalibration
+        fields = ('pk', 'cal_event', 'voltmeter_vendor', 'voltmeter_model_num', 'voltmeter_asset_tag',
+                  'shunt_meter_vendor', 'shunt_meter_model_num', 'shunt_meter_asset_tag', 'visual_inspection',
+                  'auto_cutoff', 'alarm', 'recorded_data', 'printer', 'current_tests', 'voltage_test')
 
 
 class LoadCurrentWriteSerializer(serializers.ModelSerializer):
@@ -377,19 +401,20 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
 
     def get_cr_error(self, obj):
         if self.initial_data['ideal'] == 0: return None
-        cr = self.initial_data['cr']
-        ca = self.initial_data['ca']
+        cr = float(self.initial_data['cr'])
+        ca = float(self.initial_data['ca'])
+        if ca == 0: raise serializers.ValidationError({"loadbank_error": [C_DIVIDE_BY_ZERO]})
         return (cr-ca)/ca
 
     def get_ca_error(self, obj):
-        ideal = self.initial_data['ideal']
+        ideal = float(self.initial_data['ideal'])
         if ideal == 0: return None
-        ca = self.initial_data['ca']
+        ca = float(self.initial_data['ca'])
         return (ca-ideal)/ideal
 
     def get_cr_ok(self, obj):
         if self.initial_data['ideal'] == 0:
-            return self.initial_data['cr'] == 0
+            return float(self.initial_data['cr']) == 0
         cr_error = self.get_cr_error(obj)
         return abs(cr_error) < CR_THRESHOLD
 
@@ -404,6 +429,12 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
         fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
 
 
+class LoadCurrentReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LoadCurrent
+        fields = ('load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
+
+
 class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     vr_error = serializers.SerializerMethodField()
     va_error = serializers.SerializerMethodField()
@@ -411,13 +442,14 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     va_ok = serializers.SerializerMethodField()
 
     def get_vr_error(self, obj):
-        vr = self.initial_data['vr']
-        va = self.initial_data['va']
+        vr = float(self.initial_data['vr'])
+        va = float(self.initial_data['va'])
+        if va == 0: raise serializers.ValidationError({"loadbank_error": [V_DIVIDE_BY_ZERO]})
         return (vr-va)/va
 
     def get_va_error(self, obj):
-        test = self.initial_data['test_voltage']
-        va = self.initial_data['va']
+        test = float(self.initial_data['test_voltage'])
+        va = float(self.initial_data['va'])
         return (va-test)/test
 
     def get_vr_ok(self, obj):
@@ -431,3 +463,10 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoadVoltage
         fields = ('pk', 'lb_cal', 'vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')
+
+
+class LoadVoltageReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LoadVoltage
+        fields = ('vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')

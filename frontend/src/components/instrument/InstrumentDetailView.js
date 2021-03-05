@@ -110,7 +110,6 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalHistoryTable = () => {
-        console.log(this.state.instrument_info);
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         let calButtonRow = (
             <div className="table-button-row">
@@ -286,7 +285,8 @@ class InstrumentDetailView extends Component {
             vendor: this.state.instrument_info.vendor,
             serial_number: this.state.instrument_info.serial_number,
             comment: this.state.instrument_info.comment,
-            instrument_categories: this.state.instrument_info.instrument_categories
+            instrument_categories: this.state.instrument_info.instrument_categories,
+            asset_tag: this.state.instrument_info.asset_tag
         }
         return (
             <EditInstrumentPopop
@@ -413,7 +413,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onEditInstrumentSubmit(newInstrument) {
-        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories)
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories, newInstrument.asset_tag)
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();

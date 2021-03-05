@@ -32,7 +32,7 @@ class AddInstrumentPopup extends Component {
     constructor(props) {
         super(props);
 
-
+        console.log(props.currentInstrument);
 
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
@@ -130,7 +130,7 @@ class AddInstrumentPopup extends Component {
                     <Form.Label >Asset Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Asset Number" value={this.state.newInstrument.asset_tag} onChange={this.onAssetChange} />
                     <Form.Text muted>
-                        If left blank, this will be autopopulated
+                        Must be greater than or equal to 100000. If left blank, this will be autopopulated
   </Form.Text>
                 </Form.Group>
                 <Form.Group>
@@ -249,7 +249,8 @@ class AddInstrumentPopup extends Component {
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
                 serial_number: this.state.newInstrument.serial_number,
-                instrument_categories: this.state.newInstrument.instrument_categories
+                instrument_categories: this.state.newInstrument.instrument_categories,
+                asset_tag: this.state.newInstrument.asset_tag
 
             }
             this.props.onSubmit(returnedInstrument);

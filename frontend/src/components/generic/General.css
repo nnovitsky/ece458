@@ -140,6 +140,10 @@ form.popup input[type=text] {
     margin: 0px;
 }
 
+form.popup .form-group {
+    margin-bottom: 0px;
+}
+
 /* The Generic popup has alerts, this is where they are formatted */
 
 .popup-alert{

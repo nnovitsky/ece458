@@ -196,7 +196,7 @@ def instruments_detail(request, pk):
         # disable changing instrument's model
         request.data['item_model'] = instrument.item_model.pk
         if 'instrumentcategory_set' not in request.data: request.data['instrumentcategory_set'] = [cat.pk for cat in instrument.instrumentcategory_set.all()]
-        if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
+        if 'asset_tag' not in request.data: request.data['asset_tag'] = instrument.asset_tag
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()

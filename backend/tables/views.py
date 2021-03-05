@@ -2,21 +2,24 @@ import os
 
 from django.contrib.auth.models import User
 from django.http import FileResponse
+from django.http.request import QueryDict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user
+from backend.tables.utils import get_page_response, validate_user, get_calibration_modes
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.config.admin_config import ADMIN_USERNAME
+from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
+
 
 class OauthConsume(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -68,8 +71,8 @@ def calibration_event_list(request):
 
     elif request.method == 'POST':
         # set user to current user
-        request_data = request.data.dict()
-        if request_data['file'] == '':
+        request_data = request.data.dict() if type(request.data) == QueryDict else request.data
+        if 'file' not in request_data or request_data['file'] == '':
             request_data['file'] = None
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
@@ -196,7 +199,7 @@ def instruments_detail(request, pk):
         # disable changing instrument's model
         request.data['item_model'] = instrument.item_model.pk
         if 'instrumentcategory_set' not in request.data: request.data['instrumentcategory_set'] = [cat.pk for cat in instrument.instrumentcategory_set.all()]
-        if 'serial_number' not in request.data: request.data['serial_number'] = instrument.serial_number
+        if 'asset_tag' not in request.data: request.data['asset_tag'] = instrument.asset_tag
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -228,6 +231,11 @@ def models_list(request):
         if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        mode_pks, error = get_calibration_modes(request)
+        if error:
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+        request.data['calibrationmode_set'] = mode_pks
+
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -259,6 +267,11 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
+        mode_pks, error = get_calibration_modes(request)
+        if error:
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+        request.data['calibrationmode_set'] = mode_pks
+
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -275,6 +288,11 @@ def models_detail(request, pk):
         else:
             model.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_calibration_modes(request):
+    return Response({"modes": CALIBRATION_MODES}, status=status.HTTP_200_OK)
 
 
 # IMPORT/EXPORT
@@ -409,7 +427,7 @@ class TokenAuth(APIView):
         if 'username' not in request.data: return error
         try:
             user = User.objects.get(username=request.data['username'])
-            if UserType.contains_user(user, "oauth"):
+            if not user.is_active or UserType.contains_user(user, "oauth"):
                 return error
         except User.DoesNotExist:
             return error
@@ -476,15 +494,33 @@ def current_user(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'DELETE'])
 def user_list(request):
     """
-    Get list of all users. Returns 200 on success.
+    Get list of all users or delete user. Returns 200 on success.
     """
-    nextPage = 1
-    previousPage = 1
-    users = User.objects.all()
-    return get_page_response(users, request, UserSerializer, nextPage, previousPage)
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        users = User.objects.all().filter(is_active=True)
+        return get_page_response(users, request, UserSerializer, nextPage, previousPage)
+
+    elif request.method == 'DELETE':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            delete_user = User.objects.get(pk=request.data['delete_user'])
+        except User.DoesNotExist:
+            return Response({"user_error": ["Invalid user ID."]}, status=status.HTTP_404_NOT_FOUND)
+        if delete_user.pk == request.user.pk:
+            return Response({"user_error": ["Cannot delete self."]}, status=status.HTTP_400_BAD_REQUEST)
+        if UserType.contains_user(delete_user, "oauth"):
+            return Response({"user_error": ["Cannot delete oauth user."]}, status=status.HTTP_400_BAD_REQUEST)
+        delete_user.is_active = False
+        delete_user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserCreate(APIView):
@@ -573,9 +609,9 @@ def model_category_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if len(category.item_models.all()) > 0:
+        if len(category.item_models.all()) > 0 and ('force_delete' not in request.data or not request.data['force_delete']):
             return Response(
-                {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
+                {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -606,7 +642,7 @@ def instrument_category_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if len(category.instruments.all()) > 0:
+        if len(category.instruments.all()) > 0 and ('force_delete' not in request.data or not request.data['force_delete']):
             return Response(
                 {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
         else:

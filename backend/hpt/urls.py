@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from backend.tables import views
 from backend.tables import api_views
+from backend.tables import loadbank_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
@@ -52,6 +53,16 @@ urlpatterns = [
     path('api/instrument_categories/', views.instrument_category_list),
     path('api/instrument_categories/<int:pk>/', views.instrument_category_detail),
     path('api/category_list/<str:type>/', views.category_list),
-    path('api/calibration_event_file/<int:pk>/', views.calibration_event_file)
+    path('api/calibration_event_file/<int:pk>/', views.calibration_event_file),
+    path('api/category_list/<str:type>/', views.category_list),
+    path('api/new_loadbank_cal/', loadbank_views.start_loadbank_cal),
+    path('api/update_lb_cal/<int:lb_cal_pk>/', loadbank_views.update_lb_cal_field),
+    path('api/load_levels/<int:page>/', loadbank_views.get_load_levels),
+    path('api/voltage_test/', loadbank_views.get_test_voltage),
+    path('api/add_current_reading/<int:lb_cal_pk>/', loadbank_views.add_current_reading),
+    path('api/add_voltage_reading/<int:lb_cal_pk>/', loadbank_views.add_voltage_reading),
+    path('api/cancel_lb_cal/<int:lb_cal_pk>/', loadbank_views.cancel_lb_cal),
+    path('api/lb_cal_event_details/<int:lb_cal_pk>/', loadbank_views.lb_cal_details),
+    path('api/calibration_modes/', views.get_calibration_modes),
 
 ]

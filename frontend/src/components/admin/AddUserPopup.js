@@ -44,19 +44,19 @@ const addUserPopup = (props) => {
 const makeBody = () => {
     return (
         <Form className="popup">
-            <Form.Label>Username</Form.Label>
+            <Form.Label className="required-field">Username</Form.Label>
             <Form.Control required type="text" name={username} onChange={onTextInput} placeholder="Enter Username" />
 
-            <Form.Label>Password</Form.Label>
+            <Form.Label className="required-field">Password</Form.Label>
             <Form.Control required type="password" name={password} onChange={onTextInput} placeholder="Enter Password" />
 
-            <Form.Label>First Name</Form.Label>
+            <Form.Label className="required-field">First Name</Form.Label>
             <Form.Control required type="text" name={first_name} onChange={onTextInput} placeholder="Enter New User First Name" />
 
-            <Form.Label>Last Name</Form.Label>
+            <Form.Label className="required-field">Last Name</Form.Label>
             <Form.Control required type="text" name={last_name} onChange={onTextInput} placeholder="Enter New User Last Name" />
 
-            <Form.Label>Email</Form.Label>
+            <Form.Label className="required-field">Email</Form.Label>
             <Form.Control required type="text" name={email} onChange={onTextInput} placeholder="Enter New User Email" />
         </Form>
     )

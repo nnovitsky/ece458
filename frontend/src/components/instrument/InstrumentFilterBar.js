@@ -20,9 +20,9 @@ const InstrumentFilterBar = (props) => {
     const [filterState, dispatch] = useReducer(reducer, getEmptyFilters());
 
     useEffect(() => {
-        let filters = window.sessionStorage.getItem("instrumentPageFilters");
-        console.log(filters);
-        dispatch({ type: 'setAll', payload: JSON.parse(filters) });
+        let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        let filters = JSON.parse(searchParams).filters;
+        dispatch({ type: 'setAll', payload: filters });
     }, []);
 
     // modelCategories = formatCategories(props.modelCategories);
@@ -92,54 +92,20 @@ function reducer(state, action) {
     }
 }
 
-// const onTextInput = (e, filterChange) => {
-//     switch (e.target.name) {
-//         case modelName:
-//             filters.model_number = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case vendorName:
-//             filters.vendor = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case serialName:
-//             filters.serial_number = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case descriptionName:
-//             filters.description = e.target.value;
-//             filterChange(filters);
-//             break;
-//         default:
-//             break;
-//     }
-// }
-
-// const onCategoryInput = (e, filterChange, type) => {
-//     console.log(e);
-//     switch (type) {
-//         case 'model':
-//             filters.model_categories = e;
-//             break;
-//         case 'instrument':
-//             filters.instrument_categories = e;
-//             break;
-//         default:
-//             break;
-//     }
-//     filterChange(filters);
-// }
-
 const onSubmit = (parentHandler, filterState) => {
-    window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(filterState));
-
+    let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = filterState;
+    window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(searchParams));
     parentHandler();
-
 }
 
 const onClear = (parentHandler, dispatch) => {
     dispatch({ type: 'clear' });
-    window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(getEmptyFilters()));
+    let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = getEmptyFilters();
+    window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(searchParams));
     parentHandler();
 }
 

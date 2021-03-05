@@ -186,7 +186,7 @@ class App extends Component {
               {/* routes below require being logged in */}
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} saveState={this.setModelPageState} oldState={this.state.pageState.modelPage} />)} exact />
               <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} saveState={this.setInstrumentPageState} oldState={this.state.pageState.instrumentPage} />)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} />)} exact />
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />

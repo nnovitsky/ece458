@@ -24,14 +24,6 @@ class InstrumentTablePage extends Component {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
             instrumentSearchParams: {
-                filters: {
-                    model_number: '',
-                    vendor: '',
-                    serial_number: '',
-                    description: '',
-                    model_categories: [],
-                    instrument_categories: []
-                },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
@@ -49,6 +41,9 @@ class InstrumentTablePage extends Component {
             isLoading: false,
         }
 
+        // the pagination and filters for this page use session storage
+        this.initializeInstrumentSessionStorage();
+
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
@@ -60,44 +55,43 @@ class InstrumentTablePage extends Component {
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
 
-        if (!window.sessionStorage.getItem("instrumentPageFilters")) {
-            console.log('setting')
-            let filters = {
-                model_number: '',
-                vendor: '',
-                serial_number: '',
-                description: '',
-                model_categories: [],
-                instrument_categories: []
+
+    }
+
+    initializeInstrumentSessionStorage() {
+        if (!window.sessionStorage.getItem("instrumentPageSearchParams")) {
+            let instrumentPageSearchParams = {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    serial_number: '',
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: []
+                },
+                sortingIndicator: '',
+                desiredPage: 1,
+                showAll: false
             }
-            window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(filters));
+            window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentPageSearchParams));
         }
     }
+
     //make async calls here
     async componentDidMount() {
-        if (this.props.oldState) {
-            let oldState = this.props.oldState;
-            this.setState({
-                pagination: oldState.pagination,
-                instrumentSearchParams: oldState.instrumentSearchParams,
-                redirect: null
-            }, () => this.updateTable());
-        } else {
-            this.setState({
-                redirect: null
-            }, () => this.updateTable());
-        }
+        let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                sortingIndicator: searchParams.sortingIndicator,
+                desiredPage: searchParams.desiredPage,
+                showAll: searchParams.desiredPage
+            }
+        }, () => this.updateTable());
     }
 
-    componentWillUnmount() {
-        // before redirecting, save the state
-        let savedState = {
-            pagination: this.state.pagination,
-            instrumentSearchParams: this.state.instrumentSearchParams
-        }
-
-        this.props.saveState(savedState);
-    }
 
     render() {
         //handle if it's time to redirect
@@ -163,29 +157,20 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
-        let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
         });
+        console.log("updating table");
+        this.updateSessionStorage();
 
-        // let modelCats = params.filters.model_categories.map(el => el.pk);
-        // let instrumentCats = params.filters.instrument_categories.map(el => el.pk);
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
 
-        let filters = window.sessionStorage.getItem("instrumentPageFilters");
-        filters = JSON.parse(filters);
-        console.log(filters);
+        let filters = instrumentSearchParams.filters;
         filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
         filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
-        // let filters = {
-        //     model_number: params.filters.model_number,
-        //     vendor: params.filters.vendor,
-        //     serial_number: params.filters.serial_number,
-        //     description: params.filters.description,
-        //     model_categories: modelCats.join(","),
-        //     instrument_categories: instrumentCats.join(",")
-        // }
 
-        instrumentServices.getInstruments(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
+        instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -220,6 +205,18 @@ class InstrumentTablePage extends Component {
                 console.log("error")
             }
         })
+    }
+
+    updateSessionStorage() {
+        console.log("updating session storage");
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
+
+        instrumentSearchParams.sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
+        instrumentSearchParams.desiredPage = this.state.instrumentSearchParams.desiredPage;
+        instrumentSearchParams.showAll = this.state.instrumentSearchParams.showAll;
+
+        window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
     }
 
     onCategoriesClicked() {

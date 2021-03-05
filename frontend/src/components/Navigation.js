@@ -12,11 +12,11 @@ function Navigation(props) {
             <ul>
                 <li><img style={{height: "20px"}}src={profileIcon} alt="Logo" /></li>
                 <li>{props.user}   </li>
-                <li><NavLink push to="/user-profile">   Profile&nbsp;</NavLink></li>
-                <li><NavLink push to="/models">Models&nbsp;</NavLink></li>
-                <li><NavLink push to="/instruments">Instruments&nbsp;</NavLink></li>
-                {props.is_admin ? <li><NavLink push to="/import">Import&nbsp;</NavLink></li> : null}
-                {props.is_admin ? <li><NavLink push to="/admin">Admin&nbsp;</NavLink></li> : null}
+                <li><NavLink to="/user-profile">   Profile&nbsp;</NavLink></li>
+                <li><NavLink to="/models">Models&nbsp;</NavLink></li>
+                <li><NavLink to="/instruments">Instruments&nbsp;</NavLink></li>
+                {props.is_admin ? <li><NavLink to="/import">Import&nbsp;</NavLink></li> : null}
+                {props.is_admin ? <li><NavLink to="/admin">Admin&nbsp;</NavLink></li> : null}
                 <li className="col order-last" style={{ textAlign: "right" }}><NavLink onClick={props.handle_logout} to="/">Logout&nbsp;</NavLink></li>
             </ul>
         </nav>

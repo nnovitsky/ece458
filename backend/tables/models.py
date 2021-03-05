@@ -102,3 +102,53 @@ class InstrumentCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class LoadBankCalibration(models.Model):
+    """
+    Details on load bank calibration event.
+    """
+    cal_event = models.ForeignKey(CalibrationEvent, on_delete=models.CASCADE)
+    voltmeter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_voltmeter")
+    shunt_meter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_shunt")
+    visual_inspection = models.BooleanField(blank=True, default=False)
+    auto_cutoff = models.BooleanField(blank=True, default=False)
+    alarm = models.BooleanField(blank=True, default=False)
+    recorded_data = models.BooleanField(blank=True, default=False)
+    printer = models.BooleanField(blank=True, default=False)
+
+    def __str__(self):
+        return str(self.cal_event)
+
+
+class LoadCurrent(models.Model):
+    lb_cal = models.ForeignKey(LoadBankCalibration, on_delete=models.CASCADE)
+    load = models.CharField(max_length=100)
+    cr = models.FloatField()
+    ca = models.FloatField()
+    ideal = models.FloatField()
+    cr_error = models.FloatField(null=True)
+    ca_error = models.FloatField(null=True)
+    index = models.IntegerField()
+    cr_ok = models.BooleanField(default=False)
+    ca_ok = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.lb_cal) + ' ' + str(self.load)
+
+    class Meta:
+        unique_together = (("lb_cal", "load"),)
+
+
+class LoadVoltage(models.Model):
+    lb_cal = models.OneToOneField(LoadBankCalibration, on_delete=models.CASCADE)
+    vr = models.FloatField()
+    va = models.FloatField()
+    test_voltage = models.FloatField()
+    vr_error = models.FloatField(null=True)
+    va_error = models.FloatField(null=True)
+    vr_ok = models.BooleanField(default=False)
+    va_ok = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.lb_cal) + ' Voltage Test'

@@ -4,6 +4,7 @@ from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 from django.forms.fields import FileField
 import datetime
+from backend.config.load_bank_config import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -308,7 +309,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
 
-        if data['file'] is not None:
+        if 'file' in data and data['file'] is not None:
             valid_file_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf',
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
             if data['file'].content_type not in valid_file_types:
@@ -359,3 +360,74 @@ class ListInstrumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = InstrumentCategory
         fields = ('pk', 'name', 'count', 'instruments')
+
+
+class LBCalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LoadBankCalibration
+        fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+
+
+class LoadCurrentWriteSerializer(serializers.ModelSerializer):
+    cr_error = serializers.SerializerMethodField()
+    ca_error = serializers.SerializerMethodField()
+    cr_ok = serializers.SerializerMethodField()
+    ca_ok = serializers.SerializerMethodField()
+
+    def get_cr_error(self, obj):
+        if self.initial_data['ideal'] == 0: return None
+        cr = self.initial_data['cr']
+        ca = self.initial_data['ca']
+        return (cr-ca)/ca
+
+    def get_ca_error(self, obj):
+        ideal = self.initial_data['ideal']
+        if ideal == 0: return None
+        ca = self.initial_data['ca']
+        return (ca-ideal)/ideal
+
+    def get_cr_ok(self, obj):
+        if self.initial_data['ideal'] == 0:
+            return self.initial_data['cr'] == 0
+        cr_error = self.get_cr_error(obj)
+        return abs(cr_error) < CR_THRESHOLD
+
+    def get_ca_ok(self, obj):
+        if self.initial_data['ideal'] == 0:
+            return self.initial_data['ca'] == 0
+        ca_error = self.get_ca_error(obj)
+        return abs(ca_error) < CA_THRESHOLD
+
+    class Meta:
+        model = LoadCurrent
+        fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
+
+
+class LoadVoltageWriteSerializer(serializers.ModelSerializer):
+    vr_error = serializers.SerializerMethodField()
+    va_error = serializers.SerializerMethodField()
+    vr_ok = serializers.SerializerMethodField()
+    va_ok = serializers.SerializerMethodField()
+
+    def get_vr_error(self, obj):
+        vr = self.initial_data['vr']
+        va = self.initial_data['va']
+        return (vr-va)/va
+
+    def get_va_error(self, obj):
+        test = self.initial_data['test_voltage']
+        va = self.initial_data['va']
+        return (va-test)/test
+
+    def get_vr_ok(self, obj):
+        vr_error = self.get_vr_error(obj)
+        return abs(vr_error) < VR_THRESHOLD
+
+    def get_va_ok(self, obj):
+        va_error = self.get_va_error(obj)
+        return abs(va_error) < VA_THRESHOLD
+
+    class Meta:
+        model = LoadVoltage
+        fields = ('pk', 'lb_cal', 'vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')

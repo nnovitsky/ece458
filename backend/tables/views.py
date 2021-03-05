@@ -411,7 +411,7 @@ class TokenAuth(APIView):
         if 'username' not in request.data: return error
         try:
             user = User.objects.get(username=request.data['username'])
-            if UserType.contains_user(user, "oauth"):
+            if not user.is_active or UserType.contains_user(user, "oauth"):
                 return error
         except User.DoesNotExist:
             return error
@@ -478,15 +478,33 @@ def current_user(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'DELETE'])
 def user_list(request):
     """
-    Get list of all users. Returns 200 on success.
+    Get list of all users or delete user. Returns 200 on success.
     """
-    nextPage = 1
-    previousPage = 1
-    users = User.objects.all()
-    return get_page_response(users, request, UserSerializer, nextPage, previousPage)
+    if request.method == 'GET':
+        nextPage = 1
+        previousPage = 1
+        users = User.objects.all().filter(is_active=True)
+        return get_page_response(users, request, UserSerializer, nextPage, previousPage)
+
+    elif request.method == 'DELETE':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            delete_user = User.objects.get(pk=request.data['delete_user'])
+        except User.DoesNotExist:
+            return Response({"user_error": ["Invalid user ID."]}, status=status.HTTP_404_NOT_FOUND)
+        if delete_user.pk == request.user.pk:
+            return Response({"user_error": ["Cannot delete self."]}, status=status.HTTP_400_BAD_REQUEST)
+        if UserType.contains_user(delete_user, "oauth"):
+            return Response({"user_error": ["Cannot delete oauth user."]}, status=status.HTTP_400_BAD_REQUEST)
+        delete_user.is_active = False
+        delete_user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserCreate(APIView):

@@ -167,7 +167,10 @@ export default class InstrumentServices {
             serial_number: serial_number,
             comment: comment,
             instrumentcategory_set: categories.map(el => el.pk),
-            asset_tag: asset_tag
+        }
+
+        if (asset_tag !== '') {
+            data.asset_tag = asset_tag;
         }
 
         let result = {

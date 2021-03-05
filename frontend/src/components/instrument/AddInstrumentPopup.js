@@ -213,7 +213,6 @@ class AddInstrumentPopup extends Component {
     }
 
     onAssetChange = (e) => {
-        console.log('asset change')
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,

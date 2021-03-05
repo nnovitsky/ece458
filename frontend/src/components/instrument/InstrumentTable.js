@@ -182,7 +182,7 @@ const getLatestCalText = (data) => {
                         if (row.calibration_event.length === 0) {
                             return <span>{display}</span>
                         } else {
-                            return <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>{display}</Button>
+                            return <Button onClick={onCertificateRequested} value={row.pk} id={row.asset_tag} className="data-table-button" hidden={row.calibration_event.length === 0}>{display}</Button>
                         }
 
                     },

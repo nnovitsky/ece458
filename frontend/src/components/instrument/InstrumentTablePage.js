@@ -258,7 +258,7 @@ class InstrumentTablePage extends Component {
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
     }

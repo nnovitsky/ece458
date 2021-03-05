@@ -8,7 +8,7 @@ import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed, nameAndDownloadFile } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
@@ -466,7 +466,8 @@ class InstrumentDetailView extends Component {
         instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
             .then((result) => {
                 if (result.success) {
-                    nameAndDownloadFile(result.url, `calibration-certificate`);
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`);
                 }
             })
     }

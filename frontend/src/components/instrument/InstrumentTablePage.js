@@ -92,7 +92,7 @@ class InstrumentTablePage extends Component {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
-                <Redirect to={this.state.redirect} />
+                <Redirect push to={this.state.redirect} />
             )
         }
         let buttonRow = (

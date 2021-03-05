@@ -80,7 +80,7 @@ class ModelDetailView extends React.Component {
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
 
         if (this.state.redirect != null) {
-            return <Redirect to={this.state.redirect} />
+            return <Redirect push to={this.state.redirect} />
         }
 
         let comment = (this.state.model_info.comment === '' ? 'No Comment Entered' : this.state.model_info.comment);

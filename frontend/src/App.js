@@ -154,12 +154,18 @@ class App extends Component {
   }
 
 
-
+  // called with a page component that should only be displayed if the user is logged in
+  // if not, they will be redirected to login
   loggedInPath = (protectedComponent) => {
     const isAuthenticated = localStorage.getItem('token');
 
-    return isAuthenticated && typeof (isAuthenticated) !== 'undefined' ?
-      protectedComponent : <Redirect to="/" />;
+    return isAuthenticated && typeof (isAuthenticated) !== 'undefined' ? protectedComponent : <Redirect to="/" />;
+  }
+
+  // called with a page component that should only be displayed if the user is an admin
+  // if not, they will be redirected to the user profile page
+  adminPath = (adminComponent) => {
+    return this.state.admin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
   render(
@@ -173,16 +179,20 @@ class App extends Component {
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>
             <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
             <Switch>
+              {/* routes below require being logged in */}
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} saveState={this.setModelPageState} oldState={this.state.modelPage} />)} exact />
               <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
               <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} saveState={this.setInstrumentPageState} oldState={this.state.instrumentPage} />)} exact />
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
-              <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
-            <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
-            <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />
-            <AdminRoute is_admin={this.state.admin} path="/admin" component={AdminPage} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
+              <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
+              {/* routes below require user to be an admin */}
+              <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
+              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.admin} />)} exact />
+              <Route path="/categories" render={() => this.adminPath(<CategoriesPage is_admin={this.state.admin} />)} exact />
+              {/* routes below are oauth */}
             <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
-            <AdminRoute is_admin={this.state.admin} path="/categories" component={CategoriesPage} exact />
+
           </Switch>
           {this.state.logged_in ? null : form}
           {this.state.redirect ? (<Redirect to="/user-profile" />) : null}

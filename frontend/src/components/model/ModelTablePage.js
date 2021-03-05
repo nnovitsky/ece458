@@ -92,7 +92,7 @@ class ModelTablePage extends Component {
 
     render() {
         if (this.state.redirect !== null) {
-            return (<Redirect to={this.state.redirect} />)
+            return (<Redirect push to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">

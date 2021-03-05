@@ -46,7 +46,9 @@ class Instrument(models.Model):
     Instance of a model with unique model + serial number pair.
     """
     item_model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
-    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH)
+    asset_tag = models.IntegerField(unique=True, validators=[MinValueValidator(ASSET_TAG_MIN_VALUE),
+                                                             MaxValueValidator(ASSET_TAG_MAX_VALUE)])
+    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH, blank=True)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
 
     def __str__(self):

@@ -25,11 +25,13 @@ const descriptionName = "description";
 // 'currentFilter' must match filters ^ 
 const ModelFilterBar = (props) => {
 
-    const [filterState, dispatch] = useReducer(reducer, props.currentFilter);
+    const [filterState, dispatch] = useReducer(reducer, getEmptyFilters());
 
     useEffect(() => {
-        dispatch({ type: 'setAll', payload: props.currentFilter });
-    }, [props.currentFilter])
+        let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        let filters = JSON.parse(searchParams).filters;
+        dispatch({ type: 'setAll', payload: filters });
+    }, [])
 
     return (
 
@@ -50,7 +52,7 @@ const ModelFilterBar = (props) => {
                     />
                 </div>
 
-                <Button onClick={() => props.onSearch(filterState)}>Apply</Button>
+                <Button onClick={() => onSubmit(props.onSearch, filterState)}>Apply</Button>
                 <Button onClick={() => onRemove(props.onRemoveFilters, dispatch)}>Clear</Button>
             </Col>
 
@@ -84,19 +86,38 @@ function reducer(state, action) {
     }
 }
 
+const getEmptyFilters = () => {
+    return (
+        {
+            model_number: '',
+            vendor: '',
+            description: '',
+            model_categories: [],
+        }
+    )
+}
+
 const onCategoryInput = (e, dispatch) => {
     dispatch({ type: 'model_categories', payload: e });
     // filters.model_categories = e;
     // filterChange(filters);
 }
 
-// const onSearch = (parentSearch, filter) => {
-//     parentSearch(filters);
-// }
+const onSubmit = (parentHandler, filter) => {
+    let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = filter;
+    window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(searchParams));
+    parentHandler();
+}
 
-const onRemove = (parentRemove, dispatch) => {
+const onRemove = (parentHandler, dispatch) => {
     dispatch({ type: 'clear' });
-    parentRemove();
+    let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = getEmptyFilters();
+    window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(searchParams));
+    parentHandler();
 }
 
 

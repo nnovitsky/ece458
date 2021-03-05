@@ -87,7 +87,7 @@ class InstrumentTablePage extends Component {
                 ...this.state.instrumentSearchParams,
                 sortingIndicator: searchParams.sortingIndicator,
                 desiredPage: searchParams.desiredPage,
-                showAll: searchParams.desiredPage
+                showAll: searchParams.showAll
             }
         }, () => this.updateTable());
     }
@@ -160,7 +160,7 @@ class InstrumentTablePage extends Component {
         this.setState({
             isLoading: true,
         });
-        console.log("updating table");
+
         this.updateSessionStorage();
 
         let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");

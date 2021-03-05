@@ -1,7 +1,7 @@
 import './App.css';
 
 import React, { Component } from 'react';
-import { BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
 import { Beforeunload } from 'react-beforeunload';
 
 import LoginPage from './components/login/LoginPage';
@@ -155,19 +155,28 @@ class App extends Component {
 
 
 
+  loggedInPath = (protectedComponent) => {
+    const isAuthenticated = localStorage.getItem('token');
+
+    return isAuthenticated && typeof (isAuthenticated) !== 'undefined' ?
+      protectedComponent : <Redirect to="/" />;
+  }
+
   render(
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
+    console.log("rendering app")
     return (
-    <Beforeunload onBeforeunload={this.emptyLocalStorage}>
-      <BrowserRouter>
-        <div>
-        <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-          <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
-          <Switch>
-              <ProtectedRoute path="/models" render={() => <ModelTablePage saveState={this.setModelPageState} oldState={this.state.modelPage} is_admin={this.state.admin} />} is_admin={this.state.admin} exact />
-              <ProtectedRoute path="/models-detail/:pk" component={ModelDetailPage} is_admin={this.state.admin} exact />
-              <ProtectedRoute path="/instruments" render={() => <InstrumentTablePage saveState={this.setInstrumentPageState} oldState={this.state.instrumentPage} is_admin={this.state.admin} />} exact />
+      <Beforeunload onBeforeunload={this.emptyLocalStorage}>
+        <BrowserRouter>
+          <div>
+            <GenericLoader isShown={this.state.isLoading}></GenericLoader>
+            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
+            <Switch>
+              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} saveState={this.setModelPageState} oldState={this.state.modelPage} />)} exact />
+              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} saveState={this.setInstrumentPageState} oldState={this.state.instrumentPage} />)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
               <ProtectedRoute path="/instruments-detail/:pk" component={InstrumentDetailView} is_admin={this.state.admin} exact />
             <AdminRoute is_admin={this.state.admin} path="/import" component={ImportPage} exact />
             <ProtectedRoute path="/user-profile" component={UserProfilePage} exact />

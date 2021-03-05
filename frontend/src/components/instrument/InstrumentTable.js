@@ -8,6 +8,7 @@ import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
 import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
 import GoodIcon from "../../assets/CalibrationIcons/Good.png";
 import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
+import { Link } from 'react-router-dom';
 
 // props
 // data: json data object to be displayed
@@ -115,6 +116,7 @@ const getLatestCalText = (data) => {
                     sort: true,
                     title: (cell) => `Asset Number: ${cell}. Click to see more`,
                     formatter: (cell, row) => {
+                        return <Link to={`/instruments-detail/${row.pk}`} className="green-link">asset</Link>
                         return <span><a className="green-link" href={`/instruments-detail/${row.pk}`}>ASSET</a></span>
                     },
                     headerClasses: 'it-asset-column'

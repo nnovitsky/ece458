@@ -52,7 +52,6 @@ class InstrumentTablePage extends Component {
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
-        this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
@@ -66,9 +65,10 @@ class InstrumentTablePage extends Component {
     async componentDidMount() {
         if (this.props.oldState) {
             let oldState = this.props.oldState;
+            console.log(oldState)
             this.setState({
                 pagination: oldState.pagination,
-                instrumentSearchParams: oldState.modelSearchParams,
+                instrumentSearchParams: oldState.instrumentSearchParams,
                 redirect: null
             }, () => this.updateTable());
         } else {
@@ -82,7 +82,7 @@ class InstrumentTablePage extends Component {
         // before redirecting, save the state
         let savedState = {
             pagination: this.state.pagination,
-            modelSearchParams: this.state.instrumentSearchParams
+            instrumentSearchParams: this.state.instrumentSearchParams
         }
 
         this.props.saveState(savedState);
@@ -251,12 +251,12 @@ class InstrumentTablePage extends Component {
     }
 
 
-    onDetailViewRequested(e) {
-        this.setState({
-            ...this.state,
-            redirect: `/instruments-detail/${e.target.value}`
-        });
-    }
+    // onDetailViewRequested(e) {
+    //     this.setState({
+    //         ...this.state,
+    //         redirect: `/instruments-detail/${e.target.value}`
+    //     });
+    // }
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)

@@ -593,9 +593,9 @@ def model_category_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if len(category.item_models.all()) > 0:
+        if len(category.item_models.all()) > 0 and ('force_delete' not in request.data or not request.data['force_delete']):
             return Response(
-                {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
+                {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -626,7 +626,7 @@ def instrument_category_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if len(category.instruments.all()) > 0:
+        if len(category.instruments.all()) > 0 and ('force_delete' not in request.data or not request.data['force_delete']):
             return Response(
                 {"delete_error": ["Cannot delete non-empty category."]}, status=status.HTTP_400_BAD_REQUEST)
         else:

@@ -47,7 +47,8 @@ class AddInstrumentPopup extends Component {
                     vendor: props.currentInstrument.vendor,
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
-                    instrument_categories: props.currentInstrument.instrument_categories
+                    instrument_categories: props.currentInstrument.instrument_categories,
+                    asset_tag: props.currentInstrument.asset_tag
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -64,7 +65,8 @@ class AddInstrumentPopup extends Component {
                     vendor: '',
                     serial_number: '',
                     comment: '',
-                    instrument_categories: []
+                    instrument_categories: [],
+                    asset_tag: ''
                 },
                 modelsFromVendorArr: []
             }
@@ -124,6 +126,13 @@ class AddInstrumentPopup extends Component {
         return (
             <Form className="popup">
                 {vendorModel}
+                <Form.Group>
+                    <Form.Label >Asset Number</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Asset Number" value={this.state.newInstrument.asset_tag} onChange={this.onAssetChange} />
+                    <Form.Text muted>
+                        If left blank, this will be autopopulated
+  </Form.Text>
+                </Form.Group>
                 <Form.Group>
                     <Form.Label >Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
@@ -204,6 +213,15 @@ class AddInstrumentPopup extends Component {
             newInstrument: {
                 ...this.state.newInstrument,
                 serial_number: e.target.value
+            }
+        })
+    }
+
+    onAssetChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                asset_tag: e.target.value
             }
         })
     }

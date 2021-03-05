@@ -30,6 +30,7 @@ class InstrumentDetailView extends Component {
                 model_pk: '',
                 vendor: '',
                 serial_number: '',
+                asset_tag: '',
                 comment: '',
                 calibration_frequency: '',
                 calibration_expiration: '',
@@ -150,7 +151,8 @@ class InstrumentDetailView extends Component {
                             calibration_frequency: data.item_model.calibration_frequency,
                             calibration_expiration: data.calibration_expiration,
                             model_categories: data.categories.item_model_categories,
-                            instrument_categories: data.categories.instrument_categories
+                            instrument_categories: data.categories.instrument_categories,
+                            asset_tag: data.asset_tag
 
                         }
                     })
@@ -229,7 +231,7 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>
-                        <td>ASSET TAG</td>
+                        <td>{this.state.instrument_info.asset_tag}</td>
                     </tr>
                     <tr>
                         <td><strong>Serial Number</strong></td>

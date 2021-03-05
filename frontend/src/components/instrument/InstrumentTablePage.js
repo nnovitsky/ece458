@@ -53,13 +53,25 @@ class InstrumentTablePage extends Component {
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onFilteredSearch = this.onFilteredSearch.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
+
+        if (!window.sessionStorage.getItem("instrumentPageFilters")) {
+            console.log('setting')
+            let filters = {
+                model_number: '',
+                vendor: '',
+                serial_number: '',
+                description: '',
+                model_categories: [],
+                instrument_categories: []
+            }
+            window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(filters));
+        }
     }
     //make async calls here
     async componentDidMount() {
@@ -113,9 +125,8 @@ class InstrumentTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <FilterBar
-                                onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.onRemoveFilters}
-                                currentFilter={this.state.instrumentSearchParams.filters}
+                                onSearch={this.updateTable}
+                                onRemoveFilters={this.updateTable}
                             />
                         </div>
                         <div className="col-10">
@@ -157,17 +168,22 @@ class InstrumentTablePage extends Component {
             isLoading: true,
         });
 
-        let modelCats = params.filters.model_categories.map(el => el.pk);
-        let instrumentCats = params.filters.instrument_categories.map(el => el.pk);
+        // let modelCats = params.filters.model_categories.map(el => el.pk);
+        // let instrumentCats = params.filters.instrument_categories.map(el => el.pk);
 
-        let filters = {
-            model_number: params.filters.model_number,
-            vendor: params.filters.vendor,
-            serial_number: params.filters.serial_number,
-            description: params.filters.description,
-            model_categories: modelCats.join(","),
-            instrument_categories: instrumentCats.join(",")
-        }
+        let filters = window.sessionStorage.getItem("instrumentPageFilters");
+        filters = JSON.parse(filters);
+        console.log(filters);
+        filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+        // let filters = {
+        //     model_number: params.filters.model_number,
+        //     vendor: params.filters.vendor,
+        //     serial_number: params.filters.serial_number,
+        //     description: params.filters.description,
+        //     model_categories: modelCats.join(","),
+        //     instrument_categories: instrumentCats.join(",")
+        // }
 
         instrumentServices.getInstruments(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             if (result.success) {
@@ -272,18 +288,6 @@ class InstrumentTablePage extends Component {
                     nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
-    }
-
-    async onFilteredSearch(newFilter) {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: newFilter,
-                desiredPage: 1
-            }
-        }, () => {
-            this.updateTable();
-        })
     }
 
     async onRemoveFilters() {

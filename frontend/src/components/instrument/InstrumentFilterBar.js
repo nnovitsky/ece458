@@ -15,16 +15,16 @@ const descriptionName = "description";
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
-// 'onFilterChange' a handler that will be passed ^filters
-// 'currentFilter' must match filters ^ 
-// modelCategories  an array of pk/category pairs
-// instrumentCategories: an array of pk/category pairs
 const InstrumentFilterBar = (props) => {
 
-    const [filterState, dispatch] = useReducer(reducer, props.currentFilter);
+    const [filterState, dispatch] = useReducer(reducer, getEmptyFilters());
+
     useEffect(() => {
-        dispatch({ type: 'setAll', payload: props.currentFilter });
-    }, [props.currentFilter])
+        let filters = window.sessionStorage.getItem("instrumentPageFilters");
+        console.log(filters);
+        dispatch({ type: 'setAll', payload: JSON.parse(filters) });
+    }, []);
+
     // modelCategories = formatCategories(props.modelCategories);
     // instrumentCategories = formatCategories(props.instrumentCategories);
     return (
@@ -47,13 +47,13 @@ const InstrumentFilterBar = (props) => {
                 </div>
                 <div className="filter-picklist">
                     <InstrumentCategoriesPicklist
-                        selectedCategories={props.currentFilter.instrument_categories}
+                        selectedCategories={filterState.instrument_categories}
                         onChange={(e) => dispatch({ type: 'instrument_categories', payload: e })}
                     />
                 </div>
 
 
-                <Button className="filter-button" onClick={() => props.onSearch(filterState)}>Apply</Button>
+                <Button className="filter-button" onClick={() => onSubmit(props.onSearch, filterState)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters, dispatch)}>Clear</Button>
 
 
@@ -130,10 +130,30 @@ function reducer(state, action) {
 //     filterChange(filters);
 // }
 
+const onSubmit = (parentHandler, filterState) => {
+    window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(filterState));
+
+    parentHandler();
+
+}
 
 const onClear = (parentHandler, dispatch) => {
     dispatch({ type: 'clear' });
+    window.sessionStorage.setItem("instrumentPageFilters", JSON.stringify(getEmptyFilters()));
     parentHandler();
+}
+
+const getEmptyFilters = () => {
+    return (
+        {
+            model_number: '',
+            vendor: '',
+            serial_number: '',
+            description: '',
+            model_categories: [],
+            instrument_categories: []
+        }
+    )
 }
 
 export default InstrumentFilterBar;

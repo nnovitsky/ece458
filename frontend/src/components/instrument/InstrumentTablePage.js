@@ -65,7 +65,6 @@ class InstrumentTablePage extends Component {
     async componentDidMount() {
         if (this.props.oldState) {
             let oldState = this.props.oldState;
-            console.log(oldState)
             this.setState({
                 pagination: oldState.pagination,
                 instrumentSearchParams: oldState.instrumentSearchParams,
@@ -372,7 +371,6 @@ class InstrumentTablePage extends Component {
     }
 
     getSortingKey = (sortingField, direction) => {
-        console.log(sortingField, direction)
         let result;
         switch (sortingField) {
             case 'item_model.vendor':

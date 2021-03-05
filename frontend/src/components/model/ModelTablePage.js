@@ -19,7 +19,6 @@ const modelServices = new ModelServices();
 class ModelTablePage extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
         this.state = {
             redirect: null,
             tableData: [],
@@ -85,8 +84,6 @@ class ModelTablePage extends Component {
             pagination: this.state.pagination,
             modelSearchParams: this.state.modelSearchParams
         }
-
-        console.log(savedState);
         this.props.saveState(savedState);
     }
 

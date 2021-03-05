@@ -141,7 +141,6 @@ class App extends Component {
   // this handler will be called by model page before redirecting
   // an attempt at preserving state when flipping between pages
   setModelPageState = (newState) => {
-    console.log('set model state called');
     this.setState({
       pageState: {
         ...this.state.pageState,
@@ -151,7 +150,6 @@ class App extends Component {
   }
 
   setInstrumentPageState = (newState) => {
-    console.log('set model state called');
     this.setState({
       pageState: {
         ...this.state.pageState,
@@ -178,7 +176,6 @@ class App extends Component {
   render(
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
-    console.log("rendering app")
     return (
       <Beforeunload onBeforeunload={this.emptyLocalStorage}>
         <BrowserRouter>

@@ -3,6 +3,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext_lazy as _
 
 from ..config.character_limits import *
 
@@ -67,6 +68,12 @@ class Instrument(models.Model):
         unique_together = (("item_model", "serial_number"),)
 
 
+class CalibrationEventFile(models.TextChoices):
+    NONE = 'None'
+    ARTIFACT = 'Artifact'
+    LOAD_BANK = 'Load Bank'
+
+
 class CalibrationEvent(models.Model):
     """
     Calibration event for specific instrument.
@@ -75,6 +82,8 @@ class CalibrationEvent(models.Model):
     date = models.DateField(default=datetime.date.today)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
+    file_type = models.CharField(default=CalibrationEventFile.NONE, choices=CalibrationEventFile.choices,
+                                 max_length=20)
     file = models.FileField(upload_to='cal_event_artifacts', null=True)
 
     def __str__(self):

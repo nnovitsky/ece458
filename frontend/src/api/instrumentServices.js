@@ -161,12 +161,16 @@ export default class InstrumentServices {
 
     // Error handling in place for bad input
     // handled modified/expired tokens
-    async addInstrument(model_pk, serial_number, comment, categories) {
+    async addInstrument(model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment,
-            instrumentcategory_set: categories.map(el => el.pk)
+            instrumentcategory_set: categories.map(el => el.pk),
+        }
+
+        if (asset_tag !== '') {
+            data.asset_tag = asset_tag;
         }
 
         let result = {
@@ -210,12 +214,13 @@ export default class InstrumentServices {
     }
 
     // handling field errors and modification/expiration of tokens
-    async editInstrument(instrumentPk, model_pk, serial_number, comment, categories) {
+    async editInstrument(instrumentPk, model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment,
-            instrumentcategory_set: categories.map(el => el.pk)
+            instrumentcategory_set: categories.map(el => el.pk),
+            asset_tag: asset_tag
         }
 
         let result = {
@@ -296,11 +301,14 @@ export default class InstrumentServices {
 
     // Note: the date needs to be a string
     // Error handling in place for future dates
-    async addCalibrationEvent(instrument_pk, date, comment) {
-        let data = {
-            instrument: instrument_pk,
-            date: date,
-            comment: comment
+    async addCalibrationEvent(instrument_pk, date, comment, file) {
+        const formData = new FormData();
+        formData.append('instrument', instrument_pk);
+        formData.append('date', date);
+        formData.append('comment', comment);
+
+        if (file !== '') {
+            formData.append('file', file);
         }
 
         let result = {
@@ -313,10 +321,9 @@ export default class InstrumentServices {
         return fetch(`${API_URL}/api/calibration_events/`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-            body: JSON.stringify(data)
+            body: formData
         })
             .then(res => {
                 if (res.ok) {
@@ -390,6 +397,50 @@ export default class InstrumentServices {
         }
 
         const url = `${API_URL}/api/export_calibration_event_pdf/${pk}`;
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.blob().then(blob => {
+                        return URL.createObjectURL(blob)
+                    })
+                        .then(url => {
+                            result.url = url;
+                            return result;
+                        })
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
+
+    async getCalEventFile(cal_pk) {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            url: [],
+        }
+
+        const url = `${API_URL}/api/calibration_event_file/${cal_pk}`;
         return fetch(url, {
             method: 'GET',
             headers: {

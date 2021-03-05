@@ -3,6 +3,7 @@ import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import "../generic/General.css";
 import { CalibrationModeDisplayMap } from '../generic/Util';
+import { Link } from 'react-router-dom';
 
 // props
 // data: json data object to be displayed
@@ -69,7 +70,9 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'mt-model-number-column',
                 formatter: (cell, row) => {
                     return (
-                        <span><a href={`/models-detail/${row.pk}`} className="green-link">{cell}</a></span>
+                        <span>
+                            <Link to={`/models-detail/${row.pk}`} className="green-link">{cell}</Link>
+                        </span>
                     )
                 }
             },

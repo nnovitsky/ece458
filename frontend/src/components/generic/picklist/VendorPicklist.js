@@ -4,6 +4,7 @@ import BaseListPicklist from './BaseListPicklist';
 
 // selectedVendor: a string of the selected vendor
 // onChange: an event handler that will be passed a string of the newly selected vendor
+// isCreatable: true if can create new options
 function VendorPicklist(props) {
     return (
         <BaseListPicklist
@@ -29,3 +30,7 @@ async function getVendors() {
 }
 
 export default VendorPicklist;
+
+VendorPicklist.defaultProps = {
+    isCreatable: false
+}

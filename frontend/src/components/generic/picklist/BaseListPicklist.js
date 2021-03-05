@@ -72,8 +72,6 @@ const formatSelected = (input) => {
 }
 
 const formatOptions = (input) => {
-
-    console.log('made it to the right place')
     let stringFormatted = [];
     input.map(el => (stringFormatted.push({ label: el, value: el })));
     return stringFormatted;

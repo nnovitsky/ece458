@@ -5,6 +5,8 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import '../generic/General.css';
 import './CategoriesPage.css';
+import ErrorFile from "../../api/ErrorMapping/CategoryErrors.json";
+import { rawErrorsToDisplayed } from '../generic/Util';
 
 import LogoHeader from '../generic/LogoTitleHeader';
 import CategoriesTable from './CategoriesTable';
@@ -36,6 +38,7 @@ class CategoriesPage extends Component {
             deletePopup: {
                 pk: null,
                 isShown: false,
+                force_delete: false,
                 errors: [],
                 name: '',
             },
@@ -173,7 +176,7 @@ class CategoriesPage extends Component {
 
     makeDeletePopup() {
         let body = (
-            <p>Are you sure you want to delete category '{this.state.deletePopup.name}'?</p>
+            <p>This category is being used, are you sure you want to delete '{this.state.deletePopup.name}'?</p>
         )
         return(
             <DeletePopup
@@ -324,6 +327,14 @@ class CategoriesPage extends Component {
                 if (result.success) {
                     this.onCreateCancel();
                     this.updateTabCategory();
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_categories"]);
+                    this.setState({
+                        createPopup: {
+                            ...this.state.createPopup,
+                            errors: formattedErrors
+                        }
+                    })
                 }
                 this.setState({
                     isLoading: false
@@ -374,6 +385,14 @@ class CategoriesPage extends Component {
                     this.updateTabCategory();
                     this.onEditClose();
 
+                } else {
+                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_categories"]);
+                    this.setState({
+                        renamePopup: {
+                            ...this.state.renamePopup,
+                            errors: formattedErrors
+                        }
+                    })
                 }
                 this.setState({
                     isLoading: false
@@ -383,29 +402,37 @@ class CategoriesPage extends Component {
     }
 
     onDeleteClick(e) {
-        this.setState({
-            deletePopup: {
-                ...this.state.deletePopup,
-                isShown: true,
-                name: e.target.name,
-                pk: e.target.value
-            }
-        })
-    }
-
-    onDeleteSubmit() {
-        this.setState({
-            isLoading: true
-        })
-        categoryServices.deleteCategory(this.state.currentTab, this.state.deletePopup.pk).then(
+        categoryServices.deleteCategory(this.state.currentTab, e.target.value, false).then(
             (result) => {
                 if (result.success) {
                     this.updateTabCategory();
                     this.onDeleteCancel();
+                } else {
+                    if (result.errors.delete_error !== undefined) {
+                        this.setState({
+                            deletePopup: {
+                                ...this.state.deletePopup,
+                                isShown: true,
+                                name: e.target.name,
+                                pk: e.target.value
+                            }
+                        })
+                    }
                 }
-                this.setState({
-                    isLoading: false
-                })
+            }
+        )
+
+    }
+
+    onDeleteSubmit() {
+        categoryServices.deleteCategory(this.state.currentTab, this.state.deletePopup.pk, true).then(
+            (result) => {
+                if (result.success) {
+                    this.updateTabCategory();
+                    this.onDeleteCancel();
+                } else {
+                    console.log.apply('delete error')
+                }
             }
         )
     }

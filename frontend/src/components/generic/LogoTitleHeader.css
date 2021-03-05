@@ -6,13 +6,14 @@
 }
 
 .logo-title-header-buttons-div {
-    width: 50%;
+    width: 40%;
     float: right;
     margin: auto;
 }
 
 .logo-title-header-buttons-div button {
     float: right;
+    margin-left: 10px;
 }
 
 .logo-title-header h1 {

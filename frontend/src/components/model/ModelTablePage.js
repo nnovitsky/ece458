@@ -13,10 +13,8 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
-import CategoryServices from '../../api/categoryServices';
 
 const modelServices = new ModelServices();
-const categoryServices = new CategoryServices();
 
 class ModelTablePage extends Component {
     constructor(props) {
@@ -56,7 +54,6 @@ class ModelTablePage extends Component {
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
@@ -67,17 +64,32 @@ class ModelTablePage extends Component {
     }
 
     async componentDidMount() {
-        this.setState({
-            ...this.state,
-            redirect: null
+        if (this.props.oldState) {
+            let oldState = this.props.oldState;
+            this.setState({
+                pagination: oldState.pagination,
+                modelSearchParams: oldState.modelSearchParams,
+                redirect: null
+            }, () => this.updateModelTable());
+        } else {
+            this.setState({
+                redirect: null
+            }, () => this.updateModelTable());
         }
-        )
-        this.updateModelTable();
+    }
+
+    componentWillUnmount() {
+        // before redirecting, save the state
+        let savedState = {
+            pagination: this.state.pagination,
+            modelSearchParams: this.state.modelSearchParams
+        }
+        this.props.saveState(savedState);
     }
 
     render() {
         if (this.state.redirect !== null) {
-            return (<Redirect to={this.state.redirect} />)
+            return (<Redirect push to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">
@@ -98,7 +110,6 @@ class ModelTablePage extends Component {
                             <ModelFilterBar
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFiltersClicked}
-                                onFilterChange={this.onFilterChange}
                                 currentFilter={this.state.modelSearchParams.filters}
                             />
 
@@ -187,15 +198,6 @@ class ModelTablePage extends Component {
         this.setState({
             ...this.state,
             redirect: `/models-detail/${e.target.value}`
-        })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                filters: newFilter,
-            }
         })
     }
 
@@ -302,7 +304,6 @@ class ModelTablePage extends Component {
             description: params.filters.description,
             model_categories: modelCats.join(","),
         }
-        console.log(filters)
         modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,

@@ -52,10 +52,8 @@ class InstrumentTablePage extends Component {
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
-        this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
@@ -65,19 +63,35 @@ class InstrumentTablePage extends Component {
     }
     //make async calls here
     async componentDidMount() {
-        this.setState({
-            ...this.state,
-            redirect: null
+        if (this.props.oldState) {
+            let oldState = this.props.oldState;
+            this.setState({
+                pagination: oldState.pagination,
+                instrumentSearchParams: oldState.instrumentSearchParams,
+                redirect: null
+            }, () => this.updateTable());
+        } else {
+            this.setState({
+                redirect: null
+            }, () => this.updateTable());
         }
-        )
-        this.updateTable();
+    }
+
+    componentWillUnmount() {
+        // before redirecting, save the state
+        let savedState = {
+            pagination: this.state.pagination,
+            instrumentSearchParams: this.state.instrumentSearchParams
+        }
+
+        this.props.saveState(savedState);
     }
 
     render() {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
-                <Redirect to={this.state.redirect} />
+                <Redirect push to={this.state.redirect} />
             )
         }
         let buttonRow = (
@@ -102,9 +116,6 @@ class InstrumentTablePage extends Component {
                                 onSearch={this.onFilteredSearch}
                                 onRemoveFilters={this.onRemoveFilters}
                                 currentFilter={this.state.instrumentSearchParams.filters}
-                                onFilterChange={this.onFilterChange}
-                                modelCategories={this.state.modelCategories}
-                                instrumentCategories={this.state.instrumentCategories}
                             />
                         </div>
                         <div className="col-10">
@@ -177,6 +188,13 @@ class InstrumentTablePage extends Component {
                             currentPageNum: result.data.currentpage
                         }
                     })
+                } else {
+                    this.setState({
+                        pagination: {
+                            ...this.state.pagination,
+                            currentPageNum: 1
+                        }
+                    })
                 }
                 
             } else {
@@ -239,30 +257,21 @@ class InstrumentTablePage extends Component {
     }
 
 
-    onDetailViewRequested(e) {
-        this.setState({
-            ...this.state,
-            redirect: `/instruments-detail/${e.target.value}`
-        });
-    }
+    // onDetailViewRequested(e) {
+    //     this.setState({
+    //         ...this.state,
+    //         redirect: `/instruments-detail/${e.target.value}`
+    //     });
+    // }
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: newFilter,
-            }
-        })
     }
 
     async onFilteredSearch(newFilter) {
@@ -324,7 +333,7 @@ class InstrumentTablePage extends Component {
     }
 
     async onAddInstrumentSubmit(newInstrument) {
-        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories).then(
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories, newInstrument.asset_tag).then(
             (result) => {
                 if (result.success) {
                     this.onAddInstrumentClosed();
@@ -362,7 +371,6 @@ class InstrumentTablePage extends Component {
     }
 
     getSortingKey = (sortingField, direction) => {
-        console.log(sortingField, direction)
         let result;
         switch (sortingField) {
             case 'item_model.vendor':

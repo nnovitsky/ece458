@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { Redirect, withRouter } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed, nameAndDownloadFile } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
@@ -30,7 +30,9 @@ class InstrumentDetailView extends Component {
                 model_pk: '',
                 vendor: '',
                 serial_number: '',
+                asset_tag: '',
                 comment: '',
+                asset_number: '',
                 calibration_frequency: '',
                 calibration_expiration: '',
                 calibration_history: [],
@@ -68,6 +70,7 @@ class InstrumentDetailView extends Component {
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
+        this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
     }
 
     async componentDidMount() {
@@ -86,7 +89,7 @@ class InstrumentDetailView extends Component {
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
 
         if (this.state.redirect != null) {
-            return <Redirect to={this.state.redirect} />
+            return <Redirect push to={this.state.redirect} />
         }
 
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
@@ -96,7 +99,7 @@ class InstrumentDetailView extends Component {
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
                 <DetailView
-                    title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (asset tag)`}
+                    title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
                     comments={comment}
@@ -108,14 +111,15 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalHistoryTable = () => {
+        let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         let calButtonRow = (
             <div className="table-button-row">
-                <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )
         return (
-            <div className="cal-history-table">
+            <div className="cal-history-table" hidden={!isCalibratable}>
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}
@@ -126,6 +130,7 @@ class InstrumentDetailView extends Component {
                             totalSize: this.state.calibration_pagination.resultCount
                         }}
                     inlineElements={calButtonRow}
+                    onSupplementDownload={this.onSupplementDownloadClicked}
                 />
             </div>
         )
@@ -136,7 +141,6 @@ class InstrumentDetailView extends Component {
             (result) => {
                 if (result.success) {
                     let data = result.data;
-                    console.log(data)
                     this.setState({
                         ...this.state,
                         instrument_info: {
@@ -149,7 +153,8 @@ class InstrumentDetailView extends Component {
                             calibration_frequency: data.item_model.calibration_frequency,
                             calibration_expiration: data.calibration_expiration,
                             model_categories: data.categories.item_model_categories,
-                            instrument_categories: data.categories.instrument_categories
+                            instrument_categories: data.categories.instrument_categories,
+                            asset_tag: data.asset_tag
 
                         }
                     })
@@ -183,6 +188,13 @@ class InstrumentDetailView extends Component {
                                 currentPageNum: result.data.currentpage,
                             }
                         });
+                    } else {
+                        this.setState({
+                            calibration_pagination: {
+                                ...this.state.calibration_pagination,
+                                currentPageNum: 1
+                            }
+                        })
                     }
                 } else {
                     console.log("failed to get cal history");
@@ -208,7 +220,9 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Number</strong></td>
-                        <td><a href={`/models-detail/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                        <td>
+                            <Link to={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.model_number}</Link>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>
@@ -216,12 +230,12 @@ class InstrumentDetailView extends Component {
                         <td>
                             <div className="detail-view-categories">
                                 {this.state.instrument_info.model_categories.map(el => el.name).join(', ')}
-                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>
-                        <td>ASSET TAG</td>
+                        <td>{this.state.instrument_info.asset_tag}</td>
                     </tr>
                     <tr>
                         <td><strong>Serial Number</strong></td>
@@ -274,7 +288,8 @@ class InstrumentDetailView extends Component {
             vendor: this.state.instrument_info.vendor,
             serial_number: this.state.instrument_info.serial_number,
             comment: this.state.instrument_info.comment,
-            instrument_categories: this.state.instrument_info.instrument_categories
+            instrument_categories: this.state.instrument_info.instrument_categories,
+            asset_tag: this.state.instrument_info.asset_tag
         }
         return (
             <EditInstrumentPopop
@@ -345,7 +360,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment)
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();
@@ -361,7 +376,6 @@ class InstrumentDetailView extends Component {
                     })
                 }
             });
-
     }
 
     onAddCalibrationClose() {
@@ -372,6 +386,18 @@ class InstrumentDetailView extends Component {
                 errors: []
             }
         })
+    }
+
+    async onSupplementDownloadClicked(e) {
+        let cal_pk = e.target.value;
+        instrumentServices.getCalEventFile(cal_pk)
+            .then((result) => {
+                if (result.success) {
+                    nameAndDownloadFile(result.url, `supplement-file`);
+                } else {
+                    console.log('no file exists');
+                }
+            })
     }
 
     onModelLinkClicked() {
@@ -390,7 +416,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onEditInstrumentSubmit(newInstrument) {
-        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories)
+        await instrumentServices.editInstrument(this.state.instrument_info.pk, newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories, newInstrument.asset_tag)
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();
@@ -442,7 +468,8 @@ class InstrumentDetailView extends Component {
         instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
             .then((result) => {
                 if (result.success) {
-                    nameAndDownloadFile(result.url, `calibration-certificate`);
+                    let date = dateToString(new Date());
+                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`);
                 }
             })
     }

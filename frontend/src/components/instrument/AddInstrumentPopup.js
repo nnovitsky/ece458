@@ -31,9 +31,6 @@ class AddInstrumentPopup extends Component {
 
     constructor(props) {
         super(props);
-
-
-
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
             this.state = {
@@ -47,7 +44,8 @@ class AddInstrumentPopup extends Component {
                     vendor: props.currentInstrument.vendor,
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
-                    instrument_categories: props.currentInstrument.instrument_categories
+                    instrument_categories: props.currentInstrument.instrument_categories,
+                    asset_tag: props.currentInstrument.asset_tag
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -64,7 +62,8 @@ class AddInstrumentPopup extends Component {
                     vendor: '',
                     serial_number: '',
                     comment: '',
-                    instrument_categories: []
+                    instrument_categories: [],
+                    asset_tag: ''
                 },
                 modelsFromVendorArr: []
             }
@@ -74,6 +73,7 @@ class AddInstrumentPopup extends Component {
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onAssetChange = this.onAssetChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
@@ -102,12 +102,12 @@ class AddInstrumentPopup extends Component {
     makeBody = () => {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
-                <Form.Label>Vendor</Form.Label>
+                <Form.Label className="required-field">Vendor</Form.Label>
                 <VendorPicklist
                     selectedVendor={this.state.newInstrument.vendor}
                     onChange={this.onVendorInput}
                 />
-                <Form.Label>Model</Form.Label>
+                <Form.Label className="required-field">Model</Form.Label>
                 <Select
                     value={this.state.newInstrument.model}
                     options={this.state.modelsFromVendorArr}
@@ -125,11 +125,18 @@ class AddInstrumentPopup extends Component {
             <Form className="popup">
                 {vendorModel}
                 <Form.Group>
-                    <Form.Label>Serial Number</Form.Label>
+                    <Form.Label >Asset Number</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Asset Number" value={this.state.newInstrument.asset_tag} onChange={this.onAssetChange} />
+                    <Form.Text muted>
+                        Must be greater than or equal to 100000. If left blank, this will be autopopulated
+  </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label >Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.
-  </Form.Text>
+                    </Form.Text>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Instrument Categories</Form.Label>
@@ -142,9 +149,6 @@ class AddInstrumentPopup extends Component {
                     <Form.Label>Comments</Form.Label>
                     <Form.Control as="textarea" rows={3} value={this.state.newInstrument.comment} onChange={this.onCommentChange} />
                 </Form.Group>
-
-
-
             </Form>
         )
     }
@@ -208,6 +212,15 @@ class AddInstrumentPopup extends Component {
         })
     }
 
+    onAssetChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                asset_tag: e.target.value
+            }
+        })
+    }
+
     onCommentChange = (e, setInstrumentState) => {
         this.setState({
             newInstrument: {
@@ -231,7 +244,8 @@ class AddInstrumentPopup extends Component {
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
                 serial_number: this.state.newInstrument.serial_number,
-                instrument_categories: this.state.newInstrument.instrument_categories
+                instrument_categories: this.state.newInstrument.instrument_categories,
+                asset_tag: this.state.newInstrument.asset_tag
 
             }
             this.props.onSubmit(returnedInstrument);

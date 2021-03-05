@@ -68,6 +68,7 @@ class InstrumentDetailView extends Component {
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
+        this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
     }
 
     async componentDidMount() {
@@ -126,6 +127,7 @@ class InstrumentDetailView extends Component {
                             totalSize: this.state.calibration_pagination.resultCount
                         }}
                     inlineElements={calButtonRow}
+                    onSupplementDownload={this.onSupplementDownloadClicked}
                 />
             </div>
         )
@@ -136,7 +138,6 @@ class InstrumentDetailView extends Component {
             (result) => {
                 if (result.success) {
                     let data = result.data;
-                    console.log(data)
                     this.setState({
                         ...this.state,
                         instrument_info: {
@@ -208,7 +209,7 @@ class InstrumentDetailView extends Component {
                     </tr>
                     <tr>
                         <td><strong>Model Number</strong></td>
-                        <td><a href={`/models-detail/${this.state.instrument_info.model_pk}`}>{detailData.model_number}</a></td>
+                        <td><a href={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.model_number}</a></td>
                     </tr>
                     <tr>
                         <td><strong>Model Categories</strong></td>
@@ -216,7 +217,7 @@ class InstrumentDetailView extends Component {
                         <td>
                             <div className="detail-view-categories">
                                 {this.state.instrument_info.model_categories.map(el => el.name).join(', ')}
-                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -345,7 +346,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment)
+        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
             .then((result) => {
                 if (result.success) {
                     this.getInstrumentInfo();
@@ -361,7 +362,6 @@ class InstrumentDetailView extends Component {
                     })
                 }
             });
-
     }
 
     onAddCalibrationClose() {
@@ -372,6 +372,18 @@ class InstrumentDetailView extends Component {
                 errors: []
             }
         })
+    }
+
+    async onSupplementDownloadClicked(e) {
+        let cal_pk = e.target.value;
+        instrumentServices.getCalEventFile(cal_pk)
+            .then((result) => {
+                if (result.success) {
+                    nameAndDownloadFile(result.url, `calibration-certificate`);
+                } else {
+                    console.log('no file exists');
+                }
+            })
     }
 
     onModelLinkClicked() {

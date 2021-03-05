@@ -63,5 +63,6 @@ urlpatterns = [
     path('api/add_voltage_reading/<int:lb_cal_pk>/', loadbank_views.add_voltage_reading),
     path('api/cancel_lb_cal/<int:lb_cal_pk>/', loadbank_views.cancel_lb_cal),
     path('api/lb_cal_event_details/<int:lb_cal_pk>/', loadbank_views.lb_cal_details),
+    path('api/calibration_modes/', views.get_calibration_modes),
 
 ]

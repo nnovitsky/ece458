@@ -1,3 +1,7 @@
+CALIBRATION_MODES = [
+    "load_bank"
+]
+
 CR_THRESHOLD = 0.03
 CA_THRESHOLD = 0.05
 CR_AND_CA_ERROR = "Measured current is >3% off and actual current is >5% off. Double check your input values or adjust ppm settings, check and repair or replace load cell, then restart."

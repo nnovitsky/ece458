@@ -117,7 +117,7 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'itemmodelcategory_set')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'itemmodelcategory_set', 'calibrationmode_set')
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
@@ -129,25 +129,34 @@ class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
 
 class ItemModelSearchSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
+    calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
         return {'item_model_categories': obj.model_cats}
 
+    def get_calibration_modes(self, obj):
+        return obj.calibration_modes
+
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
 
 
 class ItemModelReadSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
+    calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
         cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.itemmodelcategory_set.all()]
         return cats
 
+    def get_calibration_modes(self, obj):
+        modes = [{'name': mode.name, 'pk': mode.pk} for mode in obj.calibrationmode_set.all()]
+        return modes
+
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):

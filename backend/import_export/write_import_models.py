@@ -1,14 +1,18 @@
 import csv
 import io
 
-from backend.tables.serializers import ItemModelSerializer
+from backend.tables.serializers import ItemModelSerializer, ItemModelNoCategoriesSerializer
+from backend.tables.models import ItemModelCategory
 from backend.import_export.field_validators import is_blank_row
 
+# TODO: handle load bank cell after "calibration-mode" field decided upon for ItemModels
 # model_keys = ['vendor', 'model_number', 'description', 'comment', 'itemmodelcategory_set',
 #               'load_bank_support', 'calibration_frequency']
 
 model_keys = ['vendor', 'model_number', 'description', 'comment', 'calibration_frequency']
-
+keys_no_category = ['vendor', 'model_number', 'description', 'comment', 'calibration_frequency']
+keys_category = ['vendor', 'model_number', 'description', 'comment', 'itemmodelcategory_set',
+                 'calibration_frequency']
 
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
@@ -19,8 +23,40 @@ LOAD_BANK_INDEX = 5
 CAL_FREQUENCY_INDEX = 6
 
 
+def get_no_category_record(row):
+    if row[CAL_FREQUENCY_INDEX] == 'N/A':
+        cal_freq = 0
+    else:
+        cal_freq = int(row[CAL_FREQUENCY_INDEX])
+
+    model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
+                  row[COMMENT_INDEX], cal_freq]
+    model_record = dict(zip(keys_no_category, model_info))
+
+    return model_record
+
+
+def get_category_record(row):
+    if row[CAL_FREQUENCY_INDEX] == 'N/A':
+        cal_freq = 0
+    else:
+        cal_freq = int(row[CAL_FREQUENCY_INDEX])
+
+    model_category_set = set()
+    for category in row[MODEL_CATEGORIES_INDEX].strip().split(' '):
+        category_pk = ItemModelCategory.objects.filter(name=category)[0]
+        model_category_set.add(category_pk)
+
+    model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
+                  row[COMMENT_INDEX], model_category_set, cal_freq]
+    model_record = dict(zip(keys_category, model_info))
+
+    return model_record
+
+
 def get_model_list(file):
-    model_records = []
+    category_models = []
+    no_category_models = []
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
@@ -29,29 +65,32 @@ def get_model_list(file):
         if is_blank_row(row):
             continue
 
-        if row[CAL_FREQUENCY_INDEX] == 'N/A':
-            cal_freq = 0
+        if len(row[MODEL_CATEGORIES_INDEX].strip()) == 0:
+            no_category_models.append(get_no_category_record(row))
         else:
-            cal_freq = int(row[CAL_FREQUENCY_INDEX])
+            category_models.append(get_category_record(row))
 
-        # TODO: handle load bank cell after "calibration-mode" field decided upon for ItemModels
-        model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
-                      row[COMMENT_INDEX], cal_freq]
-        model_record = dict(zip(model_keys, model_info))
-        model_records.append(model_record)
-
-    return model_records
+    return no_category_models, category_models
 
 
 def handler(verified_file):
+    db_cat_upload = ''
+    db_no_cat_upload = ''
 
-    model_data = get_model_list(verified_file)
-    db_model_upload = ItemModelSerializer(data=model_data, many=True)
+    no_category_models, category_models = get_model_list(verified_file)
+    if len(no_category_models) > 0:
+        db_no_cat_upload = ItemModelNoCategoriesSerializer(data=no_category_models, many=True)
+        if not db_no_cat_upload.is_valid():
+            return False, None, "Error writing non-category models to db."
 
-    if not db_model_upload.is_valid():
-        return False, None, "Error writing models to db."
+    if len(category_models) > 0:
+        db_cat_upload = ItemModelSerializer(data=category_models, many=True)
+        print("db_cat_upload: ", db_cat_upload)
+        if not db_cat_upload.is_valid():
+            return False, None, "Error writing category models to db."
 
-    upload_results = db_model_upload.save()
+    if db_no_cat_upload: no_cat_upload_results = db_no_cat_upload.save()
+    if db_cat_upload: cat_upload_results = db_cat_upload.save()
 
-    upload_summary = f"Successfully wrote {len(model_data)} model(s) to the database."
-    return True, upload_results, upload_summary
+    upload_summary = f"Successfully wrote {len(no_category_models) + len(category_models)} model(s) to the database."
+    return True, category_models + no_category_models, upload_summary

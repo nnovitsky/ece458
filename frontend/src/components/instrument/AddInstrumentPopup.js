@@ -125,7 +125,7 @@ class AddInstrumentPopup extends Component {
             <Form className="popup">
                 {vendorModel}
                 <Form.Group>
-                    <Form.Label>Serial Number</Form.Label>
+                    <Form.Label >Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.

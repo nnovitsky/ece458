@@ -107,13 +107,6 @@ class AddModelPopup extends Component {
         return (
             <Form className="popup">
                 <Form.Label className="required-field">Vendor</Form.Label>
-                {/* <Select
-                    value={this.state.newModel.vendor}
-                    options={this.state.vendorsArr}
-                    isSearchable={true}
-                    onChange={this.onVendorInput}
-                    defaultInputValue={''}
-                /> */}
                 <VendorPicklist
                     selectedVendor={this.state.newModel.vendor}
                     onChange={this.onVendorInput}

@@ -33,7 +33,6 @@ const modelServices = new ModelServices();
 class AddModelPopup extends Component {
     constructor(props) {
         super(props);
-        console.log('made it to add model popup')
 
         //for whatever reason the select compne
         if (props.currentModel != null) {
@@ -79,7 +78,6 @@ class AddModelPopup extends Component {
     }
 
     render() {
-        console.log(this.state.newModel);
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Model";
@@ -100,7 +98,6 @@ class AddModelPopup extends Component {
     }
 
     makeBody() {
-        console.log(this.state.newModel)
         let categoryPicklist = (
             <ModelCategoriesPicklist
                 selectedCategories={this.state.newModel.categories}
@@ -109,23 +106,17 @@ class AddModelPopup extends Component {
         )
         return (
             <Form className="popup">
-                <Form.Label>Vendor</Form.Label>
-                {/* <Select
-                    value={this.state.newModel.vendor}
-                    options={this.state.vendorsArr}
-                    isSearchable={true}
-                    onChange={this.onVendorInput}
-                    defaultInputValue={''}
-                /> */}
+                <Form.Label className="required-field">Vendor</Form.Label>
                 <VendorPicklist
                     selectedVendor={this.state.newModel.vendor}
                     onChange={this.onVendorInput}
+                    isCreatable={true}
                 />
-                <Form.Label>Model Number</Form.Label>
+                <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
                 
-                <Form.Label>Description</Form.Label>
+                <Form.Label className="required-field">Description</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
                 <Form.Label>Comments</Form.Label>

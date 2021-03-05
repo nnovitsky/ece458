@@ -158,3 +158,14 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'backend.hpt.utils.my_jwt_response_handler'
 }
+
+# Media (File and Image Uploads)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# 32MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 33554432
+
+# Max size of request = max file size + 2.5MB (Django default value)
+DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE + 2621440

@@ -186,7 +186,7 @@ class ModelTablePage extends Component {
     onDetailClicked(e) {
         this.setState({
             ...this.state,
-            redirect: `/models/${e.target.value}`
+            redirect: `/models-detail/${e.target.value}`
         })
     }
 
@@ -235,7 +235,7 @@ class ModelTablePage extends Component {
                     this.onAddModelClosed();
                     this.setState({
                         ...this.state,
-                        redirect: `/models/${res.data.pk}`
+                        redirect: `/models-detail/${res.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
@@ -302,7 +302,6 @@ class ModelTablePage extends Component {
             description: params.filters.description,
             model_categories: modelCats.join(","),
         }
-        console.log(filters)
         modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,

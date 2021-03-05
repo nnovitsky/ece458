@@ -23,7 +23,6 @@ const keyField = 'pk';
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
-    console.log(props.data)
     return (
         <DataTable
             data={props.data}
@@ -69,7 +68,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'model-number-column',
                 formatter: (cell, row) => {
                     return (
-                        <span><a href={`/models/${row.pk}`} className="green-link">{cell}</a></span>
+                        <span><a href={`/models-detail/${row.pk}`} className="green-link">{cell}</a></span>
                     )
                 }
             },

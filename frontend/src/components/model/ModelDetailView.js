@@ -198,7 +198,7 @@ class ModelDetailView extends React.Component {
 
     onMoreClicked(e) {
         this.setState({
-            redirect: `/instruments/${e.target.value}`
+            redirect: `/instruments-detail/${e.target.value}`
         })
     }
 
@@ -352,6 +352,13 @@ class ModelDetailView extends React.Component {
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
                                 currentPageNum: result.data.currentpage
+                            }
+                        })
+                    } else {
+                        this.setState({
+                            pagination: {
+                                ...this.state.pagination,
+                                currentPageNum: 1
                             }
                         })
                     }

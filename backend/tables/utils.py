@@ -10,6 +10,7 @@ from django.urls import reverse
 from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
+from backend.config.load_bank_config import CALIBRATION_MODES
 
 
 def validate_user(request, create=False):
@@ -58,6 +59,7 @@ def annotate_models(queryset):
         model_number_lower=Func(F('model_number'), function='LOWER')).annotate(
         description_lower=Func(F('description'), function='LOWER'))
     queryset = queryset.annotate(model_cats=ArrayAgg("itemmodelcategory__name", distinct=True))
+    queryset = queryset.annotate(calibration_modes=ArrayAgg("calibrationmode__name", distinct=True))
     return queryset
 
 
@@ -185,3 +187,18 @@ def check_instrument_is_calibrated(instrument_asset_tag):
             return "Instrument out of calibration.", None, None
     else:
         return "Instrument not calibrated.", None, None
+
+
+def get_calibration_modes(request):
+    mode_pks = []
+    if 'calibration_modes' in request.data:
+        for mode_name in request.data['calibration_modes']:
+            try:
+                mode = CalibrationMode.objects.get(name=mode_name)
+            except CalibrationMode.DoesNotExist:
+                if mode_name not in CALIBRATION_MODES:
+                    return None, {"mode_error": ["Invalid calibration mode."]}
+                mode = CalibrationMode(name=mode_name)
+                mode.save()
+            mode_pks.append(mode.pk)
+    return mode_pks, None

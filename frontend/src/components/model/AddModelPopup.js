@@ -33,7 +33,6 @@ const modelServices = new ModelServices();
 class AddModelPopup extends Component {
     constructor(props) {
         super(props);
-        console.log('made it to add model popup')
 
         //for whatever reason the select compne
         if (props.currentModel != null) {
@@ -111,6 +110,7 @@ class AddModelPopup extends Component {
                 <VendorPicklist
                     selectedVendor={this.state.newModel.vendor}
                     onChange={this.onVendorInput}
+                    isCreatable={true}
                 />
                 <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />

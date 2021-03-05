@@ -118,6 +118,7 @@ class App extends Component {
   handle_logout = () => {
     localStorage.removeItem('token');
     this.emptyLocalStorage();
+    this.emptySessionStorage();
     this.setState({
       logged_in: false,
       username: '',
@@ -128,6 +129,10 @@ class App extends Component {
 
   emptyLocalStorage = () => {
     localStorage.removeItem('oauth');
+  }
+
+  emptySessionStorage = () => {
+    window.sessionStorage.clear();
   }
 
 

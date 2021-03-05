@@ -161,12 +161,16 @@ export default class InstrumentServices {
 
     // Error handling in place for bad input
     // handled modified/expired tokens
-    async addInstrument(model_pk, serial_number, comment, categories) {
+    async addInstrument(model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment,
-            instrumentcategory_set: categories.map(el => el.pk)
+            instrumentcategory_set: categories.map(el => el.pk),
+        }
+
+        if (asset_tag !== '') {
+            data.asset_tag = asset_tag;
         }
 
         let result = {
@@ -210,12 +214,13 @@ export default class InstrumentServices {
     }
 
     // handling field errors and modification/expiration of tokens
-    async editInstrument(instrumentPk, model_pk, serial_number, comment, categories) {
+    async editInstrument(instrumentPk, model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
             serial_number: serial_number,
             comment: comment,
-            instrumentcategory_set: categories.map(el => el.pk)
+            instrumentcategory_set: categories.map(el => el.pk),
+            asset_tag: asset_tag
         }
 
         let result = {

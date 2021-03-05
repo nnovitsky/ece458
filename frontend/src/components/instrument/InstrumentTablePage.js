@@ -258,7 +258,7 @@ class InstrumentTablePage extends Component {
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
     }
@@ -331,7 +331,7 @@ class InstrumentTablePage extends Component {
     }
 
     async onAddInstrumentSubmit(newInstrument) {
-        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories).then(
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories, newInstrument.asset_tag).then(
             (result) => {
                 if (result.success) {
                     this.onAddInstrumentClosed();

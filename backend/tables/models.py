@@ -47,7 +47,6 @@ class Instrument(models.Model):
     """
     def default_asset_tag():
         used_asset_tags = Instrument.objects.values_list('asset_tag', flat=True)
-        print("used_asset_tags: ", used_asset_tags)
         asset_tag = ASSET_TAG_MIN_VALUE
         while asset_tag in used_asset_tags:
             asset_tag += 1
@@ -58,7 +57,7 @@ class Instrument(models.Model):
     asset_tag = models.IntegerField(unique=True, default=default_asset_tag,
                                     validators=[MinValueValidator(ASSET_TAG_MIN_VALUE),
                                                 MaxValueValidator(ASSET_TAG_MAX_VALUE)])
-    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH, blank=True)
+    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH, blank=True, null=True, default=None)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
 
     def __str__(self):

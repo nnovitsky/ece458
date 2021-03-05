@@ -31,7 +31,6 @@ const InstrumentFilterBar = (props) => {
         <Container className="filter-column">
             <Col>
                 <h3>Filters</h3>
-
                 <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={(e) => dispatch({ type: 'vendor', payload: e.target.value })} value={filterState.vendor} />
 
                 <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={(e) => dispatch({ type: 'model_number', payload: e.target.value })} value={filterState.model_number} />

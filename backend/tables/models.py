@@ -61,7 +61,7 @@ class Instrument(models.Model):
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
 
     def __str__(self):
-        return str(self.item_model) + " " + self.serial_number
+        return str(self.item_model) + " " + str(self.asset_tag)
 
     class Meta:
         unique_together = (("item_model", "serial_number"),)
@@ -155,3 +155,12 @@ class LoadVoltage(models.Model):
 
     def __str__(self):
         return str(self.lb_cal) + ' Voltage Test'
+
+
+class CalibrationMode(models.Model):
+
+    name = models.CharField(max_length=30, unique=True)
+    models = models.ManyToManyField(ItemModel, blank=True)
+
+    def __str__(self):
+        return self.name

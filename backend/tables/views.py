@@ -9,21 +9,22 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user
+from backend.tables.utils import get_page_response, validate_user, get_calibration_modes
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.config.admin_config import ADMIN_USERNAME
+from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
+
 
 class OauthConsume(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        print("hello")
         code = request.GET['code']
         try:
             auth_token = get_token(code)
@@ -230,6 +231,11 @@ def models_list(request):
         if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        mode_pks, error = get_calibration_modes(request)
+        if error:
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+        request.data['calibrationmode_set'] = mode_pks
+
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -261,6 +267,11 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
+        mode_pks, error = get_calibration_modes(request)
+        if error:
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+        request.data['calibrationmode_set'] = mode_pks
+
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -277,6 +288,11 @@ def models_detail(request, pk):
         else:
             model.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_calibration_modes(request):
+    return Response({"modes": CALIBRATION_MODES}, status=status.HTTP_200_OK)
 
 
 # IMPORT/EXPORT

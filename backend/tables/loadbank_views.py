@@ -25,6 +25,9 @@ def start_loadbank_cal(request):
         serializer = CalibrationEventWriteSerializer(data=request.data)
 
     if serializer.is_valid():
+        cal_modes = serializer.validated_data['instrument'].item_model.calibrationmode_set.values_list("name", flat=True)
+        if "load_bank" not in cal_modes:
+            return Response({"calibration_event_error": ["Model is not eligible for loadbank calibration."]}, status=status.HTTP_400_BAD_REQUEST)
         cal_event = serializer.save()
         if not prev_cal_event:
             lb_cal = LoadBankCalibration(cal_event=cal_event)

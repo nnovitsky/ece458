@@ -67,6 +67,12 @@ class Instrument(models.Model):
         unique_together = (("item_model", "serial_number"),)
 
 
+class CalibrationEventFile(models.IntegerChoices):
+    NONE = 0, 'None'
+    ARTIFACT = 1, 'Artifact'
+    LOAD_BANK = 2, 'Load Bank'
+
+
 class CalibrationEvent(models.Model):
     """
     Calibration event for specific instrument.
@@ -75,6 +81,7 @@ class CalibrationEvent(models.Model):
     date = models.DateField(default=datetime.date.today)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
+    file_type = models.IntegerField(default=CalibrationEventFile.NONE, choices=CalibrationEventFile.choices)
     file = models.FileField(upload_to='cal_event_artifacts', null=True)
 
     def __str__(self):

@@ -110,14 +110,16 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalHistoryTable = () => {
+        console.log(this.state.instrument_info);
+        let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         let calButtonRow = (
             <div className="table-button-row">
-                <Button hidden={this.state.instrument_info.calibration_frequency === 0} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )
         return (
-            <div className="cal-history-table">
+            <div className="cal-history-table" hidden={!isCalibratable}>
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}

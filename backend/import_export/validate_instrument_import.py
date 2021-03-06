@@ -8,7 +8,9 @@ column_types = [
     'Vendor',
     'Model-Number',
     'Serial-Number',
+    'Asset-Tag-Number',
     'Comment',
+    'Instrument-Categories',
     'Calibration-Date',
     'Calibration-Comment',
 ]
@@ -19,6 +21,7 @@ SERIAL_NUM_INDEX = 2
 
 sheet_models = []
 sheet_instruments = []
+asset_tags = []
 
 
 def validate_row(current_row):
@@ -42,8 +45,14 @@ def validate_row(current_row):
             valid_cell, info = field_validators.is_valid_model_num(item)
         elif column_type == 'Serial-Number':
             valid_cell, info = field_validators.is_valid_serial_num(item)
+        elif column_type == 'Asset-Tag-Number':
+            valid_cell, info = field_validators.is_valid_asset_tag(item)
+            if len(item.strip()) > 0:
+                asset_tags.append(item)
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
+        elif column_type == 'Instrument-Categories':
+
         elif column_type == 'Calibration-Date':
             try:
                 this_model = ItemModel.objects.filter(
@@ -87,6 +96,12 @@ def contains_duplicates():
     return False, "No Duplicates!"
 
 
+def validate_asset_tags():
+    if len(asset_tags) != len(set(asset_tags)):
+        return False, "Duplicate asset tags assigned within import."
+
+
+
 def handler(uploaded_file):
     sheet_models.clear()
     sheet_instruments.clear()
@@ -115,4 +130,5 @@ def handler(uploaded_file):
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
 
+    valid_asset_tags, asset_tag_info = validate_asset_tags()
     return True, "Correct formatting. "

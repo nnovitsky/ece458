@@ -73,14 +73,14 @@ class ModelDetailView extends React.Component {
     render(
         adminButtons = <div>
             <Button onClick={this.onEditClicked}>Edit Model</Button>
-            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+            <Button onClick={this.onDeleteClicked} variant="danger">Delete Model</Button>
         </div>
     ) {
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
 
         if (this.state.redirect != null) {
-            return <Redirect to={this.state.redirect} />
+            return <Redirect push to={this.state.redirect} />
         }
 
         let comment = (this.state.model_info.comment === '' ? 'No Comment Entered' : this.state.model_info.comment);

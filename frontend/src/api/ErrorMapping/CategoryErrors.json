@@ -1,0 +1,10 @@
+{
+  "add_edit_categories": {
+    "name": {
+      "This field may not be blank.": "Please enter a category name"
+    },
+    "non_field_errors": {
+      "Category name cannot have spaces.": "Please enter a category name without spaces"
+    }
+  }
+}

@@ -89,7 +89,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 title: (cell, row) => `Delete '${row.category}'`,
                 formatter: (cell, row) => {
                     return (
-                        <Button onClick={onCategoryDelete} value={row.pk} name={row.name} className="data-table-button">Delete</Button>
+                        <Button onClick={onCategoryDelete} value={row.pk} name={row.name} className="data-table-button red">Delete</Button>
                     )
                 }
             }

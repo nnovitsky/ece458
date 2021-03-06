@@ -30,7 +30,7 @@ const calHistoryTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
-            noResults='No Instrument Results'
+            noResults='No Calibration History'
             inlineElements={props.inlineElements}
         />
 

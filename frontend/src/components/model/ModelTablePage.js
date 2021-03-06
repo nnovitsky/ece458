@@ -13,10 +13,8 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
-import CategoryServices from '../../api/categoryServices';
 
 const modelServices = new ModelServices();
-const categoryServices = new CategoryServices();
 
 class ModelTablePage extends Component {
     constructor(props) {
@@ -52,11 +50,13 @@ class ModelTablePage extends Component {
 
         }
 
+        // the pagination and filters for this page use session storage
+        this.initializeModelSessionStorage();
+
         //binding
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
@@ -66,18 +66,40 @@ class ModelTablePage extends Component {
         this.onTableChange = this.onTableChange.bind(this);
     }
 
-    async componentDidMount() {
-        this.setState({
-            ...this.state,
-            redirect: null
+    initializeModelSessionStorage() {
+        if (!window.sessionStorage.getItem("modelPageSearchParams")) {
+            let modelPageSearchParams = {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: '',
+                    model_categories: []
+                },
+                sortingIndicator: '',
+                desiredPage: 1,
+                showAll: false
+            }
+            window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelPageSearchParams));
         }
-        )
-        this.updateModelTable();
+    }
+
+    async componentDidMount() {
+        let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                sortingIndicator: searchParams.sortingIndicator,
+                desiredPage: searchParams.desiredPage,
+                showAll: searchParams.showAll
+            }
+        }, () => this.updateModelTable());
     }
 
     render() {
         if (this.state.redirect !== null) {
-            return (<Redirect to={this.state.redirect} />)
+            return (<Redirect push to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">
@@ -96,10 +118,8 @@ class ModelTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <ModelFilterBar
-                                onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.onRemoveFiltersClicked}
-                                onFilterChange={this.onFilterChange}
-                                currentFilter={this.state.modelSearchParams.filters}
+                                onSearch={this.updateModelTable}
+                                onRemoveFilters={this.updateModelTable}
                             />
 
                         </div>
@@ -187,15 +207,6 @@ class ModelTablePage extends Component {
         this.setState({
             ...this.state,
             redirect: `/models-detail/${e.target.value}`
-        })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                filters: newFilter,
-            }
         })
     }
 
@@ -291,18 +302,17 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         this.setState({
             isLoading: true,
-        })
+        });
 
-        let params = this.state.modelSearchParams;
-        let modelCats = params.filters.model_categories.map(el => el.pk);
+        this.updateSessionStorage();
 
-        let filters = {
-            model_number: params.filters.model_number,
-            vendor: params.filters.vendor,
-            description: params.filters.description,
-            model_categories: modelCats.join(","),
-        }
-        modelServices.getModels(filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
+        let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        let filters = searchParams.filters;
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+
+        modelServices.getModels(filters, searchParams.sortingIndicator, searchParams.showAll, searchParams.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,
             })
@@ -315,6 +325,17 @@ class ModelTablePage extends Component {
 
         }
         )
+    }
+
+    updateSessionStorage() {
+        let modelSearchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        modelSearchParams = JSON.parse(modelSearchParams);
+
+        modelSearchParams.sortingIndicator = this.state.modelSearchParams.sortingIndicator;
+        modelSearchParams.desiredPage = this.state.modelSearchParams.desiredPage;
+        modelSearchParams.showAll = this.state.modelSearchParams.showAll;
+
+        window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelSearchParams));
     }
 
     // method called with the data from a successful api hit for getting the model table,

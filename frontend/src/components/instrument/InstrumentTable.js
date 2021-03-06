@@ -8,6 +8,7 @@ import ExpiredIcon from "../../assets/CalibrationIcons/Expired.png";
 import WarningIcon from "../../assets/CalibrationIcons/Warning.png";
 import GoodIcon from "../../assets/CalibrationIcons/Good.png";
 import NonCalibratableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
+import { Link } from 'react-router-dom';
 
 // props
 // data: json data object to be displayed
@@ -110,12 +111,12 @@ const getLatestCalText = (data) => {
                     headerClasses: 'it-num-column'
                 },
                 {
-                    dataField: 'asset_number',
+                    dataField: 'asset_tag',
                     text: 'Asset #',
                     sort: true,
-                    title: (cell) => `Asset Number: ${cell}. Click to see more`,
+                    title: (cell) => `Asset Tag Number: ${cell}. Click to see more`,
                     formatter: (cell, row) => {
-                        return <span><a className="green-link" href={`/instruments-detail/${row.pk}`}>ASSET</a></span>
+                        return <Link to={`/instruments-detail/${row.pk}`} className="green-link">{cell}</Link>
                     },
                     headerClasses: 'it-asset-column'
                 },
@@ -181,7 +182,7 @@ const getLatestCalText = (data) => {
                         if (row.calibration_event.length === 0) {
                             return <span>{display}</span>
                         } else {
-                            return <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>{display}</Button>
+                            return <Button onClick={onCertificateRequested} value={row.pk} id={row.asset_tag} className="data-table-button" hidden={row.calibration_event.length === 0}>{display}</Button>
                         }
 
                     },

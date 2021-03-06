@@ -40,6 +40,12 @@ a.green-link:hover {
     
 }
 
+/* add this class to any form labels of required fields */
+.required-field:after {
+    content:" *";
+    color: rgb(238, 68, 68);
+  }
+
 /* apply this css to any logo columns that will have buttons
 add 'button-col' to the classname for the div acting as the column
 */
@@ -124,10 +130,20 @@ form.popup .form-control {
     margin: 0px;
 }
 
+form.popup input[type=file]  {
+    margin: 0px;
+    padding: 5px 0px 5px 0px;
+}
+
 form.popup input[type=text] {
     width: 100%;
     margin: 0px;
 }
+
+form.popup .form-group {
+    margin-bottom: 0px;
+}
+
 /* The Generic popup has alerts, this is where they are formatted */
 
 .popup-alert{

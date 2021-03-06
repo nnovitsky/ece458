@@ -3,8 +3,10 @@ import Form from "react-bootstrap/Form";
 import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
+import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
 import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
+import VendorPicklist from '../generic/picklist/VendorPicklist';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -29,9 +31,6 @@ class AddInstrumentPopup extends Component {
 
     constructor(props) {
         super(props);
-
-
-
         //for whatever reason the select compne
         if (props.currentInstrument !== null) {
             this.state = {
@@ -42,12 +41,11 @@ class AddInstrumentPopup extends Component {
                         label: props.currentInstrument.model_number,
                         number: props.currentInstrument.model_pk
                     },
-                    vendor: {
-                        label: props.currentInstrument.vendor,
-                        value: props.currentInstrument.vendor
-                    },
+                    vendor: props.currentInstrument.vendor,
                     serial_number: props.currentInstrument.serial_number,
                     comment: props.currentInstrument.comment,
+                    instrument_categories: props.currentInstrument.instrument_categories,
+                    asset_tag: props.currentInstrument.asset_tag
                 },
                 vendorsArr: null,
                 modelsFromVendorArr: []
@@ -61,14 +59,12 @@ class AddInstrumentPopup extends Component {
                         label: '',
                         number: ''
                     },
-                    vendor: {
-                        label: '',
-                        value: ''
-                    },
+                    vendor: '',
                     serial_number: '',
                     comment: '',
+                    instrument_categories: [],
+                    asset_tag: ''
                 },
-                vendorsArr: null,
                 modelsFromVendorArr: []
             }
         }
@@ -76,19 +72,14 @@ class AddInstrumentPopup extends Component {
         this.onModelInput = this.onModelInput.bind(this);
         this.onSerialChange = this.onSerialChange.bind(this);
         this.onCommentChange = this.onCommentChange.bind(this);
+        this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onAssetChange = this.onAssetChange.bind(this);
         this.onClose = this.onClose.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
     }
 
-    async componentDidMount() {
-        await this.getVendorsArr();
-    }
-
     render() {
-        if (this.state.vendorsArr === null) {
-            this.getVendorsArr();
-        }
         let body = this.makeBody();
 
         let headerText = (this.state.isEdit) ? "Edit Instrument" : "Create Instrument";
@@ -111,15 +102,12 @@ class AddInstrumentPopup extends Component {
     makeBody = () => {
         let vendorModel = (this.state.isEdit) ? null : (
             <Form.Group>
-                <Form.Label>Vendor</Form.Label>
-                <Select
-                    value={this.state.newInstrument.vendor}
-                    options={this.state.vendorsArr}
+                <Form.Label className="required-field">Vendor</Form.Label>
+                <VendorPicklist
+                    selectedVendor={this.state.newInstrument.vendor}
                     onChange={this.onVendorInput}
-                    isSearchable
-
                 />
-                <Form.Label>Model</Form.Label>
+                <Form.Label className="required-field">Model</Form.Label>
                 <Select
                     value={this.state.newInstrument.model}
                     options={this.state.modelsFromVendorArr}
@@ -137,37 +125,32 @@ class AddInstrumentPopup extends Component {
             <Form className="popup">
                 {vendorModel}
                 <Form.Group>
-                    <Form.Label>Serial Number</Form.Label>
+                    <Form.Label >Asset Number</Form.Label>
+                    <Form.Control type="text" placeholder="Enter Asset Number" value={this.state.newInstrument.asset_tag} onChange={this.onAssetChange} />
+                    <Form.Text muted>
+                        Must be greater than or equal to 100000. If left blank, this will be autopopulated
+  </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label >Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter Serial" value={this.state.newInstrument.serial_number} onChange={this.onSerialChange} />
                     <Form.Text muted>
                         The serial number must be unique to the model.
-  </Form.Text>
+                    </Form.Text>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Instrument Categories</Form.Label>
+                    <InstrumentCategoryPicklist
+                        selectedCategories={this.state.newInstrument.instrument_categories}
+                        onChange={this.onCategoryChange}
+                    />
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Comments</Form.Label>
                     <Form.Control as="textarea" rows={3} value={this.state.newInstrument.comment} onChange={this.onCommentChange} />
                 </Form.Group>
-
-
-
             </Form>
         )
-    }
-
-
-    async getVendorsArr() {
-        modelServices.getVendors().then((result) => {
-            if (result.success) {
-                let formatted = result.data.vendors.map(opt => ({ label: opt, value: opt }));
-                this.setState({
-                    vendorsArr: formatted
-                })
-            } else {
-                this.setState({
-                    vendorsArr: []
-                })
-            }
-        })
     }
 
     //called by the filter field
@@ -184,14 +167,11 @@ class AddInstrumentPopup extends Component {
         })
     }
 
-    async onVendorInput(e) {
+    async onVendorInput(newVendor) {
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,
-                vendor: {
-                    label: e.value,
-                    value: e.label
-                },
+                vendor: newVendor,
                 model: {
                     label: '',
                     value: ''
@@ -199,7 +179,7 @@ class AddInstrumentPopup extends Component {
                 model_pk: ''
             }
         })
-        await modelServices.getModelByVendor(e.value).then((result) => {
+        await modelServices.getModelByVendor(newVendor).then((result) => {
             if (result.success) {
                 let formatted = result.data.map(opt => ({ label: opt.model_number, value: opt.pk }));
                 this.setState({
@@ -214,11 +194,29 @@ class AddInstrumentPopup extends Component {
         })
     }
 
+    onCategoryChange = (categoryList) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                instrument_categories: categoryList
+            }
+        })
+    }
+
     onSerialChange = (e) => {
         this.setState({
             newInstrument: {
                 ...this.state.newInstrument,
                 serial_number: e.target.value
+            }
+        })
+    }
+
+    onAssetChange = (e) => {
+        this.setState({
+            newInstrument: {
+                ...this.state.newInstrument,
+                asset_tag: e.target.value
             }
         })
     }
@@ -245,7 +243,9 @@ class AddInstrumentPopup extends Component {
                 model_pk: this.state.newInstrument.model_pk,
                 vendor: this.state.newInstrument.vendor.value,
                 comment: this.state.newInstrument.comment,
-                serial_number: this.state.newInstrument.serial_number
+                serial_number: this.state.newInstrument.serial_number,
+                instrument_categories: this.state.newInstrument.instrument_categories,
+                asset_tag: this.state.newInstrument.asset_tag
 
             }
             this.props.onSubmit(returnedInstrument);

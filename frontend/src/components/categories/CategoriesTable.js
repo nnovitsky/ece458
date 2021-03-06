@@ -56,7 +56,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 headerClasses: 'num-column'
             },
             {
-                dataField: 'category',
+                dataField: 'name',
                 text: 'Category',
                 sort: false,
                 title: (cell) => `${cell}`,
@@ -77,7 +77,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 title: (cell, row) => `Rename '${row.category}'`,
                 formatter: (cell, row) => {
                     return (
-                        <Button onClick={onCategoryEdit} value={row.pk} name={row.category} className="data-table-button">Rename</Button>
+                        <Button onClick={onCategoryEdit} value={row.pk} name={row.name} className="data-table-button">Rename</Button>
                     )
                 }
             },
@@ -89,7 +89,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 title: (cell, row) => `Delete '${row.category}'`,
                 formatter: (cell, row) => {
                     return (
-                        <Button onClick={onCategoryDelete} value={row.pk} name={row.category} className="data-table-button">Delete</Button>
+                        <Button onClick={onCategoryDelete} value={row.pk} name={row.name} className="data-table-button red">Delete</Button>
                     )
                 }
             }

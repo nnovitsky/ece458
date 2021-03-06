@@ -4,6 +4,7 @@
     white-space:nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: .1rem .1rem .1rem .1rem !important;
 }
 
 /* formats the pagination show all/total results components */
@@ -64,6 +65,15 @@
     border-color: transparent !important;
     background-color: transparent !important;
     color: rgb(57, 127, 60) !important;
+    text-decoration: underline !important;
+}
+
+.data-table-button.red {
+    color: red !important;
+}
+
+.data-table-button:hover.red {
+    color: red !important;
     text-decoration: underline !important;
 }
 

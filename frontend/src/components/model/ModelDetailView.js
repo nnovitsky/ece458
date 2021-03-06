@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import EditModelPopup from './AddModelPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Table from 'react-bootstrap/Table';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
 import '../generic/General.css';
-import logo from '../../assets/HPT_logo_crop.png';
 import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
@@ -36,6 +33,7 @@ class ModelDetailView extends React.Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
+                categories: []
             },
             instruments: [],
             editPopup: {
@@ -75,14 +73,14 @@ class ModelDetailView extends React.Component {
     render(
         adminButtons = <div>
             <Button onClick={this.onEditClicked}>Edit Model</Button>
-            <Button onClick={this.onDeleteClicked}>Delete Model</Button>
+            <Button onClick={this.onDeleteClicked} variant="danger">Delete Model</Button>
         </div>
     ) {
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
 
         if (this.state.redirect != null) {
-            return <Redirect to={this.state.redirect} />
+            return <Redirect push to={this.state.redirect} />
         }
 
         let comment = (this.state.model_info.comment === '' ? 'No Comment Entered' : this.state.model_info.comment);
@@ -178,13 +176,20 @@ class ModelDetailView extends React.Component {
                         <td><strong>Description</strong></td>
                         <td>{modelInfo.description}</td>
                     </tr>
-                    <tr>
-                        <td><strong>Comment</strong></td>
-                        <td>{modelInfo.comment}</td>
-                    </tr>
+
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{modelInfo.calibration_frequency}</td>
+                    </tr>
+                    <tr>
+                        <td className="table-view-bold-td"><strong>Model Categories</strong></td>
+
+                        <td>
+                            <div className="detail-view-categories">
+                                {modelInfo.categories.map(el => el.name).join(', ')}
+                            </div>
+                        </td>
+
                     </tr>
                 </tbody>
             </Table>
@@ -193,7 +198,7 @@ class ModelDetailView extends React.Component {
 
     onMoreClicked(e) {
         this.setState({
-            redirect: `/instruments/${e.target.value}`
+            redirect: `/instruments-detail/${e.target.value}`
         })
     }
 
@@ -207,7 +212,8 @@ class ModelDetailView extends React.Component {
     }
 
     async onEditSubmit(editedModel) {
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency).then(result => {
+        console.log(editedModel);
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {
@@ -307,6 +313,7 @@ class ModelDetailView extends React.Component {
                         this.getInstruments();
                     })
                 }
+                return;
             default:
                 return;
         }
@@ -345,6 +352,13 @@ class ModelDetailView extends React.Component {
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
                                 currentPageNum: result.data.currentpage
+                            }
+                        })
+                    } else {
+                        this.setState({
+                            pagination: {
+                                ...this.state.pagination,
+                                currentPageNum: 1
                             }
                         })
                     }

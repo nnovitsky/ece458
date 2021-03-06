@@ -2,6 +2,7 @@ from rest_framework import serializers
 from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+from django.forms.fields import FileField
 import datetime
 from backend.config.load_bank_config import *
 
@@ -116,7 +117,7 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'itemmodelcategory_set')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'itemmodelcategory_set', 'calibrationmode_set')
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
@@ -128,25 +129,34 @@ class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
 
 class ItemModelSearchSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
+    calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
         return {'item_model_categories': obj.model_cats}
 
+    def get_calibration_modes(self, obj):
+        return obj.calibration_modes
+
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
 
 
 class ItemModelReadSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
+    calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
         cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.itemmodelcategory_set.all()]
         return cats
 
+    def get_calibration_modes(self, obj):
+        modes = [{'name': mode.name, 'pk': mode.pk} for mode in obj.calibrationmode_set.all()]
+        return modes
+
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
@@ -187,7 +197,8 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_event',
+                  'calibration_expiration', 'categories')
 
 
 class InstrumentSearchSerializer(serializers.ModelSerializer):
@@ -218,7 +229,8 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_event', 'calibration_expiration', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_event',
+                  'calibration_expiration', 'categories')
 
 
 class DetailInstrumentReadSerializer(serializers.ModelSerializer):
@@ -252,7 +264,8 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'calibration_expiration', 'calibration_events', 'categories')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_expiration',
+                  'calibration_events', 'categories')
 
 
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
@@ -261,14 +274,14 @@ class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment')
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):
     # use when writing instrument with serializer
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'serial_number', 'comment', 'instrumentcategory_set')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'instrumentcategory_set')
 
 
 class CalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -278,7 +291,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -287,14 +300,16 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
+    file = FileField(allow_empty_file=True)
+
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():
@@ -302,6 +317,13 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         item_model = data['instrument'].item_model
         if item_model.calibration_frequency <= 0:
             raise serializers.ValidationError("Non-calibratable instrument.")
+
+        if 'file' in data and data['file'] is not None:
+            valid_file_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            if data['file'].content_type not in valid_file_types:
+                raise serializers.ValidationError("Illegal file type.")
+
         return data
 
 
@@ -353,7 +375,31 @@ class LBCalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LoadBankCalibration
-        fields = ('pk', 'cal_event', 'voltmeter', 'shunt_meter', 'visual_inspection', 'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+        fields = ('pk', 'cal_event', 'voltmeter_vendor', 'voltmeter_model_num', 'voltmeter_asset_tag',
+                  'shunt_meter_vendor', 'shunt_meter_model_num', 'shunt_meter_asset_tag', 'visual_inspection',
+                  'auto_cutoff', 'alarm', 'recorded_data', 'printer')
+
+
+class LBCalReadSerializer(serializers.ModelSerializer):
+    current_tests = serializers.SerializerMethodField()
+    voltage_test = serializers.SerializerMethodField()
+    cal_event = CalibrationEventReadSerializer()
+
+    def get_current_tests(self, obj):
+        current_readings = obj.loadcurrent_set.order_by('index')
+        serializer = LoadCurrentReadSerializer(current_readings, many=True)
+        return serializer.data
+
+    def get_voltage_test(self, obj):
+        v_test = obj.loadvoltage
+        serializer = LoadVoltageReadSerializer(v_test)
+        return serializer.data
+
+    class Meta:
+        model = LoadBankCalibration
+        fields = ('pk', 'cal_event', 'voltmeter_vendor', 'voltmeter_model_num', 'voltmeter_asset_tag',
+                  'shunt_meter_vendor', 'shunt_meter_model_num', 'shunt_meter_asset_tag', 'visual_inspection',
+                  'auto_cutoff', 'alarm', 'recorded_data', 'printer', 'current_tests', 'voltage_test')
 
 
 class LoadCurrentWriteSerializer(serializers.ModelSerializer):
@@ -364,19 +410,20 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
 
     def get_cr_error(self, obj):
         if self.initial_data['ideal'] == 0: return None
-        cr = self.initial_data['cr']
-        ca = self.initial_data['ca']
+        cr = float(self.initial_data['cr'])
+        ca = float(self.initial_data['ca'])
+        if ca == 0: raise serializers.ValidationError({"loadbank_error": [C_DIVIDE_BY_ZERO]})
         return (cr-ca)/ca
 
     def get_ca_error(self, obj):
-        ideal = self.initial_data['ideal']
+        ideal = float(self.initial_data['ideal'])
         if ideal == 0: return None
-        ca = self.initial_data['ca']
+        ca = float(self.initial_data['ca'])
         return (ca-ideal)/ideal
 
     def get_cr_ok(self, obj):
         if self.initial_data['ideal'] == 0:
-            return self.initial_data['cr'] == 0
+            return float(self.initial_data['cr']) == 0
         cr_error = self.get_cr_error(obj)
         return abs(cr_error) < CR_THRESHOLD
 
@@ -391,6 +438,12 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
         fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
 
 
+class LoadCurrentReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LoadCurrent
+        fields = ('load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
+
+
 class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     vr_error = serializers.SerializerMethodField()
     va_error = serializers.SerializerMethodField()
@@ -398,13 +451,14 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     va_ok = serializers.SerializerMethodField()
 
     def get_vr_error(self, obj):
-        vr = self.initial_data['vr']
-        va = self.initial_data['va']
+        vr = float(self.initial_data['vr'])
+        va = float(self.initial_data['va'])
+        if va == 0: raise serializers.ValidationError({"loadbank_error": [V_DIVIDE_BY_ZERO]})
         return (vr-va)/va
 
     def get_va_error(self, obj):
-        test = self.initial_data['test_voltage']
-        va = self.initial_data['va']
+        test = float(self.initial_data['test_voltage'])
+        va = float(self.initial_data['va'])
         return (va-test)/test
 
     def get_vr_ok(self, obj):
@@ -418,3 +472,10 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoadVoltage
         fields = ('pk', 'lb_cal', 'vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')
+
+
+class LoadVoltageReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LoadVoltage
+        fields = ('vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')

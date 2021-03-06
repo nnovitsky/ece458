@@ -3,6 +3,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext_lazy as _
 
 from ..config.character_limits import *
 
@@ -45,15 +46,32 @@ class Instrument(models.Model):
     """
     Instance of a model with unique model + serial number pair.
     """
+    def default_asset_tag():
+        used_asset_tags = Instrument.objects.values_list('asset_tag', flat=True)
+        asset_tag = ASSET_TAG_MIN_VALUE
+        while asset_tag in used_asset_tags:
+            asset_tag += 1
+
+        return asset_tag
+
     item_model = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
-    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH)
+    asset_tag = models.IntegerField(unique=True, default=default_asset_tag,
+                                    validators=[MinValueValidator(ASSET_TAG_MIN_VALUE),
+                                                MaxValueValidator(ASSET_TAG_MAX_VALUE)])
+    serial_number = models.CharField(max_length=SERIAL_NUM_MAX_LENGTH, blank=True, null=True, default=None)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
 
     def __str__(self):
-        return str(self.item_model) + " " + self.serial_number
+        return str(self.item_model) + " " + str(self.asset_tag)
 
     class Meta:
         unique_together = (("item_model", "serial_number"),)
+
+
+class CalibrationEventFile(models.TextChoices):
+    NONE = 'None'
+    ARTIFACT = 'Artifact'
+    LOAD_BANK = 'Load Bank'
 
 
 class CalibrationEvent(models.Model):
@@ -64,6 +82,9 @@ class CalibrationEvent(models.Model):
     date = models.DateField(default=datetime.date.today)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_MAX_LENGTH, blank=True)
+    file_type = models.CharField(default=CalibrationEventFile.NONE, choices=CalibrationEventFile.choices,
+                                 max_length=20)
+    file = models.FileField(upload_to='cal_event_artifacts', null=True)
 
     def __str__(self):
         return str(self.instrument) + " " + str(self.date)
@@ -96,8 +117,12 @@ class LoadBankCalibration(models.Model):
     Details on load bank calibration event.
     """
     cal_event = models.ForeignKey(CalibrationEvent, on_delete=models.CASCADE)
-    voltmeter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_voltmeter")
-    shunt_meter = models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_shunt")
+    voltmeter_model_num = models.CharField(blank=True, null=True, max_length=MODEL_NUM_MAX_LENGTH)
+    voltmeter_vendor = models.CharField(blank=True, null=True, max_length=VENDOR_MAX_LENGTH)
+    voltmeter_asset_tag = models.IntegerField(blank=True, null=True) #models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_voltmeter")
+    shunt_meter_model_num = models.CharField(blank=True, null=True, max_length=MODEL_NUM_MAX_LENGTH)
+    shunt_meter_vendor = models.CharField(blank=True, null=True, max_length=VENDOR_MAX_LENGTH)
+    shunt_meter_asset_tag = models.IntegerField(blank=True, null=True) #models.ForeignKey(Instrument, on_delete=models.PROTECT, blank=True, null=True, related_name="lb_shunt")
     visual_inspection = models.BooleanField(blank=True, default=False)
     auto_cutoff = models.BooleanField(blank=True, default=False)
     alarm = models.BooleanField(blank=True, default=False)
@@ -139,3 +164,12 @@ class LoadVoltage(models.Model):
 
     def __str__(self):
         return str(self.lb_cal) + ' Voltage Test'
+
+
+class CalibrationMode(models.Model):
+
+    name = models.CharField(max_length=30, unique=True)
+    models = models.ManyToManyField(ItemModel, blank=True)
+
+    def __str__(self):
+        return self.name

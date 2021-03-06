@@ -14,7 +14,6 @@ import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
 
-let date = '';
 
 const instrumentServices = new InstrumentServices();
 
@@ -24,14 +23,7 @@ class InstrumentTablePage extends Component {
         this.state = {
             redirect: null,   //this will be a url if a redirect is necessary
             tableData: [],     //displayed data
-            url: '',
             instrumentSearchParams: {
-                filters: {
-                    model_number: '',
-                    vendor: '',
-                    serial_number: '',
-                    description: ''
-                },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
@@ -49,30 +41,63 @@ class InstrumentTablePage extends Component {
             isLoading: false,
         }
 
+        // the pagination and filters for this page use session storage
+        this.initializeInstrumentSessionStorage();
+
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
-        this.onDetailViewRequested = this.onDetailViewRequested.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
+
+
     }
+
+    initializeInstrumentSessionStorage() {
+        if (!window.sessionStorage.getItem("instrumentPageSearchParams")) {
+            let instrumentPageSearchParams = {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    serial_number: '',
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: []
+                },
+                sortingIndicator: '',
+                desiredPage: 1,
+                showAll: false
+            }
+            window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentPageSearchParams));
+        }
+    }
+
     //make async calls here
     async componentDidMount() {
-        await this.updateTable();
+        let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        this.setState({
+            instrumentSearchParams: {
+                ...this.state.instrumentSearchParams,
+                sortingIndicator: searchParams.sortingIndicator,
+                desiredPage: searchParams.desiredPage,
+                showAll: searchParams.showAll
+            }
+        }, () => this.updateTable());
     }
+
 
     render() {
         //handle if it's time to redirect
         if (this.state.redirect !== null) {
             return (
-                <Redirect to={this.state.redirect} />
+                <Redirect push to={this.state.redirect} />
             )
         }
         let buttonRow = (
@@ -94,10 +119,8 @@ class InstrumentTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <FilterBar
-                                onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.onRemoveFilters}
-                                currentFilter={this.state.instrumentSearchParams.filters}
-                                onFilterChange={this.onFilterChange}
+                                onSearch={this.updateTable}
+                                onRemoveFilters={this.updateTable}
                             />
                         </div>
                         <div className="col-10">
@@ -134,13 +157,20 @@ class InstrumentTablePage extends Component {
     }
 
     async updateTable() {
-        console.log(`Data being requested: ${Date.now() - date}`);
-        let params = this.state.instrumentSearchParams;
         this.setState({
             isLoading: true,
-        })
-        instrumentServices.getInstruments(params.filters, params.sortingIndicator, params.showAll, params.desiredPage).then((result) => {
-            console.log(`Data back now and being displayed: ${Date.now() - date}`)
+        });
+
+        this.updateSessionStorage();
+
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
+
+        let filters = instrumentSearchParams.filters;
+        filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+
+        instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -159,6 +189,13 @@ class InstrumentTablePage extends Component {
                             currentPageNum: result.data.currentpage
                         }
                     })
+                } else {
+                    this.setState({
+                        pagination: {
+                            ...this.state.pagination,
+                            currentPageNum: 1
+                        }
+                    })
                 }
                 
             } else {
@@ -170,16 +207,27 @@ class InstrumentTablePage extends Component {
         })
     }
 
+    updateSessionStorage() {
+        console.log("updating session storage");
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
+
+        instrumentSearchParams.sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
+        instrumentSearchParams.desiredPage = this.state.instrumentSearchParams.desiredPage;
+        instrumentSearchParams.showAll = this.state.instrumentSearchParams.showAll;
+
+        window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
+    }
+
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
 
     // event handler for the NewModelTable, it handles sorting and pagination
     onTableChange(type, { sortField, sortOrder, page, sizePerPage }) {
-        date = Date.now();
-        console.log(`Table change: ${date}`);
         switch (type) {
             case 'sort':
                 let sortKey = this.getSortingKey(sortField, sortOrder);
@@ -222,41 +270,21 @@ class InstrumentTablePage extends Component {
     }
 
 
-    onDetailViewRequested(e) {
-        this.setState({
-            redirect: `/instruments/${e.target.value}`
-        });
-    }
+    // onDetailViewRequested(e) {
+    //     this.setState({
+    //         ...this.state,
+    //         redirect: `/instruments-detail/${e.target.value}`
+    //     });
+    // }
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: newFilter,
-            }
-        })
-    }
-
-    async onFilteredSearch(newFilter) {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: newFilter,
-                desiredPage: 1
-            }
-        }, () => {
-            this.updateTable();
-        })
     }
 
     async onRemoveFilters() {
@@ -267,7 +295,9 @@ class InstrumentTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     serial_number: '',
-                    description: ''
+                    description: '',
+                    model_categories: [],
+                    instrument_categories: [],
                 }
             }
         }, () => {
@@ -304,17 +334,18 @@ class InstrumentTablePage extends Component {
     }
 
     async onAddInstrumentSubmit(newInstrument) {
-        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment).then(
+        await instrumentServices.addInstrument(newInstrument.model_pk, newInstrument.serial_number, newInstrument.comment, newInstrument.instrument_categories, newInstrument.asset_tag).then(
             (result) => {
                 if (result.success) {
                     this.onAddInstrumentClosed();
                     this.updateTable();
                     this.setState({
+                        ...this.state,
                         addInstrumentPopup: {
                             ...this.state.addInstrumentPopup,
                             errors: []
                         },
-                        redirect: `/instruments/${result.data.pk}`
+                        redirect: `/instruments-detail/${result.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorsFile['add_edit_instrument']);
@@ -341,7 +372,6 @@ class InstrumentTablePage extends Component {
     }
 
     getSortingKey = (sortingField, direction) => {
-        console.log(sortingField, direction)
         let result;
         switch (sortingField) {
             case 'item_model.vendor':

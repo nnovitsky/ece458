@@ -10,6 +10,7 @@ from django.urls import reverse
 from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
+from backend.config.load_bank_config import CALIBRATION_MODES
 
 
 def validate_user(request, create=False):
@@ -58,6 +59,7 @@ def annotate_models(queryset):
         model_number_lower=Func(F('model_number'), function='LOWER')).annotate(
         description_lower=Func(F('description'), function='LOWER'))
     queryset = queryset.annotate(model_cats=ArrayAgg("itemmodelcategory__name", distinct=True))
+    queryset = queryset.annotate(calibration_modes=ArrayAgg("calibrationmode__name", distinct=True))
     return queryset
 
 
@@ -166,22 +168,37 @@ def make_user(username, data, login, groups=[]):
     return serializer.data['token'], u
 
 
-def check_instrument_is_calibrated(instrument_pk):
+def check_instrument_is_calibrated(instrument_asset_tag):
     try:
-        instrument = Instrument.objects.get(pk=instrument_pk)
+        instrument = Instrument.objects.get(asset_tag=instrument_asset_tag)
     except Instrument.DoesNotExist:
-        return "Instrument does not exist."
+        return "Instrument does not exist.", None, None
 
     cal_frequency = instrument.item_model.calibration_frequency
     if cal_frequency < 1:
-        return "Instrument not calibratable."
+        return "Instrument not calibratable.", None, None
     last_cal = instrument.calibrationevent_set.order_by('-date')[:1]
     if len(last_cal) > 0:
         last_cal = last_cal[0]
         exp_date = last_cal.date + datetime.timedelta(cal_frequency)
         if exp_date >= datetime.date.today():
-            return None
+            return None, instrument, exp_date
         else:
-            return "Instrument out of calibration."
+            return "Instrument out of calibration.", None, None
     else:
-        return "Instrument not calibrated."
+        return "Instrument not calibrated.", None, None
+
+
+def get_calibration_mode_pks(request):
+    mode_pks = []
+    if 'calibration_modes' in request.data:
+        for mode_name in request.data['calibration_modes']:
+            try:
+                mode = CalibrationMode.objects.get(name=mode_name)
+            except CalibrationMode.DoesNotExist:
+                if mode_name not in CALIBRATION_MODES:
+                    return None, {"mode_error": ["Invalid calibration mode."]}
+                mode = CalibrationMode(name=mode_name)
+                mode.save()
+            mode_pks.append(mode.pk)
+    return mode_pks, None

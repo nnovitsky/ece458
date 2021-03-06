@@ -34,15 +34,12 @@ class ModelTablePage extends Component {
                     model_number: '',
                     vendor: '',
                     description: '',
-                    categories: [
-
-                    ]
+                    model_categories: []
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
                 showAll: false
             },
-            modelCategories: [],
             addModelPopup: {
                 isShown: false,
                 errors: []
@@ -53,11 +50,13 @@ class ModelTablePage extends Component {
 
         }
 
+        // the pagination and filters for this page use session storage
+        this.initializeModelSessionStorage();
+
         //binding
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onDetailClicked = this.onDetailClicked.bind(this);
         this.onFilteredSearch = this.onFilteredSearch.bind(this);
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onRemoveFiltersClicked = this.onRemoveFiltersClicked.bind(this);
         this.onAddModelClosed = this.onAddModelClosed.bind(this);
         this.onAddModelSubmit = this.onAddModelSubmit.bind(this);
@@ -67,18 +66,40 @@ class ModelTablePage extends Component {
         this.onTableChange = this.onTableChange.bind(this);
     }
 
-    async componentDidMount() {
-        this.setState({
-            redirect: null
+    initializeModelSessionStorage() {
+        if (!window.sessionStorage.getItem("modelPageSearchParams")) {
+            let modelPageSearchParams = {
+                filters: {
+                    model_number: '',
+                    vendor: '',
+                    description: '',
+                    model_categories: []
+                },
+                sortingIndicator: '',
+                desiredPage: 1,
+                showAll: false
+            }
+            window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelPageSearchParams));
         }
-        )
-        this.updateModelTable();
-        this.getModelCategories();
+    }
+
+    async componentDidMount() {
+        let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        this.setState({
+            modelSearchParams: {
+                ...this.state.modelSearchParams,
+                sortingIndicator: searchParams.sortingIndicator,
+                desiredPage: searchParams.desiredPage,
+                showAll: searchParams.showAll
+            }
+        }, () => this.updateModelTable());
     }
 
     render() {
         if (this.state.redirect !== null) {
-            return (<Redirect to={this.state.redirect} />)
+            return (<Redirect push to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
         let buttonRow = (<div className="table-button-row">
@@ -97,11 +118,8 @@ class ModelTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <ModelFilterBar
-                                onSearch={this.onFilteredSearch}
-                                onRemoveFilters={this.onRemoveFiltersClicked}
-                                onFilterChange={this.onFilterChange}
-                                currentFilter={this.state.modelSearchParams.filters}
-                                modelCategories={this.state.modelCategories}
+                                onSearch={this.updateModelTable}
+                                onRemoveFilters={this.updateModelTable}
                             />
 
                         </div>
@@ -170,29 +188,25 @@ class ModelTablePage extends Component {
                         }
                     }, () => {
                         this.updateModelTable();
-                    })
+                    });
                 }
+                return;
+            default:
+                console.log(`Model table does not support ${type}`);
         }
     }
 
     onCategoriesClicked() {
         this.setState({
+            ...this.state,
             redirect: '/categories'
         });
     }
 
     onDetailClicked(e) {
         this.setState({
-            redirect: `/models/${e.target.value}`
-        })
-    }
-
-    onFilterChange(newFilter) {
-        this.setState({
-            modelSearchParams: {
-                ...this.state.modelSearchParams,
-                filters: newFilter,
-            }
+            ...this.state,
+            redirect: `/models-detail/${e.target.value}`
         })
     }
 
@@ -215,7 +229,8 @@ class ModelTablePage extends Component {
                 filters: {
                     model_number: '',
                     vendor: '',
-                    description: ''
+                    description: '',
+                    model_categories: []
                 }
             }
         }, () => {
@@ -224,14 +239,14 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency)
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories)
             .then((res) => {
                 if (res.success) {
-
                     this.updateModelTable();
                     this.onAddModelClosed();
                     this.setState({
-                        redirect: `/models/${res.data.pk}`
+                        ...this.state,
+                        redirect: `/models-detail/${res.data.pk}`
                     })
                 } else {
                     let formattedErrors = rawErrorsToDisplayed(res.errors, ErrorsFile['add_edit_model']);
@@ -287,8 +302,17 @@ class ModelTablePage extends Component {
     async updateModelTable() {
         this.setState({
             isLoading: true,
-        })
-        modelServices.getModels(this.state.modelSearchParams.filters, this.state.modelSearchParams.sortingIndicator, this.state.modelSearchParams.showAll, this.state.modelSearchParams.desiredPage).then((result) => {
+        });
+
+        this.updateSessionStorage();
+
+        let searchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        searchParams = JSON.parse(searchParams);
+
+        let filters = searchParams.filters;
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+
+        modelServices.getModels(filters, searchParams.sortingIndicator, searchParams.showAll, searchParams.desiredPage).then((result) => {
             this.setState({
                 isLoading: false,
             })
@@ -303,22 +327,15 @@ class ModelTablePage extends Component {
         )
     }
 
-    async getModelCategories() {
-        this.setState({
-            modelCategories: [
-            {
-                pk: 1,
-                category: "new"
-            },
-            {
-                pk: 2,
-                category: "old"
-            },
-            {
-                pk: 3,
-                category: "red"
-            }
-        ]})
+    updateSessionStorage() {
+        let modelSearchParams = window.sessionStorage.getItem("modelPageSearchParams");
+        modelSearchParams = JSON.parse(modelSearchParams);
+
+        modelSearchParams.sortingIndicator = this.state.modelSearchParams.sortingIndicator;
+        modelSearchParams.desiredPage = this.state.modelSearchParams.desiredPage;
+        modelSearchParams.showAll = this.state.modelSearchParams.showAll;
+
+        window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelSearchParams));
     }
 
     // method called with the data from a successful api hit for getting the model table,
@@ -338,7 +355,7 @@ class ModelTablePage extends Component {
                     ...this.state.pagination,
                     resultCount: data.count,
                     numPages: data.numpages,
-                    currentPageNum: data.currentpage
+                    currentPageNum: data.currentpage,
                 },
 
             })

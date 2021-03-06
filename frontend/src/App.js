@@ -31,15 +31,7 @@ class App extends Component {
       admin: false,
       redirect: null,
       isLoading: false,
-      pageState: {
-        instrumentPage: null,
-        modelPage: null,
-      }
-
     };
-
-    this.setModelPageState = this.setModelPageState.bind(this);
-    this.setInstrumentPageState = this.setInstrumentPageState.bind(this);
   }
 
   componentDidMount() {
@@ -126,6 +118,7 @@ class App extends Component {
   handle_logout = () => {
     localStorage.removeItem('token');
     this.emptyLocalStorage();
+    this.emptySessionStorage();
     this.setState({
       logged_in: false,
       username: '',
@@ -138,24 +131,8 @@ class App extends Component {
     localStorage.removeItem('oauth');
   }
 
-  // this handler will be called by model page before redirecting
-  // an attempt at preserving state when flipping between pages
-  setModelPageState = (newState) => {
-    this.setState({
-      pageState: {
-        ...this.state.pageState,
-        modelPage: newState
-      }
-    })
-  }
-
-  setInstrumentPageState = (newState) => {
-    this.setState({
-      pageState: {
-        ...this.state.pageState,
-        instrumentPage: newState
-      }
-    })
+  emptySessionStorage = () => {
+    window.sessionStorage.clear();
   }
 
 
@@ -184,9 +161,9 @@ class App extends Component {
             <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
             <Switch>
               {/* routes below require being logged in */}
-              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} saveState={this.setModelPageState} oldState={this.state.pageState.modelPage} />)} exact />
+              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} />)} exact />
               <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} saveState={this.setInstrumentPageState} oldState={this.state.pageState.instrumentPage} />)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} />)} exact />
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />

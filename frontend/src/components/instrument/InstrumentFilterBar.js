@@ -15,16 +15,16 @@ const descriptionName = "description";
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
-// 'onFilterChange' a handler that will be passed ^filters
-// 'currentFilter' must match filters ^ 
-// modelCategories  an array of pk/category pairs
-// instrumentCategories: an array of pk/category pairs
 const InstrumentFilterBar = (props) => {
 
-    const [filterState, dispatch] = useReducer(reducer, props.currentFilter);
+    const [filterState, dispatch] = useReducer(reducer, getEmptyFilters());
+
     useEffect(() => {
-        dispatch({ type: 'setAll', payload: props.currentFilter });
-    }, [props.currentFilter])
+        let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        let filters = JSON.parse(searchParams).filters;
+        dispatch({ type: 'setAll', payload: filters });
+    }, []);
+
     // modelCategories = formatCategories(props.modelCategories);
     // instrumentCategories = formatCategories(props.instrumentCategories);
     return (
@@ -47,13 +47,13 @@ const InstrumentFilterBar = (props) => {
                 </div>
                 <div className="filter-picklist">
                     <InstrumentCategoriesPicklist
-                        selectedCategories={props.currentFilter.instrument_categories}
+                        selectedCategories={filterState.instrument_categories}
                         onChange={(e) => dispatch({ type: 'instrument_categories', payload: e })}
                     />
                 </div>
 
 
-                <Button className="filter-button" onClick={() => props.onSearch(filterState)}>Apply</Button>
+                <Button className="filter-button" onClick={() => onSubmit(props.onSearch, filterState)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters, dispatch)}>Clear</Button>
 
 
@@ -92,48 +92,34 @@ function reducer(state, action) {
     }
 }
 
-// const onTextInput = (e, filterChange) => {
-//     switch (e.target.name) {
-//         case modelName:
-//             filters.model_number = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case vendorName:
-//             filters.vendor = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case serialName:
-//             filters.serial_number = e.target.value;
-//             filterChange(filters);
-//             break;
-//         case descriptionName:
-//             filters.description = e.target.value;
-//             filterChange(filters);
-//             break;
-//         default:
-//             break;
-//     }
-// }
-
-// const onCategoryInput = (e, filterChange, type) => {
-//     console.log(e);
-//     switch (type) {
-//         case 'model':
-//             filters.model_categories = e;
-//             break;
-//         case 'instrument':
-//             filters.instrument_categories = e;
-//             break;
-//         default:
-//             break;
-//     }
-//     filterChange(filters);
-// }
-
+const onSubmit = (parentHandler, filterState) => {
+    let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = filterState;
+    window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(searchParams));
+    parentHandler();
+}
 
 const onClear = (parentHandler, dispatch) => {
     dispatch({ type: 'clear' });
+    let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+    searchParams = JSON.parse(searchParams);
+    searchParams.filters = getEmptyFilters();
+    window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(searchParams));
     parentHandler();
+}
+
+const getEmptyFilters = () => {
+    return (
+        {
+            model_number: '',
+            vendor: '',
+            serial_number: '',
+            description: '',
+            model_categories: [],
+            instrument_categories: []
+        }
+    )
 }
 
 export default InstrumentFilterBar;

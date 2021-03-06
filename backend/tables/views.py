@@ -9,7 +9,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user, get_calibration_modes
+from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
@@ -74,7 +74,7 @@ def calibration_event_list(request):
         request_data = request.data.dict() if type(request.data) == QueryDict else request.data
         if 'file' not in request_data or request_data['file'] == '':
             request_data['file'] = None
-        request_data['file_type'] = 0 if request_data['file'] is None else 1
+        request_data['file_type'] = 'None' if request_data['file'] is None else 'Artifact'
 
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
@@ -233,7 +233,7 @@ def models_list(request):
         if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-        mode_pks, error = get_calibration_modes(request)
+        mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks
@@ -269,7 +269,7 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
-        mode_pks, error = get_calibration_modes(request)
+        mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks

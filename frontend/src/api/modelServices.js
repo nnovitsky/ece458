@@ -110,7 +110,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
     // appropriate error handling if the token gets bad
-    async addModel(vendor, modelNumber, description, comment, calFrequency, categories) {
+    async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
         const token = localStorage.getItem('token');
         let data = {
             vendor: vendor,
@@ -118,7 +118,8 @@ export default class ModelServices {
             description: description,
             comment: comment,
             calibration_frequency: calFrequency,
-            itemmodelcategory_set: categories.map(el => el.pk)
+            itemmodelcategory_set: categories.map(el => el.pk),
+            calibration_modes: calMode
         }
 
         let result = {
@@ -332,6 +333,50 @@ export default class ModelServices {
     //         }
     //     })
     // }
+
+    async getCalModes() {
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+            errors: []
+        }
+
+        let url = `${API_URL}/api/calibration_modes/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(json => {
+                        if (json.detail === 'Signature has expired.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        if (json.detail === 'Error decoding signature.') {
+                            window.location.reload();
+                            result.success = false;
+                            return result;
+                        }
+                        result.success = false;
+                        result.errors = json;
+                        return result;
+                    })
+                }
+            })
+    }
 
     // has handling if the token is modified/expired
     async getVendors() {

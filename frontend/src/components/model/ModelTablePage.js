@@ -239,7 +239,8 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories)
+
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories, newModel.calMode)
             .then((res) => {
                 if (res.success) {
                     this.updateModelTable();

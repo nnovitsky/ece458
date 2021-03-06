@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import ModelServices from '../../../api/modelServices';
 import { CalibrationModeDisplayMap } from '../Util';
 
 // selectedMode: a string of the selected calibration mode
@@ -51,11 +52,19 @@ function mapStringToObject(input) {
 
 
 const getCalModes = async () => {
-    let result = [
-        "regular",
-        "load_bank"
-    ];
-    return mapArrayToObject(result);
+    // let result = [
+    //     "regular",
+    //     "load_bank"
+    // ];
+    const modelServices = new ModelServices();
+    return await modelServices.getCalModes().then((result) => {
+        if (result.success) {
+            return mapArrayToObject(result.data.modes);
+        } else {
+            return [];
+        }
+    })
+
     // let categoryServices = new CategoryServices();
     // return await categoryServices.getCategories('model', true, 1).then(
     //     (result) => {

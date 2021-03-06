@@ -47,7 +47,6 @@ const nameAndDownloadFile = (blobURL, name) => {
 }
 
 export const CalibrationModeDisplayMap = {
-    "regular": "Regular",
     "load_bank": "Load Bank"
 };
 

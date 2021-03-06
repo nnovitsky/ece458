@@ -34,7 +34,7 @@ class ModelDetailView extends React.Component {
                 comment: '',
                 calibration_frequency: '',
                 categories: [],
-                calibration_mode: ''
+                calibration_mode: []
             },
             instruments: [],
             editPopup: {
@@ -184,7 +184,7 @@ class ModelDetailView extends React.Component {
                     </tr>
                     <tr>
                         <td><strong>Calibration Mode</strong></td>
-                        <td>{CalibrationModeDisplayMap[modelInfo.calibration_mode]}</td>
+                        <td>{this.getCalModesString()}</td>
                     </tr>
                     <tr>
                         <td className="table-view-bold-td"><strong>Model Categories</strong></td>
@@ -199,6 +199,16 @@ class ModelDetailView extends React.Component {
                 </tbody>
             </Table>
         )
+    }
+
+    getCalModesString() {
+        console.log(this.state.model_info);
+        let result = this.state.model_info.calibration_mode.map(el => {
+            console.log(el);
+            return CalibrationModeDisplayMap[el.name]
+        })
+        console.log(result);
+        return result;
     }
 
     onMoreClicked(e) {

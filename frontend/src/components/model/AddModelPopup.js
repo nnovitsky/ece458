@@ -47,7 +47,7 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                     categories: props.currentModel.categories,
-                    calMode: '',
+                    calMode: [],
                 },
                 vendorsArr: null,
             }
@@ -62,7 +62,7 @@ class AddModelPopup extends Component {
                     comment: '',
                     calibration_frequency: '',
                     categories: [],
-                    calMode: 'regular', 
+                    calMode: [], 
                 },
                 vendorsArr: null
             }
@@ -125,16 +125,18 @@ class AddModelPopup extends Component {
 
                 <Form.Label>Comments</Form.Label>
                 <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
-
-                <Form.Label>Calibration Mode</Form.Label>
-                <CalModePicklist
+                {/* <CalModePicklist
                     selectedMode={this.state.newModel.calMode}
                     onChange={this.onCalModeInput}
-                />
+                /> */}
+
 
                 <Form.Label>Calibration Frequency (days)</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
+
+                <Form.Label>Calibration Mode</Form.Label>
+                <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} />
 
                 <Form.Label>Model Categories</Form.Label>
                 {categoryPicklist}
@@ -161,11 +163,12 @@ class AddModelPopup extends Component {
         })
     }
 
-    onCalModeInput(calMode) {
+    onCalModeInput(e) {
+        console.log(e.target.checked);
         this.setState({
             newModel: {
                 ...this.state.newModel,
-                calMode: calMode
+                calMode: (e.target.checked ? ["load_bank"] : [])
             }
         })
     }
@@ -230,7 +233,8 @@ class AddModelPopup extends Component {
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
-                categories: this.state.newModel.categories
+                categories: this.state.newModel.categories,
+                calMode: this.state.newModel.calMode
             }
 
             if (newModel.calibration_frequency === '') {

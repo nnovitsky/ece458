@@ -189,7 +189,7 @@ def check_instrument_is_calibrated(instrument_asset_tag):
         return "Instrument not calibrated.", None, None
 
 
-def get_calibration_modes(request):
+def get_calibration_mode_pks(request):
     mode_pks = []
     if 'calibration_modes' in request.data:
         for mode_name in request.data['calibration_modes']:

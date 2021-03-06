@@ -28,23 +28,19 @@ class Step4 extends React.Component {
         this.updateAllValidated = this.updateAllValidated.bind(this);
         this.validate = this.validate.bind(this);
         this.nextTable = this.nextTable.bind(this);
-        this.prevTable = this.prevTable.bind(this);
         this.getInitialData = this.getInitialData.bind(this);
 
     }
 
     async componentDidMount() {
-        await this.getInitialData(this.state.index).then(res => {
-            console.log(this.state.validationData)
-        })
-        console.log(this.state.index)
+        await this.getInitialData(this.state.index)
     }
 
 
     render() {
         let body = this.makeBody();
-        //console.log(this.state.num_validated)
-        //console.log(this.state.validationData.length)
+        console.log(this.state.num_validated)
+        console.log(this.state.validationData.length)
 
         return (
             <Base
@@ -53,7 +49,7 @@ class Step4 extends React.Component {
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.nextTable}
-                decrementStep={this.prevTable}
+                decrementStep={this.props.decrementStep}
                 //Add this in once we want all validated
                 //disableContinue={!(this.state.num_validated === this.state.validationData.length)}
             />
@@ -164,18 +160,6 @@ class Step4 extends React.Component {
         }
         else if (this.state.index === 4) {
             this.props.incrementStep()
-        }
-    }
-
-    prevTable() {
-        if (this.state.index > 1) {
-            this.setState({
-                index: this.state.index - 1,
-                allValidated: false
-            })
-        }
-        else if (this.state.index === 1) {
-            this.props.decrementStep()
         }
     }
 

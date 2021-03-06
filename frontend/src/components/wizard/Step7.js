@@ -4,10 +4,8 @@ import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion'
-import Card from 'react-bootstrap/Card'
 import WizardServices from "../../api/wizardServices.js";
 import data from './LoadLevel.json'
-import LoadTableDisplay from './LoadTableDisplay.js'
 import AccordionTableCard from './AccordionTableCard.js'
 
 const wizardServices = new WizardServices();

@@ -89,7 +89,6 @@ class InstrumentDetailView extends Component {
     render(
         adminButtons = <div className="detail-header-buttons-div">
             <Button onClick={this.onEditInstrumentClicked}>Edit</Button>
-            <Button onClick={this.onWizardClicked}>Wizard</Button>
             <Button onClick={this.onDeleteClicked} variant="danger">Delete</Button>
         </div>
     ) {
@@ -126,6 +125,7 @@ class InstrumentDetailView extends Component {
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button onClick={this.onWizardClicked}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )

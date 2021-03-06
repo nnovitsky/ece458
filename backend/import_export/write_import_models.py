@@ -44,7 +44,7 @@ def get_category_record(row):
 
     model_category_set = set()
     for category in row[MODEL_CATEGORIES_INDEX].strip().split(' '):
-        category_pk = ItemModelCategory.objects.filter(name=category)[0]
+        category_pk = ItemModelCategory.objects.filter(name=category)[0].pk
         model_category_set.add(category_pk)
 
     model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
@@ -83,10 +83,12 @@ def handler(verified_file):
         if not db_no_cat_upload.is_valid():
             return False, None, "Error writing non-category models to db."
 
+    print("non-category upload was valid!")
     if len(category_models) > 0:
         db_cat_upload = ItemModelSerializer(data=category_models, many=True)
         print("db_cat_upload: ", db_cat_upload)
         if not db_cat_upload.is_valid():
+            print("db_category_upload_response: ", str(db_cat_upload.is_valid()))
             return False, None, "Error writing category models to db."
 
     upload_list = []

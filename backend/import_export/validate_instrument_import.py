@@ -52,7 +52,7 @@ def validate_row(current_row):
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
         elif column_type == 'Instrument-Categories':
-
+            valid_cell, info = field_validators.is_valid_instrument_category_list(item)
         elif column_type == 'Calibration-Date':
             try:
                 this_model = ItemModel.objects.filter(

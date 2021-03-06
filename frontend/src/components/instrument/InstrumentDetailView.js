@@ -78,6 +78,7 @@ class InstrumentDetailView extends Component {
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
+        this.onLoadBankClick = this.onLoadBankClick.bind(this);
     }
 
     async componentDidMount() {
@@ -141,6 +142,7 @@ class InstrumentDetailView extends Component {
                         }}
                     inlineElements={calButtonRow}
                     onSupplementDownload={this.onSupplementDownloadClicked}
+                    onLoadBankClick={this.onLoadBankClick}
                 />
             </div>
         )
@@ -426,6 +428,10 @@ class InstrumentDetailView extends Component {
                     console.log('no file exists');
                 }
             })
+    }
+
+    onLoadBankClick(e) {
+        console.log(`Load bank requested for cal event with pk: ${e.target.value}`);
     }
 
     onModelLinkClicked() {

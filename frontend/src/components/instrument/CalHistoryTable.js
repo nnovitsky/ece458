@@ -18,11 +18,12 @@ import Button from 'react-bootstrap/Button';
 
 //inlineElements: elements to be displayed next to the pagination component
 // onSupplementDownload: an event handler to call when wanting a download, event.target.value is the cal event pk
+// onLoadBankClick: an event handler to call when wanting to see the load bank cal data, event.target.value is the cal event pk
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick);
     return (
         <DataTable
             data={props.data}
@@ -38,7 +39,7 @@ const calHistoryTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, onSupplementDownload) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
     return (
         [
             // this is a column for a number for the table
@@ -61,15 +62,22 @@ let makeConfig = (countStart, onSupplementDownload) => {
                 headerClasses: 'cal-column'
             },
             {
-                dataField: 'file_name',
-                text: 'Supplement Files',
+                dataField: 'file_type',
+                text: 'Additional Files',
                 sort: false,
-                title: (cell) => `Click to download the supplement file`,
+                title: (cell) => `If a supplement file/data exists, click to see more`,
                 headerClasses: 'file-column',
                 formatter: ((cell, row) => {
-                    return (
-                        <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">ADD ME</Button>
-                    )
+                    switch (cell) {
+                        case '0':
+                            return <span>N/A</span>;
+                        case 'Artifact':
+                            return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
+                        case 'Load Bank':
+                            return <Button onClick={onLoadBankClick} value={row.pk} className="data-table-button">Load Bank Data</Button>
+                        default:
+                            return <span>N/A</span>
+                    }
                 })
             },
             {

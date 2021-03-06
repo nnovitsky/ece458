@@ -55,7 +55,7 @@
 
 /* apply to any buttons in the table */
 .data-table-button {
-    padding: 3px 5px 3px 5px !important;
+    padding: 1px 3px 1px 3px !important;
     border-color: transparent !important;
     background-color: transparent !important;
     color: rgb(57, 127, 60) !important;

@@ -50,7 +50,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.props.decrementStep}
-                //Add this in once we want all validated
+                //TODO: Add this in once we want all validated
                 //disableContinue={!(this.state.num_validated === this.state.validationData.length)}
             />
         );
@@ -78,6 +78,7 @@ class Step4 extends React.Component {
 
     async getInitialData(index)
     {
+        //TODO: Needs correct API call
         wizardServices.getLoadLevelSet(index).then(result =>{
             if(result.success)
             {

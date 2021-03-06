@@ -283,7 +283,7 @@ class InstrumentDetailView extends Component {
     }
 
     makeWizardPopup() {
-        console.log(this.state.currentUser)
+        console.log(this.state.instrument_info.pk)
         return (
             <Wizard
                 isShown={this.state.wizardPopup.isShown}
@@ -291,8 +291,8 @@ class InstrumentDetailView extends Component {
                 model_number={this.state.instrument_info.model_number}
                 vendor={this.state.instrument_info.vendor}
                 serial_number={this.state.instrument_info.serial_number}
-                model_pk={this.state.instrument_info.model_pk}
-                user={this.state.currentUser}
+                instrument_pk={this.state.instrument_info.pk}
+                asset_tag={this.state.instrument_info.asset_tag}
             />
         )
     }

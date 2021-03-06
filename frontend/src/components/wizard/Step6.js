@@ -31,6 +31,10 @@ class Step6 extends React.Component {
 
     }
 
+    async componentDidMount(){
+        //TODO: Need to be able to get details 
+    }
+
 
     render() {
         let body = this.makeBody();

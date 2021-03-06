@@ -22,3 +22,8 @@ form.wizard {
 .notValidated{
     background-color: whitesmoke
 }
+
+.datepicker{
+    width: 12vw;
+    font-size: 1.3vw;
+}

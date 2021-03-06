@@ -10,13 +10,6 @@ const authServices = new AuthServices();
 const wizardServices = new WizardServices();
 
 
-
-const modelName = "model";
-const vendorName = "vendor";
-const serial = "description";
-const asset = "comment";
-const engineer = "engineer"
-
 class Step0 extends React.Component {
 
     constructor(props) {
@@ -28,26 +21,28 @@ class Step0 extends React.Component {
                 vendor: this.props.vendor,
                 model_number: this.props.model_number,
                 serial_number: this.props.serial_number,
-                asset_tag: '',
+                asset_tag: this.props.asset_tag,
                 engineer: '',
                 date_string: dateToString(new Date()),
                 date_object: new Date(),
-                model_pk: this.props.model_pk,
-                asset_list: [],
+                instrument_pk: this.props.instrument_pk,
+                comment: '',
+                cal_event_pk: this.props.cal_event_pk,
+                loadbank_pk: this.props.loadbank_pk,
             },
         }
 
-        this.onTextInput = this.onTextInput.bind(this);
-        this.getAssetNumber = this.getAssetNumber.bind(this);
+        this.onCommentInput = this.onCommentInput.bind(this);
         this.createNewLoadbankEvent = this.createNewLoadbankEvent.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
         this.getUser = this.getUser.bind(this);
+        this.getDetails = this.getDetails.bind(this);
 
     }
 
     async componentDidMount() {
-        await this.getAssetNumber();
         this.getUser();
+        this.getDetails();
     }
 
 
@@ -69,24 +64,28 @@ class Step0 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
-                <p>Please select a date then click continue to begin the Loadbank Calibration.</p>
+                <p>Please select a date and add a comment for this calibration event. <br></br>Next, click continue to begin the Loadbank Calibration.</p>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Vendor:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" name={vendorName} value={this.state.calInfo.vendor} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.vendor} />
                     <Form.Label className="col-sm-3 col-form-label">Model Number:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" name={modelName} value={this.state.calInfo.model_number} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.model_number} />
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Serial Number:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" name={serial} value={this.state.calInfo.serial_number} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.serial_number} />
                     <Form.Label className="col-sm-3 col-form-label">Asset Tag:</Form.Label>
-                    <Form.Control type="text" name={asset} value={this.state.calInfo.asset_tag} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.asset_tag} />
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" name={engineer} value={this.state.calInfo.engineer} onChange={this.onTextInput} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.engineer}/>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
-                    <DatePicker onSelect={this.onDateChange} selected={this.state.calInfo.date_object} />
+                    <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} />
+                </Form.Group>
+                <Form.Group className="form-inline">
+                    <Form.Label className="col-sm-3 col-form-label">Comment:</Form.Label>
+                    <Form.Control className="col-sm-7" as="textarea" type="text" value={this.state.calInfo.comment} onChange={this.onCommentInput}/>
                 </Form.Group>
             </Form>
 
@@ -104,73 +103,33 @@ class Step0 extends React.Component {
     }
 
 
-    onTextInput(e) {
-        let val = e.target.value;
-        switch (e.target.name) {
-            case modelName:
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        model_number: val
-                    }
-                })
-                return;
-            case vendorName:
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        vendor: val
-                    }
-                })
-                return;
-            case serial:
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        serial_number: val
-                    }
-                })
-                return;
-            case asset:
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        asset_tag: val
-                    }
-                })
-                return
-            case engineer:
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        engineer: val
-                    }
-                })
-                return
-            default:
-                return;
-        }
-    }
-
-    async getAssetNumber(){
-        wizardServices.getModelAssetTagByPK(this.state.calInfo.model_pk).then(result => {
-            if(result.success){
-                this.setState({
-                    calInfo: {
-                        ...this.state.calInfo,
-                        asset_list: result.data,
-                    }
-                })
+    onCommentInput(e) {
+        this.setState({
+            calInfo: {
+                ...this.state.calInfo,
+                comment: e.target.value
             }
         })
     }
 
     async createNewLoadbankEvent(){
-        wizardServices.createLoadbankCalEvent(17602, this.state.calInfo.date_string, null).then(result => {
+        wizardServices.createLoadbankCalEvent(this.state.calInfo.instrument_pk, this.state.calInfo.date_string, this.state.calInfo.cal_event_pk, this.state.calInfo.comment).then(result => {
             if(result.success){
                 console.log("Created event " + result.data.loadbank_calibration.pk)
                 this.props.setLBNum(result.data.loadbank_calibration.pk)
+                this.props.setCalEventPk(result.data.loadbank_calibration.cal_event_pk)
                 this.props.incrementStep()
+                if(this.state.calInfo.loadbank_pk === null || this.state.calInfo.cal_event_pk === null)
+                {
+                    console.log("here")
+                    this.setState({
+                        calInfo: {
+                            ...this.state.calInfo,
+                            cal_event_pk: result.data.loadbank_calibration.cal_event_pk,
+                            loadbank_pk: result.data.loadbank_calibration.pk,
+                        }
+                    })
+                }
             }
             else{
                 if(result.data.date) {
@@ -183,9 +142,14 @@ class Step0 extends React.Component {
                         errors: result.data.non_field_errors
                     })
                 }
+                else if(result.data.calibration_event_error){
+                    this.setState({
+                        errors: result.data.calibration_event_error
+                    })
+                }
                 else{
                     this.setState({
-                        errors: result.data.instrument
+                        errors: ["Instrument: " + result.data.instrument[0]]
                     })
                 }
             }
@@ -205,6 +169,27 @@ class Step0 extends React.Component {
               localStorage.removeItem('token');
             }
           })
+    }
+
+    async getDetails()
+    {
+        if(this.state.calInfo.loadbank_pk !== null)
+        {
+            console.log("Here get details")
+            wizardServices.getDetails(this.state.calInfo.loadbank_pk).then(result => {
+                if(result.success)
+                {
+                    this.setState({
+                        calInfo: {
+                            ...this.state.calInfo,
+                            comment: result.data.cal_event.comment,
+                            date_object: new Date(result.data.cal_event.date),
+                            date_string: result.data.cal_event.date,
+                        }
+                    })
+                }
+            })
+        }
     }
 }
 

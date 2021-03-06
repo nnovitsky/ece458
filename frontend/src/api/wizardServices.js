@@ -38,7 +38,7 @@ export default class WizardServices {
 
     }
 
-    async createLoadbankCalEvent(instrument_pk, date, cal_event_pk) {
+    async createLoadbankCalEvent(instrument_pk, date, cal_event_pk, comment) {
         const token = localStorage.getItem('token');
         let data = {
             instrument: instrument_pk,
@@ -48,6 +48,10 @@ export default class WizardServices {
         if(cal_event_pk !== null)
         {
             data["cal_event_pk"] = cal_event_pk
+        }
+        if(comment !== '')
+        {
+            data["comment"] = comment
         }
 
         let result = {
@@ -67,14 +71,15 @@ export default class WizardServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
+                    console.log(json)
                     result.success = true;
                     result.data = json;
-                    console.log(json)
                     return result;
                 });
             }
             else {
                 return res.json().then(json => {
+                    console.log(json)
                     result.success = false;
                     result.data = json;
                     return result;
@@ -227,7 +232,6 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
-                    console.log(json)
                     result.success = false;
                     result.data = json;
                     result.errors = this.identifyErrors(json);
@@ -296,7 +300,6 @@ export default class WizardServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
-                    console.log(json)
                     result.success = true;
                     result.data = json;
                     return result;
@@ -304,7 +307,6 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
-                    console.log(json)
                     result.success = false;
                     result.data = json;
                     return result;
@@ -315,11 +317,10 @@ export default class WizardServices {
     }
 
     getUpdateLBJSON(key, value) {
-        console.log("here")
         let data = {}
         switch (key) {
             case "shuntmeter":
-                data = { shuntmeter: value }
+                data = { shunt_meter: value }
                 return data
             case "voltmeter":
                 data = { voltmeter: value }
@@ -364,12 +365,49 @@ export default class WizardServices {
                 return res.json().then(json => {
                     result.success = true;
                     result.data = json;
+                    return result;
+                });
+            }
+            else {
+                return res.json().then(json => {
+                    result.success = false;
+                    result.data = json;
+                    return result;
+                })
+            }
+        })
+
+    }
+
+    async getDetails(lb_cal_num)
+    {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: false,
+            data: [],
+        }
+
+
+        let url = `${API_URL}/api/lb_cal_event_details/${lb_cal_num}/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            },
+        }).then(res => {
+            console.log(res)
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json;
                     console.log(result.data);
                     return result;
                 });
             }
             else {
                 return res.json().then(json => {
+                    console.log(json)
                     result.success = false;
                     result.data = json;
                     return result;

@@ -11,7 +11,7 @@ class Base extends React.Component {
 
     render() {
         return (
-            <Modal className="popup" show={this.props.isShown} onHide={this.props.onClose} size="xl">
+            <Modal className="popup" show={this.props.isShown} onHide={this.props.onClose} size="xl" backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.title}</Modal.Title>
                 </Modal.Header>

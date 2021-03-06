@@ -74,7 +74,7 @@ def calibration_event_list(request):
         request_data = request.data.dict() if type(request.data) == QueryDict else request.data
         if 'file' not in request_data or request_data['file'] == '':
             request_data['file'] = None
-        request_data['file_type'] = 0 if request_data['file'] is None else 1
+        request_data['file_type'] = 'None' if request_data['file'] is None else 'Artifact'
 
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user

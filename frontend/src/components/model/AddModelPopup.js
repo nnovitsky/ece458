@@ -147,7 +147,7 @@ class AddModelPopup extends Component {
     isLoadBank() {
         let result = false;
         this.state.newModel.calibration_modes.forEach(el => {
-            if (el.name == "load_bank") {
+            if (el.name === "load_bank") {
                 result = true;
             }
         })
@@ -173,10 +173,11 @@ class AddModelPopup extends Component {
     }
 
     onCalModeInput(e) {
+        console.log('input');
         this.setState({
             newModel: {
                 ...this.state.newModel,
-                calibration_modes: (e.target.checked ? ["load_bank"] : [])
+                calibration_modes: (e.target.checked ? [{ name: "load_bank", pk: 1 }] : [])
             }
         })
     }
@@ -233,6 +234,7 @@ class AddModelPopup extends Component {
     }
 
     onSubmit() {
+
         if (this.isValid()) {
             let newModel = {
                 pk: this.state.newModel.model_pk,
@@ -242,7 +244,7 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
                 categories: this.state.newModel.categories,
-                calibration_modes: this.state.newModel.calibration_modes
+                calibration_modes: (this.isLoadBank() ? ["load_bank"] : [])
             }
 
             if (newModel.calibration_frequency === '') {

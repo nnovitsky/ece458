@@ -91,16 +91,30 @@ let makeConfig = (countStart, onMoreClicked) => {
                 title: (cell) => `Cal. Frequency: ${cell} days`,
                 headerTitle: () => `Calibration Frequency (Days)`,
                 headerClasses: 'mt-cal-column',
+                formatter: (cell) => {
+                    if (cell === 0) {
+                        return <span>N/A</span>
+                    } else {
+                        return <span>{cell}</span>
+                    }
+                }
             },
             {
-                dataField: 'calibration_mode',
+                dataField: 'calibration_modes',
                 text: 'Cal. Mode',
                 sort: false,
                 title: (cell) => `Calibration Mode: ${CalibrationModeDisplayMap[cell]}`,
                 formatter: (cell) => {
-                    return (
-                        <span>{CalibrationModeDisplayMap[cell]}</span>
-                    )
+                    if (cell[0] !== null) {
+                        let result = cell.map(el => {
+                            return CalibrationModeDisplayMap[el]
+                        });
+                        return (
+                            <span>{result.join(',')}</span>
+                        )
+                    } else {
+                        return <span>Regular</span>
+                    }
                 },
                 headerTitle: () => `Calibration Mode`,
                 headerClasses: 'mt-cal-mode-column',

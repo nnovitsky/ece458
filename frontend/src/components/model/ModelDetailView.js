@@ -202,9 +202,7 @@ class ModelDetailView extends React.Component {
     }
 
     getCalModesString() {
-        console.log(this.state.model_info);
         let result = this.state.model_info.calibration_modes.map(el => {
-            console.log(el);
             return CalibrationModeDisplayMap[el.name]
         })
         return result.join(',');

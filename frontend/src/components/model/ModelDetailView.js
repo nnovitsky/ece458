@@ -34,7 +34,7 @@ class ModelDetailView extends React.Component {
                 comment: '',
                 calibration_frequency: '',
                 categories: [],
-                calibration_mode: []
+                calibration_modes: []
             },
             instruments: [],
             editPopup: {
@@ -203,12 +203,11 @@ class ModelDetailView extends React.Component {
 
     getCalModesString() {
         console.log(this.state.model_info);
-        let result = this.state.model_info.calibration_mode.map(el => {
+        let result = this.state.model_info.calibration_modes.map(el => {
             console.log(el);
             return CalibrationModeDisplayMap[el.name]
         })
-        console.log(result);
-        return result;
+        return result.join(',');
     }
 
     onMoreClicked(e) {
@@ -228,7 +227,7 @@ class ModelDetailView extends React.Component {
 
     async onEditSubmit(editedModel) {
         console.log(editedModel);
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories).then(result => {
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {

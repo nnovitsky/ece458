@@ -5,7 +5,8 @@ import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
 import "react-datepicker/dist/react-datepicker.css";
 import WizardServices from "../../api/wizardServices.js";
-
+import AuthServices from '../../api/authServices';
+const authServices = new AuthServices();
 const wizardServices = new WizardServices();
 
 
@@ -28,7 +29,7 @@ class Step0 extends React.Component {
                 model_number: this.props.model_number,
                 serial_number: this.props.serial_number,
                 asset_tag: '',
-                engineer: this.props.user,
+                engineer: '',
                 date_string: dateToString(new Date()),
                 date_object: new Date(),
                 model_pk: this.props.model_pk,
@@ -40,11 +41,13 @@ class Step0 extends React.Component {
         this.getAssetNumber = this.getAssetNumber.bind(this);
         this.createNewLoadbankEvent = this.createNewLoadbankEvent.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
+        this.getUser = this.getUser.bind(this);
 
     }
 
     async componentDidMount() {
         await this.getAssetNumber();
+        this.getUser();
     }
 
 
@@ -170,12 +173,15 @@ class Step0 extends React.Component {
                 this.props.incrementStep()
             }
             else{
-                if(typeof(result.data.instrument) === 'undefined') {
-                    if(typeof(result.data.date) !== 'undefined') {
+                if(result.data.date) {
                         this.setState({
                             errors: result.data.date
-                        })
-                    }
+                    })
+                }
+                else if(result.data.non_field_errors){
+                    this.setState({
+                        errors: result.data.non_field_errors
+                    })
                 }
                 else{
                     this.setState({
@@ -184,6 +190,21 @@ class Step0 extends React.Component {
                 }
             }
         })
+    }
+
+    async getUser(){
+        authServices.getCurrentUser().then((result) => {
+            if (result.success) {
+              this.setState({
+                calInfo: {
+                    ...this.state.calInfo,
+                    engineer: result.data.username,
+                }
+              })
+            } else {
+              localStorage.removeItem('token');
+            }
+          })
     }
 }
 

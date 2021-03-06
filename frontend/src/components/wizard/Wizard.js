@@ -8,7 +8,6 @@ import Step5 from './Step5.js';
 import Step6 from './Step6.js';
 import Step7 from './Step7.js';
 import WizardServices from "../../api/wizardServices.js";
-
 const wizardServices = new WizardServices();
 
 class Wizard extends React.Component {
@@ -23,12 +22,16 @@ class Wizard extends React.Component {
             serial_number: this.props.serial_number,
             model_pk: this.props.model_pk,
             loadbank_pk: null,
-            user: this.props.user,
         }
 
         this.incrementStep = this.incrementStep.bind(this);
         this.decrementStep = this.decrementStep.bind(this);
         this.setLoabankCalEventNumber = this.setLoabankCalEventNumber.bind(this);
+    }
+
+    async componentDidMount()
+    {
+
     }
 
     render() {
@@ -45,7 +48,7 @@ class Wizard extends React.Component {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} model_pk={this.state.model_pk}
-                        setLBNum={this.setLoabankCalEventNumber} user={this.state.user}/>;
+                        setLBNum={this.setLoabankCalEventNumber}/>;
             case 1:
                 return <Step1 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>;

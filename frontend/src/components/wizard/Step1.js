@@ -68,25 +68,26 @@ class Step1 extends React.Component {
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
-                <p>For each device, enter all fields then validate the instruments to continue.</p>
+                <p>For each device, please enter the asset tag. The vendor and model number will be autofilled for each instrument. 
+                    <br></br>Validate both instruments to continue.</p>
                 <h5>Voltmeter: {this.state.voltmeter.validated_text}</h5>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
-                    <Form.Control type="text" name={vmVendor} value={this.state.voltmeter.vendor} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-1 col-form-label">Model Number:</Form.Label>
-                    <Form.Control type="text" name={vmModel} value={this.state.voltmeter.model_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-1 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={vmAsset} value={this.state.voltmeter.asset_tag} onChange={this.onTextInput} />
+                    <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
+                    <Form.Control readOnly="readonly" type="text" name={vmVendor} value={this.state.voltmeter.vendor} onChange={this.onTextInput} />
+                    <Form.Label className="col-sm-1 col-form-label">Model Number:</Form.Label>
+                    <Form.Control readOnly="readonly" type="text" name={vmModel} value={this.state.voltmeter.model_number} onChange={this.onTextInput} />
                     <Button onClick={this.validateVoltmeter}>Validate</Button>
                 </Form.Group>
                 <h5>Current Shuntmeter: {this.state.shuntmeter.validated_text}</h5>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
-                    <Form.Control type="text" name={shuntVendor} value={this.state.shuntmeter.vendor} onChange={this.onTextInput} />
-                    <Form.Label className="col-sm-1 col-form-label">Model Number:</Form.Label>
-                    <Form.Control type="text" name={shuntModel} value={this.state.shuntmeter.model_number} onChange={this.onTextInput} />
                     <Form.Label className="col-sm-1 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control type="text" name={shuntAsset} value={this.state.shuntmeter.asset_tag} onChange={this.onTextInput} />
+                    <Form.Label className="col-sm-1 col-form-label">Vendor:</Form.Label>
+                    <Form.Control readOnly="readonly" type="text" name={shuntVendor} value={this.state.shuntmeter.vendor} onChange={this.onTextInput} />
+                    <Form.Label className="col-sm-1 col-form-label">Model Number:</Form.Label>
+                    <Form.Control readOnly="readonly" type="text" name={shuntModel} value={this.state.shuntmeter.model_number} onChange={this.onTextInput} />
                     <Button onClick={this.validateShuntmeter}>Validate</Button>
                 </Form.Group>
             </Form>
@@ -144,7 +145,7 @@ class Step1 extends React.Component {
                         model_number: val,
                         validated: false,
                         validated_text: '',
-                        
+
                     }
                 })
                 return
@@ -163,67 +164,63 @@ class Step1 extends React.Component {
         }
     }
 
-    async validateVoltmeter()
-    {
+    async validateVoltmeter() {
         //let pk = this.state.voltmeter.pk
         let pk = 17601
         wizardServices.updateLBCal(voltmeter, pk, this.state.loadbank_pk)
-        .then(result =>{
-            if(result.success)
-            {
-                this.setState({
-                    errors: [],
-                    voltmeter: {
-                        ...this.state.voltmeter,
-                        validated: true,
-                        validated_text: 'Valid',
-                    }
-                })
-            }
-            else{
-                this.setState({
-                    errors: ["Voltmeter: " + result.data.loadbank_error],
-                    voltmeter: {
-                        ...this.state.voltmeter,
-                        validated: false,
-                        validated_text: 'Invalid',
-                    }
-                })
+            .then(result => {
+                if (result.success) {
+                    this.setState({
+                        errors: [],
+                        voltmeter: {
+                            ...this.state.voltmeter,
+                            validated: true,
+                            validated_text: 'Valid',
+                        }
+                    })
+                }
+                else {
+                    this.setState({
+                        errors: ["Voltmeter: " + result.data.loadbank_error],
+                        voltmeter: {
+                            ...this.state.voltmeter,
+                            validated: false,
+                            validated_text: 'Invalid',
+                        }
+                    })
 
-            }
-        })
+                }
+            })
     }
 
 
-    async validateShuntmeter()
-    {
+    async validateShuntmeter() {
         //let pk = this.state.shuntmeter.pk
         let pk = 17601
         wizardServices.updateLBCal(shuntmeter, pk, this.state.loadbank_pk)
-        .then(result =>{
-            if(result.success)
-            {
-                this.setState({
-                    errors: [],
-                    shuntmeter: {
-                        ...this.state.shuntmeter,
-                        validated: true,
-                        validated_text: 'Valid',
-                    }
-                })
-            }
-            else{
-                this.setState({
-                    errors: ["Shuntmeter: " + result.data.loadbank_error],
-                    shuntmeter: {
-                        ...this.state.shuntmeter,
-                        shuntmeter: false,
-                        validated_text: 'Invalid',
-                    }
-                })
+            .then(result => {
+                if (result.success) {
+                    this.setState({
+                        errors: [],
+                        shuntmeter: {
+                            ...this.state.shuntmeter,
+                            validated: true,
+                            validated_text: 'Valid',
+                        }
+                    })
+                }
+                else {
+                    this.setState({
+                        errors: ["Shuntmeter: " + result.data.loadbank_error],
+                        shuntmeter: {
+                            ...this.state.shuntmeter,
+                            shuntmeter: false,
+                            validated_text: 'Invalid',
+                        }
+                    })
 
-            }
-        })
+                }
+            })
     }
 
 }

@@ -89,8 +89,11 @@ def handler(verified_file):
         if not db_cat_upload.is_valid():
             return False, None, "Error writing category models to db."
 
-    if db_no_cat_upload: no_cat_upload_results = db_no_cat_upload.save()
-    if db_cat_upload: cat_upload_results = db_cat_upload.save()
+    upload_list = []
+
+    if db_no_cat_upload: upload_list += db_no_cat_upload.save()
+    if db_cat_upload: upload_list += db_cat_upload.save()
 
     upload_summary = f"Successfully wrote {len(no_category_models) + len(category_models)} model(s) to the database."
-    return True, category_models + no_category_models, upload_summary
+    print("upload_list: ", upload_list)
+    return True, upload_list, upload_summary

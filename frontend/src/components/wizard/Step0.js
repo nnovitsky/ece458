@@ -166,7 +166,7 @@ class Step0 extends React.Component {
     }
 
     async createNewLoadbankEvent(){
-        wizardServices.createLoadbankCalEvent(17602, this.state.calInfo.date_string).then(result => {
+        wizardServices.createLoadbankCalEvent(17602, this.state.calInfo.date_string, null).then(result => {
             if(result.success){
                 console.log("Created event " + result.data.loadbank_calibration.pk)
                 this.props.setLBNum(result.data.loadbank_calibration.pk)

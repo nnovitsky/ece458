@@ -38,11 +38,16 @@ export default class WizardServices {
 
     }
 
-    async createLoadbankCalEvent(instrument_pk, date) {
+    async createLoadbankCalEvent(instrument_pk, date, cal_event_pk) {
         const token = localStorage.getItem('token');
         let data = {
             instrument: instrument_pk,
             date: date,
+        }
+
+        if(cal_event_pk !== null)
+        {
+            data["cal_event_pk"] = cal_event_pk
         }
 
         let result = {
@@ -64,6 +69,7 @@ export default class WizardServices {
                 return res.json().then(json => {
                     result.success = true;
                     result.data = json;
+                    console.log(json)
                     return result;
                 });
             }

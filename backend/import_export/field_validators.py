@@ -8,6 +8,7 @@ CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
 CALIBRATION_DATE_MAX_LENGTH = 20
+INSTRUMENT_CATEGORIES_MAX_LENGTH = 100
 ASSET_TAG_LENGTH = 6
 ASSET_TAG_MAX_VALUE = 999999
 EXPECTED_DATE_FORMAT = '%m/%d/%Y'
@@ -155,3 +156,12 @@ def is_valid_asset_tag(asset_tag):
         return True, "Valid asset tag format."
 
     return False
+
+
+def is_valid_instrument_categories(instrument_categories):
+
+    if len(instrument_categories) > INSTRUMENT_CATEGORIES_MAX_LENGTH:
+        return False, f"Instrument categories entry \'{instrument_categories}\' too long, " \
+                      f"Max: {INSTRUMENT_CATEGORIES_MAX_LENGTH} chars long"
+
+    return True, "Valid set of instrument categories."

@@ -2,7 +2,7 @@ import csv
 import io
 
 from backend.import_export import field_validators
-from backend.tables.models import ItemModel, Instrument
+from backend.tables.models import ItemModel, Instrument, InstrumentCategory
 
 column_types = [
     'Vendor',
@@ -22,6 +22,7 @@ SERIAL_NUM_INDEX = 2
 sheet_models = []
 sheet_instruments = []
 asset_tags = []
+sheet_categories = []
 
 
 def validate_row(current_row):
@@ -53,6 +54,8 @@ def validate_row(current_row):
             valid_cell, info = field_validators.is_valid_comment(item)
         elif column_type == 'Instrument-Categories':
             valid_cell, info = field_validators.is_valid_instrument_category_list(item)
+            for category in item.strip().split(' '):
+                sheet_categories.append(category)
         elif column_type == 'Calibration-Date':
             try:
                 this_model = ItemModel.objects.filter(
@@ -97,9 +100,34 @@ def contains_duplicates():
 
 
 def validate_asset_tags():
-    if len(asset_tags) != len(set(asset_tags)):
-        return False, "Duplicate asset tags assigned within import."
+    if len(asset_tags) == 0:
+        return True, "no manual assignments."
 
+    if len(asset_tags) != len(set(asset_tags)):
+        return True, "Duplicate asset tags assigned within import."
+
+    db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
+
+    for asset_tag in asset_tags:
+        if asset_tag in db_asset_tags:
+            return True, f"asset tag {asset_tag} already exists in database."
+
+    return False, "Valid set of asset tags"
+
+
+def validate_categories():
+
+    db_categories = InstrumentCategory.objects.all()
+    db_category_names = []
+
+    for db_category in db_categories:
+        db_category_names.append(db_category.name)
+
+    for sheet_category in set(sheet_categories):
+        if sheet_category not in db_category_names:
+            return True, f"Instrument category \'{sheet_category}\' not in database."
+
+    return False, "All instrument categories exist in database."
 
 
 def handler(uploaded_file):
@@ -130,5 +158,8 @@ def handler(uploaded_file):
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
 
-    valid_asset_tags, asset_tag_info = validate_asset_tags()
+    asset_tag_error, asset_tag_info = validate_asset_tags()
+    if asset_tag_error:
+        return False, f"Asset tag error: {asset_tag_info}"
+
     return True, "Correct formatting. "

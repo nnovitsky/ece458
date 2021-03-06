@@ -3,6 +3,14 @@ import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import Table from 'react-bootstrap/Table';
+import Accordion from 'react-bootstrap/Accordion'
+import Card from 'react-bootstrap/Card'
+import WizardServices from "../../api/wizardServices.js";
+import data from './LoadLevel.json'
+import LoadTableDisplay from './LoadTableDisplay.js'
+import AccordionTableCard from './AccordionTableCard.js'
+
+const wizardServices = new WizardServices();
 
 
 class Step3 extends React.Component {
@@ -69,11 +77,15 @@ class Step3 extends React.Component {
                         </tr>
                     </tbody>
                 </Table>
+                <Accordion>
+                    <AccordionTableCard eventKey="0" title={"First Stage"} tableHeader={"Results for initial Levels"} data={data[1]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="1" title={"Second Stage"} tableHeader={"Results for secondary Levels"} data={data[2]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="2" title={"Third Stage"} tableHeader={"Results for tertiary Levels"} data={data[3]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="3"title={"Fourth Stage"} tableHeader={"Results for quaternary Levels"} data={data[4]}></AccordionTableCard>
+                </Accordion>
             </Form>
-
         </div>
     }
-
 
 }
 

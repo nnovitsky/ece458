@@ -336,6 +336,43 @@ export default class WizardServices {
         }
     }
 
+
+    async getLoadLevelSet(index)
+    {
+        const token = localStorage.getItem('token');
+        let result = {
+            success: false,
+            data: [],
+        }
+
+
+        let url = `${API_URL}/api/load_levels/${index}/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json;
+                    console.log(result.data);
+                    return result;
+                });
+            }
+            else {
+                return res.json().then(json => {
+                    result.success = false;
+                    result.data = json;
+                    return result;
+                })
+            }
+        })
+
+    }
+
 }
 
 

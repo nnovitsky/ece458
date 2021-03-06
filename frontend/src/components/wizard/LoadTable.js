@@ -1,6 +1,5 @@
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
-import data from './LoadLevel.json'
 import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
 import Button from 'react-bootstrap/Button';
 import './Wizard.css'
@@ -10,6 +9,7 @@ const loadLevel = 'load_level'
 let buttonArray =[]
 
 const loadTable = (props) => {
+    let data = props.data
     let config = makeConfig(props.onValidate);
     return (
         <div>
@@ -17,7 +17,7 @@ const loadTable = (props) => {
                 remote
                 bootstrap4
                 condensed={true}
-                data={props.data}
+                data={data}
                 keyField={loadLevel}
                 columns={config}
                 onTableChange={e => props.updateTable(data)}
@@ -61,11 +61,6 @@ let rowStyle = (row, rowIndex) => {
     }
     return 'notValidated';
 }
-
-const onTableChange = (type, newState) => {
-    console.log(type);
-    console.log(newState);
-  }
 
 
 let makeConfig = (onValidate) => {

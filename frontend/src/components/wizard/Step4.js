@@ -3,7 +3,6 @@ import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import LoadTable from './LoadTable.js'
-import data from './LoadLevel.json'
 
 import WizardServices from "../../api/wizardServices.js";
 
@@ -19,8 +18,7 @@ class Step4 extends React.Component {
         this.state = {
             errors: [],
             index: props.index,
-            initialData: data[props.index],
-            validationData: data[props.index],
+            validationData: [],
             allValidated: false,
             loadbank_pk: this.props.loadbank_pk,
             num_validated: 0,
@@ -30,8 +28,18 @@ class Step4 extends React.Component {
         this.updateAllValidated = this.updateAllValidated.bind(this);
         this.validate = this.validate.bind(this);
         this.nextTable = this.nextTable.bind(this);
+        this.prevTable = this.prevTable.bind(this);
+        this.getInitialData = this.getInitialData.bind(this);
 
     }
+
+    async componentDidMount() {
+        await this.getInitialData(this.state.index).then(res => {
+            console.log(this.state.validationData)
+        })
+        console.log(this.state.index)
+    }
+
 
     render() {
         let body = this.makeBody();
@@ -45,7 +53,7 @@ class Step4 extends React.Component {
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.nextTable}
-                decrementStep={this.props.decrementStep}
+                decrementStep={this.prevTable}
                 //Add this in once we want all validated
                 //disableContinue={!(this.state.num_validated === this.state.validationData.length)}
             />
@@ -67,9 +75,21 @@ class Step4 extends React.Component {
                     Note: If you change an input, you will be required to revalidate that input
                 </p>
             </Form>
-            <LoadTable updateAllValidated={this.updateAllValidated} onValidate={this.validate} data={this.state.initialData} updateTable={this.updateTable}></LoadTable>
+            <LoadTable updateAllValidated={this.updateAllValidated} onValidate={this.validate} data={this.state.validationData} updateTable={this.updateTable}></LoadTable>
 
         </div>
+    }
+
+    async getInitialData(index)
+    {
+        wizardServices.getLoadLevelSet(index).then(result =>{
+            if(result.success)
+            {
+                this.setState({
+                    validationData: result.data,
+                })
+            }
+        })
     }
 
     async validate(e) {
@@ -126,22 +146,36 @@ class Step4 extends React.Component {
     }
 
     updateTable(data) {
+        console.log(data)
         this.setState({
-            validationData: data[this.state.index]
+            validationData: data
         })
     }
 
     nextTable() {
-        if (this.state.index < 4) {
+        let currentIndex = this.state.index;
+        console.log(currentIndex)
+        if (currentIndex < 4) {
             this.setState({
-                index: this.state.index + 1,
-                initialData: data[this.state.index + 1],
-                validationData: data[this.state.index + 1],
+                index: currentIndex + 1,
                 allValidated: false
             })
+            this.getInitialData((currentIndex+1))
         }
         else if (this.state.index === 4) {
             this.props.incrementStep()
+        }
+    }
+
+    prevTable() {
+        if (this.state.index > 1) {
+            this.setState({
+                index: this.state.index - 1,
+                allValidated: false
+            })
+        }
+        else if (this.state.index === 1) {
+            this.props.decrementStep()
         }
     }
 

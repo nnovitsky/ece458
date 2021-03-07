@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'groups')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'groups', 'is_active')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -282,10 +282,16 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
     # use when serializing calibration event to avoid redundant data
     item_model = ItemModelNoCategoriesSerializer()
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
+        model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
+        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'categories')
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):

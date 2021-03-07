@@ -10,7 +10,7 @@ from django.urls import reverse
 from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
-from backend.config.load_bank_config import CALIBRATION_MODES
+from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
 
 
 def validate_user(request, create=False):
@@ -205,3 +205,59 @@ def get_calibration_mode_pks(request):
                 mode.save()
             mode_pks.append(mode.pk)
     return mode_pks, None
+
+
+def validate_lb_cal(lb_cal):
+    expected_load_readings = {}
+    for page in LOAD_LEVELS:
+        for level in LOAD_LEVELS[page]:
+            expected_load_readings[level['index']] = level['load']
+    print(expected_load_readings)
+    unacceptable_load_readings = []
+    for reading in lb_cal.loadcurrent_set.all():
+        if not reading.cr_ok or not reading.ca_ok:
+            unacceptable_load_readings.append(reading.load)
+        expected_load_readings.pop(reading.index)
+
+    try:
+        v_test = lb_cal.loadvoltage
+    except LoadBankCalibration.loadvoltage.RelatedObjectDoesNotExist:
+        v_test = None
+    voltage_error = None
+    if v_test and (not v_test.vr_ok or not v_test.va_ok):
+        voltage_error = "Unacceptable voltage test results."
+    elif not v_test:
+        voltage_error = "Missing voltage test."
+
+    bool_fields = ["visual_inspection", "auto_cutoff", "alarm", "recorded_data", "printer"]
+    bool_errors = []
+    for field in bool_fields:
+        if not getattr(lb_cal, field):
+            bool_errors.append(field)
+
+    voltmeter_asset_tag = lb_cal.voltmeter_asset_tag
+    if not voltmeter_asset_tag:
+        voltmeter_error = "No voltmeter given."
+    else:
+        voltmeter_cal_error, instrument, expiration_date = check_instrument_is_calibrated(voltmeter_asset_tag)
+        voltmeter_error = voltmeter_cal_error
+
+    shunt_asset_tag = lb_cal.shunt_meter_asset_tag
+    if not shunt_asset_tag:
+        shunt_error = "No current shunt meter given."
+    else:
+        shunt_cal_error, instrument, expiration_date = check_instrument_is_calibrated(shunt_asset_tag)
+        shunt_error = shunt_cal_error
+
+    valid = (not voltage_error and len(unacceptable_load_readings) == 0 and len(expected_load_readings) == 0 and
+             len(bool_errors) == 0 and not voltmeter_error and not shunt_error)
+    error = {
+        "voltage_test_error": voltage_error,
+        "unacceptable_load_readings": unacceptable_load_readings,
+        "missing_load_readings": [expected_load_readings[index] for index in expected_load_readings],
+        "failed_boolean_checks": bool_errors,
+        "voltmeter_error": voltmeter_error,
+        "shunt_meter_error": shunt_error,
+        "valid": valid
+    }
+    return error

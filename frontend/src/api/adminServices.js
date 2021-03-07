@@ -5,7 +5,7 @@ export default class AdminServices {
     constructor() { }
 
     // handles modified/expired token
-    addAdminPriviledges(userPK) {
+    async addAdminPriviledges(user_pk) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -13,7 +13,7 @@ export default class AdminServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/toggle_admin/${userPK}/`;
+        let url = `${API_URL}/api/toggle_admin/${user_pk}/`;
         return fetch(url, {
             method: 'PUT',
             headers: {
@@ -47,7 +47,7 @@ export default class AdminServices {
     }
 
 
-    removeAdminPriviledges(userPK) {
+    async removeAdminPriviledges(user_pk) {
         const token = localStorage.getItem('token');
 
         let result = {
@@ -55,7 +55,7 @@ export default class AdminServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/toggle_admin/${userPK}/`;
+        let url = `${API_URL}/api/toggle_admin/${user_pk}/`;
         return fetch(url, {
             method: 'DELETE',
             headers: {
@@ -85,6 +85,39 @@ export default class AdminServices {
                         result.errors = json;
                         return result;
                     })
+                }
+            })
+    }
+
+    async deleteUser(user_pk){
+        const token = localStorage.getItem('token');
+
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let data = {
+            delete_user: user_pk,
+        }
+
+        let url = `${API_URL}/api/users/`;
+        return fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                console.log(res)
+                if (res.ok) {
+                        result.success = true;
+                        return result;
+                } else {
+                        result.success = false;
+                        return result;
                 }
             })
     }

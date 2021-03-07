@@ -21,6 +21,9 @@ def validate_user(request, create=False):
             return Response({'input_error': [f"Username must be less than {USERNAME_MAX_LENGTH} characters."]}, status.HTTP_400_BAD_REQUEST)
         elif len(request.data['username']) == 0:
             return Response({'input_error': ["Username is required."]}, status.HTTP_400_BAD_REQUEST)
+        deleted_user_usernames = User.objects.filter(is_active=False).values_list('username', flat=True)
+        if request.data['username'] in deleted_user_usernames:
+            return Response({'input_error': ["Username belongs to a deactivated user."]}, status.HTTP_400_BAD_REQUEST)
 
     if 'first_name' in request.data:
         if len(request.data['first_name']) > FIRST_NAME_MAX_LENGTH:

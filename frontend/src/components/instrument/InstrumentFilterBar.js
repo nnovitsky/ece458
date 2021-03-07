@@ -12,6 +12,7 @@ const modelName = "model";
 const vendorName = "vendor";
 const serialName = "serial";
 const descriptionName = "description";
+const assetName = "asset";
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
@@ -35,9 +36,11 @@ const InstrumentFilterBar = (props) => {
 
                 <Form.Control name={modelName} type="text" placeholder="Enter Model Number" onChange={(e) => dispatch({ type: 'model_number', payload: e.target.value })} value={filterState.model_number} />
 
+                <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => dispatch({ type: 'description', payload: e.target.value })} value={filterState.description} />
+
                 <Form.Control name={serialName} type="text" placeholder="Enter Serial" onChange={(e) => dispatch({ type: 'serial_number', payload: e.target.value })} value={filterState.serial_number} />
 
-                <Form.Control name={descriptionName} type="text" placeholder="Description" onChange={(e) => dispatch({ type: 'description', payload: e.target.value })} value={filterState.description} />
+                <Form.Control name={assetName} type="text" placeholder="Enter Asset Tag" onChange={(e) => dispatch({ type: 'asset_tag', payload: e.target.value })} value={filterState.asset_tag} />
 
                 <div className="filter-picklist">
                     <ModelCategoriesPicklist
@@ -71,7 +74,9 @@ function reducer(state, action) {
         case 'serial_number':
             return { ...state, serial_number: action.payload };
         case 'description':
-            return { ...state, description: action.payload }
+            return { ...state, description: action.payload };
+        case 'asset_tag':
+            return { ...state, asset_tag: action.payload };
         case 'model_categories':
             return { ...state, model_categories: action.payload };
         case 'instrument_categories':
@@ -116,6 +121,7 @@ const getEmptyFilters = () => {
             vendor: '',
             serial_number: '',
             description: '',
+            asset_tag: '',
             model_categories: [],
             instrument_categories: []
         }

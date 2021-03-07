@@ -39,12 +39,12 @@ class Step1 extends React.Component {
         this.onTextInput = this.onTextInput.bind(this);
         this.validateVoltmeter = this.validateVoltmeter.bind(this);
         this.validateShuntmeter = this.validateShuntmeter.bind(this);
-        this.getDetails = this.getDetails.bind(this);
+        this.getStatus = this.getStatus.bind(this);
     }
 
 
     async componentDidMount() {
-        //TODO this.getDetails();
+        await this.getStatus()
     }
 
 
@@ -189,19 +189,39 @@ class Step1 extends React.Component {
             })
     }
 
-    async getDetails()
+    async getStatus()
     {
-        if(this.state.loadbank_pk !== null)
-        {
-            wizardServices.getDetails(this.state.loadbank_pk).then(result => {
-                if(result.success)
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if (result.success) {
+                console.log(result.data)
+                if(result.data.shunt_meter_asset_tag != null)
                 {
                     this.setState({
-                        // setstuff here???
+                        shuntmeter: {
+                            ...this.state.shuntmeter,
+                            validated: true,
+                            validated_text: 'Valid',
+                            vendor: result.data.shunt_meter_vendor,
+                            model_number: result.data.shunt_meter_model_num,
+                            asset_tag: result.data.shunt_meter_asset_tag 
+                        }
                     })
-                }
-            })
-        }
+                } 
+                if(result.data.voltmeter_asset_tag != null)
+                {
+                    this.setState({
+                        voltmeter: {
+                            ...this.state.voltmeter,
+                            validated: true,
+                            validated_text: 'Valid',
+                            vendor: result.data.voltmeter_vendor,
+                            model_number: result.data.voltmeter_model_num,
+                            asset_tag: result.data.voltmeter_asset_tag 
+                        }
+                    })
+                } 
+            }
+        })
     }
 
 }

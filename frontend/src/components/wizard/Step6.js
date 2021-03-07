@@ -28,11 +28,12 @@ class Step6 extends React.Component {
         }
         this.toggleCheck = this.toggleCheck.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.getStatus = this.getStatus.bind(this);
 
     }
 
-    async componentDidMount(){
-        //TODO: Need to be able to get details 
+    async componentDidMount() {
+        await this.getStatus();
     }
 
 
@@ -102,17 +103,17 @@ class Step6 extends React.Component {
                 })
                 return;
             case checkRecordedData:
-                    newCheckValue = !this.state.checkRecordedData
-                    key = "recorded_data"
-                    this.updateLBCal(key, newCheckValue)
+                newCheckValue = !this.state.checkRecordedData
+                key = "recorded_data"
+                this.updateLBCal(key, newCheckValue)
                 this.setState({
                     checkRecordedData: newCheckValue,
                 })
                 return;
             case checkPrinter:
-                    newCheckValue = !this.state.checkPrinter
-                    key = "printer"
-                    this.updateLBCal(key, newCheckValue)
+                newCheckValue = !this.state.checkPrinter
+                key = "printer"
+                this.updateLBCal(key, newCheckValue)
                 this.setState({
                     checkPrinter: newCheckValue,
                 })
@@ -137,6 +138,20 @@ class Step6 extends React.Component {
             } else {
                 this.setState({
                     errors: ["Error sending information"]
+                })
+            }
+        })
+    }
+
+    async getStatus() {
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if (result.success) {
+                console.log(result.data)
+                this.setState({
+                    checkCutoff: result.data.auto_cutoff,
+                    checkAlarm: result.data.alarm,
+                    checkRecordedData: result.data.recorded_data,
+                    checkPrinter: result.data.printer,
                 })
             }
         })

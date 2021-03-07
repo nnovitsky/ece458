@@ -21,7 +21,12 @@ class Step2 extends React.Component {
         }
 
         this.toggleCheck = this.toggleCheck.bind(this);
+        this.getStatus = this.getStatus.bind(this);
 
+    }
+
+    async componentDidMount() {
+        await this.getStatus()
     }
 
 
@@ -64,6 +69,18 @@ class Step2 extends React.Component {
                 this.setState({
                     checked: !this.state.checked,
                     errors: ["Error sending information"]
+                })
+            }
+        })
+    }
+
+    async getStatus()
+    {
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if (result.success) {
+                console.log(result.data)
+                this.setState({
+                    checked: result.data.visual_inspection
                 })
             }
         })

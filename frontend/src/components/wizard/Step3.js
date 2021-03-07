@@ -2,6 +2,9 @@ import React from 'react'
 import Base from './Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
+import WizardServices from "../../api/wizardServices.js";
+
+const wizardServices = new WizardServices();
 
 
 
@@ -12,13 +15,17 @@ class Step3 extends React.Component {
 
         this.state = {
             errors: [],
-            checked: false
+            checked: false,
+            loadbank_pk: this.props.loadbank_pk,
         }
 
         this.toggleCheck = this.toggleCheck.bind(this);
 
     }
+    async componentDidMount() {
 
+        
+    }
 
     render() {
         let body = this.makeBody();

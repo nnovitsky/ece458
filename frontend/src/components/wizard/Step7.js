@@ -5,7 +5,6 @@ import './Wizard.css'
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion'
 import WizardServices from "../../api/wizardServices.js";
-import data from './LoadLevel.json'
 import AccordionTableCard from './AccordionTableCard.js'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -28,15 +27,18 @@ class Step3 extends React.Component {
                 comment: ''
             },
             loadbank_pk: this.props.loadbank_pk,
-            data: []
+            data: [[],[],[],[]]
         }
-
         this.getDeatils = this.getDeatils.bind(this);
+        this.getData = this.getData.bind(this);
 
     }
 
     async componentDidMount() {
         this.getDeatils();
+        this.getData().then(res => {
+            console.log(this.state.data)
+        })
     }
 
 
@@ -52,7 +54,7 @@ class Step3 extends React.Component {
                 decrementStep={this.props.decrementStep}
                 isCancelHidden={true}
                 isBackHidden={false}
-                continueButtonText='Exit'
+                continueButtonText='Finish'
             />
         );
     }
@@ -96,10 +98,10 @@ class Step3 extends React.Component {
                     </Col>
                 </Row>
                 <Accordion>
-                    <AccordionTableCard eventKey="0" title={"First Stage"} tableHeader={"Results for initial Levels"} data={data[1]}></AccordionTableCard>
-                    <AccordionTableCard eventKey="1" title={"Second Stage"} tableHeader={"Results for secondary Levels"} data={data[2]}></AccordionTableCard>
-                    <AccordionTableCard eventKey="2" title={"Third Stage"} tableHeader={"Results for tertiary Levels"} data={data[3]}></AccordionTableCard>
-                    <AccordionTableCard eventKey="3" title={"Fourth Stage"} tableHeader={"Results for quaternary Levels"} data={data[4]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="0" title={"First Stage"} tableHeader={"Results for initial levels"} data={this.state.data[0]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="1" title={"Second Stage"} tableHeader={"Results for secondary levels"} data={this.state.data[1]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="2" title={"Third Stage"} tableHeader={"Results for tertiary levels"} data={this.state.data[2]}></AccordionTableCard>
+                    <AccordionTableCard eventKey="3" title={"Fourth Stage"} tableHeader={"Results for quaternary levels"} data={this.state.data[3]}></AccordionTableCard>
                 </Accordion>
             </Form>
         </div>
@@ -121,6 +123,23 @@ class Step3 extends React.Component {
                 })
             }
         })
+    }
+
+    async getData()
+    {
+        this.state.data.forEach(element => {
+            let index = this.state.data.indexOf(element) + 1
+            wizardServices.getLoadLevelSet(this.state.loadbank_pk, index).then(result =>{
+                if(result.success)
+                {
+                    element = result.data
+                }
+                let newData = this.state.data;
+                newData[index-1] = element;
+                this.setState({ data: newData});
+            })
+        })
+
     }
 
 }

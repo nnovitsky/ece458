@@ -1,10 +1,9 @@
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import './Wizard.css'
-import data from './LoadLevel.json'
 
 
-const loadLevel = 'load_level'
+const loadLevel = 'load'
 
 const loadTable = (props) => {
     let config = makeConfig();
@@ -32,7 +31,7 @@ let makeConfig = () => {
         [
             {
                 isKey: true,
-                dataField: 'load_level',
+                dataField: 'load',
                 text: 'Load Level',
                 headerClasses: 'format-width'
             },
@@ -45,24 +44,41 @@ let makeConfig = () => {
                 text: 'Current Actual',
             },
             {
-                dataField: 'ideal_current',
+                dataField: 'ideal',
                 text: 'Ideal Current',
             },
             {
                 dataField: 'cr_error',
                 text: 'CR Error [%]',
+                formatter: (cell) => {
+                    if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
+                    else return null;
+                }
             },
             {
                 dataField: 'cr_ok',
                 text: 'CR Ok? [<3%]',
+                formatter: (cell) => {
+                    if(cell) return <span>Yes</span>;
+                    else return <span>No</span>
+                }
             },
             {
                 dataField: 'ca_error',
                 text: 'CA Error [%]',
+                formatter: (cell) => {
+                    if(typeof(cell) !== 'undefined') return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
+                    else return null;
+                }
+                
             },
             {
                 dataField: 'ca_ok',
                 text: 'CA Ok? [<5%]',
+                formatter: (cell) => {
+                    if(cell) return <span>Yes</span>;
+                    else return <span>No</span>
+                }
             },
         ]
     )

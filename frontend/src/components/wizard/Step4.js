@@ -25,9 +25,10 @@ class Step4 extends React.Component {
         }
 
         this.updateTable = this.updateTable.bind(this);
-        this.updateAllValidated = this.updateAllValidated.bind(this);
+        this.updateValidated = this.updateValidated.bind(this);
         this.validate = this.validate.bind(this);
         this.nextTable = this.nextTable.bind(this);
+        this.prevTable = this.prevTable.bind(this);
         this.getInitialData = this.getInitialData.bind(this);
 
     }
@@ -39,8 +40,7 @@ class Step4 extends React.Component {
 
     render() {
         let body = this.makeBody();
-        console.log(this.state.num_validated)
-        console.log(this.state.validationData.length)
+        console.log(this.state.num_validated + " vs. " + this.state.validationData.length)
 
         return (
             <Base
@@ -49,7 +49,7 @@ class Step4 extends React.Component {
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.nextTable}
-                decrementStep={this.props.decrementStep}
+                decrementStep={this.prevTable}
                 //TODO: Add this in once we want all validated
                 //disableContinue={!(this.state.num_validated === this.state.validationData.length)}
             />
@@ -71,19 +71,28 @@ class Step4 extends React.Component {
                     Note: If you change an input, you will be required to revalidate that input
                 </p>
             </Form>
-            <LoadTable updateAllValidated={this.updateAllValidated} onValidate={this.validate} data={this.state.validationData} updateTable={this.updateTable}></LoadTable>
+            <LoadTable updateValidated={this.updateValidated} onValidate={this.validate} data={this.state.validationData} updateTable={this.updateTable}></LoadTable>
 
         </div>
     }
 
     async getInitialData(index)
     {
-        //TODO: Needs correct API call
-        wizardServices.getLoadLevelSet(index).then(result =>{
+        wizardServices.getLoadLevelSet(this.state.loadbank_pk, index).then(result =>{
             if(result.success)
             {
                 this.setState({
                     validationData: result.data,
+                })
+                let count = 0;
+                result.data.forEach(element => {
+                    if(element.ca_ok && element.cr_ok)
+                    {
+                        count++;
+                    }
+                })
+                this.setState({
+                    num_validated: count
                 })
             }
         })
@@ -95,20 +104,20 @@ class Step4 extends React.Component {
             errors: []
         })
 
-        const load_level = e.target.value
+        const load = e.target.value
         let res = {
             validate: false
         }
 
         this.state.validationData.forEach(element => {
-            if (element.load_level === load_level) {
-                wizardServices.addCurrentReading(element.load_level, Number(element.cr), Number(element.ca), Number(element.ideal_current), Number(element.index), this.state.loadbank_pk)
+            if (element.load === load) {
+                wizardServices.addCurrentReading(element.load, Number(element.cr), Number(element.ca), Number(element.ideal), Number(element.index), this.state.loadbank_pk)
                 .then(result => {
                     if(result.success){
-                            element.ca_error = result.data.ca_error.toFixed(3) * 100 + "%"
-                            element.cr_error = result.data.cr_error.toFixed(3) * 100 + "%"
-                            element.cr_ok = result.data.cr_ok ? "Yes" : "No"
-                            element.ca_ok = result.data.ca_ok ? "Yes" : "No"
+                            element.ca_error = result.data.ca_error
+                            element.cr_error = result.data.cr_error
+                            element.cr_ok = result.data.cr_ok
+                            element.ca_ok = result.data.ca_ok
                             element.validate = (result.data.cr_ok && result.data.ca_ok)
                             res.validate = element.validate
                             if(element.validate) this.setState({num_validated: this.state.num_validated+1})
@@ -135,7 +144,7 @@ class Step4 extends React.Component {
         return res
     }
 
-    updateAllValidated(val)
+    updateValidated(val)
     {   
         this.setState({
             num_validated: this.state.num_validated + val
@@ -143,7 +152,6 @@ class Step4 extends React.Component {
     }
 
     updateTable(data) {
-        console.log(data)
         this.setState({
             validationData: data
         })
@@ -151,16 +159,28 @@ class Step4 extends React.Component {
 
     nextTable() {
         let currentIndex = this.state.index;
-        console.log(currentIndex)
         if (currentIndex < 4) {
             this.setState({
                 index: currentIndex + 1,
-                allValidated: false
             })
             this.getInitialData((currentIndex+1))
         }
         else if (this.state.index === 4) {
             this.props.incrementStep()
+        }
+    }
+
+
+    prevTable() {
+        let currentIndex = this.state.index;
+        if (currentIndex > 1) {
+            this.setState({
+                index: currentIndex - 1,
+            })
+            this.getInitialData((currentIndex-1))
+        }
+        else if (this.state.index === 1) {
+            this.props.decrementStep()
         }
     }
 

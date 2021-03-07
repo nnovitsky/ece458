@@ -26,6 +26,7 @@ class Wizard extends React.Component {
             asset_tag: this.props.asset_tag,
             cal_event_pk: null,
             isDeleteShown: false,
+            step4Index: 1,
         }
 
         this.incrementStep = this.incrementStep.bind(this);
@@ -33,6 +34,7 @@ class Wizard extends React.Component {
         this.setLoabankCalEventNumber = this.setLoabankCalEventNumber.bind(this);
         this.setCalEventPk = this.setCalEventPk.bind(this);
         this.onClose = this.onClose.bind(this);
+        this.cancelEvent = this.cancelEvent.bind(this);
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
@@ -66,7 +68,7 @@ class Wizard extends React.Component {
                 return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>
             case 4:
-                return <Step4 index={1} isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
+                return <Step4 index={this.state.step4Index} isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>
             case 5:
                 return <Step5 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
@@ -75,7 +77,7 @@ class Wizard extends React.Component {
                 return <Step6 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>
             default:
-                return <Step7 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
+                return <Step7 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
                         loadbank_pk={this.state.loadbank_pk}/>
 
         }
@@ -114,13 +116,18 @@ class Wizard extends React.Component {
     }
 
     onDeleteSubmit() {
-        // TODO cancelEvent()
-        this.props.onClose();
+        this.cancelEvent()
     }
 
 
     incrementStep() {
         if (this.state.currentStep < 7) {
+            if(this.state.currentStep === 3)
+            {
+                this.setState({
+                    step4Index: 1
+                })
+            }
             this.setState({
                 currentStep: this.state.currentStep + 1,
                 errors: []
@@ -130,6 +137,12 @@ class Wizard extends React.Component {
 
     decrementStep() {
         if (this.state.currentStep > 0) {
+            if(this.state.currentStep === 5)
+            {
+                this.setState({
+                    step4Index: 4
+                })
+            }
             this.setState({
                 currentStep: this.state.currentStep - 1,
                 errors: []

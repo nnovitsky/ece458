@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import './Wizard.css'
 
 
-const loadLevel = 'load_level'
+const loadLevel = 'load'
 let buttonArray =[]
 
 const loadTable = (props) => {
@@ -41,11 +41,11 @@ const loadTable = (props) => {
                             {
                                 props.updateAllValidated(-1)
                                 row.validate = false
-                                row.cr_error = ''
-                                row.ca_error = ''
-                                row.cr_ok = ''
-                                row.ca_ok = ''
                             }
+                                row.cr_error = null
+                                row.ca_error = null
+                                row.cr_ok = false
+                                row.ca_ok = false
                         }
                     })
                 }
@@ -55,7 +55,7 @@ const loadTable = (props) => {
 }
 
 let rowStyle = (row, rowIndex) => {
-    if(typeof(row) !== 'undefined' && row.validate)
+    if(typeof(row) !== 'undefined' && (row.validate || row.cr_ok && row.ca_ok))
     {
         return 'validated'
     }
@@ -68,7 +68,7 @@ let makeConfig = (onValidate) => {
         [
             {
                 isKey: true,
-                dataField: 'load_level',
+                dataField: 'load',
                 text: 'Load Level',
                 headerClasses: 'format-width'
                 //headerClasses: 'vendor-column'
@@ -91,7 +91,7 @@ let makeConfig = (onValidate) => {
                 formatter: (cell, row) => {
                     let button = <Button onClick={e => {onValidate(e).then(res => {
                                                             row.validate = res.validate
-                                                        })}} value={row.load_level} className="data-table-button">Validate</Button>
+                                                        })}} value={row.load} className="data-table-button">Validate</Button>
                     buttonArray.push(button)
                     return (
                         button
@@ -99,7 +99,7 @@ let makeConfig = (onValidate) => {
                 }
             },
             {
-                dataField: 'ideal_current',
+                dataField: 'ideal',
                 text: 'Ideal Current',
                 editable: () => {
                     return false;
@@ -110,6 +110,10 @@ let makeConfig = (onValidate) => {
                 text: 'CR Error [%]',
                 editable: () => {
                     return false;
+                },
+                formatter: (cell) => {
+                    if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
+                    else return null;
                 }
             },
             {
@@ -117,6 +121,10 @@ let makeConfig = (onValidate) => {
                 text: 'CR Ok? [<3%]',
                 editable: () => {
                     return false;
+                },
+                formatter: (cell) => {
+                    if(cell) return <span>Yes</span>;
+                    else return <span>No</span>
                 }
             },
             {
@@ -124,13 +132,22 @@ let makeConfig = (onValidate) => {
                 text: 'CA Error [%]',
                 editable: () => {
                     return false;
+                },
+                formatter: (cell) => {
+                    if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
+                    else return null;
                 }
+                
             },
             {
                 dataField: 'ca_ok',
                 text: 'CA Ok? [<5%]',
                 editable: () => {
                     return false;
+                },
+                formatter: (cell) => {
+                    if(cell) return <span>Yes</span>;
+                    else return <span>No</span>
                 }
             },
         ]

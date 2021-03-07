@@ -9,7 +9,7 @@ import AuthServices from '../../api/authServices';
 const authServices = new AuthServices();
 const wizardServices = new WizardServices();
 
-
+const dateDetails = "T00:00:00";
 class Step0 extends React.Component {
 
     constructor(props) {
@@ -179,11 +179,12 @@ class Step0 extends React.Component {
             wizardServices.getDetails(this.state.calInfo.loadbank_pk).then(result => {
                 if(result.success)
                 {
+                    console.log(result.data.cal_event.date)
                     this.setState({
                         calInfo: {
                             ...this.state.calInfo,
                             comment: result.data.cal_event.comment,
-                            date_object: new Date(result.data.cal_event.date),
+                            date_object: new Date(result.data.cal_event.date + dateDetails),
                             date_string: result.data.cal_event.date,
                         }
                     })

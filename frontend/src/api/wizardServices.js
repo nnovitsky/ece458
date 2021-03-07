@@ -45,12 +45,10 @@ export default class WizardServices {
             date: date,
         }
 
-        if(cal_event_pk !== null)
-        {
+        if (cal_event_pk !== null) {
             data["cal_event_pk"] = cal_event_pk
         }
-        if(comment !== '')
-        {
+        if (comment !== '') {
             data["comment"] = comment
         }
 
@@ -100,24 +98,18 @@ export default class WizardServices {
         let url = `${API_URL}/api/cancel_lb_cal/${loadCalNum}/`;
 
         return fetch(url, {
-            method: 'DEL',
+            method: 'DELETE',
             headers: {
                 Authorization: `JWT ${token}`
             },
         }).then(res => {
             if (res.ok) {
-                return res.json().then(json => {
-                    result.success = true;
-                    result.data = json;
-                    return result;
-                });
+                result.success = true;
+                return result;
             }
             else {
-                return res.json().then(json => {
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                result.success = false;
+                return result;
             }
         })
 
@@ -185,13 +177,13 @@ export default class WizardServices {
         else if (json.load) {
             error = ['Load level: ' + json.load]
         }
-        else if(json.va){
+        else if (json.va) {
             error = ["Voltage actual: " + json.va]
         }
-        else if(json.vr){
+        else if (json.vr) {
             error = ["Voltage reported: " + json.vr]
         }
-        else if(json.loadbank_error){
+        else if (json.loadbank_error) {
             error = [json.loadbank_error]
         }
         return error
@@ -326,26 +318,25 @@ export default class WizardServices {
                 data = { voltmeter: value }
                 return data
             case "visual_inspection":
-                data = { visual_inspection : value}
+                data = { visual_inspection: value }
                 return data
             case "auto_cutoff":
-                data = { auto_cutoff : value }
+                data = { auto_cutoff: value }
                 return data
             case "alarm":
-                data = { alarm : value }
+                data = { alarm: value }
                 return data
             case "recorded_data":
-                data = { recorded_data : value }
+                data = { recorded_data: value }
                 return data
             case "printer":
-                data = { printer : value }
+                data = { printer: value }
                 return data
         }
     }
 
 
-    async getLoadLevelSet(index)
-    {
+    async getLoadLevelSet(lb_cal_num, index) {
         const token = localStorage.getItem('token');
         let result = {
             success: false,
@@ -353,7 +344,7 @@ export default class WizardServices {
         }
 
 
-        let url = `${API_URL}/api/load_levels/${index}/`;
+        let url = `${API_URL}/api/load_levels/${lb_cal_num}/${index}/`;
 
         return fetch(url, {
             method: 'GET',
@@ -379,8 +370,7 @@ export default class WizardServices {
 
     }
 
-    async getDetails(lb_cal_num)
-    {
+    async getDetails(lb_cal_num) {
         const token = localStorage.getItem('token');
         let result = {
             success: false,
@@ -396,12 +386,10 @@ export default class WizardServices {
                 Authorization: `JWT ${token}`
             },
         }).then(res => {
-            console.log(res)
             if (res.ok) {
                 return res.json().then(json => {
                     result.success = true;
                     result.data = json;
-                    console.log(result.data);
                     return result;
                 });
             }

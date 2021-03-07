@@ -33,12 +33,15 @@ class Step5 extends React.Component {
 
         this.onTextInput = this.onTextInput.bind(this);
         this.validateVoltages = this.validateVoltages.bind(this);
+        this.invalidateFields = this.invalidateFields.bind(this);
 
     }
 
     async componentDidMount() {
         // TODO: Needs to be able to get details for back button
         await this.getTestVoltage();
+        await this.getStatus();
+
     }
 
 
@@ -89,16 +92,29 @@ class Step5 extends React.Component {
                 this.setState({
                     voltage_reported: val
                 })
+                this.invalidateFields();
                 return;
             case va:
                 this.setState({
                     voltage_actual: val
                 })
+                this.invalidateFields();
                 return;
             default:
                 return;
         }
 
+    }
+
+    invalidateFields() {
+        this.setState({
+            vr_error: '',
+            vr_ok: '',
+            va_error: '',
+            va_ok: '',
+            validated: false,
+            validated_text: '',
+        })
     }
 
     async validateVoltages() {
@@ -107,14 +123,14 @@ class Step5 extends React.Component {
                 console.log(result)
                 if (result.success) {
                     this.setState({
-                        vr_error: result.data.vr_error.toFixed(3)*100 + "%",
-                        va_error: result.data.va_error.toFixed(3)*100  + "%",
+                        vr_error: (result.data.vr_error * 100).toFixed(2) + "%",
+                        va_error: (result.data.va_error * 100).toFixed(2) + "%",
                         vr_ok: result.data.vr_ok ? "Yes" : "No",
                         va_ok: result.data.va_ok ? "Yes" : "No",
                         validated: (result.data.vr_ok && result.data.va_ok),
                         validated_text: (result.data.vr_ok && result.data.va_ok) ? "Valid" : "Invalid",
                     })
-                    if(result.errors[0] !== null){
+                    if (result.errors[0] !== null) {
                         console.log("Here")
                         console.log(result.errors)
                         this.setState({
@@ -157,6 +173,31 @@ class Step5 extends React.Component {
         })
 
     }
+
+
+    async getStatus() {
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if (result.success) {
+                console.log(result.data)
+
+                if (result.data.voltage_test !== null) {
+                    this.setState({
+                        voltage_reported: result.data.voltage_test.vr,
+                        voltage_actual: result.data.voltage_test.va,
+                        test_voltage: result.data.voltage_test.test_voltage,
+                        vr_error: (result.data.voltage_test.vr_error * 100).toFixed(2) + "%",
+                        va_error: (result.data.voltage_test.va_error * 100).toFixed(2) + "%",
+                        vr_ok: result.data.voltage_test.vr_ok ? "Yes" : "No",
+                        va_ok: result.data.voltage_test.va_ok ? "Yes" : "No",
+                        validated: (result.data.voltage_test.vr_ok && result.data.voltage_test.va_ok),
+                        validated_text: (result.data.voltage_test.vr_ok && result.data.voltage_test.va_ok) ? "Valid" : "Invalid",
+                    })
+
+                }
+            }
+        })
+    }
+
 }
 
 

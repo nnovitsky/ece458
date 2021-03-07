@@ -1,4 +1,3 @@
-Vendor,Model-Number,Serial-Number,Comment,Calibration-Date,Calibration-Comment
-VendorA,Model123,123ABC,Example of a calibratable instrument,01/01/2021,Manually calibrated
-VendorA,Model123,123DEF,,12/31/2020,
-VendorB,Model456,EX123,Example of a noncalibratable instrument,,
+Vendor,Model-Number,Serial-Number,Asset-Tag-Number,Comment,Instrument-Categories,Calibration-Date,Calibration-Comment
+VendorA,Model123,,,An example of a calibratable model,end_of_warranty,01/01/2021,
+VendorB,Model123,123DEF,123456,non-calibratable,van_1 shelf_1,,

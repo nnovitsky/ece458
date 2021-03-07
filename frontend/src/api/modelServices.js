@@ -112,6 +112,7 @@ export default class ModelServices {
     // appropriate error handling if the token gets bad
     async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
         const token = localStorage.getItem('token');
+
         let data = {
             vendor: vendor,
             model_number: modelNumber,
@@ -162,7 +163,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
 
-    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories) {
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
         const token = localStorage.getItem('token');
 
         let data = {
@@ -171,7 +172,8 @@ export default class ModelServices {
             description: description,
             comment: comment,
             calibration_frequency: calFrequency,
-            itemmodelcategory_set: categories.map(el => el.pk)
+            itemmodelcategory_set: categories.map(el => el.pk),
+            calibration_modes: calMode,
         }
 
         console.log(data)

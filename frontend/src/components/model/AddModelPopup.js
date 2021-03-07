@@ -77,10 +77,6 @@ class AddModelPopup extends Component {
         //this.getVendorsArr = this.getVendorsArr.bind(this);
     }
 
-    async componentDidMount() {
-
-    }
-
     render() {
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Model" : "Create Model";
@@ -147,7 +143,7 @@ class AddModelPopup extends Component {
     isLoadBank() {
         let result = false;
         this.state.newModel.calibration_modes.forEach(el => {
-            if (el.name === "load_bank") {
+            if (el === "load_bank") {
                 result = true;
             }
         })
@@ -173,11 +169,10 @@ class AddModelPopup extends Component {
     }
 
     onCalModeInput(e) {
-        console.log('input');
         this.setState({
             newModel: {
                 ...this.state.newModel,
-                calibration_modes: (e.target.checked ? [{ name: "load_bank", pk: 1 }] : [])
+                calibration_modes: (e.target.checked ? ["load_bank"] : [])
             }
         })
     }
@@ -244,7 +239,7 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
                 categories: this.state.newModel.categories,
-                calibration_modes: (this.isLoadBank() ? ["load_bank"] : [])
+                calibration_modes: this.state.newModel.calibration_modes
             }
 
             if (newModel.calibration_frequency === '') {
@@ -267,6 +262,7 @@ class AddModelPopup extends Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
+                calibration_modes: [],
 
             },
             vendorsArr: null,

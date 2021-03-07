@@ -61,7 +61,7 @@ def get_model_list(file, load_bank_pk):
     model_records = []
 
     file.seek(0)
-    reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
+    reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
     headers = next(reader)
     for row in reader:
         if is_blank_row(row):

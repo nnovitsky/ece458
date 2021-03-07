@@ -239,7 +239,8 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories)
+
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories, newModel.calibration_modes)
             .then((res) => {
                 if (res.success) {
                     this.updateModelTable();
@@ -384,7 +385,7 @@ class ModelTablePage extends Component {
                 result = 'description_lower';
                 break;
             case 'calibration_frequency':
-                result = 'calibration_frequency_lower';
+                result = 'calibration_frequency';
                 break;
             default:
                 return '';

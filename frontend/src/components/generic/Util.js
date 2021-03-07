@@ -46,5 +46,9 @@ const nameAndDownloadFile = (blobURL, name) => {
     URL.revokeObjectURL(blobURL);
 }
 
+export const CalibrationModeDisplayMap = {
+    "load_bank": "Load Bank"
+};
+
 
 export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };

@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from backend.tables.models import *
 from backend.tables.serializers import *
-from backend.tables.utils import check_instrument_is_calibrated
+from backend.tables.utils import check_instrument_is_calibrated, validate_lb_cal
 from backend.config.load_bank_config import LOAD_LEVELS
 
 
@@ -186,5 +186,6 @@ def lb_cal_details(request, lb_cal_pk):
     except LoadBankCalibration.DoesNotExist:
         return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
+    errors = validate_lb_cal(lb_cal)
     serializer = LBCalReadSerializer(lb_cal)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({"data": serializer.data, "errors": errors}, status=status.HTTP_200_OK)

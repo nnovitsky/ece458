@@ -126,3 +126,32 @@ not defined so it gets the leftover
 .cm-delete-column {
     width: 10%;
 }
+
+/* model table page columns */
+.mt-num-column {
+    width: 30px;
+}
+
+.mt-vendor-column {
+    width: 15%;
+}
+
+.mt-model-number-column {
+    width: 7%;
+}
+
+.mt-description-column {
+    width: 20%;
+}
+
+.mt-cal-column {
+    width: 8%;
+}
+
+.mt-cal-mode-column {
+    width: 10%;
+}
+
+/* .mt-model-category-column {
+
+} */

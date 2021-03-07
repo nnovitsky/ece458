@@ -171,6 +171,7 @@ def instruments_list(request):
         if not UserType.contains_user(request.user, "admin"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        if 'serial_number' in request.data and request.data['serial_number'] == '': request.data['serial_number'] = None
         serializer = InstrumentWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -202,6 +203,7 @@ def instruments_detail(request, pk):
         request.data['item_model'] = instrument.item_model.pk
         if 'instrumentcategory_set' not in request.data: request.data['instrumentcategory_set'] = [cat.pk for cat in instrument.instrumentcategory_set.all()]
         if 'asset_tag' not in request.data: request.data['asset_tag'] = instrument.asset_tag
+        if 'serial_number' in request.data and request.data['serial_number'] == '': request.data['serial_number'] = None
         serializer = InstrumentWriteSerializer(instrument, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -664,4 +666,5 @@ def category_list(request, type):
         return Response({"category_error": ["Invalid category type."]}, status=status.HTTP_400_BAD_REQUEST)
 
     data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
+    data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)

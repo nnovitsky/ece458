@@ -127,10 +127,15 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
+    calibration_modes = serializers.SerializerMethodField()
+
+    def get_calibration_modes(self, obj):
+        modes = [mode.name for mode in obj.calibrationmode_set.all()]
+        return modes
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'calibration_modes')
 
 
 class ItemModelSearchSerializer(serializers.ModelSerializer):
@@ -157,7 +162,7 @@ class ItemModelReadSerializer(serializers.ModelSerializer):
         return cats
 
     def get_calibration_modes(self, obj):
-        modes = [{'name': mode.name, 'pk': mode.pk} for mode in obj.calibrationmode_set.all()]
+        modes = [mode.name for mode in obj.calibrationmode_set.all()]
         return modes
 
     class Meta:

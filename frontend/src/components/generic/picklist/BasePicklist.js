@@ -21,7 +21,7 @@ let valueField;
 let isMulti;
 function BasePicklist(props) {
     const [allOptions, setAllOptions] = useState(null);
-    displayField = props.displayField
+    displayField = props.displayField;
     valueField = props.valueField;
     isMulti = props.isMulti;
 
@@ -64,7 +64,9 @@ const formatSelected = (input) => {
 const formatOptions = (input) => {
 
     let formatted = [];
-    input.map(el => (formatted.push({ label: el[displayField], value: el[valueField] })));
+    input.map(el => {
+        formatted.push({ label: el[displayField], value: el[valueField] })
+    });
     return formatted;
 
 }

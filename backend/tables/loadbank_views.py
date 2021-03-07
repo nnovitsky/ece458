@@ -68,13 +68,26 @@ def update_lb_cal_field(request, lb_cal_pk):
 
 
 @api_view(['GET'])
-def get_load_levels(request, page):
+def get_load_levels(request, lb_cal_pk, page):
     try:
         data = LOAD_LEVELS[page]
     except KeyError:
         return Response({"loadbank_error": ["Invalid page number."]}, status=status.HTTP_400_BAD_REQUEST)
-    data = sorted(data, key=lambda i: i['index'])
-    return Response(data, status=status.HTTP_200_OK)
+    try:
+        lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
+        load_currents = lb_cal.loadcurrent_set.all()
+    except LoadBankCalibration.DoesNotExist:
+        return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+    result = []
+    for load in data:
+        prev_reading = load_currents.filter(index=load['index'])
+        if len(prev_reading) == 0:
+            result.append(load)
+        else:
+            serializer = LoadCurrentReadSerializer(prev_reading[0])
+            result.append(serializer.data)
+    result = sorted(result, key=lambda i: i['index'])
+    return Response(result, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

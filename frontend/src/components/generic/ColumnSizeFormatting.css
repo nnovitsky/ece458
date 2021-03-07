@@ -115,6 +115,9 @@
 not defined so it gets the leftover
 } */
 
+.cm-num-column {
+    width: 50px;
+}
 .cm-count-column {
     width: 15%;
 }
@@ -155,3 +158,44 @@ not defined so it gets the leftover
 /* .mt-model-category-column {
 
 } */
+
+/* serial table of instruments on the model detail page */
+.st-num-column {
+    width: 50px;
+}
+
+.st-asset-tag-column {
+    width: 35%;
+}
+
+/* .st-serial-number-column {
+takes up the rest of the space
+} */
+
+/* calibration table for the instrument detail view */
+.ct-num-column {
+    width: 50px;
+}
+
+.ct-cal-column {
+    width: 15%;
+}
+
+.ct-file-column {
+    width: 15%;
+}
+
+.ct-name-column {
+    width: 15%;
+}
+
+.ct-username-column {
+    width: 12%
+}
+/* .ct-comment-column {
+takes the leftover
+} */
+
+
+
+

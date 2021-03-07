@@ -54,7 +54,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                     return <span>{rowNumber}</span>;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'num-column'
+                headerClasses: 'cm-num-column'
             },
             {
                 dataField: 'name',

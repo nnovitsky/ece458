@@ -18,6 +18,7 @@
     },
     "input_error": {
       "Username is required.": "Please enter a username",
+      "Username belongs to a deactivated user.": "This username is not available, please enter a new one",
       "First name is required.": "Please enter a first name",
       "Last name is required.": "Please enter a last name",
       "Email is required.": "Please enter an email",

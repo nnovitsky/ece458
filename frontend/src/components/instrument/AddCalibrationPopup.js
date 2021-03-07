@@ -44,6 +44,7 @@ const makeBody = (calDate, setCalDate) => {
                         <DatePicker
                             onSelect={(e) => onDateChange(e, setCalDate)}
                             selected={calDate}
+                            maxDate={new Date()}
                         />
                     </div>
 

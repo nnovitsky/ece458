@@ -31,6 +31,7 @@ class InstrumentFilter(django_filters.rest_framework.FilterSet):
     description = django_filters.CharFilter(field_name='item_model__description', lookup_expr='icontains')
     instrument_categories = django_filters.Filter(field_name='instrumentcategory', method=category_filter)
     model_categories = django_filters.Filter(field_name='item_model__itemmodelcategory', method=category_filter)
+    asset_tag = django_filters.CharFilter(field_name='asset_tag', lookup_expr='icontains')
 
     class Meta:
         model = Instrument

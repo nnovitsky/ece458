@@ -119,6 +119,7 @@ class CategoriesPage extends Component {
                                         onCategoryEdit={this.onEditClicked}
                                         onCategoryDelete={this.onDeleteClick}
                                         inlineElements={buttonRow}
+                                        noResultsText="No Model Categories"
                                     />
                                 </div>
 
@@ -132,6 +133,7 @@ class CategoriesPage extends Component {
                                     onCategoryEdit={this.onEditClicked}
                                     onCategoryDelete={this.onDeleteClick}
                                     inlineElements={buttonRow}
+                                        noResultsText="No Instrument Categories"
                                 />
                                 </div>
                             </Tab>

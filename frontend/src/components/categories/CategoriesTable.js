@@ -20,6 +20,7 @@ import Button from 'react-bootstrap/Button';
 // onCategoryDelete: event handler for deleting category, the event.target.value passed in is the pk, event.target.currentName is the current category name
 
 // inlineElements: optional prop that will put elements inline with the pagination
+// noResultsText: a string to display when no results exist
 const keyField = 'pk';
 
 const modelCategoriesTable = (props) => {
@@ -32,7 +33,7 @@ const modelCategoriesTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
-            noResults='No Model Results'
+            noResults={props.noResultsText}
             inlineElements={props.inlineElements}
         />
 

@@ -135,7 +135,7 @@ class AddModelPopup extends Component {
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
 
-                <Form.Label>Calibration Mode</Form.Label>
+                <Form.Label>Specialty Calibration Mode</Form.Label>
                 <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} checked={this.isLoadBank()} />
 
                 <Form.Label>Model Categories</Form.Label>

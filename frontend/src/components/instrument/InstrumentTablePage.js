@@ -66,6 +66,7 @@ class InstrumentTablePage extends Component {
                     vendor: '',
                     serial_number: '',
                     description: '',
+                    asset_tag: '',
                     model_categories: [],
                     instrument_categories: []
                 },

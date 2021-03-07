@@ -49,11 +49,11 @@ def validate_row(current_row):
         elif column_type == 'Asset-Tag-Number':
             valid_cell, info = field_validators.is_valid_asset_tag(item)
             if len(item.strip()) > 0:
-                asset_tags.append(item)
+                asset_tags.append(int(item))
         elif column_type == 'Comment':
             valid_cell, info = field_validators.is_valid_comment(item)
         elif column_type == 'Instrument-Categories':
-            valid_cell, info = field_validators.is_valid_instrument_category_list(item)
+            valid_cell, info = field_validators.is_valid_instrument_categories(item)
             for category in item.strip().split(' '):
                 sheet_categories.append(category)
         elif column_type == 'Calibration-Date':
@@ -103,11 +103,13 @@ def validate_asset_tags():
     if len(asset_tags) == 0:
         return True, "no manual assignments."
 
+    print("\tasset_tags (list): ", asset_tags)
+    print("\tasset_tags (set): ", set(asset_tags))
     if len(asset_tags) != len(set(asset_tags)):
         return True, "Duplicate asset tags assigned within import."
 
     db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
-
+    print("\tdb_asset_tags: ", db_asset_tags)
     for asset_tag in asset_tags:
         if asset_tag in db_asset_tags:
             return True, f"asset tag {asset_tag} already exists in database."
@@ -133,6 +135,8 @@ def validate_categories():
 def handler(uploaded_file):
     sheet_models.clear()
     sheet_instruments.clear()
+    asset_tags.clear()
+    sheet_categories.clear()
     
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
@@ -161,5 +165,9 @@ def handler(uploaded_file):
     asset_tag_error, asset_tag_info = validate_asset_tags()
     if asset_tag_error:
         return False, f"Asset tag error: {asset_tag_info}"
+
+    category_error, category_info = validate_categories()
+    if category_error:
+        return False, f"Category error: {category_info}"
 
     return True, "Correct formatting. "

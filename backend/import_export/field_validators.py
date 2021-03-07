@@ -99,8 +99,6 @@ def is_valid_serial_num(serial_num):
         return False, f"Serial number length too long. " \
                       f"{len(serial_num)} chars long, " \
                       f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
-    elif len(serial_num) == 0:
-        return False, "Missing serial number."
 
     return True, "Valid Serial Number"
 
@@ -152,7 +150,7 @@ def is_valid_asset_tag(asset_tag):
     if len(asset_tag.strip()) == 0:
         return True, "Default asset tag."
 
-    if len(asset_tag) == ASSET_TAG_LENGTH and asset_tag.digits():
+    if len(asset_tag) == ASSET_TAG_LENGTH and asset_tag.isdigit():
         return True, "Valid asset tag format."
 
     return False

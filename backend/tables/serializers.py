@@ -396,7 +396,10 @@ class LBCalReadSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_voltage_test(self, obj):
-        v_test = obj.loadvoltage
+        try:
+            v_test = obj.loadvoltage
+        except LoadBankCalibration.loadvoltage.RelatedObjectDoesNotExist:
+            return None
         serializer = LoadVoltageReadSerializer(v_test)
         return serializer.data
 

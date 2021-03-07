@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.forms.fields import FileField
 import datetime
 from backend.config.load_bank_config import *
+from backend.config.admin_config import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,6 +42,8 @@ class UserSerializerWithToken(serializers.ModelSerializer):
             try:
                 group = UserType.objects.get(name=groupname)
             except UserType.DoesNotExist:
+                if groupname not in USER_GROUPS:
+                    raise serializers.ValidationError({"input_error": ["Invalid group name."]})
                 group = UserType(name=groupname)
                 group.save()
             group.users.add(obj)
@@ -80,6 +83,8 @@ class UserEditSerializer(serializers.ModelSerializer):
             try:
                 group = UserType.objects.get(name=groupname)
             except UserType.DoesNotExist:
+                if groupname not in USER_GROUPS:
+                    raise serializers.ValidationError({"input_error": ["Invalid group name."]})
                 group = UserType(name=groupname)
                 group.save()
             group.users.add(obj)
@@ -301,7 +306,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
@@ -392,7 +397,10 @@ class LBCalReadSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_voltage_test(self, obj):
-        v_test = obj.loadvoltage
+        try:
+            v_test = obj.loadvoltage
+        except LoadBankCalibration.loadvoltage.RelatedObjectDoesNotExist:
+            return None
         serializer = LoadVoltageReadSerializer(v_test)
         return serializer.data
 

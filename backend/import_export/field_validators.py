@@ -8,8 +8,15 @@ CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
 CALIBRATION_DATE_MAX_LENGTH = 20
+
 MODEL_CATEGORIES_MAX_LENGTH = 100
+INSTRUMENT_CATEGORIES_MAX_LENGTH = 100
+
 LOAD_BANK_SUPPORT_MAX_LENGTH = 1
+
+ASSET_TAG_LENGTH = 6
+ASSET_TAG_MAX_VALUE = 999999
+
 EXPECTED_DATE_FORMAT = '%m/%d/%Y'
 
 
@@ -98,8 +105,6 @@ def is_valid_serial_num(serial_num):
         return False, f"Serial number length too long. " \
                       f"{len(serial_num)} chars long, " \
                       f"Max: {SERIAL_NUM_MAX_LENGTH} chars"
-    elif len(serial_num) == 0:
-        return False, "Missing serial number."
 
     return True, "Valid Serial Number"
 
@@ -116,6 +121,9 @@ def is_valid_username(calibration_username):
 
 
 def is_valid_calibration_date(calibration_date, calibratable_instrument):
+    if len(calibration_date) > 0 and not calibratable_instrument:
+        return False, "Received calibration date for non-calibratable instrument"
+
     if len(calibration_date) == 0 and calibratable_instrument:
         return False, "Needs to be calibrated"
     elif len(calibration_date) == 0 and not calibratable_instrument:
@@ -166,3 +174,22 @@ def is_blank_row(row):
             return False
 
     return True
+
+
+def is_valid_asset_tag(asset_tag):
+    if len(asset_tag.strip()) == 0:
+        return True, "Default asset tag."
+
+    if len(asset_tag) == ASSET_TAG_LENGTH and asset_tag.isdigit():
+        return True, "Valid asset tag format."
+
+    return False
+
+
+def is_valid_instrument_categories(instrument_categories):
+
+    if len(instrument_categories) > INSTRUMENT_CATEGORIES_MAX_LENGTH:
+        return False, f"Instrument categories entry \'{instrument_categories}\' too long, " \
+                      f"Max: {INSTRUMENT_CATEGORIES_MAX_LENGTH} chars long"
+
+    return True, "Valid set of instrument categories."

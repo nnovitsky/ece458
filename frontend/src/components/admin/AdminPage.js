@@ -45,6 +45,7 @@ class AdminPage extends React.Component {
         this.giveAdminPriviledges = this.giveAdminPriviledges.bind(this);
         this.revokeAdminPriviledges = this.revokeAdminPriviledges.bind(this);
         this.getUsername = this.getUsername.bind(this);
+        this.onUserDeleted = this.onUserDeleted.bind(this);
     }
 
     
@@ -84,6 +85,7 @@ class AdminPage extends React.Component {
                                 giveAdminPriviledges={this.giveAdminPriviledges}
                                 revokeAdminPriviledges={this.revokeAdminPriviledges}
                                 currentUser={this.state.username}
+                                deleteUser={this.onUserDeleted}
                             />
                         </div>
                     </div>
@@ -132,8 +134,15 @@ class AdminPage extends React.Component {
     }
 
 
-    onUserDeleted = e => {
-        console.log("Delete user");
+    async onUserDeleted(e){
+        let pk = Number(e.target.value)
+        adminServices.deleteUser(pk).then(result =>{
+            if(result.success)
+            {
+                console.log("Trying to update table");
+                this.updateUserTable();
+            }
+        })
     }
 
     // event handler for the User Table, it handles pagination

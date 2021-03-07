@@ -25,7 +25,7 @@ const oauthGroup = 'oauth'
 
 const userTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser);
+    let config = makeConfig(countStart, props.deleteUser, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser);
     return (
         <DataTable
             data={props.data}
@@ -41,7 +41,7 @@ const userTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, currentUser) => {
+let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPriviledges, currentUser) => {
     return (
         [
             // this is a column for a number for the table
@@ -87,7 +87,7 @@ let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, curr
                 formatter: (cell, row) => {   //TODO change to oauth
                     console.log(row)
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
-                    return <Button hidden={isHidden} className="data-table-button red">Delete</Button>;
+                    return <Button onClick={deleteUser} value={row.pk} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
             },
             {
@@ -96,7 +96,7 @@ let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, curr
                 formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
                     let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
-                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Give</Button>
+                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
                     return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
                 },
             },

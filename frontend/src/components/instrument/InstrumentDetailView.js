@@ -306,7 +306,7 @@ class InstrumentDetailView extends Component {
 
     makeDeletePopup() {
         let body = (
-            <p>Are you sure you want to delete Instrument: {this.state.instrument_info.serial_number}?</p>
+            <p>Are you sure you want to delete instrument #{this.state.instrument_info.asset_tag}?</p>
         )
         return (
             <DeletePopup

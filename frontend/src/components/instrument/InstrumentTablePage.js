@@ -392,6 +392,9 @@ class InstrumentTablePage extends Component {
             case 'calibration_expiration':
                 result = 'calibration_expiration_date';
                 break;
+            case 'asset_tag':
+                result = 'asset_tag';
+                break;
             default:
                 return '';
         }

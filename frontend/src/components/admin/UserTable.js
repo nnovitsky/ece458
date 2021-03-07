@@ -96,7 +96,7 @@ let makeConfig = (countStart, giveAdminPriviledges, revokeAdminPriviledges, curr
                 formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
                     let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
-                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Give</Button>
+                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
                     return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
                 },
             },

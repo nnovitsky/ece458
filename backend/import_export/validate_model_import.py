@@ -111,7 +111,6 @@ def handler(uploaded_file):
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
 
-    print("Sheet categories: ", sheet_categories)
     category_error, category_info = validate_categories()
 
     if category_error:

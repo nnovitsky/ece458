@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
+import Wizard from '../wizard/Wizard.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString } from '../generic/Util';
 
@@ -55,8 +56,11 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 errors: []
             },
+            wizardPopup: {
+                isShown: false,
+            },
             isDeleteShown: false,
-            currentUser: ''
+            currentUser: this.props.user,
         }
         this.onAddCalibrationClicked = this.onAddCalibrationClicked.bind(this);
         this.onAddCalibrationSubmit = this.onAddCalibrationSubmit.bind(this);
@@ -67,6 +71,9 @@ class InstrumentDetailView extends Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.onWizardClicked = this.onWizardClicked.bind(this);
+        this.onWizardClose = this.onWizardClose.bind(this);
+        this.makeWizardPopup = this.makeWizardPopup.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
@@ -88,6 +95,7 @@ class InstrumentDetailView extends Component {
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
+        let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -99,6 +107,7 @@ class InstrumentDetailView extends Component {
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
+                {wizardPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={this.props.is_admin ? adminButtons : null}
@@ -116,6 +125,7 @@ class InstrumentDetailView extends Component {
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button onClick={this.onWizardClicked}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )
@@ -264,10 +274,28 @@ class InstrumentDetailView extends Component {
                         <td><strong>Calibration</strong></td>
                         <td>This model isn't calibratable</td>
                     </tr>
-
+                    {/* <tr>
+                        <td><strong>Comment</strong></td>
+                        <td>{detailData.comment}</td>
+                    </tr> */}
 
                 </tbody>
             </Table>
+        )
+    }
+
+    makeWizardPopup() {
+        console.log(this.state.instrument_info.pk)
+        return (
+            <Wizard
+                isShown={this.state.wizardPopup.isShown}
+                onClose={this.onWizardClose}
+                model_number={this.state.instrument_info.model_number}
+                vendor={this.state.instrument_info.vendor}
+                serial_number={this.state.instrument_info.serial_number}
+                instrument_pk={this.state.instrument_info.pk}
+                asset_tag={this.state.instrument_info.asset_tag}
+            />
         )
     }
 
@@ -468,6 +496,24 @@ class InstrumentDetailView extends Component {
                 redirect: '/instruments/'
             })
         });
+    }
+
+    onWizardClicked() {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: true
+            }
+        })
+    }
+
+    onWizardClose() {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: false
+            }
+        })
     }
 
     async onCertificateRequested(e) {

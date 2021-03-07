@@ -20,6 +20,7 @@ import "../generic/ColumnSizeFormatting.css";
 const keyField = 'pk';
 
 const serialTable = (props) => {
+    console.log(props.data);
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
     return (
@@ -54,10 +55,10 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'asset_tag',
                 text: 'Asset Tag',
                 sort: false,
-                title: (cell) => `Asset Tag: ${cell}`,
-                formatter: (pk) => {
+                title: (cell) => `Asset Tag: ${cell}, Click for more information about this instrument`,
+                formatter: (cell, row) => {
                     return (
-                        <p>ADD ME</p>
+                        <Button onClick={onMoreClicked} value={row.pk} className="data-table-button">{cell}</Button>
                     )
                 },
                 headerClasses: 'asset-tag-column'
@@ -69,19 +70,6 @@ let makeConfig = (countStart, onMoreClicked) => {
                 title: (cell) => `Serial: ${cell}`,
                 headerClasses: 'serial-number-column'
             },
-            {
-                isKey: true,
-                dataField: 'pk',
-                text: 'More',
-                sort: false,
-                headerClasses: 'more-column',
-                title: (cell) => 'Go to instrument detail view',
-                formatter: (pk) => {
-                    return (
-                        <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-                    )
-                }
-            }
         ]
     )
 };

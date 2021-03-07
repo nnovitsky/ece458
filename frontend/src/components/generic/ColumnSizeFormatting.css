@@ -168,3 +168,31 @@ not defined so it gets the leftover
 /* .st-serial-number-column {
 takes up the rest of the space
 } */
+
+/* calibration table for the instrument detail view */
+.ct-num-column {
+    width: 50px;
+}
+
+.ct-cal-column {
+    width: 15%;
+}
+
+.ct-file-column {
+    width: 15%;
+}
+
+.ct-name-column {
+    width: 15%;
+}
+
+.ct-username-column {
+    width: 12%
+}
+/* .ct-comment-column {
+takes the leftover
+} */
+
+
+
+

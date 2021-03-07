@@ -520,6 +520,8 @@ def user_list(request):
             return Response({"user_error": ["Cannot delete self."]}, status=status.HTTP_400_BAD_REQUEST)
         if UserType.contains_user(delete_user, "oauth"):
             return Response({"user_error": ["Cannot delete oauth user."]}, status=status.HTTP_400_BAD_REQUEST)
+        if delete_user.username == ADMIN_USERNAME:
+            return Response({"user_error": ["Cannot delete main site administrator."]}, status=status.HTTP_400_BAD_REQUEST)
         delete_user.is_active = False
         delete_user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

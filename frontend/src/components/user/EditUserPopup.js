@@ -24,7 +24,6 @@ class EditUserPopup extends Component {
 
         this.state = {
             newUser: {
-                username: '',
                 password: '',
                 password_confirm: '',
                 first_name: '',
@@ -54,20 +53,18 @@ class EditUserPopup extends Component {
     makeBody() {
         return (
             <Form className="popup">
-                <Form.Label className="required-field">Username</Form.Label>
-                <Form.Control required type="text" name={username} onChange={this.onTextInput} placeholder="Enter Username" />
+                <p>Please enter the fields you wish to edit. Any fields left blank will not be changed. To change your password, please enter both fields.</p>
+                <Form.Label>New Password</Form.Label>
+                <Form.Control type="password" name={password} onChange={this.onTextInput} placeholder="Password" />
 
-                <Form.Label className="required-field">Password</Form.Label>
-                <Form.Control required type="password" name={password} onChange={this.onTextInput} placeholder="Enter Password" />
+                <Form.Label>Confirm New Password</Form.Label>
+                <Form.Control type="password" name={password_confirm} onChange={this.onTextInput} placeholder="Re-enter Password" />
 
-                <Form.Label className="required-field">Confirm Password</Form.Label>
-                <Form.Control required type="password" name={password_confirm} onChange={this.onTextInput} placeholder="Re-enter Password" />
+                <Form.Label>First Name</Form.Label>
+                <Form.Control type="text" name={first_name} onChange={this.onTextInput} placeholder="Enter Your First Name" />
 
-                <Form.Label className="required-field">First Name</Form.Label>
-                <Form.Control required type="text" name={first_name} onChange={this.onTextInput} placeholder="Enter Your First Name" />
-
-                <Form.Label className="required-field">Last Name</Form.Label>
-                <Form.Control required type="text" name={last_name} onChange={this.onTextInput} placeholder="Enter Your Last Name" />
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control type="text" name={last_name} onChange={this.onTextInput} placeholder="Enter Your Last Name" />
             </Form>
         )
     }
@@ -75,14 +72,6 @@ class EditUserPopup extends Component {
     onTextInput(e) {
         let val = e.target.value;
         switch (e.target.name) {
-            case username:
-                this.setState({
-                    newUser: {
-                        ...this.state.newUser,
-                        username: val,
-                    }
-                })
-                return;
             case password:
                 this.setState({
                     newUser: {

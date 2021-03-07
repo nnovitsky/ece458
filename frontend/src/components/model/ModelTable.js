@@ -113,7 +113,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                             <span>{result.join(',')}</span>
                         )
                     } else {
-                        return <span>Regular</span>
+                        return <span>Default</span>
                     }
                 },
                 headerTitle: () => `Calibration Mode`,

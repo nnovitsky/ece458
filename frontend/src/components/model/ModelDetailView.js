@@ -203,8 +203,11 @@ class ModelDetailView extends React.Component {
 
     getCalModesString() {
         let result = this.state.model_info.calibration_modes.map(el => {
-            return CalibrationModeDisplayMap[el.name]
-        })
+            return CalibrationModeDisplayMap[el]
+        });
+        if (result.length === 0) {
+            result.push('Default');
+        }
         return result.join(',');
     }
 
@@ -224,7 +227,6 @@ class ModelDetailView extends React.Component {
     }
 
     async onEditSubmit(editedModel) {
-        console.log(editedModel);
         await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes).then(result => {
             if (result.success) {
                 this.setState({

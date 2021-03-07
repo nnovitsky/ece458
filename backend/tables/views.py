@@ -666,4 +666,5 @@ def category_list(request, type):
         return Response({"category_error": ["Invalid category type."]}, status=status.HTTP_400_BAD_REQUEST)
 
     data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
+    data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)

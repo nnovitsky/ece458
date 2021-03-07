@@ -53,6 +53,8 @@ def upload_cal_event(current_row, current_instrument, user):
 def get_instrument_list(file, user):
     instrument_raw_data = []
     instruments = []
+    db_asset_tags = Instrument.objects.values_list('asset_tag', flat=True).sort()
+    pending_asset_tags = []
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8')))

@@ -164,13 +164,16 @@ export default class InstrumentServices {
     async addInstrument(model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
-            serial_number: serial_number,
             comment: comment,
             instrumentcategory_set: categories.map(el => el.pk),
         }
 
         if (asset_tag !== '') {
             data.asset_tag = asset_tag;
+        }
+
+        if (serial_number !== '') {
+            data.serial_number = serial_number;
         }
 
         let result = {
@@ -217,10 +220,13 @@ export default class InstrumentServices {
     async editInstrument(instrumentPk, model_pk, serial_number, comment, categories, asset_tag) {
         let data = {
             item_model: model_pk,
-            serial_number: serial_number,
             comment: comment,
             instrumentcategory_set: categories.map(el => el.pk),
             asset_tag: asset_tag
+        }
+
+        if (serial_number !== '') {
+            data.serial_number = serial_number;
         }
 
         let result = {

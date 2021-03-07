@@ -49,7 +49,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                     return <span>{rowNumber}</span>;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'num-column'
+                headerClasses: 'st-num-column'
             },
             {
                 dataField: 'asset_tag',
@@ -61,14 +61,14 @@ let makeConfig = (countStart, onMoreClicked) => {
                         <Button onClick={onMoreClicked} value={row.pk} className="data-table-button">{cell}</Button>
                     )
                 },
-                headerClasses: 'asset-tag-column'
+                headerClasses: 'st-asset-tag-column'
             },
             {
                 dataField: 'serial_number',
                 text: 'Serial Number',
                 sort: false,
                 title: (cell) => `Serial: ${cell}`,
-                headerClasses: 'serial-number-column'
+                headerClasses: 'st-serial-number-column'
             },
         ]
     )

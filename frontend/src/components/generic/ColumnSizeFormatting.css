@@ -155,3 +155,16 @@ not defined so it gets the leftover
 /* .mt-model-category-column {
 
 } */
+
+/* serial table of instruments on the model detail page */
+.st-num-column {
+    width: 50px;
+}
+
+.st-asset-tag-column {
+    width: 35%;
+}
+
+/* .st-serial-number-column {
+takes up the rest of the space
+} */

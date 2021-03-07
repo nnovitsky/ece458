@@ -136,7 +136,7 @@ def handler(uploaded_file):
     sheet_categories.clear()
     
     uploaded_file.seek(0)
-    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
 
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)

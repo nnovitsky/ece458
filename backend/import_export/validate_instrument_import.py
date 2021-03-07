@@ -101,15 +101,12 @@ def contains_duplicates():
 
 def validate_asset_tags():
     if len(asset_tags) == 0:
-        return True, "no manual assignments."
+        return False, "no manual assignments."
 
-    print("\tasset_tags (list): ", asset_tags)
-    print("\tasset_tags (set): ", set(asset_tags))
     if len(asset_tags) != len(set(asset_tags)):
         return True, "Duplicate asset tags assigned within import."
 
     db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
-    print("\tdb_asset_tags: ", db_asset_tags)
     for asset_tag in asset_tags:
         if asset_tag in db_asset_tags:
             return True, f"asset tag {asset_tag} already exists in database."

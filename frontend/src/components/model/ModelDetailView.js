@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { CalibrationModeDisplayMap, rawErrorsToDisplayed } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 import SerialTable from './SerialTable';
 import DetailView from '../generic/DetailView';
@@ -33,7 +33,8 @@ class ModelDetailView extends React.Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
-                categories: []
+                categories: [],
+                calibration_modes: []
             },
             instruments: [],
             editPopup: {
@@ -182,6 +183,10 @@ class ModelDetailView extends React.Component {
                         <td>{modelInfo.calibration_frequency}</td>
                     </tr>
                     <tr>
+                        <td><strong>Calibration Mode</strong></td>
+                        <td>{this.getCalModesString()}</td>
+                    </tr>
+                    <tr>
                         <td className="table-view-bold-td"><strong>Model Categories</strong></td>
 
                         <td>
@@ -194,6 +199,13 @@ class ModelDetailView extends React.Component {
                 </tbody>
             </Table>
         )
+    }
+
+    getCalModesString() {
+        let result = this.state.model_info.calibration_modes.map(el => {
+            return CalibrationModeDisplayMap[el.name]
+        })
+        return result.join(',');
     }
 
     onMoreClicked(e) {
@@ -213,7 +225,7 @@ class ModelDetailView extends React.Component {
 
     async onEditSubmit(editedModel) {
         console.log(editedModel);
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories).then(result => {
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {

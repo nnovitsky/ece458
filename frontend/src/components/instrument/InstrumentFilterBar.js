@@ -76,7 +76,9 @@ function reducer(state, action) {
         case 'serial_number':
             return { ...state, serial_number: action.payload };
         case 'description':
-            return { ...state, description: action.payload }
+            return { ...state, description: action.payload };
+        case 'asset_tag':
+            return { ...state, asset_tag: action.payload };
         case 'model_categories':
             return { ...state, model_categories: action.payload };
         case 'instrument_categories':
@@ -125,6 +127,7 @@ const getEmptyFilters = () => {
             serial_number: '',
             asset_tag: '',
             description: '',
+            asset_tag: '',
             model_categories: [],
             instrument_categories: []
         }

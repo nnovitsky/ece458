@@ -48,7 +48,6 @@ class InstrumentTablePage extends Component {
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
@@ -286,24 +285,6 @@ class InstrumentTablePage extends Component {
                     nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
                 }
             })
-    }
-
-    async onRemoveFilters() {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: {
-                    model_number: '',
-                    vendor: '',
-                    serial_number: '',
-                    description: '',
-                    model_categories: [],
-                    instrument_categories: [],
-                }
-            }
-        }, () => {
-            this.updateTable();
-        })
     }
 
     onAddInstrumentClicked = (e) => {

@@ -12,8 +12,14 @@ form.wizard {
 }
 
 .format-width {
-    width: 100px
+    width: 20vw;
+    font-size: min(1.4vw, 20px);
 }
+
+.format-basic-cells{
+    font-size: min(1.4vw, 20px) !important;
+}
+
 
 .validated{
     background-color: rgba(200, 255, 187, 0.411)
@@ -27,3 +33,5 @@ form.wizard {
     width: 12vw;
     font-size: 1.3vw;
 }
+
+

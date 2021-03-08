@@ -9,9 +9,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
+image_types = ['gif', 'jpg', 'png']
 model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Model-Categories', 'Load-Bank-Support',
                  'Calibration-Frequency']
-instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Comment', 'Calibration-Date', 'Calibration-Comment']
+instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Asset-Tag', 'Comment', 'Calibration-Date',
+                      'Calibration-Comment', 'Instrument-Categories', 'Calibration-File-Attachment',
+                      'Calibration-Load-Bank-Result-Exists']
 
 
 def get_model_categories(model):
@@ -56,10 +59,52 @@ def write_model_sheet(db_models, buffer):
     return buffer, f"model_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.csv"
 
 
+def get_instrument_categories(instrument):
+    cats = [cat.name for cat in instrument.instrumentcategory_set.all()]
+
+    if len(cats) > 0:
+        return " ".join(cats)
+
+    return ""
+
+
+def get_file_info(db_instrument):
+    file_name = None
+    most_recent_cal = db_instrument.calibrationevent_set.order_by('-date')[:1]
+
+    if len(most_recent_cal) != 0:
+        file_name = str(most_recent_cal[0].file)
+
+    if file_name is None or file_name.strip() == '':
+        return ""
+
+    file_ext = file_name.split('.')[-1]
+
+    if file_ext.lower() in image_types:
+        return f"Attachment: {file_ext.upper()} image"
+
+    return f"Attachment: {file_ext.upper()} file"
+
+
+def check_calibration_for_lb(instrument):
+    most_recent_cal = instrument.calibrationevent_set.order_by('-date')[:1]
+
+    if len(most_recent_cal) != 0:
+        file_type = most_recent_cal[0].file_type
+        if file_type == 'Load Bank':
+            return "Calibration via load-bank wizard"
+
+    return ""
+
+
 def write_instrument_sheet(db_instruments, buffer):
     instrument_list = []
     for db_instrument in db_instruments:
         instrument_model = db_instrument.item_model
+
+        categories = get_instrument_categories(db_instrument)
+        file_info = get_file_info(db_instrument)
+        load_bank_check = check_calibration_for_lb(db_instrument)
 
         if instrument_model.calibration_frequency < 1:
             cal_date = ""
@@ -73,9 +118,13 @@ def write_instrument_sheet(db_instruments, buffer):
             str(instrument_model.vendor),
             str(instrument_model.model_number),
             str(db_instrument.serial_number),
+            str(db_instrument.asset_tag),
             str(db_instrument.comment),
             cal_date,
-            cal_comment
+            cal_comment,
+            categories,
+            file_info,
+            load_bank_check
         ]
 
         instrument_list.append(instrument_row)

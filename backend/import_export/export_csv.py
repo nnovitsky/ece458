@@ -2,7 +2,6 @@ from io import BytesIO
 from datetime import date, datetime
 import zipfile
 import pytz
-
 import pandas as pd
 
 from django.http import FileResponse, HttpResponse
@@ -10,18 +9,42 @@ from rest_framework import status
 from rest_framework.response import Response
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
-model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Calibration-Frequency']
+model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Model-Categories', 'Load-Bank-Support',
+                 'Calibration-Frequency']
 instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Comment', 'Calibration-Date', 'Calibration-Comment']
+
+
+def get_model_categories(model):
+    cats = [cat.name for cat in model.itemmodelcategory_set.all()]
+
+    if len(cats) > 0:
+        return " ".join(cats)
+
+    return ""
+
+
+def get_load_bank_compatibility(model):
+    modes = model.calibrationmode_set.all()
+
+    if len(modes) > 0 and modes[0].name == 'load_bank':
+        return "Y"
+
+    return ""
 
 
 def write_model_sheet(db_models, buffer):
     model_list = []
     for db_model in db_models:
+        model_categories = get_model_categories(db_model)
+        load_bank_support = get_load_bank_compatibility(db_model)
+
         model_row = [
             str(db_model.vendor),
             str(db_model.model_number),
             str(db_model.description),
             str(db_model.comment),
+            model_categories,
+            load_bank_support,
             str(db_model.calibration_frequency)
         ]
         model_list.append(model_row)

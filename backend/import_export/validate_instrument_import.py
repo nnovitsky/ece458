@@ -10,9 +10,9 @@ column_types = [
     'Serial-Number',
     'Asset-Tag-Number',
     'Comment',
-    'Instrument-Categories',
     'Calibration-Date',
     'Calibration-Comment',
+    'Instrument-Categories'
 ]
 
 VENDOR_INDEX = 0
@@ -87,7 +87,6 @@ def check_models():
 
 
 def contains_duplicates():
-
     if len(sheet_instruments) != len(set(sheet_instruments)):
         return True, "Duplicate instruments contained within the imported sheet."
 
@@ -112,21 +111,6 @@ def validate_asset_tags():
             return True, f"asset tag {asset_tag} already exists in database."
 
     return False, "Valid set of asset tags"
-
-
-def validate_categories():
-
-    db_categories = InstrumentCategory.objects.all()
-    db_category_names = []
-
-    for db_category in db_categories:
-        db_category_names.append(db_category.name)
-
-    for sheet_category in set(sheet_categories):
-        if sheet_category not in db_category_names:
-            return True, f"Instrument category \'{sheet_category}\' not in database."
-
-    return False, "All instrument categories exist in database."
 
 
 def handler(uploaded_file):
@@ -162,9 +146,5 @@ def handler(uploaded_file):
     asset_tag_error, asset_tag_info = validate_asset_tags()
     if asset_tag_error:
         return False, f"Asset tag error: {asset_tag_info}"
-
-    category_error, category_info = validate_categories()
-    if category_error:
-        return False, f"Category error: {category_info}"
 
     return True, "Correct formatting. "

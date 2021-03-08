@@ -2,29 +2,75 @@ import csv
 import io
 import datetime
 
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent
-from backend.tables.serializers import ItemModelSerializer, InstrumentWriteSerializer, CalibrationEventWriteSerializer
-from backend.import_export.field_validators import is_blank_row
+from django.db import transaction
 from django.contrib.auth.models import User
 
-instrument_keys = ['item_model', 'serial_number', 'comment']
-cal_event_keys = ['date', 'user', 'instrument','comment']
-record_keys = ['vendor', 'model_number', 'serial_number', 'comment', 'calibration_date', 'calibration_comment']
+from backend.tables.models import ItemModel, Instrument, CalibrationEvent, InstrumentCategory
+from backend.tables.serializers import ItemModelSerializer, InstrumentWriteSerializer, \
+                                       CalibrationEventWriteSerializer, InstrumentCategorySerializer
+from backend.import_export.field_validators import is_blank_row
+
+db_categories = list(InstrumentCategory.objects.values_list('name', flat=True))
+db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
+at_pointer = 100000
+instrument_keys = ['item_model', 'asset_tag', 'serial_number', 'comment', 'instrumentcategory_set']
+cal_event_keys = ['date', 'user', 'instrument', 'comment']
+
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
 SERIAL_NUM_INDEX = 2
-COMMENT_INDEX = 3
-CAL_DATE_INDEX = 4
-CAL_COMMENT_INDEX = 5
+ASSET_TAG_INDEX = 3
+COMMENT_INDEX = 4
+CAL_DATE_INDEX = 5
+CAL_COMMENT_INDEX = 6
+CATEGORIES_INDEX = 7
+
+
+def get_instrument_category_set(row):
+    global db_categories
+    instrument_category_set = set()
+    row_categories = row[CATEGORIES_INDEX].strip()
+
+    if len(row_categories) > 0:
+        for category in row_categories.split(' '):
+            if category not in db_categories:
+                cat_to_add = InstrumentCategorySerializer(data={"name": category})
+                if cat_to_add.is_valid(): cat_to_add.save()
+                db_categories.append(category)
+
+            category_pk = InstrumentCategory.objects.filter(name=category)[0].pk
+            instrument_category_set.add(category_pk)
+
+    return instrument_category_set
+
+
+def get_valid_asset_tag(row):
+    global at_pointer, db_asset_tags
+
+    if row[ASSET_TAG_INDEX].strip() == '':
+        while at_pointer in db_asset_tags:
+            at_pointer += 1
+    else:
+        return int(row[ASSET_TAG_INDEX])
+
+    return at_pointer
 
 
 def upload_instrument(current_row, item_model):
+    global db_asset_tags, db_categories
 
-    instrument_info = [item_model.pk, current_row[SERIAL_NUM_INDEX], current_row[COMMENT_INDEX]]
+    categories = get_instrument_category_set(current_row)
+    asset_tag = get_valid_asset_tag(current_row)
+
+    instrument_info = [item_model.pk, asset_tag, current_row[SERIAL_NUM_INDEX], current_row[COMMENT_INDEX],
+                       list(categories)]
     instrument_raw_data = dict(zip(instrument_keys, instrument_info))
     instrument_upload = InstrumentWriteSerializer(data=instrument_raw_data)
     if instrument_upload.is_valid():
         current_instrument = instrument_upload.save()
+        db_asset_tags.add(asset_tag)
+        for cat_pk in categories:
+            db_categories.append(InstrumentCategory.objects.get(pk=cat_pk).name)
         return True, current_instrument
     else:
         return False, []
@@ -50,18 +96,31 @@ def upload_cal_event(current_row, current_instrument, user):
     return False
 
 
+def get_assigned_asset_tags(reader):
+    next(reader)
+
+    for row in reader:
+        if row[ASSET_TAG_INDEX].strip() == '':
+            continue
+
+        db_asset_tags.add(int(row[ASSET_TAG_INDEX]))
+
+
 def get_instrument_list(file, user):
-    instrument_raw_data = []
+    n_uploads = 0
     instruments = []
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
+    get_assigned_asset_tags(reader)
+
+    file.seek(0)
+    reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
     headers = next(reader)
+
     for row in reader:
         if is_blank_row(row):
             continue
-
-        instrument_raw_data.append(dict(zip(record_keys, row)))
 
         item_model = ItemModel.objects.filter(vendor=row[VENDOR_INDEX]).filter(model_number=row[MODEL_NUM_INDEX])[0]
         instrument_upload_success, current_instrument = upload_instrument(row, item_model)
@@ -76,10 +135,15 @@ def get_instrument_list(file, user):
 
         instruments.append(current_instrument)
 
-    return True, instruments, f"Uploaded {len(instrument_raw_data)} records to db"
+    return True, instruments, f"Uploaded {n_uploads} records to db"
 
 
 def handler(verified_file, request):
     user = request.user
-    successful_upload, instruments, upload_summary = get_instrument_list(verified_file, user)
+    try:
+        with transaction.atomic():
+            successful_upload, instruments, upload_summary = get_instrument_list(verified_file, user)
+    except IOError:
+        return False, None, "Error writing instruments to database."
+
     return successful_upload, instruments, upload_summary

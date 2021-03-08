@@ -57,7 +57,7 @@ def get_instrument_list(file, user):
     pending_asset_tags = []
 
     file.seek(0)
-    reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
+    reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
     headers = next(reader)
     for row in reader:
         if is_blank_row(row):

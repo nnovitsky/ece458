@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import Select from 'react-select/creatable';
 import ModelServices from '../../api/modelServices';
 import GenericPopup from '../generic/GenericPopup';
+import CalModePicklist from '../generic/picklist/CalModePicklist';
 import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
 import VendorPicklist from '../generic/picklist/VendorPicklist';
 
@@ -46,6 +47,7 @@ class AddModelPopup extends Component {
                     comment: props.currentModel.comment,
                     calibration_frequency: props.currentModel.calibration_frequency,
                     categories: props.currentModel.categories,
+                    calibration_modes: props.currentModel.calibration_modes,
                 },
                 vendorsArr: null,
             }
@@ -60,6 +62,7 @@ class AddModelPopup extends Component {
                     comment: '',
                     calibration_frequency: '',
                     categories: [],
+                    calibration_modes: [], 
                 },
                 vendorsArr: null
             }
@@ -69,12 +72,9 @@ class AddModelPopup extends Component {
         this.onTextInput = this.onTextInput.bind(this);
         this.onCategoryInput = this.onCategoryInput.bind(this);
         this.onVendorInput = this.onVendorInput.bind(this);
+        this.onCalModeInput = this.onCalModeInput.bind(this);
         this.onClose = this.onClose.bind(this);
         //this.getVendorsArr = this.getVendorsArr.bind(this);
-    }
-
-    async componentDidMount() {
-
     }
 
     render() {
@@ -121,10 +121,18 @@ class AddModelPopup extends Component {
 
                 <Form.Label>Comments</Form.Label>
                 <Form.Control as="textarea" rows={3} value={this.state.newModel.comment} name={commentName} onChange={this.onTextInput} />
+                {/* <CalModePicklist
+                    selectedMode={this.state.newModel.calMode}
+                    onChange={this.onCalModeInput}
+                /> */}
+
 
                 <Form.Label>Calibration Frequency (days)</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
+
+                <Form.Label>Specialty Calibration Mode</Form.Label>
+                <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} checked={this.isLoadBank()} />
 
                 <Form.Label>Model Categories</Form.Label>
                 {categoryPicklist}
@@ -132,8 +140,17 @@ class AddModelPopup extends Component {
         )
     }
 
+    isLoadBank() {
+        let result = false;
+        this.state.newModel.calibration_modes.forEach(el => {
+            if (el === "load_bank") {
+                result = true;
+            }
+        })
+        return result;
+    }
+
     onVendorInput(e) {
-        console.log(`vendor change: ${e}`)
         this.setState({
             newModel: {
                 ...this.state.newModel,
@@ -147,6 +164,15 @@ class AddModelPopup extends Component {
             newModel: {
                 ...this.state.newModel,
                 categories: categoryList
+            }
+        })
+    }
+
+    onCalModeInput(e) {
+        this.setState({
+            newModel: {
+                ...this.state.newModel,
+                calibration_modes: (e.target.checked ? ["load_bank"] : [])
             }
         })
     }
@@ -203,6 +229,7 @@ class AddModelPopup extends Component {
     }
 
     onSubmit() {
+
         if (this.isValid()) {
             let newModel = {
                 pk: this.state.newModel.model_pk,
@@ -211,7 +238,8 @@ class AddModelPopup extends Component {
                 calibration_frequency: this.state.newModel.calibration_frequency,
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
-                categories: this.state.newModel.categories
+                categories: this.state.newModel.categories,
+                calibration_modes: this.state.newModel.calibration_modes
             }
 
             if (newModel.calibration_frequency === '') {
@@ -234,6 +262,7 @@ class AddModelPopup extends Component {
                 description: '',
                 comment: '',
                 calibration_frequency: '',
+                calibration_modes: [],
 
             },
             vendorsArr: null,

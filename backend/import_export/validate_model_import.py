@@ -73,25 +73,10 @@ def contains_duplicates():
     return False, "No Duplicates!"
 
 
-def validate_categories():
-
-    db_categories = ItemModelCategory.objects.all()
-    db_category_names = []
-
-    for db_category in db_categories:
-        db_category_names.append(db_category.name)
-
-    for sheet_category in set(sheet_categories):
-        if sheet_category not in db_category_names:
-            return True, f"Model category \'{sheet_category}\' not in database."
-
-    return False, "All models exist in database."
-
-
 def handler(uploaded_file):
     sheet_models.clear()
     uploaded_file.seek(0)
-    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8')))
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
 
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
@@ -110,10 +95,5 @@ def handler(uploaded_file):
 
     if duplicate_error:
         return False, f"Duplicate input: " + duplicate_info
-
-    category_error, category_info = validate_categories()
-
-    if category_error:
-        return False, category_info
 
     return True, "Correct formatting. "

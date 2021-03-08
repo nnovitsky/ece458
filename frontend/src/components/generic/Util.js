@@ -18,7 +18,7 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
             let currentJson = errorBlock[key];
             errorArr[key].forEach(currentErrorKey => {
                 if (currentJson[currentErrorKey] === undefined) {
-                    console.log(`No catch for the following error: ${currentErrorKey}`);
+                    console.log(`No catch for the following error: ${currentErrorKey} with key: ${key}`);
                 }
                 formattedErrors.push(currentJson[currentErrorKey]);
             })
@@ -45,6 +45,10 @@ const nameAndDownloadFile = (blobURL, name) => {
     // window.open(result.url, '_blank');
     URL.revokeObjectURL(blobURL);
 }
+
+export const CalibrationModeDisplayMap = {
+    "load_bank": "Load Bank"
+};
 
 
 export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };

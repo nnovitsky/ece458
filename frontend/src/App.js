@@ -151,8 +151,10 @@ class App extends Component {
   }
 
   render(
+    
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
+    console.log(this.state.username)
     return (
       <Beforeunload onBeforeunload={this.emptyLocalStorage}>
         <BrowserRouter>

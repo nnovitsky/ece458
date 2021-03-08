@@ -48,7 +48,6 @@ class InstrumentTablePage extends Component {
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
-        this.onRemoveFilters = this.onRemoveFilters.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
@@ -66,6 +65,7 @@ class InstrumentTablePage extends Component {
                     vendor: '',
                     serial_number: '',
                     description: '',
+                    asset_tag: '',
                     model_categories: [],
                     instrument_categories: []
                 },
@@ -287,24 +287,6 @@ class InstrumentTablePage extends Component {
             })
     }
 
-    async onRemoveFilters() {
-        this.setState({
-            instrumentSearchParams: {
-                ...this.state.instrumentSearchParams,
-                filters: {
-                    model_number: '',
-                    vendor: '',
-                    serial_number: '',
-                    description: '',
-                    model_categories: [],
-                    instrument_categories: [],
-                }
-            }
-        }, () => {
-            this.updateTable();
-        })
-    }
-
     onAddInstrumentClicked = (e) => {
         this.setState({
             addInstrumentPopup: {
@@ -391,6 +373,9 @@ class InstrumentTablePage extends Component {
                 break;
             case 'calibration_expiration':
                 result = 'calibration_expiration_date';
+                break;
+            case 'asset_tag':
+                result = 'asset_tag';
                 break;
             default:
                 return '';

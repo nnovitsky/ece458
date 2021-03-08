@@ -52,21 +52,21 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                     return <span>{rowNumber}</span>;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'num-column'
+                headerClasses: 'ct-num-column'
             },
             {
                 dataField: 'date',
                 text: 'Date',
                 sort: false,
                 title: (cell) => `Calibration Date: ${cell}`,
-                headerClasses: 'cal-column'
+                headerClasses: 'ct-cal-column'
             },
             {
                 dataField: 'file_type',
                 text: 'Additional Files',
                 sort: false,
                 title: (cell) => `If a supplement file/data exists, click to see more`,
-                headerClasses: 'file-column',
+                headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
                     switch (cell) {
                         case '0':
@@ -81,18 +81,11 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                 })
             },
             {
-                dataField: 'comment',
-                text: 'Comment',
-                sort: false,
-                title: (cell) => `Comment: ${cell}`,
-                headerClasses: 'comment-column'
-            },
-            {
                 dataField: 'user',
                 text: 'Name',
                 sort: false,
                 title: (cell) => `Name: ${cell}`,
-                headerClasses: 'name-column',
+                headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>
                 }
@@ -102,7 +95,14 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                 text: 'Username',
                 sort: false,
                 title: (cell) => `Username: ${cell}`,
-                headerClasses: 'username-column'
+                headerClasses: 'ct-username-column'
+            },
+            {
+                dataField: 'comment',
+                text: 'Comment',
+                sort: false,
+                title: (cell) => `Comment: ${cell}`,
+                headerClasses: 'ct-comment-column'
             },
         ]
     )

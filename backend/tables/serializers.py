@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'groups')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'groups', 'is_active')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -127,10 +127,15 @@ class ItemModelSerializer(serializers.ModelSerializer):
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
+    calibration_modes = serializers.SerializerMethodField()
+
+    def get_calibration_modes(self, obj):
+        modes = [mode.name for mode in obj.calibrationmode_set.all()]
+        return modes
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'calibration_modes')
 
 
 class ItemModelSearchSerializer(serializers.ModelSerializer):
@@ -157,7 +162,7 @@ class ItemModelReadSerializer(serializers.ModelSerializer):
         return cats
 
     def get_calibration_modes(self, obj):
-        modes = [{'name': mode.name, 'pk': mode.pk} for mode in obj.calibrationmode_set.all()]
+        modes = [mode.name for mode in obj.calibrationmode_set.all()]
         return modes
 
     class Meta:
@@ -277,10 +282,16 @@ class DetailInstrumentReadSerializer(serializers.ModelSerializer):
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
     # use when serializing calibration event to avoid redundant data
     item_model = ItemModelNoCategoriesSerializer()
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
+        model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
+        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     class Meta:
         model = Instrument
-        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment')
+        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'categories')
 
 
 class InstrumentWriteSerializer(serializers.ModelSerializer):

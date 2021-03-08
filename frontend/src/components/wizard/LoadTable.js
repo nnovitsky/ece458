@@ -39,7 +39,7 @@ const loadTable = (props) => {
                             }
                             if(row.validate)
                             {
-                                props.updateAllValidated(-1)
+                                props.updateValidated(-1)
                                 row.validate = false
                             }
                                 row.cr_error = null

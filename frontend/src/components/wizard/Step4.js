@@ -30,6 +30,7 @@ class Step4 extends React.Component {
         this.nextTable = this.nextTable.bind(this);
         this.prevTable = this.prevTable.bind(this);
         this.getInitialData = this.getInitialData.bind(this);
+        this.seeIfAllValidated = this.seeIfAllValidated.bind(this);
 
     }
 
@@ -166,7 +167,8 @@ class Step4 extends React.Component {
             this.getInitialData((currentIndex+1))
         }
         else if (this.state.index === 4) {
-            this.props.incrementStep()
+            this.seeIfAllValidated();
+            //this.props.incrementStep()
         }
     }
 
@@ -182,6 +184,32 @@ class Step4 extends React.Component {
         else if (this.state.index === 1) {
             this.props.decrementStep()
         }
+    }
+
+    async seeIfAllValidated()
+    {
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if(result.success)
+            {
+                if(result.data.errors.unacceptable_load_readings.length === 0 && result.data.errors.missing_load_readings.length === 0)
+                {
+                    this.props.incrementStep()
+                }
+                else if(result.data.errors.unacceptable_load_readings.length > 0 && result.data.errors.unacceptable_load_readings.length <= 5)
+                {
+                    this.setState({
+                        errors: ["Cannot continue: Inputted current readings contain unacceptable values. Please fix and validate them to continue."]
+                    })
+                }
+                else if(result.data.errors.missing_load_readings.length > 0)
+                {
+                    this.setState({
+                        errors: ["Cannot continue: Some current readings are missing, please enter and validate them to continue."]
+                    })
+                }
+                //this.props.incrementStep()
+            }
+        })
     }
 
 }

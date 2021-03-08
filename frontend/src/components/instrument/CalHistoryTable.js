@@ -74,7 +74,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                         case 'Artifact':
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
                         case 'Load Bank':
-                            return <Button onClick={onLoadBankClick} value={row.pk} className="data-table-button">Load Bank Data</Button>
+                            return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
                         default:
                             return <span>N/A</span>
                     }

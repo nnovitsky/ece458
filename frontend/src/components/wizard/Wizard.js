@@ -17,12 +17,12 @@ class Wizard extends React.Component {
         super(props);
         this.state = {
             errors: [],
-            currentStep: 0,
+            currentStep: this.props.lb_pk !== null ? 7 : 0,
             model_number: this.props.model_number,
             vendor: this.props.vendor,
             serial_number: this.props.serial_number,
             instrument_pk: this.props.instrument_pk,
-            loadbank_pk: null,
+            loadbank_pk: this.props.lb_pk,
             asset_tag: this.props.asset_tag,
             cal_event_pk: null,
             isDeleteShown: false,

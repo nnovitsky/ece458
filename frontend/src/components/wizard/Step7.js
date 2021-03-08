@@ -24,7 +24,10 @@ class Step3 extends React.Component {
                 date: '',
                 voltmeter: '',
                 shuntmeter: '',
-                comment: ''
+                test_voltage: '',
+                comment: '',
+                vr: '',
+                va: '',
             },
             loadbank_pk: this.props.loadbank_pk,
             data: [[],[],[],[]]
@@ -53,7 +56,7 @@ class Step3 extends React.Component {
                 incrementStep={this.props.onClose}
                 decrementStep={this.props.decrementStep}
                 isCancelHidden={true}
-                isBackHidden={false}
+                isBackHidden={true}
                 continueButtonText='Finish'
             />
         );
@@ -76,12 +79,16 @@ class Step3 extends React.Component {
                                     <td>{this.state.calInfo.date}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Voltmeter Used</strong></td>
+                                    <td><strong>Voltmeter</strong></td>
                                     <td>{this.state.calInfo.voltmeter}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Shuntmeter Used</strong></td>
+                                    <td><strong>Shuntmeter</strong></td>
                                     <td>{this.state.calInfo.shuntmeter}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Test Voltage</strong></td>
+                                    <td>Tested: {this.state.calInfo.test_voltage} <br></br>Reported: {this.state.calInfo.vr} <br></br>Actual: {this.state.calInfo.va}</td>
                                 </tr>
                             </tbody>
                         </Table>
@@ -119,6 +126,9 @@ class Step3 extends React.Component {
                         voltmeter: result.data.data.voltmeter_vendor + " " + result.data.data.voltmeter_model_num + ", (" + result.data.data.voltmeter_asset_tag+")",
                         shuntmeter: result.data.data.shunt_meter_vendor + " " + result.data.data.shunt_meter_model_num + ", (" + result.data.data.shunt_meter_asset_tag+")",
                         comment: result.data.data.cal_event.comment,
+                        test_voltage: result.data.data.voltage_test.test_voltage + "V",
+                        vr: result.data.data.voltage_test.vr + "V",
+                        va: result.data.data.voltage_test.va + "V",
                     }
                 })
             }

@@ -60,6 +60,7 @@ class InstrumentDetailView extends Component {
             },
             wizardPopup: {
                 isShown: false,
+                lbPK: null,
             },
             isDeleteShown: false,
             currentUser: this.props.user,
@@ -92,6 +93,7 @@ class InstrumentDetailView extends Component {
         adminButtons = <div className="detail-header-buttons-div">
             <Button onClick={this.onEditInstrumentClicked}>Edit</Button>
             <Button onClick={this.onDeleteClicked} variant="danger">Delete</Button>
+            <Button onClick={this.onLoadBankClick}>Click</Button>
         </div>
     ) {
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
@@ -303,6 +305,7 @@ class InstrumentDetailView extends Component {
                 serial_number={this.state.instrument_info.serial_number}
                 instrument_pk={this.state.instrument_info.pk}
                 asset_tag={this.state.instrument_info.asset_tag}
+                lb_pk={this.state.wizardPopup.lbPK}
             />
         )
     }
@@ -439,6 +442,14 @@ class InstrumentDetailView extends Component {
     }
 
     onLoadBankClick(e) {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: true,
+                lbPK: 38
+            }
+        })
+
         console.log(`Load bank requested for cal event with pk: ${e.target.value}`);
     }
 
@@ -510,7 +521,8 @@ class InstrumentDetailView extends Component {
         this.setState({
             wizardPopup: {
                 ...this.state.wizardPopup,
-                isShown: true
+                isShown: true,
+                lbPK: null,
             }
         })
     }
@@ -519,7 +531,8 @@ class InstrumentDetailView extends Component {
         this.setState({
             wizardPopup: {
                 ...this.state.wizardPopup,
-                isShown: false
+                isShown: false,
+                lbPK: null,
             }
         })
         this.getCalHistory();

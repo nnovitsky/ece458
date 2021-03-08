@@ -100,7 +100,7 @@ def fill_pdf(buffer, fields, cal_file_data):
         elements.append(Spacer(1, 10))
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
-        elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 3*inch))
+        elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
     doc.build(elements)
     return buffer

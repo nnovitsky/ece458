@@ -87,8 +87,6 @@ def check_models():
 
 
 def contains_duplicates():
-    print("len(sheet_instruments): ", len(sheet_instruments))
-    print("len(set(sheet_instruments)): ", len(set(sheet_instruments)))
     if len(sheet_instruments) != len(set(sheet_instruments)):
         return True, "Duplicate instruments contained within the imported sheet."
 

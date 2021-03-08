@@ -194,29 +194,29 @@ class Step1 extends React.Component {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
                 console.log(result.data)
-                if(result.data.shunt_meter_asset_tag != null)
+                if(result.data.data.shunt_meter_asset_tag != null)
                 {
                     this.setState({
                         shuntmeter: {
                             ...this.state.shuntmeter,
                             validated: true,
                             validated_text: 'Valid',
-                            vendor: result.data.shunt_meter_vendor,
-                            model_number: result.data.shunt_meter_model_num,
-                            asset_tag: result.data.shunt_meter_asset_tag 
+                            vendor: result.data.data.shunt_meter_vendor,
+                            model_number: result.data.data.shunt_meter_model_num,
+                            asset_tag: result.data.data.shunt_meter_asset_tag 
                         }
                     })
                 } 
-                if(result.data.voltmeter_asset_tag != null)
+                if(result.data.data.voltmeter_asset_tag != null)
                 {
                     this.setState({
                         voltmeter: {
                             ...this.state.voltmeter,
                             validated: true,
                             validated_text: 'Valid',
-                            vendor: result.data.voltmeter_vendor,
-                            model_number: result.data.voltmeter_model_num,
-                            asset_tag: result.data.voltmeter_asset_tag 
+                            vendor: result.data.data.voltmeter_vendor,
+                            model_number: result.data.data.voltmeter_model_num,
+                            asset_tag: result.data.data.voltmeter_asset_tag 
                         }
                     })
                 } 

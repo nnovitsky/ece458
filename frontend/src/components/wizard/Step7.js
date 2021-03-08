@@ -114,11 +114,11 @@ class Step3 extends React.Component {
                 this.setState({
                     calInfo: {
                         ...this.state.calInfo,
-                        engineer: result.data.cal_event.user.username,
-                        date: result.data.cal_event.date,
-                        voltmeter: result.data.voltmeter_vendor + " " + result.data.voltmeter_model_num + ", (" + result.data.voltmeter_asset_tag+")",
-                        shuntmeter: result.data.shunt_meter_vendor + " " + result.data.shunt_meter_model_num + ", (" + result.data.shunt_meter_asset_tag+")",
-                        comment: result.data.cal_event.comment,
+                        engineer: result.data.data.cal_event.user.username,
+                        date: result.data.data.cal_event.date,
+                        voltmeter: result.data.data.voltmeter_vendor + " " + result.data.data.voltmeter_model_num + ", (" + result.data.data.voltmeter_asset_tag+")",
+                        shuntmeter: result.data.data.shunt_meter_vendor + " " + result.data.data.shunt_meter_model_num + ", (" + result.data.data.shunt_meter_asset_tag+")",
+                        comment: result.data.data.cal_event.comment,
                     }
                 })
             }

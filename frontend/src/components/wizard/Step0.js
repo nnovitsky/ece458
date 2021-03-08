@@ -179,13 +179,13 @@ class Step0 extends React.Component {
             wizardServices.getDetails(this.state.calInfo.loadbank_pk).then(result => {
                 if(result.success)
                 {
-                    console.log(result.data.cal_event.date)
+                    console.log(result.data.data.cal_event.date)
                     this.setState({
                         calInfo: {
                             ...this.state.calInfo,
-                            comment: result.data.cal_event.comment,
-                            date_object: new Date(result.data.cal_event.date + dateDetails),
-                            date_string: result.data.cal_event.date,
+                            comment: result.data.data.cal_event.comment,
+                            date_object: new Date(result.data.data.cal_event.date + dateDetails),
+                            date_string: result.data.data.cal_event.date,
                         }
                     })
                 }

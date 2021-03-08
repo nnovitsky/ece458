@@ -180,17 +180,17 @@ class Step5 extends React.Component {
             if (result.success) {
                 console.log(result.data)
 
-                if (result.data.voltage_test !== null && typeof(result.data.voltage_test) !== 'undefined') {
+                if (result.data.data.voltage_test !== null && typeof(result.data.data.voltage_test) !== 'undefined') {
                     this.setState({
-                        voltage_reported: result.data.voltage_test.vr,
-                        voltage_actual: result.data.voltage_test.va,
-                        test_voltage: result.data.voltage_test.test_voltage,
-                        vr_error: (result.data.voltage_test.vr_error * 100).toFixed(2) + "%",
-                        va_error: (result.data.voltage_test.va_error * 100).toFixed(2) + "%",
-                        vr_ok: result.data.voltage_test.vr_ok ? "Yes" : "No",
-                        va_ok: result.data.voltage_test.va_ok ? "Yes" : "No",
-                        validated: (result.data.voltage_test.vr_ok && result.data.voltage_test.va_ok),
-                        validated_text: (result.data.voltage_test.vr_ok && result.data.voltage_test.va_ok) ? "Valid" : "Invalid",
+                        voltage_reported: result.data.data.voltage_test.vr,
+                        voltage_actual: result.data.data.voltage_test.va,
+                        test_voltage: result.data.data.voltage_test.test_voltage,
+                        vr_error: (result.data.data.voltage_test.vr_error * 100).toFixed(2) + "%",
+                        va_error: (result.data.data.voltage_test.va_error * 100).toFixed(2) + "%",
+                        vr_ok: result.data.data.voltage_test.vr_ok ? "Yes" : "No",
+                        va_ok: result.data.data.voltage_test.va_ok ? "Yes" : "No",
+                        validated: (result.data.data.voltage_test.vr_ok && result.data.data.voltage_test.va_ok),
+                        validated_text: (result.data.data.voltage_test.vr_ok && result.data.data.voltage_test.va_ok) ? "Valid" : "Invalid",
                     })
 
                 }

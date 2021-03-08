@@ -148,10 +148,10 @@ class Step6 extends React.Component {
             if (result.success) {
                 console.log(result.data)
                 this.setState({
-                    checkCutoff: result.data.auto_cutoff,
-                    checkAlarm: result.data.alarm,
-                    checkRecordedData: result.data.recorded_data,
-                    checkPrinter: result.data.printer,
+                    checkCutoff: result.data.data.auto_cutoff,
+                    checkAlarm: result.data.data.alarm,
+                    checkRecordedData: result.data.data.recorded_data,
+                    checkPrinter: result.data.data.printer,
                 })
             }
         })

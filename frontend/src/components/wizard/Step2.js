@@ -61,7 +61,7 @@ class Step2 extends React.Component {
         wizardServices.updateLBCal(key, !this.state.checked, this.state.loadbank_pk).then(result => {
             if(result.success)
             {
-                console.log("Visual inspection set to " + result.data.visual_inspection)
+                console.log("Visual inspection set to " + result.data.data.visual_inspection)
                 this.setState({
                     checked: !this.state.checked,
                 })
@@ -79,18 +79,9 @@ class Step2 extends React.Component {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
                 console.log(result.data)
-                if(result.data.visual_inspection)
-                {
-                    this.setState({
-                        checked: result.data.visual_inspection
-                    })
-                }
-                else
-                {
-                    this.setState({
-                        checked: false
-                    })
-                }
+                this.setState({
+                    checked: result.data.data.visual_inspection
+                })
             }
         })
     }

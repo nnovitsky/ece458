@@ -29,6 +29,7 @@ class InstrumentDetailView extends Component {
                 pk: arr[arr.length - 1],
                 model_number: '',
                 model_pk: '',
+                model_description: '',
                 vendor: '',
                 serial_number: '',
                 asset_tag: '',
@@ -36,6 +37,7 @@ class InstrumentDetailView extends Component {
                 asset_number: '',
                 calibration_frequency: '',
                 calibration_expiration: '',
+                calibration_modes: [],
                 calibration_history: [],
                 model_categories: [],
                 instrument_categories: []
@@ -122,10 +124,11 @@ class InstrumentDetailView extends Component {
 
     makeCalHistoryTable = () => {
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
+        const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
-                <Button onClick={this.onWizardClicked}>Add Load Bank Calibration</Button>
+                <Button onClick={this.onWizardClicked} hidden={!isLoadBank}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )
@@ -152,6 +155,7 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
                 if (result.success) {
+                    console.log(result.data);
                     let data = result.data;
                     this.setState({
                         ...this.state,
@@ -160,6 +164,8 @@ class InstrumentDetailView extends Component {
                             model_number: data.item_model.model_number,
                             model_pk: data.item_model.pk,
                             vendor: data.item_model.vendor,
+                            model_description: data.item_model.description,
+                            calibration_modes: data.item_model.calibration_modes,
                             serial_number: data.serial_number,
                             comment: data.comment,
                             calibration_frequency: data.item_model.calibration_frequency,
@@ -227,13 +233,15 @@ class InstrumentDetailView extends Component {
                 </tr> */}
                 <tbody>
                     <tr>
-                        <td><strong>Vendor</strong></td>
-                        <td>{this.state.instrument_info.vendor}</td>
+                        <td><strong>Model</strong></td>
+                        <td>
+                            <Link to={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.vendor}-{detailData.model_number}</Link>
+                        </td>
                     </tr>
                     <tr>
-                        <td><strong>Model Number</strong></td>
+                        <td><strong>Model Description</strong></td>
                         <td>
-                            <Link to={`/models-detail/${this.state.instrument_info.model_pk}`} className="green-link">{detailData.model_number}</Link>
+                            {detailData.model_description}
                         </td>
                     </tr>
                     <tr>

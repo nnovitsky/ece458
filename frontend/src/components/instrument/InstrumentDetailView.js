@@ -514,6 +514,7 @@ class InstrumentDetailView extends Component {
                 isShown: false
             }
         })
+        this.getCalHistory();
     }
 
     async onCertificateRequested(e) {

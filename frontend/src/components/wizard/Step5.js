@@ -180,7 +180,7 @@ class Step5 extends React.Component {
             if (result.success) {
                 console.log(result.data)
 
-                if (result.data.voltage_test !== null) {
+                if (result.data.voltage_test !== null && typeof(result.data.voltage_test) !== 'undefined') {
                     this.setState({
                         voltage_reported: result.data.voltage_test.vr,
                         voltage_actual: result.data.voltage_test.va,

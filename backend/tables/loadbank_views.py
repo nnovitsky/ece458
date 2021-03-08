@@ -11,6 +11,7 @@ from backend.config.load_bank_config import LOAD_LEVELS
 @api_view(['POST'])
 def start_loadbank_cal(request):
     request.data['user'] = request.user.pk
+    request.data['file_type'] = 'Load Bank'
     if 'cal_event_pk' in request.data:
         try:
             pk = request.data.pop('cal_event_pk')

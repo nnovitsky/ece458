@@ -70,7 +70,8 @@ let makeConfig = (onValidate) => {
                 isKey: true,
                 dataField: 'load',
                 text: 'Load Level',
-                headerClasses: 'format-width'
+                headerClasses: 'format-width',
+                classes: 'format-width'
                 //headerClasses: 'vendor-column'
             },
             {
@@ -85,13 +86,14 @@ let makeConfig = (onValidate) => {
                 dataField: 'button',
                 text: 'Check',
                 sort: false,
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 },
                 formatter: (cell, row) => {
                     let button = <Button onClick={e => {onValidate(e).then(res => {
                                                             row.validate = res.validate
-                                                        })}} value={row.load} className="data-table-button">Validate</Button>
+                                                        })}} value={row.load} className="data-table-button format-basic-cells">Validate</Button>
                     buttonArray.push(button)
                     return (
                         button
@@ -101,6 +103,7 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'ideal',
                 text: 'Ideal Current',
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 }
@@ -108,6 +111,7 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'cr_error',
                 text: 'CR Error [%]',
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 },
@@ -119,6 +123,7 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'cr_ok',
                 text: 'CR Ok? [<3%]',
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 },
@@ -130,6 +135,7 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'ca_error',
                 text: 'CA Error [%]',
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 },
@@ -142,6 +148,7 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'ca_ok',
                 text: 'CA Ok? [<5%]',
+                classes: 'format-basic-cells',
                 editable: () => {
                     return false;
                 },

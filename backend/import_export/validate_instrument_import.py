@@ -10,9 +10,9 @@ column_types = [
     'Serial-Number',
     'Asset-Tag-Number',
     'Comment',
-    'Instrument-Categories',
     'Calibration-Date',
     'Calibration-Comment',
+    'Instrument-Categories'
 ]
 
 VENDOR_INDEX = 0
@@ -87,7 +87,8 @@ def check_models():
 
 
 def contains_duplicates():
-
+    print("len(sheet_instruments): ", len(sheet_instruments))
+    print("len(set(sheet_instruments)): ", len(set(sheet_instruments)))
     if len(sheet_instruments) != len(set(sheet_instruments)):
         return True, "Duplicate instruments contained within the imported sheet."
 

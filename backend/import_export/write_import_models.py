@@ -86,8 +86,6 @@ def get_model_list(file, load_bank_pk):
 
 
 def handler(verified_file):
-    print("db_categories type: ", type(db_categories))
-    print("db_categories: ", db_categories)
     load_bank_pk = get_load_bank_pk()
     try:
         with transaction.atomic():

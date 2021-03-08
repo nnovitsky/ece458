@@ -446,7 +446,7 @@ class InstrumentDetailView extends Component {
             wizardPopup: {
                 ...this.state.wizardPopup,
                 isShown: true,
-                lbPK: 38
+                lbPK: e.target.value
             }
         })
 

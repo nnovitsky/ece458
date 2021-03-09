@@ -91,6 +91,7 @@ def get_lb_metadata(lb_cal_event):
 
     test_voltage_model = LoadVoltage.objects.filter(lb_cal=lb_cal_event.pk)[0]
 
+
     voltmeter = lb_cal_event.voltmeter_vendor + " " + lb_cal_event.voltmeter_model_num + ", " + \
                 f"({lb_cal_event.voltmeter_asset_tag})"
     shuntmeter = lb_cal_event.shunt_meter_vendor + " " + lb_cal_event.shunt_meter_model_num + ", " + \
@@ -114,70 +115,6 @@ def get_lb_metadata(lb_cal_event):
     elements.append(t)
 
 
-def create_dummy_tables():
-    global elements
-
-    lb_header = '<font size="14">%s</font>' % "Load Bank Calibration:"
-    elements.append(Paragraph(lb_header, styles["Heading2"]))
-    dummy_meta_data = [
-        ["Voltmeter", "Fluke 99V, (884723)"],
-        ["Shuntmeter", "Fluke 1KA, (884724)"],
-        ["Test Voltage", "Tested: 48.0V\nReported: 48.0V\nActual: 48.0V"]
-    ]
-
-    t = Table(dummy_meta_data, hAlign='LEFT')
-    t.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('VALIGN', (0,0),(0,2), 'TOP'),
-        ('BACKGROUND', (0,0),(0,2), colors.lightgrey)
-    ]))
-
-    elements.append(t)
-
-    dummy_stage_data = [
-        ['Load Level', 'Current Reported', 'Current Actual', 'Ideal Current', 'CR Error [%]', 'CR OK? [<3%]',
-         'CA Error [%]', 'CA OK? [<5%]'],
-        ['No load', '0', '0', '0', 'na', 'Yes', '0.0%', 'Yes'],
-        ['1 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['2 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['3 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['4 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['5 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['6 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['7 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['8 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['9 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes'],
-        ['10 x 100A', '100', '100', '100', 'na', 'Yes', '0.0%', 'Yes']
-    ]
-
-
-    stage_one_header = '<font size="12">%s</font>' % "First Stage Results:"
-    elements.append(Paragraph(stage_one_header, styles["Heading3"]))
-    t_one = Table(dummy_stage_data)
-    t_one.setStyle(TableStyle([
-        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('BACKGROUND', (0,0), (7,0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
-        ('BACKGROUND', (5,1), (5,11), colors.lightgreen),
-        ('BACKGROUND', (7,1), (7,11), colors.lightgreen)
-    ]))
-    elements.append(t_one)
-
-    stage_two_header = '<font size="14">%s</font>' % "Second Stage Results:"
-    elements.append(Paragraph(stage_two_header, styles["Heading3"]))
-    elements.append(t_one)
-
-    stage_three_header = '<font size="14">%s</font>' % "Third Stage Results:"
-    elements.append(Paragraph(stage_three_header, styles["Heading3"]))
-    elements.append(t_one)
-
-    stage_four_header = '<font size="14">%s</font>' % "Fourth Stage Results:"
-    elements.append(Paragraph(stage_four_header, styles["Heading3"]))
-    elements.append(t_one)
-
-    return elements
-
-
 def get_stage_data(lc_data):
     cleaned_data = [lb_stage_headers]
     for lc in lc_data:
@@ -188,39 +125,22 @@ def get_stage_data(lc_data):
                 str(lc.ca),
                 str(lc.ideal),
                 str(lc.cr_error),
-                'Yes' if not lc.cr_ok else 'No',
+                'Yes',
                 str(lc.ca_error),
-                'Yes' if not lc.ca_ok else 'No',
+                'Yes',
             ]
         )
-
     return cleaned_data
 
 
 def get_lb_tables(cal_pk):
+    global elements
 
     lb_header = '<font size="14">%s</font>' % "Load Bank Calibration:"
     elements.append(Paragraph(lb_header, styles["Heading2"]))
 
-    lb_cal_event = LoadBankCalibration.objects.filter(cal_event = cal_pk)[0]
+    lb_cal_event = LoadBankCalibration.objects.filter(cal_event=cal_pk)[0]
     get_lb_metadata(lb_cal_event)
-
-    ten_index_style = TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
-        ('BACKGROUND', (5, 1), (5, 11), colors.lightgreen),
-        ('BACKGROUND', (7, 1), (7, 11), colors.lightgreen)
-    ])
-
-    five_index_style = TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
-        ('BACKGROUND', (5, 1), (5, 5), colors.lightgreen),
-        ('BACKGROUND', (7, 1), (7, 5), colors.lightgreen)
-    ])
-
     all_stages = LoadCurrent.objects.filter(lb_cal=lb_cal_event.pk)
 
     # STAGE 1
@@ -230,8 +150,17 @@ def get_lb_tables(cal_pk):
 
     stage_one_header = '<font size="12">%s</font>' % "First Stage Results:"
     elements.append(Paragraph(stage_one_header, styles["Heading3"]))
+
     t_one = Table(get_stage_data(stage_one_models))
-    elements.append(t_one.setStyle(ten_index_style))
+    t_one.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
+        ('BACKGROUND', (5, 1), (5, 11), colors.lightgreen),
+        ('BACKGROUND', (7, 1), (7, 11), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 8)
+    ]))
+    elements.append(t_one)
 
     # STAGE 2
     stage_two_models = []
@@ -241,7 +170,15 @@ def get_lb_tables(cal_pk):
     stage_two_header = '<font size="12">%s</font>' % "Second Stage Results:"
     elements.append(Paragraph(stage_two_header, styles["Heading3"]))
     t_two = Table(get_stage_data(stage_two_models))
-    elements.append(t_two.setStyle(five_index_style))
+    t_two.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
+        ('BACKGROUND', (5, 1), (5, 5), colors.lightgreen),
+        ('BACKGROUND', (7, 1), (7, 5), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 8)
+    ]))
+    elements.append(t_two)
 
     # STAGE 3
     stage_three_models = []
@@ -250,7 +187,15 @@ def get_lb_tables(cal_pk):
     stage_three_header = '<font size="12">%s</font>' % "Third Stage Results:"
     elements.append(Paragraph(stage_three_header, styles["Heading3"]))
     t_three = Table(get_stage_data(stage_three_models))
-    elements.append(t_three.setStyle(ten_index_style))
+    t_three.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
+        ('BACKGROUND', (5, 1), (5, 11), colors.lightgreen),
+        ('BACKGROUND', (7, 1), (7, 11), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 8)
+    ]))
+    elements.append(t_three)
 
     # STAGE 4
     stage_four_models = []
@@ -259,7 +204,15 @@ def get_lb_tables(cal_pk):
     stage_four_header = '<font size="12">%s</font>' % "Fourth Stage Results:"
     elements.append(Paragraph(stage_four_header, styles["Heading3"]))
     t_four = Table(get_stage_data(stage_four_models))
-    elements.append(t_four.setStyle(ten_index_style))
+    t_four.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (7, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (7, 0), colors.white),
+        ('BACKGROUND', (5, 1), (5, 11), colors.lightgreen),
+        ('BACKGROUND', (7, 1), (7, 11), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 8)
+    ]))
+    elements.append(t_four)
 
 
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
@@ -276,8 +229,6 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
 
     logo_path = "import_export/HPT_logo.png"
     elements.append(get_image(logo_path, 2*inch))
-
-    styles.add(ParagraphStyle(name='alignment', alignment=TA_JUSTIFY))
 
     header_text = "Verification of Calibration"
     header = '<font size="18">%s</font>' % header_text
@@ -297,10 +248,9 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
-    if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
+    if cal_file_data[FILE_TYPE_INDEX] == 'Load_Bank':
         get_lb_tables(cal_pk)
 
-    #create_dummy_tables()
     doc.build(elements)
     return buffer
 

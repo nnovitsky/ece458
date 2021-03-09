@@ -137,8 +137,8 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
-        # elements = get_lb_tables(cal_pk, elements)
-        get_lb_tables(cal_pk, elements)
+        elements = get_lb_tables(cal_pk, elements)
+        #get_lb_tables(cal_pk, elements)
 
     doc.build(elements)
     return buffer

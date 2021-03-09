@@ -8,11 +8,13 @@ from reportlab.lib import utils
 from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus.tables import Table
 
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import FileResponse
 from backend.tables.serializers import ListInstrumentReadSerializer
+from backend.tables.models import LoadBankCalibration, LoadVoltage
 
 EXPECTED_FIELDS = [
     'Vendor',
@@ -28,6 +30,8 @@ EXPECTED_FIELDS = [
 
 FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
+styles = getSampleStyleSheet()
+
 
 def get_fields(instrument):
 
@@ -53,7 +57,7 @@ def get_fields(instrument):
     if cal_file_data[FILE_TYPE_INDEX] in ['Artifact', 'Load Bank']:
         cal_file_data.append(str(calibration_event_data.get('file'))[1:])
 
-    return fields, cal_file_data
+    return fields, cal_file_data, cal_event.pk
 
 
 def get_image(path, width):
@@ -68,7 +72,38 @@ def is_image_file(file_name):
     return file_name.split('.')[-1].lower() in ['jpg', 'png', 'gif']
 
 
-def fill_pdf(buffer, fields, cal_file_data):
+def get_lb_metadata(lb_cal_event):
+
+    test_voltage_model = LoadVoltage.objects.filter(lb_cal=lb_cal_event.pk)[0]
+
+    voltmeter = lb_cal_event.voltmeter_vendor + " " + lb_cal_event.voltmeter_model_num + ", " + \
+                f"({lb_cal_event.voltmeter_asset_tag})"
+    shuntmeter = lb_cal_event.shunt_meter_vendor + " " + lb_cal_event.shunt_meter_model_num + ", " + \
+                 f"({lb_cal_event.shunt_meter_asset_tag})"
+    test_voltage = f"Tested: {test_voltage_model.test_voltage}V\n" + f"Reported: {test_voltage_model.vr}V\n" + \
+                   f"Actual: {test_voltage_model.va}V"
+
+    table_data = [
+        ["Voltmeter", voltmeter],
+        ["Shuntmeter", shuntmeter],
+        ["Test Voltage", test_voltage]
+    ]
+
+    return Table(table_data, colWidths=270, rowHeights=79)
+
+
+def get_lb_tables(cal_pk, elements):
+
+    lb_header = '<font size="18">%s</font>' % "Load Bank Calibration:"
+    elements.append(Paragraph(lb_header, styles["Heading2"]))
+
+    lb_cal_event = LoadBankCalibration.objects.filter(cal_event = cal_pk)[0]
+    elements.append(get_lb_metadata(lb_cal_event))
+
+    return elements
+
+
+def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     doc = SimpleDocTemplate(buffer, pagesize=LETTER,
                             rightMargin=72, leftMargin=72,
                             topMargin=72, bottomMargin=18)
@@ -81,7 +116,6 @@ def fill_pdf(buffer, fields, cal_file_data):
     logo_path = "import_export/HPT_logo.png"
     elements.append(get_image(logo_path, 2*inch))
 
-    styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
 
     header_text = "Verification of Calibration"
@@ -102,18 +136,21 @@ def fill_pdf(buffer, fields, cal_file_data):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
+    if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
+        # elements = get_lb_tables(cal_pk, elements)
+        get_lb_tables(cal_pk, elements)
+
     doc.build(elements)
     return buffer
 
 
 def handler(instrument):
 
-    certificate_info, cal_file_data = get_fields(instrument)
+    certificate_info, cal_file_data, cal_pk = get_fields(instrument)
     instrument_name = str(instrument).replace(" ", "_")
     filename = f"{instrument_name}_calibration_record_{date.today().strftime('%Y_%m_%d')}.pdf"
-    buffer = fill_pdf(BytesIO(), certificate_info, cal_file_data)
+    buffer = fill_pdf(BytesIO(), certificate_info, cal_file_data, cal_pk)
     buffer.seek(0)
-
     try:
         return FileResponse(buffer, as_attachment=True, filename=filename)
     except IOError:

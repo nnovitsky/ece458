@@ -61,6 +61,7 @@ class Step0 extends React.Component {
     }
 
     makeBody() {
+        console.log("serial:" + this.state.calInfo.serial_number)
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>

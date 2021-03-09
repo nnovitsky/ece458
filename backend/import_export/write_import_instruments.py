@@ -62,7 +62,8 @@ def upload_instrument(current_row, item_model):
     categories = get_instrument_category_set(current_row)
     asset_tag = get_valid_asset_tag(current_row)
 
-    instrument_info = [item_model.pk, asset_tag, current_row[SERIAL_NUM_INDEX], current_row[COMMENT_INDEX],
+    serial_num = None if current_row[SERIAL_NUM_INDEX].strip() == '' else current_row[SERIAL_NUM_INDEX]
+    instrument_info = [item_model.pk, asset_tag, serial_num, current_row[COMMENT_INDEX],
                        list(categories)]
     instrument_raw_data = dict(zip(instrument_keys, instrument_info))
     instrument_upload = InstrumentWriteSerializer(data=instrument_raw_data)

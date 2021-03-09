@@ -287,7 +287,7 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         #elements = get_lb_tables(cal_pk, elements)
-        #get_lb_tables(cal_pk, elements)
+        get_lb_tables(cal_pk, elements)
 
     #create_dummy_tables()
     doc.build(elements)

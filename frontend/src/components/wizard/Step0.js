@@ -74,7 +74,7 @@ class Step0 extends React.Component {
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Serial Number:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.serial_number === '' ? "N/A" : this.state.calInfo.serial_number} />
+                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.serial_number === '' || this.state.calInfo.serial_number === null ? "N/A" : this.state.calInfo.serial_number} />
                     <Form.Label className="col-sm-3 col-form-label">Asset Tag:</Form.Label>
                     <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.asset_tag} />
                 </Form.Group>

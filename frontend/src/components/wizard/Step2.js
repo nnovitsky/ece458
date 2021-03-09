@@ -78,7 +78,6 @@ class Step2 extends React.Component {
     {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
-                console.log(result.data)
                 this.setState({
                     checked: result.data.data.visual_inspection
                 })

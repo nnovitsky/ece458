@@ -193,7 +193,6 @@ class Step1 extends React.Component {
     {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
-                console.log(result.data)
                 if(result.data.data.shunt_meter_asset_tag != null)
                 {
                     this.setState({

@@ -61,7 +61,6 @@ class Step0 extends React.Component {
     }
 
     makeBody() {
-        console.log("serial:" + this.state.calInfo.serial_number)
         return <div>
             <Form className="wizard">
                 <h3>Calibration Info</h3>
@@ -122,7 +121,6 @@ class Step0 extends React.Component {
                 this.props.incrementStep()
                 if(this.state.calInfo.loadbank_pk === null || this.state.calInfo.cal_event_pk === null)
                 {
-                    console.log("here")
                     this.setState({
                         calInfo: {
                             ...this.state.calInfo,
@@ -176,11 +174,9 @@ class Step0 extends React.Component {
     {
         if(this.state.calInfo.loadbank_pk !== null)
         {
-            console.log("Here get details")
             wizardServices.getDetails(this.state.calInfo.loadbank_pk).then(result => {
                 if(result.success)
                 {
-                    console.log(result.data.data.cal_event.date)
                     this.setState({
                         calInfo: {
                             ...this.state.calInfo,

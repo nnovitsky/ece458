@@ -9,7 +9,9 @@ import Step6 from './Step6.js';
 import Step7 from './Step7.js';
 import WizardServices from "../../api/wizardServices.js";
 import DeletePopup from '../generic/GenericPopup';
+import { Beforeunload } from 'react-beforeunload';
 const wizardServices = new WizardServices();
+
 
 class Wizard extends React.Component {
 
@@ -44,41 +46,43 @@ class Wizard extends React.Component {
         let body = this.makeBody();
         let deleteEventPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         return (
-            <div>
-                {deleteEventPopup}
-                {body}
-            </div>
+            //<Beforeunload onBeforeunload={this.cancelEvent}>
+                <div>
+                    {deleteEventPopup}
+                    {body}
+                </div>
+            //</Beforeunload>
         );
     }
 
     makeBody() {
         switch (this.state.currentStep) {
             case 0:
-                return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} instrument_pk={this.state.instrument_pk}
-                        setLBNum={this.setLoabankCalEventNumber} setCalEventPk={this.setCalEventPk} asset_tag={this.state.asset_tag} cal_event_pk={this.state.cal_event_pk}
-                        loadbank_pk={this.state.loadbank_pk}/>;
+                return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} instrument_pk={this.state.instrument_pk}
+                    setLBNum={this.setLoabankCalEventNumber} setCalEventPk={this.setCalEventPk} asset_tag={this.state.asset_tag} cal_event_pk={this.state.cal_event_pk}
+                    loadbank_pk={this.state.loadbank_pk} />;
             case 1:
-                return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>;
+                return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />;
             case 2:
-                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />
             case 3:
-                return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />
             case 4:
-                return <Step4 index={this.state.step4Index} isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step4 index={this.state.step4Index} isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />
             case 5:
-                return <Step5 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step5 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />
             case 6:
-                return <Step6 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step6 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} />
             default:
-                return <Step7 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep} 
-                        loadbank_pk={this.state.loadbank_pk}/>
+                return <Step7 isShown={this.props.isShown} onClose={this.props.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    loadbank_pk={this.state.loadbank_pk} cancelEvent={this.cancelEvent}/>
 
         }
 
@@ -122,8 +126,7 @@ class Wizard extends React.Component {
 
     incrementStep() {
         if (this.state.currentStep < 7) {
-            if(this.state.currentStep === 3)
-            {
+            if (this.state.currentStep === 3) {
                 this.setState({
                     step4Index: 1
                 })
@@ -137,8 +140,7 @@ class Wizard extends React.Component {
 
     decrementStep() {
         if (this.state.currentStep > 0) {
-            if(this.state.currentStep === 5)
-            {
+            if (this.state.currentStep === 5) {
                 this.setState({
                     step4Index: 4
                 })
@@ -150,45 +152,43 @@ class Wizard extends React.Component {
         }
     }
 
-    async setLoabankCalEventNumber(lb_pk){
+    async setLoabankCalEventNumber(lb_pk) {
         this.setState({
             loadbank_pk: lb_pk
         })
     }
 
-    async setCalEventPk(cal_pk){
+    async setCalEventPk(cal_pk) {
         this.setState({
             cal_event_pk: cal_pk
         })
     }
 
-    async onClose(){
-        if(this.state.loadbank_pk !== null)
-        {
+    async onClose() {
+        if (this.state.loadbank_pk !== null) {
             this.setState({
                 isDeleteShown: true
             })
         }
-        else{
+        else {
             this.props.onClose()
         }
-        
+
     }
 
     // TODO get this working 
-    async cancelEvent()
-    {
-            wizardServices.cancelLoadbankCalEvent(this.state.loadbank_pk).then(result => {
-                console.log(result)
-                if(result.success){
-                    this.props.onClose()
-                }
-                else {
-                    this.setState({
-                        errors: result.data
-                    })
-                }
-            })
+    async cancelEvent() {
+        wizardServices.cancelLoadbankCalEvent(this.state.loadbank_pk).then(result => {
+            console.log(result)
+            if (result.success) {
+                this.props.onClose()
+            }
+            else {
+                this.setState({
+                    errors: result.data
+                })
+            }
+        })
 
     }
 }

@@ -29,6 +29,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.data = json;
                     return result;
@@ -77,6 +87,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     console.log(json)
                     result.success = false;
                     result.data = json;
@@ -153,7 +173,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
-                    console.log(json)
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.error = this.identifyErrors(json);
                     return result;
@@ -224,6 +253,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.data = json;
                     result.errors = this.identifyErrors(json);
@@ -260,6 +299,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.data = json;
                     return result;
@@ -299,6 +348,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.data = json;
                     return result;
@@ -361,6 +420,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     result.success = false;
                     result.data = json;
                     return result;
@@ -395,6 +464,16 @@ export default class WizardServices {
             }
             else {
                 return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
                     console.log(json)
                     result.success = false;
                     result.data = json;

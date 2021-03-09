@@ -121,12 +121,12 @@ def get_stage_data(lc_data):
         cleaned_data.append(
             [
                 lc.load,
-                str(lc.cr),
-                str(lc.ca),
-                str(lc.ideal),
-                str(lc.cr_error),
+                f"{int(lc.cr)}",
+                f"{int(lc.ca)}",
+                f"{int(lc.ideal)}",
+                f"{lc.cr_error:.2f}%",
                 'Yes',
-                str(lc.ca_error),
+                f"{lc.ca_error:.2f}%",
                 'Yes',
             ]
         )
@@ -248,7 +248,7 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
-    if cal_file_data[FILE_TYPE_INDEX] == 'Load_Bank':
+    if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         get_lb_tables(cal_pk)
 
     doc.build(elements)

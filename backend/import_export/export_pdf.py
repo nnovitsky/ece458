@@ -28,6 +28,16 @@ EXPECTED_FIELDS = [
     'Calibration comment'
 ]
 
+lb_stage_headers = [
+    'Load Level',
+    'Current Reported',
+    'Current Actual',
+    'Ideal Current',
+    'CR Error [%]',
+    'CR OK? [<3%]',
+    'CA Error [%]', 'CA OK? [<5%]'
+]
+
 FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
 styles = getSampleStyleSheet()
@@ -169,7 +179,7 @@ def create_dummy_tables():
 
 
 def get_stage_data(lc_data):
-    cleaned_data = []
+    cleaned_data = [lb_stage_headers]
     for lc in lc_data:
         cleaned_data.append(
             [

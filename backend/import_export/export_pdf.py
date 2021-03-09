@@ -168,8 +168,21 @@ def create_dummy_tables():
     return elements
 
 
-def get_stage_data():
-
+def get_stage_data(lc_data):
+    cleaned_data = []
+    for lc in lc_data:
+        cleaned_data.append(
+            [
+                lc.load,
+                str(lc.cr),
+                str(lc.ca),
+                str(lc.ideal),
+                str(lc.cr_error),
+                'Yes' if not lc.cr_ok else 'No',
+                str(lc.ca_error),
+                'Yes' if not lc.ca_ok else 'No',
+            ]
+        )
 
 
 def get_lb_tables(cal_pk):
@@ -196,26 +209,44 @@ def get_lb_tables(cal_pk):
         ('BACKGROUND', (7, 1), (7, 5), colors.lightgreen)
     ])
 
-    all_stages = LoadBankCalibration.objects.filter(cal_event=cal_pk)
+    all_stages = LoadCurrent.objects.filter(lb_cal=lb_cal_event.pk)
+
+    # STAGE 1
+    stage_one_models = []
+    for i in range(1, 12):
+        stage_one_models.append(all_stages.filter(index=i)[0])
 
     stage_one_header = '<font size="12">%s</font>' % "First Stage Results:"
     elements.append(Paragraph(stage_one_header, styles["Heading3"]))
-    t_one = Table(get_stage_data())
+    t_one = Table(get_stage_data(stage_one_models))
     elements.append(t_one.setStyle(ten_index_style))
+
+    # STAGE 2
+    stage_two_models = []
+    for i in range(12, 17):
+        stage_two_models.append(all_stages.filter(index=i)[0])
 
     stage_two_header = '<font size="12">%s</font>' % "Second Stage Results:"
     elements.append(Paragraph(stage_two_header, styles["Heading3"]))
-    t_two = Table(get_stage_data())
+    t_two = Table(get_stage_data(stage_two_models))
     elements.append(t_two.setStyle(five_index_style))
 
+    # STAGE 3
+    stage_three_models = []
+    for i in range(17, 27):
+        stage_three_models.append(all_stages.filter(index=i)[0])
     stage_three_header = '<font size="12">%s</font>' % "Third Stage Results:"
     elements.append(Paragraph(stage_three_header, styles["Heading3"]))
-    t_three = Table(get_stage_data())
+    t_three = Table(get_stage_data(stage_three_models))
     elements.append(t_three.setStyle(ten_index_style))
 
+    # STAGE 4
+    stage_four_models = []
+    for i in range(27, 37):
+        stage_four_models.append(all_stages.filter(index=i)[0])
     stage_four_header = '<font size="12">%s</font>' % "Fourth Stage Results:"
     elements.append(Paragraph(stage_four_header, styles["Heading3"]))
-    t_four = Table(get_stage_data())
+    t_four = Table(get_stage_data(stage_four_models))
     elements.append(t_four.setStyle(ten_index_style))
 
 
@@ -254,11 +285,11 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
-    # if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
-    #     elements = get_lb_tables(cal_pk, elements)
-    #     #get_lb_tables(cal_pk, elements)
+    if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
+        #elements = get_lb_tables(cal_pk, elements)
+        #get_lb_tables(cal_pk, elements)
 
-    create_dummy_tables()
+    #create_dummy_tables()
     doc.build(elements)
     return buffer
 

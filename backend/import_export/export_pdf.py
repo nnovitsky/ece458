@@ -184,6 +184,8 @@ def get_stage_data(lc_data):
             ]
         )
 
+    return cleaned_data
+
 
 def get_lb_tables(cal_pk):
 

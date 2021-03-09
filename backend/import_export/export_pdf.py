@@ -265,7 +265,7 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     logo_path = "import_export/HPT_logo.png"
     elements.append(get_image(logo_path, 2*inch))
 
-    styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
+    styles.add(ParagraphStyle(name='alignment', alignment=TA_JUSTIFY))
 
     header_text = "Verification of Calibration"
     header = '<font size="18">%s</font>' % header_text
@@ -285,11 +285,11 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
-    if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
+    #if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         #elements = get_lb_tables(cal_pk, elements)
-        get_lb_tables(cal_pk, elements)
+        #get_lb_tables(cal_pk, elements)
 
-    #create_dummy_tables()
+    create_dummy_tables()
     doc.build(elements)
     return buffer
 

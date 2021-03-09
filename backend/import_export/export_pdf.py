@@ -121,12 +121,12 @@ def get_stage_data(lc_data):
         cleaned_data.append(
             [
                 lc.load,
-                str(lc.cr),
-                str(lc.ca),
-                str(lc.ideal),
-                str(lc.cr_error),
+                f"{int(lc.cr)}",
+                f"{int(lc.ca)}",
+                f"{int(lc.ideal)}",
+                f"{lc.cr_error:.2f}%",
                 'Yes',
-                str(lc.ca_error),
+                f"{lc.ca_error:.2f}%",
                 'Yes',
             ]
         )

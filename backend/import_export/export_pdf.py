@@ -91,7 +91,6 @@ def get_lb_metadata(lb_cal_event):
 
     test_voltage_model = LoadVoltage.objects.filter(lb_cal=lb_cal_event.pk)[0]
 
-
     voltmeter = lb_cal_event.voltmeter_vendor + " " + lb_cal_event.voltmeter_model_num + ", " + \
                 f"({lb_cal_event.voltmeter_asset_tag})"
     shuntmeter = lb_cal_event.shunt_meter_vendor + " " + lb_cal_event.shunt_meter_model_num + ", " + \
@@ -123,6 +122,13 @@ def get_stage_data(lc_data):
             cr_error = f"{lc.cr_error:.2f}%"
         else:
             cr_error = "N/A"
+
+        if lc.ca_error is not None:
+            ca_error = f"{lc.ca_error:.2f}%"
+        else:
+            ca_error = "N/A"
+
+
         cleaned_data.append(
             [
                 lc.load,
@@ -131,7 +137,7 @@ def get_stage_data(lc_data):
                 f"{int(lc.ideal)}",
                 cr_error,
                 'Yes',
-                f"{lc.ca_error:.2f}%",
+                ca_error,
                 'Yes',
             ]
         )

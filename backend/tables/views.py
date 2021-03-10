@@ -484,6 +484,9 @@ def current_user(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
+        if UserType.contains_user(request.user, "oauth"):
+            return Response(
+                {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username

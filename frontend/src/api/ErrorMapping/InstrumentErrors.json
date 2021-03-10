@@ -21,7 +21,8 @@
   },
   "add_calibration": {
     "non_field_errors": {
-      "Cannot set future date.": "Please select a date on, or earlier than, today."
+      "Cannot set future date.": "Please select a date on, or earlier than, today.",
+      "File size too large.": "This file is too large, please make sure the upload is less than 32MB"
     },
     "comment": {
       "Ensure this field has no more than 2000 characters.": "Please enter a comment no longer than 2000 characters"

@@ -106,7 +106,7 @@ def get_assigned_asset_tags(reader, db_asset_tags):
 
 def get_instrument_list(file, user):
     n_uploads = 0
-    instruments = []
+    asset_tags = []
     db_categories = list(InstrumentCategory.objects.values_list('name', flat=True))
     db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
 
@@ -133,17 +133,17 @@ def get_instrument_list(file, user):
             if not cal_event_upload_success:
                 return False, [], "Failed to upload cal events to db"
 
-        instruments.append(current_instrument)
+        asset_tags.append(current_instrument.asset_tag)
 
-    return True, instruments, f"Uploaded {n_uploads} records to db"
+    return True, asset_tags, f"Uploaded {n_uploads} records to db"
 
 
 def handler(verified_file, request):
     user = request.user
     try:
         with transaction.atomic():
-            successful_upload, instruments, upload_summary = get_instrument_list(verified_file, user)
+            successful_upload, asset_tags, upload_summary = get_instrument_list(verified_file, user)
     except IOError:
         return False, None, "Error writing instruments to database."
 
-    return successful_upload, instruments, upload_summary
+    return successful_upload, asset_tags, upload_summary

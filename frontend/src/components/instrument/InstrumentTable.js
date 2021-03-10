@@ -72,17 +72,24 @@ const getLatestCalText = (data) => {
             if (currentData.calibration_event.length > 0) {
                 let expireDateString = currentData.calibration_expiration;
                 let expireDate = new Date(expireDateString);
-                let lasCalDate = new Date(currentData.calibration_event[0].date);
-                let timeDifference = expireDate.getTime() - lasCalDate.getTime();
-                let daysDifference = timeDifference / (1000 * 3600 * 24);
+                let today = new Date();
+                let timeDifference = expireDate.getTime() - today.getTime();
+                let daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
                 if (daysDifference > 30) {
                     result.icon = GoodIcon;
                     result.text = `Good: expires in ${daysDifference} days`;
                 }
-                else if (daysDifference <= 30) {
+                else if (daysDifference <= 30 && daysDifference > 1) {
                     result.icon = WarningIcon;
                     result.text = `Warning: expires in ${daysDifference} days`;
-                } else {
+                } else if (daysDifference === 1) {
+                    result.icon = WarningIcon;
+                    result.text = `Warning: expires in 1 day`;
+                } 
+                else if (daysDifference === 0){
+                    result.icon = WarningIcon;
+                    result.text = `Warning: expires today`;
+                }else{
                     result.icon = ExpiredIcon;
                     result.text = `Warning: this calibration is expired`;
                 }

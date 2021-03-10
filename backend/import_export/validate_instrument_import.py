@@ -23,6 +23,7 @@ sheet_models = []
 sheet_instruments = []
 asset_tags = []
 sheet_categories = []
+vend_model_serial = []
 
 
 def validate_row(current_row):
@@ -37,6 +38,11 @@ def validate_row(current_row):
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])
+
+    if current_row[SERIAL_NUM_INDEX].strip() != '':
+        vend_model_serial.append(current_row[VENDOR_INDEX] + " "
+                                 + current_row[MODEL_NUM_INDEX] +
+                                 " " + current_row[SERIAL_NUM_INDEX])
 
     for item, column_type in zip(current_row, column_types):
 
@@ -87,7 +93,7 @@ def check_models():
 
 
 def contains_duplicates():
-    if len(sheet_instruments) != len(set(sheet_instruments)):
+    if len(vend_model_serial) != len(set(vend_model_serial)):
         return True, "Duplicate instruments contained within the imported sheet."
 
     db_instruments = Instrument.objects.all()

@@ -95,7 +95,6 @@ class ModelDetailView extends React.Component {
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
                     comments={comment}
-                    bottomElementTitle="Model's Instruments"
                     bottomElement={this.makeSerialTable()}
                 />
                 {/* <div className="col-2 text-center button-col">
@@ -121,12 +120,15 @@ class ModelDetailView extends React.Component {
 
     makeSerialTable() {
         return (
+            <>
+            <h3>Model's Instruments</h3>
             <SerialTable
                 data={this.state.instruments}
                 onTableChange={this.onSerialTableChange}
                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                 onMoreClicked={this.onMoreClicked}
             />
+            </>
         )
     }
 

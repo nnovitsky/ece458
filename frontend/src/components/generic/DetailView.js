@@ -11,7 +11,6 @@ import Table from 'react-bootstrap/Table';
 // col5: an element (likely a detail table) displayed in the column of 5
 // comments: a string of comments that will be displayed next to col 5
 // bottomElement: an element that will be on the bottom of the page, eg a calibration history table
-// bottomElementTitle: a string to be displayed as the title to the table
 const detailView = (props) => {
 
     return (
@@ -57,7 +56,6 @@ const detailView = (props) => {
                     </div>
                     <hr />
                     <div className="bottom-element">
-                        <h3>{props.bottomElementTitle}</h3>
                         {props.bottomElement}
                     </div>
                     

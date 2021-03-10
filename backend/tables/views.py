@@ -3,13 +3,14 @@ import os
 from django.contrib.auth.models import User
 from django.http import FileResponse
 from django.http.request import QueryDict
+from django.db.models.functions import Lower
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks
+from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks, annotate_instruments
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
@@ -383,7 +384,7 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file, request)
+    db_write_success, asset_tags, upload_summary = write_import_instruments.handler(uploaded_file, request)
 
     if not db_write_success:
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
@@ -391,7 +392,9 @@ def import_instruments_csv(request):
     else:
         nextPage = 1
         previousPage = 1
-        return get_page_response(upload_list, request, ListInstrumentReadSerializer, nextPage, previousPage)
+        qs = Instrument.objects.filter(asset_tag__in=asset_tags)
+        upload_list = annotate_instruments(qs)
+        return get_page_response(upload_list, request, InstrumentSearchSerializer, nextPage, previousPage)
 
 
 @api_view(['GET'])
@@ -483,6 +486,9 @@ def current_user(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
+        if UserType.contains_user(request.user, "oauth"):
+            return Response(
+                {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
@@ -559,7 +565,7 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        categories = ItemModelCategory.objects.all()
+        categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
@@ -579,7 +585,7 @@ def instrument_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        categories = InstrumentCategory.objects.all()
+        categories = InstrumentCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':

@@ -36,7 +36,8 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         return token
 
     def _add_to_groups(self, obj):
-        if 'groups' not in self.initial_data: return []
+        if 'groups' not in self.initial_data:
+            return [utype.name for utype in obj.usertype_set.all()]
         for groupname in self.initial_data['groups']:
             if UserType.contains_user(obj, groupname):
                 continue
@@ -77,7 +78,8 @@ class UserEditSerializer(serializers.ModelSerializer):
         return token
 
     def _add_to_groups(self, obj):
-        if 'groups' not in self.initial_data: return []
+        if 'groups' not in self.initial_data:
+            return [utype.name for utype in obj.usertype_set.all()]
         for groupname in self.initial_data['groups']:
             if UserType.contains_user(obj, groupname):
                 continue

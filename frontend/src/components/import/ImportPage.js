@@ -83,7 +83,7 @@ class ImportPage extends Component {
                                 <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
                             </div>
                             <div className="popup-button-row" >
-                                <Button variant="secondary" style={{ width: "100%" }} onClick={this.onShowInstructionsClicked}>How to Import</Button>
+                                <Button className="button-matching" style={{ width: "100%" }} onClick={this.onShowInstructionsClicked}>How to Import</Button>
 
                             </div>
                         </div>

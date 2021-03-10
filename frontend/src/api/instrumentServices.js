@@ -493,7 +493,7 @@ export default class InstrumentServices {
             data:[]
         }
 
-        return fetch(`${API_URL}/api/import_instruments_csv/`, {
+        return fetch(`${API_URL}/api/import_instruments_csv/?get_all`, {
             method: 'PUT',
             headers: {
                 Authorization: `JWT ${token}`,

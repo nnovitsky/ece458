@@ -478,7 +478,7 @@ export default class ModelServices {
             data:[]
         }
 
-        return fetch(`${API_URL}/api/import_models_csv/`, {
+        return fetch(`${API_URL}/api/import_models_csv/?get_all`, {
             method: 'PUT',
             headers: {
                 Authorization: `JWT ${token}`,

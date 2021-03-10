@@ -42,6 +42,7 @@ FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
 styles = getSampleStyleSheet()
 elements = []
+pdf_merge = False
 
 
 def get_fields(instrument):
@@ -259,11 +260,21 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
+    if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX]('.')[-1].lower() == 'pdf':
+        pdf_merge = True
+
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         get_lb_tables(cal_pk)
 
     doc.build(elements)
     return buffer
+
+
+def merge_pdf(cal_pk, buffer):
+    merged_buffer = True
+
+
+    return merged_buffer
 
 
 def handler(instrument):
@@ -273,6 +284,10 @@ def handler(instrument):
     filename = f"{instrument_name}_calibration_record_{date.today().strftime('%Y_%m_%d')}.pdf"
     buffer = fill_pdf(BytesIO(), certificate_info, cal_file_data, cal_pk)
     buffer.seek(0)
+
+    if pdf_merge:
+        merge_pdf(cal_pk, buffer)
+
     try:
         return FileResponse(buffer, as_attachment=True, filename=filename)
     except IOError:

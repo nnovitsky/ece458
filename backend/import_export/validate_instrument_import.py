@@ -39,10 +39,14 @@ def validate_row(current_row):
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])
 
+    instrument_vms = current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] + " " + current_row[SERIAL_NUM_INDEX]
+    if vend_model_serial.contains(instrument_vms):
+        return False, f"Duplicate instrument within sheet: {instrument_vms}."
+
     if current_row[SERIAL_NUM_INDEX].strip() != '':
-        vend_model_serial.append(current_row[VENDOR_INDEX] + " "
-                                 + current_row[MODEL_NUM_INDEX] +
-                                 " " + current_row[SERIAL_NUM_INDEX])
+        vend_model_serial.append()
+
+
 
     for item, column_type in zip(current_row, column_types):
 
@@ -93,8 +97,6 @@ def check_models():
 
 
 def contains_duplicates():
-    if len(vend_model_serial) != len(set(vend_model_serial)):
-        return True, "Duplicate instruments contained within the imported sheet."
 
     db_instruments = Instrument.objects.all()
     for db_instrument in db_instruments:

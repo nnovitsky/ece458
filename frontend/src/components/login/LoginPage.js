@@ -13,7 +13,7 @@ class login extends React.Component {
         password: '',
         redirect: null,
         //oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=http%3A//localhost%3A3000/oauth/consume&response_type=code',
-        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=https%3A//vcm-18868.vm.duke.edu/oauth/consume&response_type=code',
+        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=https%3A//vcm-18278.vm.duke.edu/oauth/consume&response_type=code',
 
     };
 

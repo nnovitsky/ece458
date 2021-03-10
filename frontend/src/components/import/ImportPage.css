@@ -16,6 +16,9 @@ input[type=file]{
     background-color: rgb(221, 221, 221);
 
 }
+.button-matching{
+    background-color: rgb(100, 100, 100) !important;
+}
 
 .summary{
     height: 255px;

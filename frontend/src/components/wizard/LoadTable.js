@@ -71,7 +71,7 @@ let makeConfig = (onValidate) => {
                 dataField: 'load',
                 text: 'Load Level',
                 headerClasses: 'format-width-load-level',
-                classes: 'format-width'
+                classes: 'format-basic-cells'
                 //headerClasses: 'vendor-column'
             },
             {
@@ -117,7 +117,8 @@ let makeConfig = (onValidate) => {
                 editable: () => {
                     return false;
                 },
-                formatter: (cell) => {
+                formatter: (cell, row) => {
+                    if(row.cr_ok===true && row.ca_ok===true && row.load==="No load") return<span>N/A</span>;
                     if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
                     else return null;
                 }
@@ -141,7 +142,8 @@ let makeConfig = (onValidate) => {
                 editable: () => {
                     return false;
                 },
-                formatter: (cell) => {
+                formatter: (cell, row) => {
+                    if(row.cr_ok===true && row.ca_ok===true && row.load==="No load") return<span>N/A</span>;
                     if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
                     else return null;
                 }

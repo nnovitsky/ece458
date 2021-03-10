@@ -50,7 +50,8 @@ let makeConfig = () => {
             {
                 dataField: 'cr_error',
                 text: 'CR Error [%]',
-                formatter: (cell) => {
+                formatter: (cell, row) => {
+                    if(row.cr_ok===true && row.ca_ok===true &&cell===null) return<span>N/A</span>;
                     if(cell || cell == 0) return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
                     else return null;
                 }
@@ -66,7 +67,8 @@ let makeConfig = () => {
             {
                 dataField: 'ca_error',
                 text: 'CA Error [%]',
-                formatter: (cell) => {
+                formatter: (cell, row) => {
+                    if(row.cr_ok===true && row.ca_ok===true && row.load==="No load") return<span>N/A</span>;
                     if(typeof(cell) !== 'undefined') return <span>{(Number(cell)* 100).toFixed(1) + "%"}</span>;
                     else return null;
                 }

@@ -126,7 +126,7 @@ class Step3 extends React.Component {
                         date: result.data.data.cal_event.date,
                         comment: result.data.data.cal_event.comment,
                     }})
-                if(result.data.data.voltage_test !== null)
+                if(result.data.data.voltage_test !== null && result.data.errors.missing_load_readings.length === 0 && result.data.errors.unacceptable_load_readings.length === 0)
                 {
                 this.setState({
                     calInfo: {

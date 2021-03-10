@@ -70,7 +70,7 @@ let makeConfig = (onValidate) => {
                 isKey: true,
                 dataField: 'load',
                 text: 'Load Level',
-                headerClasses: 'format-width',
+                headerClasses: 'format-width-load-level',
                 classes: 'format-width'
                 //headerClasses: 'vendor-column'
             },

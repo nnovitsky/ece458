@@ -11,7 +11,7 @@ form.wizard {
     align-content: left;
 }
 
-.format-width {
+.format-width-load-level {
     width: 20vw;
     font-size: min(1.4vw, 20px);
 }

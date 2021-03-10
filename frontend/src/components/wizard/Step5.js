@@ -66,6 +66,10 @@ class Step5 extends React.Component {
             <Form className="wizard">
                 <h3>Check Voltages with all Load Steps on:</h3>
                 <h5>Test Voltage: &nbsp;{this.state.test_voltage}V</h5>
+                <p>
+                    Please enter the recorded and actual voltage associated with the test voltage. Click validate to validate and save your inputs.
+                    If the inputs are in the acceptable range, you will be able to continue.
+                </p>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-2 col-form-label">Voltage Reported (display):</Form.Label>
                     <Form.Control type="text" placeholder={"input #"} name={vr} value={this.state.voltage_reported} onChange={this.onTextInput} />
@@ -180,7 +184,7 @@ class Step5 extends React.Component {
             if (result.success) {
                 console.log(result.data)
 
-                if (result.data.data.voltage_test !== null && typeof(result.data.data.voltage_test) !== 'undefined') {
+                if (result.data.data.voltage_test !== null && typeof (result.data.data.voltage_test) !== 'undefined') {
                     this.setState({
                         voltage_reported: result.data.data.voltage_test.vr,
                         voltage_actual: result.data.data.voltage_test.va,

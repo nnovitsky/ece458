@@ -3,7 +3,8 @@
     "name": {
       "This field may not be blank.": "Please enter a category name",
       "item model category with this name already exists.": "A model category with this name already exists",
-      "instrument category with this name already exists.": "An instrument category with this name already exists"
+      "instrument category with this name already exists.": "An instrument category with this name already exists",
+      "Ensure this field has no more than 30 characters.": "Please enter a category less than 30 characters"
     },
     "non_field_errors": {
       "Category name cannot have spaces.": "Please enter a category name without spaces"

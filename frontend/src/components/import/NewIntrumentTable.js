@@ -48,6 +48,11 @@ const NewInstrumentTablePage = (props) => {
         return (
             [
                 {
+                    isKey: true,
+                    dataField: 'pk', //json data key for this column
+                    text: '#',      //displayed column header text
+                },
+                {
                     dataField: 'asset_tag',
                     text: 'Asset #',
                 },

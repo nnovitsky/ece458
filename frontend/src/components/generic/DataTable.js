@@ -40,7 +40,7 @@ const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     return (
         <div className="data-table">
-
+            <span>(Hover over a cell for more information)</span>
 
             <PaginationProvider
                 pagination={paginationFactory(options)}

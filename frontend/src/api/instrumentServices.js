@@ -501,6 +501,7 @@ export default class InstrumentServices {
             body: csvFile
         })
             .then(res => {
+                console.log(res)
                 if (res.ok) {
                     return res.json().then(json => {
                         result.data = json;

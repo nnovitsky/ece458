@@ -39,10 +39,15 @@ def validate_row(current_row):
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])
 
-    if current_row[SERIAL_NUM_INDEX].strip() != '':
-        vend_model_serial.append(current_row[VENDOR_INDEX] + " "
-                                 + current_row[MODEL_NUM_INDEX] +
-                                 " " + current_row[SERIAL_NUM_INDEX])
+    if len(current_row[SERIAL_NUM_INDEX].strip()) != 0:
+        instrument_vms = current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] + " " + current_row[
+            SERIAL_NUM_INDEX]
+
+        if instrument_vms in vend_model_serial:
+            return False, f"Duplicate instrument within sheet: {instrument_vms}."
+        else:
+            vend_model_serial.append(instrument_vms)
+
 
     for item, column_type in zip(current_row, column_types):
 
@@ -93,8 +98,6 @@ def check_models():
 
 
 def contains_duplicates():
-    if len(vend_model_serial) != len(set(vend_model_serial)):
-        return True, "Duplicate instruments contained within the imported sheet."
 
     db_instruments = Instrument.objects.all()
     for db_instrument in db_instruments:
@@ -124,6 +127,7 @@ def handler(uploaded_file):
     sheet_instruments.clear()
     asset_tags.clear()
     sheet_categories.clear()
+    vend_model_serial.clear()
     
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))

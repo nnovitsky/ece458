@@ -72,23 +72,18 @@ export default class AuthServices {
         admin: false,
       }
       
-      console.log("Calling get oath token");
 
       return fetch(url).then(res =>{
-        console.log(res);
         if(res.ok){
           return res.json().then(json => {
             result.success = true;
             result.data = json;
             result.admin = json.user.groups.includes("admin")
-            console.log("Auth working");
-            console.log(result.data)
             return result;
           });
         }
         else{
           result.success = false;
-          console.log("Auth not working");
           return result;
         }
       }

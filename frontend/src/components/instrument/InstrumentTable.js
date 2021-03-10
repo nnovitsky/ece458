@@ -72,17 +72,24 @@ const getLatestCalText = (data) => {
             if (currentData.calibration_event.length > 0) {
                 let expireDateString = currentData.calibration_expiration;
                 let expireDate = new Date(expireDateString);
-                let lasCalDate = new Date(currentData.calibration_event[0].date);
-                let timeDifference = expireDate.getTime() - lasCalDate.getTime();
-                let daysDifference = timeDifference / (1000 * 3600 * 24);
+                let today = new Date();
+                let timeDifference = expireDate.getTime() - today.getTime();
+                let daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
                 if (daysDifference > 30) {
                     result.icon = GoodIcon;
                     result.text = `Good: expires in ${daysDifference} days`;
                 }
-                else if (daysDifference <= 30) {
+                else if (daysDifference <= 30 && daysDifference > 1) {
                     result.icon = WarningIcon;
                     result.text = `Warning: expires in ${daysDifference} days`;
-                } else {
+                } else if (daysDifference === 1) {
+                    result.icon = WarningIcon;
+                    result.text = `Warning: expires in 1 day`;
+                } 
+                else if (daysDifference === 0){
+                    result.icon = WarningIcon;
+                    result.text = `Warning: expires today`;
+                }else{
                     result.icon = ExpiredIcon;
                     result.text = `Warning: this calibration is expired`;
                 }
@@ -145,7 +152,15 @@ const getLatestCalText = (data) => {
                     dataField: 'categories.item_model_categories',
                     text: 'Model Categories',
                     sort: false,
-                    title: (cell) => `Model Categories: ${cell.join(', ')}`,
+                    title: (cell) => {
+                        let contents;
+                        if (cell[0] === null) {
+                            contents = 'None'
+                        } else {
+                            contents = cell.join(', ');
+                        }
+                        return `Model Categories: ${contents}`
+                    },
                     headerClasses: 'it-model-category-column',
                     formatter: (cell) => {
                         return (
@@ -157,7 +172,15 @@ const getLatestCalText = (data) => {
                     dataField: 'serial_number',
                     text: 'Serial #',
                     sort: true,
-                    title: (cell) => `Serial Number: ${cell}`,
+                    title: (cell) => {
+                        let text;
+                        if(cell !== null) {
+                            text = cell;
+                        } else {
+                            text = 'None'
+                        }
+                        return `Serial Number: ${text}`
+                    },
                     headerClasses: 'it-serial-number-column',
                 },
 
@@ -165,7 +188,16 @@ const getLatestCalText = (data) => {
                     dataField: 'categories.instrument_categories',
                     text: 'Instrument Categories',
                     sort: false,
-                    title: (cell) => `Instrument Categories: ${cell.join(', ')}`,
+                    
+                    title: (cell) => {
+                        let contents;
+                        if (cell[0] === null) {
+                            contents = 'None'
+                        } else {
+                            contents = cell.join(', ');
+                        }
+                    return `Instrument Categories: ${contents}`
+                    },
                     headerClasses: 'it-instrument-category-column',
                     formatter: (cell) => {
                         return (
@@ -186,7 +218,16 @@ const getLatestCalText = (data) => {
                         }
 
                     },
-                    title: (cell, row) => `Last Calibration: ${getLatestCalText(row)}, click to download certificate`,
+                    title: (cell, row) => 
+                    {
+                        let display = getLatestCalText(row);
+                        if (row.calibration_event.length === 0) {
+                            return `Last Calibration: ${display}`;
+                        } else {
+                            return `Last Calibration: ${display}, click to download certificate`;
+                        }
+                        
+                },
                     headerClasses: 'it-latest-calibration-column',
                 },
                 {

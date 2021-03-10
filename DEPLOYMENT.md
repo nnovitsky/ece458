@@ -366,3 +366,81 @@ $ sudo certbot --nginx
 With this, we have allowed Certbot to edit our 'sites-available' page to configure https security. Now your site is ready to launch!
 Navigate to `https://your-hostname` and login to the HPT interface using your superuser credentials. Here, you can add and import models/instruments and create new users to populate the database.
 
+## Setting up Automatic Deployment
+In Evolution Two, the Fantastic Four configured automatic deployment to their dev virtual machine which was beneficial to testing and continuous integration. This secton will describe how to set up automatic deployment through GitHub Actions. The first step is to ensure that you have connecton to your Ubuntu 20.04 server as a user with an SSH key. This was a requirement for the above section. 
+
+The next step is to configure your GitHub repo with certain Secrects to allow GitHub to log into the server and deploy the code. Got to the GitHub website and navigate to the repository (which you now own) which you just forked and deployed. Go to the Settings tab. There will be options of tabs on the right to choose from. Click `[Secrects]`. In GitHub, Secrects are encrypted environment variables which provide a secure mechanism to hold confidential information such as passwords and secrect keys to be used in GitHub Actions. For our purpose, they will allow us to give GitHub the secrect key to our VM, the user accociated with the key and the hostname of the VM in a secure way.
+
+Now you will add Secrects to your repository to allow GitHub to identify your VM and login. Under the Secrests tab, click `[New Repository Secret]`. Add the three following secrects with the exact names shown:
+```
+NAME: DEPLOY_USER
+VALUE: The username which you use to log into your server
+
+NAME: DEPLOY_KEY
+VALUE: The secret key associated with your user to log into your server
+
+NAME: DEPLOY_HOST
+VALUE: The hostname of your server
+```
+
+Once you have added these Secrects, the next step is to create a GitHub action which uses these secrets to deploy the code. Navigate to `[Actions]` tab of your repository and select `[Set up a workflow for yourself]`. If you have created a workflow for this repo before, click `[New Workflow]`.
+
+GitHub will navigate you to a new `.yml` file which it automatically creates and puts in the `.github/workflows` folder of your repo (GitHub creates this folder if it doesn't already exist). Rename the file from `main.yml` to `deploy.yml`. 
+
+Delete all the code in the file which is prepopulated by GitHub. Add the following code to the file. This code sets up the workflow in proper GitHub fashion and initializes a connection with the server using the Secrects which were created in the previous step:
+
+```
+name: SSH Deploy
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: "Deploy to staging"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host test_server
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+```
+Below is some insight as to how these lines function:
+`name:` Names the action, this is the name which will apear when the action is run. 
+`on: push/pull` This line specifies to run this action every time code is pushed/pulled to the main branch. 
+`jobs:` This is a line required by GitHub actions to specify the work which this action will perform.
+`deploy: name:` This name within the jobs sections is the name of the first 'test' which will be run. This would be the name of the first Unit test if this action were being used for testing. Instead, we break up steps of deployement into different chunks to more easilly debug if something in deployment goes wrong. This first chunk enters our server. 
+`steps` This specifies what the action will do. In this case, the action will run terminal commands using our configured Secrests (environment variables) to enter into the server. 
+
+Now that we have a job which is able to enter the server, we will add the actions to be performed once in the server. First, the action will need to stop the server running.
+```
+- name: Stop the server
+        run: ssh test_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
+```
+Next, we want the action to pull any new code which was pushed. Not having to manually download new code is what sets up continuous integration.
+```
+- name: Check out the source
+        run: ssh test_server 'cd /home/jay18/evo2/ece458 && git pull'
+```
+Check to see if any new 
+
+
+
+
+

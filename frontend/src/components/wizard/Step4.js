@@ -60,12 +60,12 @@ class Step4 extends React.Component {
                     Instructions:
                     <ol>
                         <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
-                        <li>Press [Enter] after each time you enter input to save your input in the cell</li>
-                        <li>Click validate to validate your inputs. If the row appears green, your inputs were acceptable callibration values</li>
+                        <li>Press [Enter] after each time you enter input to hold your input in the cell</li>
+                        <li>Click validate to validate your inputs and save them to the calibration event. If the row appears green, your inputs were acceptable callibration values</li>
                         <li>Click continue once you have entered and validated all inputs</li>
                     </ol>
                 <p>
-                    Note: If you change an input, you will be required to revalidate that input
+                    Note: If you change an input, you will be required to revalidate that input. If you do not revalidate, the old input will be held in the calibration record.
                 </p>
             </Form>
             <LoadTable updateValidated={this.updateValidated} onValidate={this.validate} data={this.state.validationData} updateTable={this.updateTable}></LoadTable>

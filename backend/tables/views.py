@@ -10,7 +10,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks
+from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks, annotate_instruments
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
@@ -384,7 +384,7 @@ def import_instruments_csv(request):
         return Response({"Upload error": [f"{format_response}"]},
                         status=status.HTTP_412_PRECONDITION_FAILED)
 
-    db_write_success, upload_list, upload_summary = write_import_instruments.handler(uploaded_file, request)
+    db_write_success, asset_tags, upload_summary = write_import_instruments.handler(uploaded_file, request)
 
     if not db_write_success:
         return Response({"Upload error": [f"DB write error: {upload_summary}"]},
@@ -392,7 +392,9 @@ def import_instruments_csv(request):
     else:
         nextPage = 1
         previousPage = 1
-        return get_page_response(upload_list, request, ListInstrumentReadSerializer, nextPage, previousPage)
+        qs = Instrument.objects.filter(asset_tag__in=asset_tags)
+        upload_list = annotate_instruments(qs)
+        return get_page_response(upload_list, request, InstrumentSearchSerializer, nextPage, previousPage)
 
 
 @api_view(['GET'])

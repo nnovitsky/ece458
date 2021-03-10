@@ -39,13 +39,14 @@ def validate_row(current_row):
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +
                              " " + current_row[SERIAL_NUM_INDEX])
 
-    instrument_vms = current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] + " " + current_row[SERIAL_NUM_INDEX]
-    if vend_model_serial.contains(instrument_vms):
-        return False, f"Duplicate instrument within sheet: {instrument_vms}."
+    if len(current_row[SERIAL_NUM_INDEX].strip()) != 0:
+        instrument_vms = current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] + " " + current_row[
+            SERIAL_NUM_INDEX]
 
-    if current_row[SERIAL_NUM_INDEX].strip() != '':
-        vend_model_serial.append()
-
+        if instrument_vms in vend_model_serial:
+            return False, f"Duplicate instrument within sheet: {instrument_vms}."
+        else:
+            vend_model_serial.append(instrument_vms)
 
 
     for item, column_type in zip(current_row, column_types):
@@ -126,6 +127,7 @@ def handler(uploaded_file):
     sheet_instruments.clear()
     asset_tags.clear()
     sheet_categories.clear()
+    vend_model_serial.clear()
     
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))

@@ -493,7 +493,7 @@ export default class InstrumentServices {
             data:[]
         }
 
-        return fetch(`${API_URL}/api/import_instruments_csv/?get_all`, {
+        return fetch(`${API_URL}/api/import_instruments_csv/?`, {
             method: 'PUT',
             headers: {
                 Authorization: `JWT ${token}`,
@@ -501,6 +501,7 @@ export default class InstrumentServices {
             body: csvFile
         })
             .then(res => {
+                console.log(res)
                 if (res.ok) {
                     return res.json().then(json => {
                         result.data = json;

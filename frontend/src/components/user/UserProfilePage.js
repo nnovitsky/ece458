@@ -28,6 +28,7 @@ class UserPage extends React.Component {
                 isShown: false,
                 errors: []
             },
+            groups:[],
         };
 
         this.onEditUserClosed = this.onEditUserClosed.bind(this);
@@ -54,7 +55,7 @@ class UserPage extends React.Component {
                         <div className="col-10">
                             <h2>Hello, {`${this.state.userData.first_name} ${this.state.userData.last_name}`}</h2>
                             <div className="table-button-row col-3 alignButton">
-                                <Button onClick={this.onEditUserClicked}>Edit Information</Button>
+                                <Button hidden={this.state.groups.includes('oauth')} onClick={this.onEditUserClicked}>Edit Information</Button>
                             </div>
                             <Row>
                                 <Col xs={6}>
@@ -135,7 +136,8 @@ class UserPage extends React.Component {
         authServices.getCurrentUser().then((result) => {
             if (result.success) {
                 this.setState({
-                    userData: result.data
+                    userData: result.data,
+                    groups: result.data.groups
                 })
             } else {
                 console.log("error")

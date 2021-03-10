@@ -65,11 +65,23 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                 dataField: 'file_type',
                 text: 'Additional Files',
                 sort: false,
-                title: (cell) => `If a supplement file/data exists, click to see more`,
+                title: (cell) => {
+                    switch (cell) {
+                        case 'None':
+                            return 'No supplement documents';
+                        case 'Artifact':
+                            return `Supplement file: click to download`;
+                        case 'Load Bank':
+                            return 'Load Bank Data: click to view';
+                        default:
+                            return 'No supplement documents';
+                    }
+                    
+                },
                 headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
                     switch (cell) {
-                        case '0':
+                        case 'None':
                             return <span>N/A</span>;
                         case 'Artifact':
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
@@ -84,7 +96,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick) => {
                 dataField: 'user',
                 text: 'Name',
                 sort: false,
-                title: (cell) => `Name: ${cell}`,
+                title: (cell) => `Name: ${ cell.first_name } ${ cell.last_name }`,
                 headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>

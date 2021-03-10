@@ -55,7 +55,10 @@ const detailView = (props) => {
 
                     </div>
                     <hr />
-                    {props.bottomElement}
+                    <div className="bottom-element">
+                        {props.bottomElement}
+                    </div>
+                    
                 </div>
 
             </div>

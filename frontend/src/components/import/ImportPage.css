@@ -1,0 +1,53 @@
+input[type=file]{
+    padding: 20px;
+    padding-bottom: 50px;
+    margin-bottom: 20px;
+}
+
+.lowerMargin{
+    margin-bottom: 15px;
+}
+
+.instructions{
+    margin-top: 10px;
+    padding: 30px;
+    width: 100%;
+    text-align: left;
+    background-color: rgb(221, 221, 221);
+
+}
+
+.summary{
+    height: 255px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    text-align: left;
+    background-color: rgb(221, 221, 221);
+}
+
+.popupScrolling{
+    height: 50vh;
+    width: 100%;
+}
+
+.scrollable{
+    overflow-y: auto !important;
+    height: 90vh;
+}
+
+.import-table td{
+    white-space:nowrap;
+    overflow-y: auto;
+    text-overflow: ellipsis;
+    padding: .1rem .1rem .1rem .1rem !important;
+}
+
+.import-table-header th{
+    background-color: rgb(100, 100, 100) !important;
+    color: white;
+    height: 50px;
+    /* background-color: white; */
+    position: sticky;
+    top: 0;
+}

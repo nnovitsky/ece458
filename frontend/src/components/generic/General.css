@@ -1,0 +1,199 @@
+.background{
+    background-color: rgb(147, 196, 127);
+    padding: 5px;
+}
+
+
+.btn-primary {
+    border-color: rgb(57, 127, 60) !important;
+    background-color: rgb(57, 127, 60) !important;
+}
+
+.btn-primary:hover{
+    background-color: rgb(96, 153, 74) !important;
+    border-color: rgb(96, 153, 74) !important;
+}
+
+
+.mainContent{
+    background-color: white;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: -10px;
+}
+
+.col-2 img{
+    max-width: 90px;
+    max-height: 90px;
+    margin: 10px;
+    margin-bottom: 25px;
+}
+
+/* add 'green-link' to any <a> element to get a green hyperlink */
+a.green-link {
+    color: rgb(57, 127, 60) !important;
+}
+
+a.green-link:hover {
+    color: rgb(57, 127, 60) !important;
+    text-decoration: underline;
+    
+}
+
+/* add this class to any form labels of required fields */
+.required-field:after {
+    content:" *";
+    color: rgb(238, 68, 68);
+  }
+
+/* apply this css to any logo columns that will have buttons
+add 'button-col' to the classname for the div acting as the column
+*/
+.button-col {
+    padding: 5px !important;
+}
+.button-col button {
+    /* padding: 5px; */
+    margin: 10px;
+    height: min-content;
+}
+
+/* Used for the filter form to make sure they aren't scrunched together, if this gets to be too general it can definitely 
+be made to be more specific */
+.input-group {
+    padding: 5px;
+}
+
+/* Class that encompasses the filter column, 'filter-column' should be applied to a container for the filter column */
+.filter-column {
+    width: 100%;
+    padding: 5px !important;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+.filter-column .col {
+    padding: 0px !important;
+}
+
+.filter-column input {
+    width: 100%;
+    margin: 1px 1px 10px 1px;
+    padding: 5px;
+}
+
+.filter-column button{
+    width: 100%;
+    margin: 1px 1px 5px 1px;
+    padding: 5px;
+}
+
+/* class applied to the button rows on top of the model/instrument data tables */
+.table-button-row {
+    display: inline-flex;
+}
+.table-button-row button{
+    /* margin: 10px; */
+    /* display: inline-block; */
+    margin-left: 5px;
+    /* max-width: 150px; */
+    height: min-content;
+
+}
+
+/* popup is a classname that is used for some of the body's of the popups */
+
+form.popup{
+    margin: 0px;
+    border-radius: 10px;
+    padding: 20px;
+    padding-left: 5%;
+    padding-right: 5%;
+    text-align: left;
+    display: inline-block;
+    background-color: rgb(147, 196, 127);
+}
+
+form.popup {
+    width: 100%;
+}
+
+form.popup label {
+    line-height: 1px;
+}
+
+form.popup .input-group {
+margin: 0px;
+
+}
+
+form.popup .form-control {
+    margin: 0px;
+}
+
+form.popup input[type=file]  {
+    margin: 0px;
+    padding: 5px 0px 5px 0px;
+}
+
+form.popup input[type=text] {
+    width: 100%;
+    margin: 0px;
+}
+
+form.popup .form-group {
+    margin-bottom: 0px;
+}
+
+/* The Generic popup has alerts, this is where they are formatted */
+
+.popup-alert{
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.popup-alert p {
+    margin: 6px;
+    text-align: center;
+}
+
+/* The generic popup has a button row, this is where that is formatted */
+.popup-button-row {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.popup-button-row button {
+    margin: 5px;
+    padding: 15px;
+    width: 100%;
+}
+
+/* Calibration status icons on the instrument table oage are formatted using this tag */
+.calibration-status-icon {
+    display: block;
+    margin: auto !important;
+      max-width:30px !important;
+  max-height:30px !important;
+  /* width: auto;
+  height: auto; */
+}
+
+.stack-top{
+    z-index: 1000;
+    margin: 0px; /* for demo purpose  */
+    background: rgba(255, 255, 255, 0.658);
+    position: absolute;
+    width: 100%; 
+    height: 100%;
+    text-align: center;
+}
+
+.loader{
+    margin-top: 20%;
+}
+

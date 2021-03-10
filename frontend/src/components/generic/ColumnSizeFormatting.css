@@ -1,0 +1,201 @@
+/* data column formatting
+    these classes are used in the configs of the instrument/model data tables
+*/
+.num-column {
+    width: 7%;
+}
+
+.vendor-column {
+    width: 15%;
+}
+
+.model-number-column {
+    width: 10%;
+}
+
+.serial-number-column {
+    width: 10%;
+}
+
+.asset-tag-column {
+    width: 10%;
+}
+
+/* .description-column {
+    width is not defined so it fills the remaining width, the description will likely be the longest field
+} */
+
+/* 
+.comment-column left undefined
+*/
+
+.cal-column {
+    width: 15%;
+}
+
+.latest-calibration-column {
+    width: 12%;
+}
+
+.calibration-expiration-column {
+    width: 12%;
+}
+
+.more-column {
+    width: 8%;
+}
+
+.calibration-certificate-column {
+    width: 10%;
+}
+
+.name-column {
+    width: 30%;
+}
+
+.username-column {
+    width: 20%;
+}
+
+.status-column {
+    max-width: 30px;
+}
+
+/* instrument table page columns */
+.it-num-column {
+    width: 30px;
+}
+
+.it-asset-column {
+    width: 50px;
+}
+
+.it-vendor-column {
+    width: 10%;
+}
+
+.it-model-number-column {
+    width: 7%;
+}
+
+.it-description-column {
+    width: 10%;
+}
+
+.it-model-category-column {
+    width: 10%;
+}
+
+.it-serial-number-column {
+    width: 7%;
+}
+
+.it-instrument-category-column {
+    width: 10%;
+}
+
+.it-latest-calibration-column {
+    width: 8%;
+}
+
+.it-calibration-expiration-column {
+    width: 8%;
+}
+
+.it-status-column {
+    width: 50px;
+}
+
+/* .it-calibration-certificate-column {
+    width: 3%;
+} */
+
+/* category management page columns */
+/* .cm-category-column {
+not defined so it gets the leftover
+} */
+
+.cm-num-column {
+    width: 50px;
+}
+.cm-count-column {
+    width: 15%;
+}
+
+.cm-edit-column {
+    width: 10%;
+}
+
+.cm-delete-column {
+    width: 10%;
+}
+
+/* model table page columns */
+.mt-num-column {
+    width: 30px;
+}
+
+.mt-vendor-column {
+    width: 15%;
+}
+
+.mt-model-number-column {
+    width: 7%;
+}
+
+.mt-description-column {
+    width: 20%;
+}
+
+.mt-cal-column {
+    width: 8%;
+}
+
+.mt-cal-mode-column {
+    width: 10%;
+}
+
+/* .mt-model-category-column {
+
+} */
+
+/* serial table of instruments on the model detail page */
+.st-num-column {
+    width: 50px;
+}
+
+.st-asset-tag-column {
+    width: 35%;
+}
+
+/* .st-serial-number-column {
+takes up the rest of the space
+} */
+
+/* calibration table for the instrument detail view */
+.ct-num-column {
+    width: 50px;
+}
+
+.ct-cal-column {
+    width: 15%;
+}
+
+.ct-file-column {
+    width: 15%;
+}
+
+.ct-name-column {
+    width: 15%;
+}
+
+.ct-username-column {
+    width: 12%
+}
+/* .ct-comment-column {
+takes the leftover
+} */
+
+
+
+

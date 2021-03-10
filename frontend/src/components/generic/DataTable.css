@@ -1,0 +1,83 @@
+
+/* class applied to the entire data table, makes sure overflow is hidden */
+.data-table td{
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: .1rem .1rem .1rem .1rem !important;
+}
+
+/* formats the pagination show all/total results components */
+.pagination-top-row {
+    margin-block-start: .5em;
+    margin-block-end: .5em;
+    float: right;
+    width: 100%;
+}
+
+.pagination-top-row span {
+    margin-right: 10px;
+    float: right;
+}
+
+.pagination-button-row {
+    float: right;
+}
+
+.pagination-button-row button {
+    width: 110px;
+    float: right;
+}
+
+/* setting the pagination bar of button colors to match the color scheme of the site */
+.page-item.disabled .page-link{
+    color: #6c757d !important;
+}
+
+.page-item.active .page-link{
+    background-color: rgb(57, 127, 60) !important;
+    border-color: rgb(57, 127, 60) !important;
+    color: white !important;
+}
+
+.page-link {
+    color: rgb(57, 127, 60) !important;
+}
+
+/* used to make the data table header sticky */
+.data-table-header th{
+    background-color: rgb(100, 100, 100) !important;
+    color: white;
+    /* background-color: white; */
+    position: sticky;
+    top: 0;
+}
+
+/* apply to any buttons in the table */
+.data-table-button {
+    padding: 1px 3px 1px 3px !important;
+    border-color: transparent !important;
+    background-color: transparent !important;
+    color: rgb(57, 127, 60) !important;
+}
+
+.data-table-button:hover {
+    border-color: transparent !important;
+    background-color: transparent !important;
+    color: rgb(57, 127, 60) !important;
+    text-decoration: underline !important;
+}
+
+.data-table-button.red {
+    color: red !important;
+}
+
+.data-table-button:hover.red {
+    color: red !important;
+    text-decoration: underline !important;
+}
+
+/* formats the no result message */
+.data-table-no-results {
+    padding: 50px;
+}

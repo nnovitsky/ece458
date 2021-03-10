@@ -1,0 +1,34 @@
+{
+  "add_edit_user": {
+    "username": {
+      "A user with that username already exists.": "This username is already in use"
+    },
+    "password": {
+      "Ensure this field has no more than 256 characters.": "Please enter a password no longer than 256 characters"
+    },
+    "first_name": {
+      "Ensure this field has no more than 128 characters.": "Please enter a first name no longer than 128 characters"
+    },
+    "last_name": {
+      "Ensure this field has no more than 128 characters.": "Please enter a last name no longer than 128 characters"
+    },
+    "email": {
+      "Ensure this field has no more than 320 characters.": "Please enter an email no longer than 320 characters",
+      "Enter a valid email address.": "Please enter a valid email address"
+    },
+    "input_error": {
+      "Username is required.": "Please enter a username",
+      "Username belongs to a deactivated user.": "This username is not available, please enter a new one",
+      "First name is required.": "Please enter a first name",
+      "Last name is required.": "Please enter a last name",
+      "Email is required.": "Please enter an email",
+
+      "Password is required.": "Please enter a password",
+      "Username must be less than 128 characters.": "Please enter a username no longer than 128 characters",
+      "First name must be less than 128 characters.": "Please enter a first name no longer than 128 characters",
+      "Last name must be less than 128 characters.": "Please enter a last name no longer than 128 characters",
+      "Email must be less than 320 characters.": "Please enter an email no longer than 320 characters",
+      "Password must be less than 256 characters.": "Please enter a password no longer than 256 characters"
+    }
+  }
+}

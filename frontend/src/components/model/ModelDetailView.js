@@ -251,7 +251,7 @@ class ModelDetailView extends React.Component {
                 this.updateModelInfo();
                 this.onEditClose();
             } else {
-                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add__edit_model"]);
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_model"]);
                 this.setState({
                     editPopup: {
                         ...this.state.editPopup,

@@ -516,4 +516,6 @@ jobs:
         run: ssh test_server 'sudo systemctl start gunicorn && sudo systemctl start nginx'
 ```
 
+Save this file and on every push/pull to the dev branch, the deployed branch will receive changes.
 
+## Oauth Implementation

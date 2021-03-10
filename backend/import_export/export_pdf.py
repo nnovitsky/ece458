@@ -228,7 +228,8 @@ def get_lb_tables(cal_pk):
 
 
 def get_xlsx_hyperlink(cal_data):
-    
+
+
 
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements

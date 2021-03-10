@@ -3,6 +3,7 @@ import os
 from django.contrib.auth.models import User
 from django.http import FileResponse
 from django.http.request import QueryDict
+from django.db.models.functions import Lower
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
@@ -485,6 +486,9 @@ def current_user(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
+        if UserType.contains_user(request.user, "oauth"):
+            return Response(
+                {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
@@ -561,7 +565,7 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        categories = ItemModelCategory.objects.all()
+        categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
@@ -581,7 +585,7 @@ def instrument_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        categories = InstrumentCategory.objects.all()
+        categories = InstrumentCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':

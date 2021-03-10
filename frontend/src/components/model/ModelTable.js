@@ -142,7 +142,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                 sort: false,
                 title: (cell) => {
                     let contents;
-                    if (cell) {
+                    if (cell[0] === null) {
                         contents = 'None'
                     } else {
                         contents = cell.join(', ');

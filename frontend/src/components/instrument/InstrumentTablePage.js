@@ -13,6 +13,7 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
+import TableHoverTooltip from '../generic/TableHoverTooltip';
 
 
 const instrumentServices = new InstrumentServices();
@@ -124,7 +125,9 @@ class InstrumentTablePage extends Component {
                             />
                         </div>
                         <div className="col-10">
-                            <h1>Instrument Table</h1>
+                            <h1>Instrument Table
+                                <TableHoverTooltip/>
+                                </h1>
                             
                             <InstrumentTable
                                 data={this.state.tableData}

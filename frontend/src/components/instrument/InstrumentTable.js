@@ -154,7 +154,7 @@ const getLatestCalText = (data) => {
                     sort: false,
                     title: (cell) => {
                         let contents;
-                        if (cell) {
+                        if (cell[0]) {
                             contents = 'None'
                         } else {
                             contents = cell.join(', ');
@@ -191,7 +191,7 @@ const getLatestCalText = (data) => {
                     
                     title: (cell) => {
                         let contents;
-                        if (cell) {
+                        if (cell[0]) {
                             contents = 'None'
                         } else {
                             contents = cell.join(', ');

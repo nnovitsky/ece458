@@ -23,7 +23,7 @@ import './ImportPage.css'
 // onCertificateRequested: handler for when a calibration certificate is requested
 // onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 // inlineElements: elements to be inline withe pagination components on the top of the screen
-const keyField = 'pk';
+const keyField = 'asset_tag';
 
 const NewInstrumentTablePage = (props) => {
     let config = makeConfig();
@@ -48,6 +48,7 @@ const NewInstrumentTablePage = (props) => {
         return (
             [
                 {
+                    isKey: true,
                     dataField: 'asset_tag',
                     text: 'Asset #',
                 },

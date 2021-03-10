@@ -394,10 +394,10 @@ name: SSH Deploy
 on: 
   push:
     branches: 
-      - main
+      - dev_postgres
   pull_request:
     branches:
-      - main
+      - dev_postgres
 jobs:
   deploy:
     name: "Deploy to staging"
@@ -423,7 +423,7 @@ jobs:
 ```
 Below is some insight as to how these lines function:
 `name:` Names the action, this is the name which will apear when the action is run. 
-`on: push/pull` This line specifies to run this action every time code is pushed/pulled to the main branch. 
+`on: push/pull` This line specifies to run this action every time code is pushed/pulled to the dev_postgres branch. 
 `jobs:` This is a line required by GitHub actions to specify the work which this action will perform.
 `deploy: name:` This name within the jobs sections is the name of the first 'test' which will be run. This would be the name of the first Unit test if this action were being used for testing. Instead, we break up steps of deployement into different chunks to more easilly debug if something in deployment goes wrong. This first chunk enters our server. 
 `steps` This specifies what the action will do. In this case, the action will run terminal commands using our configured Secrests (environment variables) to enter into the server. 
@@ -463,10 +463,10 @@ name: SSH Deploy
 on: 
   push:
     branches: 
-      - main
+      - dev_postgres
   pull_request:
     branches:
-      - main
+      - dev_postgres
 jobs:
   deploy:
     name: "Deploy to staging"

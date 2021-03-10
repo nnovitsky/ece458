@@ -16,8 +16,11 @@ import CategoriesPage from './components/categories/CategoriesPage';
 import Navigation from './components/Navigation';
 import OauthRoute from './components/OauthRoute';
 import GenericLoader from './components/generic/GenericLoader.js';
-
 import AuthServices from './api/authServices';
+import Configs from './api/config.js';
+
+//const URL = 'http://localhost:3000/'
+const URL = Configs + '/'
 const authServices = new AuthServices();
 
 class App extends Component {
@@ -63,7 +66,6 @@ class App extends Component {
     this.setState({
       isLoading: true
     });
-    console.log("Calling handle oath/login")
     authServices.getOauthToken(code).then(result => {
       if (result.success) {
         localStorage.setItem('token', result.data.token);
@@ -88,16 +90,12 @@ class App extends Component {
   
 
   handle_login = (e, data) => {
-    if (data.username === "" || data.password === "") {
-      this.setState({ error_message: 'Please complete all fields' });
-    }
-    else {
+    this.setState({ error_message: '' })
       e.preventDefault();
       authServices.login(data)
         .then(res => res.json())
         .then(json => {
           if (typeof json.user === 'undefined') {
-            console.log(json)
             this.setState({ error_message: 'Incorrect Login Credentials' });
           }
           else {
@@ -111,7 +109,6 @@ class App extends Component {
             this.setState({ error_message: '' });
           }
         });
-    }
   };
 
 
@@ -154,7 +151,7 @@ class App extends Component {
     
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
-    console.log(this.state.username)
+    console.log("Location: "+ window.location.href)
     return (
       <Beforeunload onBeforeunload={this.emptyLocalStorage}>
         <BrowserRouter>
@@ -179,6 +176,7 @@ class App extends Component {
           </Switch>
           {this.state.logged_in ? null : form}
           {this.state.redirect ? (<Redirect to="/user-profile" />) : null}
+          {this.state.logged_in && window.location.href === URL ? (<Redirect to="/user-profile" />) : null}
         </div>
       </BrowserRouter>
       </Beforeunload>

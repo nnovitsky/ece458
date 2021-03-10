@@ -10,8 +10,7 @@ from backend.tables.serializers import ItemModelSerializer, InstrumentWriteSeria
                                        CalibrationEventWriteSerializer, InstrumentCategorySerializer
 from backend.import_export.field_validators import is_blank_row
 
-db_categories = list(InstrumentCategory.objects.values_list('name', flat=True))
-db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
+
 at_pointer = 100000
 instrument_keys = ['item_model', 'asset_tag', 'serial_number', 'comment', 'instrumentcategory_set']
 cal_event_keys = ['date', 'user', 'instrument', 'comment']
@@ -26,8 +25,7 @@ CAL_COMMENT_INDEX = 6
 CATEGORIES_INDEX = 7
 
 
-def get_instrument_category_set(row):
-    global db_categories
+def get_instrument_category_set(row, db_categories):
     instrument_category_set = set()
     row_categories = row[CATEGORIES_INDEX].strip()
 
@@ -44,8 +42,8 @@ def get_instrument_category_set(row):
     return instrument_category_set
 
 
-def get_valid_asset_tag(row):
-    global at_pointer, db_asset_tags
+def get_valid_asset_tag(row, db_asset_tags):
+    global at_pointer
 
     if row[ASSET_TAG_INDEX].strip() == '':
         while at_pointer in db_asset_tags:
@@ -56,11 +54,10 @@ def get_valid_asset_tag(row):
     return at_pointer
 
 
-def upload_instrument(current_row, item_model):
-    global db_asset_tags, db_categories
+def upload_instrument(current_row, item_model, db_asset_tags, db_categories):
 
-    categories = get_instrument_category_set(current_row)
-    asset_tag = get_valid_asset_tag(current_row)
+    categories = get_instrument_category_set(current_row, db_categories)
+    asset_tag = get_valid_asset_tag(current_row, db_asset_tags)
 
     serial_num = None if current_row[SERIAL_NUM_INDEX].strip() == '' else current_row[SERIAL_NUM_INDEX]
     instrument_info = [item_model.pk, asset_tag, serial_num, current_row[COMMENT_INDEX],
@@ -97,7 +94,7 @@ def upload_cal_event(current_row, current_instrument, user):
     return False
 
 
-def get_assigned_asset_tags(reader):
+def get_assigned_asset_tags(reader, db_asset_tags):
     next(reader)
 
     for row in reader:
@@ -110,10 +107,12 @@ def get_assigned_asset_tags(reader):
 def get_instrument_list(file, user):
     n_uploads = 0
     instruments = []
+    db_categories = list(InstrumentCategory.objects.values_list('name', flat=True))
+    db_asset_tags = set(Instrument.objects.values_list('asset_tag', flat=True))
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
-    get_assigned_asset_tags(reader)
+    get_assigned_asset_tags(reader, db_asset_tags)
 
     file.seek(0)
     reader = csv.reader(io.StringIO(file.read().decode('utf-8-sig')))
@@ -124,7 +123,7 @@ def get_instrument_list(file, user):
             continue
 
         item_model = ItemModel.objects.filter(vendor=row[VENDOR_INDEX]).filter(model_number=row[MODEL_NUM_INDEX])[0]
-        instrument_upload_success, current_instrument = upload_instrument(row, item_model)
+        instrument_upload_success, current_instrument = upload_instrument(row, item_model, db_asset_tags, db_categories)
 
         if not instrument_upload_success:
             return False, [], "Failed to upload instruments to db"

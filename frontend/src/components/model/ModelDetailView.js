@@ -95,6 +95,7 @@ class ModelDetailView extends React.Component {
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
                     comments={comment}
+                    bottomElementTitle="Model's Instruments"
                     bottomElement={this.makeSerialTable()}
                 />
                 {/* <div className="col-2 text-center button-col">

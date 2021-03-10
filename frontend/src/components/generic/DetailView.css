@@ -66,3 +66,8 @@ hr {
 .table-view-bold-td {
   width: 200px;
 }
+
+/* sets the margin for the bottom table element */
+.bottom-element {
+  margin: 20px;
+}

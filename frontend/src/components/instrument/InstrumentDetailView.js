@@ -116,6 +116,7 @@ class InstrumentDetailView extends Component {
                     col5={this.makeDetailsTable()}
                     comments={comment}
                     bottomElement={this.makeCalHistoryTable()}
+                    bottomElementTitle="Instrument Calibration History"
                 />
             </div>
 
@@ -133,7 +134,7 @@ class InstrumentDetailView extends Component {
             </div>
         )
         return (
-            <div className="cal-history-table" hidden={!isCalibratable}>
+            <div hidden={!isCalibratable}>
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}

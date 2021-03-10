@@ -77,10 +77,12 @@ let makeConfig = (onValidate) => {
             {
                 dataField: 'cr',
                 text: 'Current Reported',
+                classes: 'format-basic-cells',
             },
             {
                 dataField: 'ca',
                 text: 'Current Actual',
+                classes: 'format-basic-cells',
             },
             {
                 dataField: 'button',

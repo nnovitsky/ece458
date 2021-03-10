@@ -5,8 +5,10 @@ import logo from '../../assets/HPT_logo_crop.png';
 import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
-import ModelTable from "../model/ModelTable.js";
-import InstrumentTable from "../instrument/InstrumentTable.js";
+
+import ModelTable from "./NewModelTable.js";
+import InstrumentTable from "./NewIntrumentTable";
+
 import Button from 'react-bootstrap/Button';
 import GenericLoader from '../generic/GenericLoader.js';
 
@@ -47,10 +49,7 @@ class ImportPage extends Component {
                 <ModelTable
                     data={this.state.tableData}
                     onTableChange={null}
-                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
-                    onMoreClicked={null}
-                    inlineElements={null}
-                />
+                 />
             </div>,
 
 
@@ -59,10 +58,6 @@ class ImportPage extends Component {
                 <InstrumentTable
                     data={this.state.tableData}
                     onTableChange={null}
-                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
-                    onCertificateRequested={this.onCertificateRequested}
-                    onMoreClicked={null}
-                    inlineElements={null}
                 />
             </div>
     ) {
@@ -155,14 +150,22 @@ class ImportPage extends Component {
 
             modelServices.importModelCSV(formData)
                 .then(res => {
+                    console.log(res.data)
                     if (res.success) {
                         this.setState({
                             status_message: "Success",
-                            records_count: "Imported " + res.data.data.count + " models",
+                            records_count: "Imported " + res.data.count + " models",
                             tableData: res.data.data,
                             showModelTable: true,
                             showInstrumentTable: false,
-                            isLoading: false
+                            isLoading: false,
+                            pagination: {
+                                ...this.state.pagination,
+                                resultCount: res.data.count,
+                                numPages: 1,
+                                resultsPerPage: res.data.count,
+                                currentPageNum: 1,
+                            }
                         })
                     }
                     else {
@@ -197,11 +200,18 @@ class ImportPage extends Component {
                     if (res.success) {
                         this.setState({
                             status_message: "Success",
-                            records_count: "Imported " + res.data.data.count + " instruments",
+                            records_count: "Imported " + res.data.count + " instruments",
                             tableData: res.data.data,
                             showModelTable: false,
                             showInstrumentTable: true,
                             isLoading: false,
+                            pagination: {
+                                ...this.state.pagination,
+                                resultCount: res.data.count,
+                                numPages: 1,
+                                resultsPerPage: res.data.count,
+                                currentPageNum: 1,
+                            }
                         })
                     }
                     else {

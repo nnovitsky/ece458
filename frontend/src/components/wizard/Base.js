@@ -25,7 +25,7 @@ class Base extends React.Component {
                         {this.makeErrorsParagraphs(this.props.errors)}
                     </Alert>
                     <Button hidden={this.props.isCancelHidden} variant="secondary" className="mr-auto" onClick={this.props.onClose}>Cancel</Button>
-                    <Button hidden={this.props.isBackHidden} variant="primary" onClick={this.props.decrementStep}>Back</Button>
+                    <Button hidden={this.props.isBackHidden} variant="primary" onClick={this.props.decrementStep}>{this.props.backButtonText}</Button>
                     <Button hidden={this.props.isContinueHidden} variant="primary" disabled={this.props.disableContinue} onClick={this.props.incrementStep}>{this.props.continueButtonText}</Button>
                 </Modal.Footer>
             </Modal>
@@ -47,6 +47,7 @@ Base.defaultProps = {
     disableContinue: false,
     title: 'Calibration Wizard',
     continueButtonText: 'Continue',
+    backButtonText: 'Back',
     isCancelHidden: false,
     isBackHidden: false,
     isContinueHidden: false

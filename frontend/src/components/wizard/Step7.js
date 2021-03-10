@@ -24,10 +24,14 @@ class Step3 extends React.Component {
                 date: '',
                 voltmeter: '',
                 shuntmeter: '',
-                comment: ''
+                test_voltage: '',
+                comment: '',
+                vr: '',
+                va: '',
             },
             loadbank_pk: this.props.loadbank_pk,
-            data: [[],[],[],[]]
+            data: [[],[],[],[]],
+            canDelete: false,
         }
         this.getDeatils = this.getDeatils.bind(this);
         this.getData = this.getData.bind(this);
@@ -37,7 +41,6 @@ class Step3 extends React.Component {
     async componentDidMount() {
         this.getDeatils();
         this.getData().then(res => {
-            console.log(this.state.data)
         })
     }
 
@@ -53,7 +56,9 @@ class Step3 extends React.Component {
                 incrementStep={this.props.onClose}
                 decrementStep={this.props.decrementStep}
                 isCancelHidden={true}
-                isBackHidden={false}
+                isBackHidden={!this.state.canDelete}
+                decrementStep={this.props.cancelEvent}
+                backButtonText='Delete'
                 continueButtonText='Finish'
             />
         );
@@ -76,12 +81,16 @@ class Step3 extends React.Component {
                                     <td>{this.state.calInfo.date}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Voltmeter Used</strong></td>
+                                    <td><strong>Voltmeter</strong></td>
                                     <td>{this.state.calInfo.voltmeter}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Shuntmeter Used</strong></td>
+                                    <td><strong>Shuntmeter</strong></td>
                                     <td>{this.state.calInfo.shuntmeter}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Test Voltage</strong></td>
+                                    <td>Tested: {this.state.calInfo.test_voltage} <br></br>Reported: {this.state.calInfo.vr} <br></br>Actual: {this.state.calInfo.va}</td>
                                 </tr>
                             </tbody>
                         </Table>
@@ -110,17 +119,32 @@ class Step3 extends React.Component {
     async getDeatils() {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
-                console.log(result.data)
                 this.setState({
                     calInfo: {
                         ...this.state.calInfo,
                         engineer: result.data.data.cal_event.user.username,
                         date: result.data.data.cal_event.date,
+                        comment: result.data.data.cal_event.comment,
+                    }})
+                if(result.data.data.voltage_test !== null)
+                {
+                this.setState({
+                    calInfo: {
+                        ...this.state.calInfo,
                         voltmeter: result.data.data.voltmeter_vendor + " " + result.data.data.voltmeter_model_num + ", (" + result.data.data.voltmeter_asset_tag+")",
                         shuntmeter: result.data.data.shunt_meter_vendor + " " + result.data.data.shunt_meter_model_num + ", (" + result.data.data.shunt_meter_asset_tag+")",
-                        comment: result.data.data.cal_event.comment,
+                        test_voltage: result.data.data.voltage_test.test_voltage + "V",
+                        vr: result.data.data.voltage_test.vr + "V",
+                        va: result.data.data.voltage_test.va + "V",
                     }
                 })
+            }
+            else{
+                this.setState({
+                    errors: ["Error: Engineer did not complete complete this calibration event and failed to cancel it."],
+                    canDelete: true,
+                })
+            }
             }
         })
     }

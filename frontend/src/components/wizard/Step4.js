@@ -30,6 +30,7 @@ class Step4 extends React.Component {
         this.nextTable = this.nextTable.bind(this);
         this.prevTable = this.prevTable.bind(this);
         this.getInitialData = this.getInitialData.bind(this);
+        this.seeIfAllValidated = this.seeIfAllValidated.bind(this);
 
     }
 
@@ -40,8 +41,6 @@ class Step4 extends React.Component {
 
     render() {
         let body = this.makeBody();
-        console.log(this.state.num_validated + " vs. " + this.state.validationData.length)
-
         return (
             <Base
                 isShown={this.props.isShown}
@@ -50,8 +49,6 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
-                //TODO: Add this in once we want all validated
-                //disableContinue={!(this.state.num_validated === this.state.validationData.length)}
             />
         );
     }
@@ -64,7 +61,7 @@ class Step4 extends React.Component {
                     <ol>
                         <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
                         <li>Press [Enter] after each time you enter input to save your input in the cell</li>
-                        <li>Click validate to validate your inputs. If the row appears green, your inputs were acceptable callibration values.</li>
+                        <li>Click validate to validate your inputs. If the row appears green, your inputs were acceptable callibration values</li>
                         <li>Click continue once you have entered and validated all inputs</li>
                     </ol>
                 <p>
@@ -166,7 +163,7 @@ class Step4 extends React.Component {
             this.getInitialData((currentIndex+1))
         }
         else if (this.state.index === 4) {
-            this.props.incrementStep()
+            this.seeIfAllValidated();
         }
     }
 
@@ -182,6 +179,31 @@ class Step4 extends React.Component {
         else if (this.state.index === 1) {
             this.props.decrementStep()
         }
+    }
+
+    async seeIfAllValidated()
+    {
+        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
+            if(result.success)
+            {
+                if(result.data.errors.unacceptable_load_readings.length === 0 && result.data.errors.missing_load_readings.length === 0)
+                {
+                    this.props.incrementStep()
+                }
+                else if(result.data.errors.unacceptable_load_readings.length > 0)
+                {
+                    this.setState({
+                        errors: ["Cannot continue: Some inputted current readings contain unacceptable values. Please fix and validate them to continue."]
+                    })
+                }
+                else if(result.data.errors.missing_load_readings.length > 0)
+                {
+                    this.setState({
+                        errors: ["Cannot continue: Some current readings are missing, please enter and validate them to continue."]
+                    })
+                }
+            }
+        })
     }
 
 }

@@ -95,7 +95,7 @@ const getLatestCalText = (data) => {
                 }
             } else {
                 result.icon = ExpiredIcon;
-                result.text = `Warning: this calibration is expired`;
+                result.text = `No calibration history`;
             }
         }
 

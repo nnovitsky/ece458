@@ -430,17 +430,90 @@ Below is some insight as to how these lines function:
 
 Now that we have a job which is able to enter the server, we will add the actions to be performed once in the server. First, the action will need to stop the server running.
 ```
-- name: Stop the server
+	- name: Stop the server
         run: ssh test_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
 ```
 Next, we want the action to pull any new code which was pushed. Not having to manually download new code is what sets up continuous integration.
 ```
-- name: Check out the source
-        run: ssh test_server 'cd /home/jay18/evo2/ece458 && git pull'
+	- name: Check out the source
+        run: ssh test_server 'cd /your/path/to/ece458 && git pull'
 ```
-Check to see if any new 
+Check to see if any new requirements were added. 
+```
+	- name: Start venv and Download Requirements.txt
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458 && pip3 install -r requirements.txt'
+```
+Perform the necessary migrations, make a build of the frontend and restart the server
+```
+	- name: Perform migrations
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
+      - name: Build Frontend
+        run: ssh test_server 'cd /your/path/to/ece458/frontend && npm install && npm run build'
 
+      
+      - name: Start the server
+        if: ${{ always() }}
+        run: ssh test_server 'sudo systemctl start gunicorn && sudo systemctl start nginx'
+```
+Below is the full file all put together
+```
+name: SSH Deploy
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: "Deploy to staging"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host test_server
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+	  
+	  
+	 - name: Stop the server
+        run: ssh test_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
+	
+	
+	- name: Check out the source
+        run: ssh test_server 'cd /your/path/to/ece458 && git pull'
+	
+	
+	- name: Start venv and Download Requirements.txt
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458 && pip3 install -r requirements.txt'
+	
+	
+	- name: Perform migrations
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+
+
+      - name: Build Frontend
+        run: ssh test_server 'cd /your/path/to/ece458/frontend && npm install && npm run build'
+
+   
+      - name: Start the server
+        if: ${{ always() }}
+        run: ssh test_server 'sudo systemctl start gunicorn && sudo systemctl start nginx'
+```
 
 

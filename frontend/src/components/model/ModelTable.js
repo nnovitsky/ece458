@@ -88,7 +88,14 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'calibration_frequency',
                 text: 'Cal. Freq. (Days)',
                 sort: true,
-                title: (cell) => `Cal. Frequency: ${cell} days`,
+                title: (cell) => {
+                    if (cell === 0) {
+                        return `Cal. Frequency: N/A, non-calibratable`
+                    } else {
+                        return `Cal. Frequency: ${cell} days`
+                    }
+                    
+                },
                 headerTitle: () => `Calibration Frequency (Days)`,
                 headerClasses: 'mt-cal-column',
                 formatter: (cell) => {
@@ -103,7 +110,17 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'calibration_modes',
                 text: 'Cal. Mode',
                 sort: false,
-                title: (cell) => `Calibration Mode: ${CalibrationModeDisplayMap[cell]}`,
+                title: (cell) => {
+                    if (cell[0] !== null) {
+                        let result = cell.map(el => {
+                            return CalibrationModeDisplayMap[el]
+                        });
+                        return `Calibration Mode: ${result}`
+                    } else {
+                        return `Calibration Mode: Default`
+                    }
+                    
+                },
                 formatter: (cell) => {
                     if (cell[0] !== null) {
                         let result = cell.map(el => {
@@ -123,7 +140,15 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'categories.item_model_categories',
                 text: 'Model Categories',
                 sort: false,
-                title: (cell) => `Model Categories: ${cell.join(', ')}`,
+                title: (cell) => {
+                    let contents;
+                    if (cell) {
+                        contents = 'None'
+                    } else {
+                        contents = cell.join(', ');
+                    }
+                    return `Model Categories: ${contents}`
+                },
                 headerClasses: 'mt-model-category-column',
                 formatter: (cell) => {
                     return (

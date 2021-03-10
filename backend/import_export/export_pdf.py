@@ -227,6 +227,9 @@ def get_lb_tables(cal_pk):
     elements.append(t_four)
 
 
+def get_xlsx_hyperlink(cal_data):
+    
+
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements
     elements.clear()
@@ -262,6 +265,9 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX]('.')[-1].lower() == 'pdf':
         pdf_merge = True
+
+    if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX]('.')[-1].lower() == 'xlsx':
+        elements.append(get_xlsx_hyperlink(cal_file_data))
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         get_lb_tables(cal_pk)

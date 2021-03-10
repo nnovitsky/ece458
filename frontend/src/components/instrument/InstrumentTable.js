@@ -145,7 +145,15 @@ const getLatestCalText = (data) => {
                     dataField: 'categories.item_model_categories',
                     text: 'Model Categories',
                     sort: false,
-                    title: (cell) => `Model Categories: ${cell.join(', ')}`,
+                    title: (cell) => {
+                        let contents;
+                        if (cell) {
+                            contents = 'None'
+                        } else {
+                            contents = cell.join(', ');
+                        }
+                        return `Model Categories: ${contents}`
+                    },
                     headerClasses: 'it-model-category-column',
                     formatter: (cell) => {
                         return (
@@ -157,7 +165,15 @@ const getLatestCalText = (data) => {
                     dataField: 'serial_number',
                     text: 'Serial #',
                     sort: true,
-                    title: (cell) => `Serial Number: ${cell}`,
+                    title: (cell) => {
+                        let text;
+                        if(cell !== null) {
+                            text = cell;
+                        } else {
+                            text = 'None'
+                        }
+                        return `Serial Number: ${text}`
+                    },
                     headerClasses: 'it-serial-number-column',
                 },
 
@@ -165,7 +181,16 @@ const getLatestCalText = (data) => {
                     dataField: 'categories.instrument_categories',
                     text: 'Instrument Categories',
                     sort: false,
-                    title: (cell) => `Instrument Categories: ${cell.join(', ')}`,
+                    
+                    title: (cell) => {
+                        let contents;
+                        if (cell) {
+                            contents = 'None'
+                        } else {
+                            contents = cell.join(', ');
+                        }
+                    return `Instrument Categories: ${contents}`
+                    },
                     headerClasses: 'it-instrument-category-column',
                     formatter: (cell) => {
                         return (
@@ -186,7 +211,16 @@ const getLatestCalText = (data) => {
                         }
 
                     },
-                    title: (cell, row) => `Last Calibration: ${getLatestCalText(row)}, click to download certificate`,
+                    title: (cell, row) => 
+                    {
+                        let display = getLatestCalText(row);
+                        if (row.calibration_event.length === 0) {
+                            return `Last Calibration: ${display}`;
+                        } else {
+                            return `Last Calibration: ${display}, click to download certificate`;
+                        }
+                        
+                },
                     headerClasses: 'it-latest-calibration-column',
                 },
                 {

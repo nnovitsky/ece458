@@ -181,7 +181,7 @@ class ModelDetailView extends React.Component {
 
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
-                        <td>{modelInfo.calibration_frequency}</td>
+                        <td>{this.getCalFrequencyString()} </td>
                     </tr>
                     <tr>
                         <td><strong>Calibration Mode</strong></td>
@@ -200,6 +200,17 @@ class ModelDetailView extends React.Component {
                 </tbody>
             </Table>
         )
+    }
+
+    getCalFrequencyString() {
+        let calFrequency = this.state.model_info.calibration_frequency;
+        if (calFrequency > 1) {
+            return `${calFrequency} days`;
+        } else if (calFrequency === 1) {
+            return `${calFrequency} day`;
+        } else {
+            return 'N/A'
+        }
     }
 
     getCalModesString() {

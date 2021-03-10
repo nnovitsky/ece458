@@ -95,6 +95,7 @@ class ModelDetailView extends React.Component {
                     headerButtons={this.props.is_admin ? adminButtons : null}
                     col5={this.makeDetailsTable()}
                     comments={comment}
+                    bottomElementTitle="Model's Instruments"
                     bottomElement={this.makeSerialTable()}
                 />
                 {/* <div className="col-2 text-center button-col">
@@ -180,7 +181,7 @@ class ModelDetailView extends React.Component {
 
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
-                        <td>{modelInfo.calibration_frequency}</td>
+                        <td>{this.getCalFrequencyString()} </td>
                     </tr>
                     <tr>
                         <td><strong>Calibration Mode</strong></td>
@@ -199,6 +200,17 @@ class ModelDetailView extends React.Component {
                 </tbody>
             </Table>
         )
+    }
+
+    getCalFrequencyString() {
+        let calFrequency = this.state.model_info.calibration_frequency;
+        if (calFrequency > 1) {
+            return `${calFrequency} days`;
+        } else if (calFrequency === 1) {
+            return `${calFrequency} day`;
+        } else {
+            return 'N/A'
+        }
     }
 
     getCalModesString() {
@@ -239,7 +251,7 @@ class ModelDetailView extends React.Component {
                 this.updateModelInfo();
                 this.onEditClose();
             } else {
-                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add__edit_model"]);
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_edit_model"]);
                 this.setState({
                     editPopup: {
                         ...this.state.editPopup,

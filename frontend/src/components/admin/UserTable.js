@@ -68,7 +68,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 dataField: 'a', //no field for just name but overwriting the display so it's ok
                 text: 'Name',
                 sort: false,
-                title: (cell) => `Name: ${cell}`,
+                title: (cell, row) => `Name: ${row.first_name} ${row.last_name}`,
                 headerClasses: 'name-column',
                 formatter: (user, row) => {
                     return <span>{`${row.first_name} ${row.last_name}`}</span>

@@ -75,7 +75,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 text: 'Edit',
                 sort: false,
                 headerClasses: 'cm-edit-column',
-                title: (cell, row) => `Rename '${row.category}'`,
+                title: (cell, row) => `Rename '${row.name}'`,
                 formatter: (cell, row) => {
                     return (
                         <Button onClick={onCategoryEdit} value={row.pk} name={row.name} className="data-table-button">Rename</Button>
@@ -87,7 +87,7 @@ let makeConfig = (countStart, onCategoryEdit, onCategoryDelete) => {
                 text: 'Delete',
                 sort: false,
                 headerClasses: 'cm-delete-column',
-                title: (cell, row) => `Delete '${row.category}'`,
+                title: (cell, row) => `Delete '${row.name}'`,
                 formatter: (cell, row) => {
                     return (
                         <Button onClick={onCategoryDelete} value={row.pk} name={row.name} className="data-table-button red">Delete</Button>

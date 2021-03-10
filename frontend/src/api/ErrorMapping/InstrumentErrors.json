@@ -13,7 +13,7 @@
     "asset_tag": {
       "Ensure this value is greater than or equal to 100000.": "The asset tag must be greater than or equal to 100000",
       "Ensure this value is less than or equal to 999999.": "The asset tag must be less than or equal to 999999",
-      "instrument with this asset tag already exists.": "This asset tag is already in use by another instruments"
+      "instrument with this asset tag already exists.": "This asset tag is already in use by another instrument"
     },
     "non_field_errors": {
       "The fields item_model, serial_number must make a unique set.": "An instrument already exists with this model number and serial number pair. Serial numbers must be unique."

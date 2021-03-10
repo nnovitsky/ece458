@@ -4,6 +4,7 @@ from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 from django.forms.fields import FileField
 import datetime
+from backend.hpt.settings import FILE_UPLOAD_MAX_MEMORY_SIZE
 from backend.config.load_bank_config import *
 from backend.config.admin_config import *
 
@@ -347,6 +348,8 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
             if data['file'].content_type not in valid_file_types:
                 raise serializers.ValidationError("Illegal file type.")
 
+            if data['file'].size > FILE_UPLOAD_MAX_MEMORY_SIZE:
+                raise serializers.ValidationError("File size too large.")
         return data
 
 

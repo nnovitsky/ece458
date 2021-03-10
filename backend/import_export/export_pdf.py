@@ -118,13 +118,18 @@ def get_lb_metadata(lb_cal_event):
 def get_stage_data(lc_data):
     cleaned_data = [lb_stage_headers]
     for lc in lc_data:
+
+        if lc.cr_error is not None:
+            cr_error = f"{lc.cr_error:.2f}%"
+        else:
+            cr_error = "N/A"
         cleaned_data.append(
             [
                 lc.load,
                 f"{int(lc.cr)}",
                 f"{int(lc.ca)}",
                 f"{int(lc.ideal)}",
-                f"{lc.cr_error:.2f}%",
+                cr_error,
                 'Yes',
                 f"{lc.ca_error:.2f}%",
                 'Yes',

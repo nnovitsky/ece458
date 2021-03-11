@@ -35,7 +35,7 @@ function BasePicklist(props) {
         if (!allOptions) {
             fetchData();
         }
-    }, [allOptions, props]);
+    }, [allOptions]);
 
     return (
         <Select

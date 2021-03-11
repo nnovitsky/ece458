@@ -534,17 +534,17 @@ else:
 ```
 In line 47, add your client secret.
 ```
-    if "OAUTH_CLIENT_ID" in os.environ:
-        client_secret = os.environ["OAUTH_CLIENT_SECRET"]
-    else:
-        client_secret = "your_client_secret"
+if "OAUTH_CLIENT_ID" in os.environ:
+	client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+else:
+	client_secret = "your_client_secret"
 ```
 In line 66, add your redirect uri.
 ```
-    if "OAUTH_REDIRECT_URI" in os.environ:
-        redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
-    else:
-        redirect_uri = "https://your_host_name/oauth/consume"
+if "OAUTH_REDIRECT_URI" in os.environ:
+	redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
+else:
+	redirect_uri = "https://your_host_name/oauth/consume"
 ```
 
 The last change to make is to add your redirect URI to the frontend login page so the user is redirected to log in through Duke Netid. 
@@ -563,5 +563,4 @@ Once you have completed these steps, Oauth will be set up with the project. You 
 $ sudo systemctl restart gunicorn
 $ cd /your/path/to/ece458/frontend
 $ npm run build
-
-
+```

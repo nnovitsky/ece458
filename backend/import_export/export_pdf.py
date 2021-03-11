@@ -229,9 +229,8 @@ def get_lb_tables(cal_pk):
 
 
 def get_xlsx_hyperlink(cal_pk):
-    key = "Supplemental file: "
-    prod_link = f"https://vcm-18278.vm.duke.edu/api/calibration_event_file/{int(cal_pk)}/"
-    local_link = f"http://localhost:8000/api/calibration_event_file/{int(cal_pk)}/"
+    prod_link = f"https://vcm-18278.vm.duke.edu/api/cal_download/{int(cal_pk)}/"
+    local_link = f"http://localhost:8000/api/cal_download/{int(cal_pk)}/"
     address = '<link href="' + local_link + '">' + 'Supplemental File' + '</link>'
     elements.append(Paragraph(address, styles["Heading3"]))
 

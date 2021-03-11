@@ -183,7 +183,7 @@ def is_valid_asset_tag(asset_tag):
     if len(asset_tag) == ASSET_TAG_LENGTH and asset_tag.isdigit():
         return True, "Valid asset tag format."
 
-    return False
+    return False, "Invalid asset tag"
 
 
 def is_valid_instrument_categories(instrument_categories):

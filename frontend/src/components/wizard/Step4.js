@@ -60,7 +60,7 @@ class Step4 extends React.Component {
                     Instructions:
                     <ol>
                         <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
-                        <li>Press [Enter] after each time you enter input to hold your input in the cell</li>
+                        <li><b>Press [Enter] after each time you enter input to hold your input in the cell</b></li>
                         <li>Click validate to validate your inputs and save them to the calibration event. If the row appears green, your inputs were acceptable callibration values</li>
                         <li>Click continue once you have entered and validated all inputs</li>
                     </ol>
@@ -95,6 +95,20 @@ class Step4 extends React.Component {
         })
     }
 
+    getStrippedVal(value)
+    {
+        let ret = null;
+            if(typeof(value) !== 'undefined' && value !== null)
+            {
+                let stripped = value.trim();
+                if(stripped.length !== 0)
+                {
+                    ret = Number(value)
+                }
+            }
+        return ret;
+    }
+
     async validate(e) {
 
         this.setState({
@@ -108,7 +122,9 @@ class Step4 extends React.Component {
 
         this.state.validationData.forEach(element => {
             if (element.load === load) {
-                wizardServices.addCurrentReading(element.load, Number(element.cr), Number(element.ca), Number(element.ideal), Number(element.index), this.state.loadbank_pk)
+                let cr = this.getStrippedVal(element.cr);
+                let ca = this.getStrippedVal(element.ca);
+                wizardServices.addCurrentReading(element.load, cr, ca, Number(element.ideal), Number(element.index), this.state.loadbank_pk)
                 .then(result => {
                     if(result.success){
                             element.ca_error = result.data.ca_error

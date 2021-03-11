@@ -51,6 +51,9 @@ const NewInstrumentTablePage = (props) => {
                     isKey: true,
                     dataField: 'pk', //json data key for this column
                     text: '#',      //displayed column header text
+                    formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
+                        return <span>{rowIndex}</span>;
+                    },
                 },
                 {
                     dataField: 'asset_tag',

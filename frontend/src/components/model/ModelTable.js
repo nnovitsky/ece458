@@ -110,26 +110,35 @@ let makeConfig = (countStart, onMoreClicked) => {
                 dataField: 'calibration_modes',
                 text: 'Cal. Mode',
                 sort: false,
-                title: (cell) => {
-                    if (cell[0] !== null) {
+                title: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        console.log(row);
+                        return `Calibration Mode: Uncalibratable`;
+                    } 
+                    else if (cell[0] !== null) {
                         let result = cell.map(el => {
                             return CalibrationModeDisplayMap[el]
                         });
-                        return `Calibration Mode: ${result}`
-                    } else {
-                        return `Calibration Mode: Default`
+                        return `Calibration Mode: ${result}`;
+                    } 
+                    else {
+                        return `Calibration Mode: Default`;
                     }
                     
                 },
-                formatter: (cell) => {
-                    if (cell[0] !== null) {
+                formatter: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        return <span>Uncalibratable</span>
+                    }
+                    else if (cell[0] !== null) {
                         let result = cell.map(el => {
                             return CalibrationModeDisplayMap[el]
                         });
                         return (
                             <span>{result.join(',')}</span>
                         )
-                    } else {
+                    }
+                    else {
                         return <span>Default</span>
                     }
                 },

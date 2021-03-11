@@ -292,7 +292,9 @@ class ModelTablePage extends Component {
     }
 
     async exportModels(isAll) {
-        modelServices.exportModels(this.state.modelSearchParams.filters, isAll).then(result => {
+        let modelSearchParams = JSON.parse(window.sessionStorage.getItem("modelPageSearchParams"));
+        let filters = modelSearchParams.filters;
+        modelServices.exportModels(filters, isAll).then(result => {
             if (result.success) {
                 let date = dateToString(new Date());
                 nameAndDownloadFile(result.url, `${date}-model-export`);

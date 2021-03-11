@@ -557,7 +557,7 @@ Naviagte to `ece458/frontend/src/components/login/LoginPage.js` and open the fil
         oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=you_client_id&redirect_uri=https%3Ayour_host_name/oauth/consume&response_type=code',
     };
 ```
-Once you have completed these steps, Oauth will be set up with the project. You will need to restart gunicorn as well as run another build of the frontend.
+Once you have completed these steps, Oauth will be set up with the project. You will need to enter your server through ssh and restart gunicorn as well as run another build of the frontend.
 
 ```
 $ sudo systemctl restart gunicorn

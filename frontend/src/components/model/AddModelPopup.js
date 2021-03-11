@@ -132,8 +132,8 @@ class AddModelPopup extends Component {
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
 
                 <Form.Label>Specialty Calibration Mode</Form.Label>
-                <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} checked={this.isLoadBank()} />
-
+                <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} checked={this.isLoadBank()} disabled={(this.state.newModel.calibration_frequency == 0) || (this.state.newModel.calibration_frequency === '')}/>
+                <Form.Text muted>Must have a calibration frequency to be load bank calibratable</Form.Text>
                 <Form.Label>Model Categories</Form.Label>
                 {categoryPicklist}
             </Form>
@@ -142,8 +142,9 @@ class AddModelPopup extends Component {
 
     isLoadBank() {
         let result = false;
+        let isCalibratable = (this.state.newModel.calibration_frequency > 0) && (this.state.newModel.calibration_frequency != 0);
         this.state.newModel.calibration_modes.forEach(el => {
-            if (el === "load_bank") {
+            if (el === "load_bank" && isCalibratable) {
                 result = true;
             }
         })
@@ -216,6 +217,7 @@ class AddModelPopup extends Component {
                 })
                 return
             case callibrationName:
+                console.log(`calibration frequency to ${val}`);
                 this.setState({
                     newModel: {
                         ...this.state.newModel,

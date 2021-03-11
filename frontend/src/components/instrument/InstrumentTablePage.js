@@ -208,7 +208,6 @@ class InstrumentTablePage extends Component {
     }
 
     updateSessionStorage() {
-        console.log("updating session storage");
         let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
         instrumentSearchParams = JSON.parse(instrumentSearchParams);
 

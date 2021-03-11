@@ -20,6 +20,7 @@ import Alert from 'react-bootstrap/Alert'
 // 'errors': an array of strings that are warnings, note an empty array means no errors are displayed, this is an optional field
 // 'isSubmitButtonShown' optional boolean for if the submit button should be shown
 //  'isSecondaryButtonShown': optional boolean for if the secondary button should be shown
+// 'isPrimaryButtonEnabled': optional boolean for if the primary button is enabled
 
 const genericPopup = (props) => {
     return (
@@ -36,18 +37,18 @@ const genericPopup = (props) => {
                 <Alert className={"popup-alert"} variant={'danger'} show={props.errors.length > 0}>
                     {makeErrorsParagraphs(props.errors)}
                 </Alert>
-                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant, props.isSubmitButtonShown, props.isSecondaryButtonShown)}
+                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant, props.isSubmitButtonShown, props.isSecondaryButtonShown, props.isPrimaryButtonEnabled)}
 
             </Modal.Footer>
         </Modal>
     )
 }
 
-const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant, isSubmitButtonShown, isSecondaryButtonShown) => {
+const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant, isSubmitButtonShown, isSecondaryButtonShown, isPrimaryButtonEnabled) => {
     let buttons = [];
 
     buttons.push(<Button variant="secondary" onClick={onClose} hidden={!isSecondaryButtonShown}>{closeText}</Button>)
-    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit} hidden={!isSubmitButtonShown}>{submitText}</Button>)
+    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit} hidden={!isSubmitButtonShown} disabled={!isPrimaryButtonEnabled}>{submitText}</Button>)
 
     let buttonDiv = (
         <div className="popup-button-row">
@@ -70,6 +71,7 @@ genericPopup.defaultProps = {
     errors: [],
     isSubmitButtonShown: true,
     isSecondaryButtonShown: true,
+    isPrimaryButtonEnabled: true,
     onSubmit: () => { },
     submitButtonText: ''
 }

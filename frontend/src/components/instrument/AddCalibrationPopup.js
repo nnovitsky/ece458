@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
 //'errors': an array of errors to display
+//'isSubmitEnabled': a boolean if the submit button is enabled
 
 let newCalibration = {
     date: dateToString(new Date()),
@@ -30,6 +31,7 @@ const AddCalibrationPopup = (props) => {
             onSubmit={() => preSubmit(props.onSubmit)}
             submitButtonVariant="primary"
             errors={props.errors}
+            isPrimaryEnabled={props.isSubmitEnabled}
         />
     )
 }

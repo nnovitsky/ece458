@@ -53,6 +53,7 @@ class InstrumentDetailView extends Component {
             addCalPopup: {
                 isShown: false,
                 errors: [],
+                isSubmitEnabled: true,
             },
             editInstrumentPopup: {
                 isShown: false,
@@ -317,6 +318,7 @@ class InstrumentDetailView extends Component {
                 onClose={this.onAddCalibrationClose}
                 onSubmit={this.onAddCalibrationSubmit}
                 errors={this.state.addCalPopup.errors}
+                isSubmitEnabled={this.state.addCalPopup.isSubmitEnabled}
             />
         )
     }
@@ -401,8 +403,15 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
+        this.setState({
+            addCalPopup: {
+                ...this.state.addCalPopup,
+                isSubmitEnabled: false,
+            }
+        });
         await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
             .then((result) => {
+                
                 if (result.success) {
                     this.getInstrumentInfo();
                     this.getCalHistory();
@@ -416,6 +425,12 @@ class InstrumentDetailView extends Component {
                         }
                     })
                 }
+                this.setState({
+                    addCalPopup: {
+                        ...this.state.addCalPopup,
+                        isSubmitEnabled: true,
+                    }
+                });
             });
     }
 

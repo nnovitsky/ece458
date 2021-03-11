@@ -24,7 +24,7 @@ def get_load_bank_pk():
         load_bank_pk = CalibrationMode.objects.get(name='load_bank').pk
     except CalibrationMode.DoesNotExist:
         cal_mode = CalibrationMode(name="load_bank")
-        if cal_mode.is_valid(): cal_mode.save()
+        cal_mode.save()
         load_bank_pk = cal_mode.pk
 
     return load_bank_pk

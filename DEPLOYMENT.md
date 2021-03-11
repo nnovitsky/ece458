@@ -491,7 +491,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
 	  
 	  
-	 - name: Stop the server
+	- name: Stop the server
         run: ssh test_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
 	
 	
@@ -507,11 +507,11 @@ jobs:
         run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
-      - name: Build Frontend
+	- name: Build Frontend
         run: ssh test_server 'cd /your/path/to/ece458/frontend && npm install && npm run build'
 
    
-      - name: Start the server
+	- name: Start the server
         if: ${{ always() }}
         run: ssh test_server 'sudo systemctl start gunicorn && sudo systemctl start nginx'
 ```

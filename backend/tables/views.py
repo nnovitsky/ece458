@@ -36,6 +36,27 @@ class OauthConsume(APIView):
             return Response({"oauth_error": ["OAuth login failed."]}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CalibrationArtifact(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, cal_pk, format=None):
+        try:
+            calibration_event = CalibrationEvent.objects.get(pk=cal_pk)
+        except CalibrationEvent.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if calibration_event.file is None:
+            return Response({"description": ["Calibration event does not have a associated file"]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            file_path = MEDIA_ROOT + str(calibration_event.file)
+            if not os.path.exists(file_path):
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=str(calibration_event.file))
+        except IOError:
+            return Response(status=status.HTTP_418_IM_A_TEAPOT)
+
+
 @api_view(['GET'])
 def vendor_list(request):
     """

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import DatePicker from 'react-datepicker';
@@ -19,6 +19,14 @@ let newCalibration = {
 
 const AddCalibrationPopup = (props) => {
     const [calDate, setCalDate] = useState(new Date());
+
+    useEffect(() => {
+        newCalibration = {
+            date: dateToString(new Date()),
+            comment: '',
+            file: '',
+        }
+    }, [])
 
     return (
         <GenericPopup
@@ -82,11 +90,6 @@ const preClose = (parentHandler) => {
 
 const preSubmit = (parentHandler) => {
     parentHandler(newCalibration);
-    newCalibration = {
-        date: dateToString(new Date()),
-        comment: '',
-        file: ''
-    }
 }
 
 const onCommentChange = (e) => {

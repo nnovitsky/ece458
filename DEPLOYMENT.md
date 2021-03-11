@@ -519,3 +519,49 @@ jobs:
 Save this file and on every push/pull to the dev branch, the deployed branch will receive changes.
 
 ## Oauth Implementation
+
+This new evolution implements oauth login with Duke Netid. To have this feature implemented on your code, you must first reach out to Danai Adkisson and add this redirect URI to your account. 
+
+`https://your_host_name/oauth/consume`
+
+Next, edit the oauth file which communicates with Duke Oauth in the backend. Open the file `ece458/backend/tables/oauth.py` to edit. To this file, you will need to add your client id, client secret and redirect uri. 
+In line 43 add your client id.
+```
+if "OAUTH_CLIENT_ID" in os.environ:
+        client_id = os.environ["OAUTH_CLIENT_ID"]
+else:
+        client_id = "your_client_id"
+```
+In line 47, add your client secret.
+```
+    if "OAUTH_CLIENT_ID" in os.environ:
+        client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+    else:
+        client_secret = "your_client_secret"
+```
+In line 66, add your redirect uri.
+```
+    if "OAUTH_REDIRECT_URI" in os.environ:
+        redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
+    else:
+        redirect_uri = "https://your_host_name/oauth/consume"
+```
+
+The last change to make is to add your redirect URI to the frontend login page so the user is redirected to log in through Duke Netid. 
+Naviagte to `ece458/frontend/src/components/login/LoginPage.js` and open the file to edit. In the state of the page, change the oauth link to point to your redirect URI You will need to add your client id as well as your host name. 
+```
+    state = {
+        username: '',
+        password: '',
+        redirect: null,
+        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=you_client_id&redirect_uri=https%3Ayour_host_name/oauth/consume&response_type=code',
+    };
+```
+Once you have completed these steps, Oauth will be set up with the project. You will need to restart gunicorn as well as run another build of the frontend.
+
+```
+$ sudo systemctl restart gunicorn
+$ cd /your/path/to/ece458/frontend
+$ npm run build
+
+

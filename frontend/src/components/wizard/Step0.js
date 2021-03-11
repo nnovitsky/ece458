@@ -81,7 +81,7 @@ class Step0 extends React.Component {
                     <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
                     <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.engineer}/>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
-                    <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} />
+                    <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()}/>
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Comment:</Form.Label>

@@ -25,7 +25,7 @@ The connection to the backend is facilitated through several JavaScript service 
 
 There is a component class for each page displayed to the user (ex. login page, a model page, etc). This component class is then the culmination of several smaller component functions. With React, best practice includes making components small, function-specific, and ideally reusable.
 
-The frontend app itself is launched from the App.js file. It is here that all of the brower routes are defined. Additionally, every page other than the login are protected routes that can only be accessed with an authentication token. This is acquired when a registered user logs in. Beyond protected routes, there are also admin routes that are only accessible to users who have been granted administrative permissions.
+The frontend app itself is launched from the App.js file. It is here that all of the brower routes are defined. Additionally, every page other than the login are protected routes that can only be accessed with an authentication token. This is acquired when a registered user logs in. In the case of a Duke login, the user is redirected to the Duke NetId login page. Based on the response from Oauth, information about the user and their priveledges is retrieved, or a new user is created, in the backend. Beyond protected routes, there are also admin routes that are only accessible to users who have been granted administrative permissions.  
 
 Beyond the service files and the components, the frontend has installed several package dependencies. 
 

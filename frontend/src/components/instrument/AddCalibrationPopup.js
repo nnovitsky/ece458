@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import DatePicker from 'react-datepicker';
@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
 //'errors': an array of errors to display
+//'isSubmitEnabled': a boolean if the submit button is enabled
 
 let newCalibration = {
     date: dateToString(new Date()),
@@ -18,6 +19,14 @@ let newCalibration = {
 
 const AddCalibrationPopup = (props) => {
     const [calDate, setCalDate] = useState(new Date());
+
+    useEffect(() => {
+        newCalibration = {
+            date: dateToString(new Date()),
+            comment: '',
+            file: '',
+        }
+    }, [])
 
     return (
         <GenericPopup
@@ -30,6 +39,7 @@ const AddCalibrationPopup = (props) => {
             onSubmit={() => preSubmit(props.onSubmit)}
             submitButtonVariant="primary"
             errors={props.errors}
+            isPrimaryEnabled={props.isSubmitEnabled}
         />
     )
 }
@@ -80,11 +90,6 @@ const preClose = (parentHandler) => {
 
 const preSubmit = (parentHandler) => {
     parentHandler(newCalibration);
-    newCalibration = {
-        date: dateToString(new Date()),
-        comment: '',
-        file: ''
-    }
 }
 
 const onCommentChange = (e) => {

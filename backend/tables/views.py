@@ -36,6 +36,27 @@ class OauthConsume(APIView):
             return Response({"oauth_error": ["OAuth login failed."]}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CalibrationArtifact(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, cal_pk, format=None):
+        try:
+            calibration_event = CalibrationEvent.objects.get(pk=cal_pk)
+        except CalibrationEvent.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if calibration_event.file is None:
+            return Response({"description": ["Calibration event does not have a associated file"]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            file_path = MEDIA_ROOT + str(calibration_event.file)
+            if not os.path.exists(file_path):
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=str(calibration_event.file))
+        except IOError:
+            return Response(status=status.HTTP_418_IM_A_TEAPOT)
+
+
 @api_view(['GET'])
 def vendor_list(request):
     """
@@ -558,9 +579,6 @@ class UserCreate(APIView):
 # CATEGORIES
 @api_view(['GET', 'POST'])
 def model_category_list(request):
-    if not UserType.contains_user(request.user, "admin"):
-        return Response(
-            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'GET':
         nextPage = 1
@@ -569,6 +587,9 @@ def model_category_list(request):
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -578,9 +599,6 @@ def model_category_list(request):
 
 @api_view(['GET', 'POST'])
 def instrument_category_list(request):
-    if not UserType.contains_user(request.user, "admin"):
-        return Response(
-            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'GET':
         nextPage = 1
@@ -589,6 +607,9 @@ def instrument_category_list(request):
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = InstrumentCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

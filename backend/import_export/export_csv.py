@@ -110,7 +110,7 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date = ""
             cal_comment = ""
         else:
-            last_cal = db_instrument.calibrationevent_set.order_by('date')[:1]
+            last_cal = db_instrument.calibrationevent_set.order_by('-date')[:1]
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 

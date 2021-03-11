@@ -9,12 +9,13 @@ from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.platypus.tables import Table, TableStyle
+from PyPDF2 import PdfFileMerger
 
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import FileResponse
 from backend.tables.serializers import ListInstrumentReadSerializer
-from backend.tables.models import LoadBankCalibration, LoadVoltage, LoadCurrent
+from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent
 
 EXPECTED_FIELDS = [
     'Vendor',
@@ -42,6 +43,7 @@ FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
 styles = getSampleStyleSheet()
 elements = []
+pdf_merge = False
 
 
 def get_fields(instrument):
@@ -226,13 +228,20 @@ def get_lb_tables(cal_pk):
     elements.append(t_four)
 
 
+def get_xlsx_hyperlink(cal_pk):
+    key = "Supplemental file: "
+    prod_link = f"https://vcm-18278.vm.duke.edu/api/calibration_event_file/{int(cal_pk)}/"
+    local_link = f"http://localhost:8000/api/calibration_event_file/{int(cal_pk)}/"
+    address = '<link href="' + local_link + '">' + 'Supplemental File' + '</link>'
+    elements.append(Paragraph(address, styles["Heading3"]))
+
+
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements
     elements.clear()
     doc = SimpleDocTemplate(buffer, pagesize=LETTER,
                             rightMargin=72, leftMargin=72,
                             topMargin=15, bottomMargin=15)
-
 
     tz_eastern = pytz.timezone('America/New_York')
     today_dt = datetime.now(tz_eastern)
@@ -259,6 +268,13 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
+    if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX].split('.')[-1].lower() == 'pdf':
+        global pdf_merge
+        pdf_merge = True
+
+    if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX].split('.')[-1].lower() == 'xlsx':
+        elements.append(get_xlsx_hyperlink(cal_pk))
+
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         get_lb_tables(cal_pk)
 
@@ -266,13 +282,33 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     return buffer
 
 
+def merge_pdf(cal_pk, buffer):
+    merger = PdfFileMerger()
+
+    merger.append(buffer)
+    merger.append(CalibrationEvent.objects.get(pk=cal_pk).file)
+    merged_buffer = BytesIO()
+
+    merger.write(merged_buffer)
+    merger.close()
+    return merged_buffer
+
+
 def handler(instrument):
+    global pdf_merge
 
     certificate_info, cal_file_data, cal_pk = get_fields(instrument)
     instrument_name = str(instrument).replace(" ", "_")
     filename = f"{instrument_name}_calibration_record_{date.today().strftime('%Y_%m_%d')}.pdf"
     buffer = fill_pdf(BytesIO(), certificate_info, cal_file_data, cal_pk)
     buffer.seek(0)
+
+    if pdf_merge:
+        pdf_buffer = merge_pdf(cal_pk, buffer)
+        pdf_buffer.seek(0)
+        return FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+
+
     try:
         return FileResponse(buffer, as_attachment=True, filename=filename)
     except IOError:

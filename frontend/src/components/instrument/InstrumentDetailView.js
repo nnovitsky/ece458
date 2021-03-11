@@ -53,6 +53,7 @@ class InstrumentDetailView extends Component {
             addCalPopup: {
                 isShown: false,
                 errors: [],
+                isSubmitEnabled: true,
             },
             editInstrumentPopup: {
                 isShown: false,
@@ -157,7 +158,6 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
                 if (result.success) {
-                    console.log(result.data);
                     let data = result.data;
                     this.setState({
                         ...this.state,
@@ -295,7 +295,6 @@ class InstrumentDetailView extends Component {
     }
 
     makeWizardPopup() {
-        console.log(this.state.instrument_info.pk)
         return (
             <Wizard
                 isShown={this.state.wizardPopup.isShown}
@@ -317,6 +316,7 @@ class InstrumentDetailView extends Component {
                 onClose={this.onAddCalibrationClose}
                 onSubmit={this.onAddCalibrationSubmit}
                 errors={this.state.addCalPopup.errors}
+                isSubmitEnabled={this.state.addCalPopup.isSubmitEnabled}
             />
         )
     }
@@ -401,22 +401,55 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
-            .then((result) => {
-                if (result.success) {
-                    this.getInstrumentInfo();
-                    this.getCalHistory();
-                    this.onAddCalibrationClose();
-                } else {
-                    let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+        if(this.isFileSizeGood(calibrationEvent.file)) {
+            await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
+                .then((result) => {
+
+                    if (result.success) {
+                        this.getInstrumentInfo();
+                        this.getCalHistory();
+                        this.onAddCalibrationClose();
+                    } else {
+                        let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                        this.setState({
+                            addCalPopup: {
+                                ...this.state.addCalPopup,
+                                errors: formattedErrors
+                            }
+                        })
+                    }
                     this.setState({
                         addCalPopup: {
                             ...this.state.addCalPopup,
-                            errors: formattedErrors
+                            isSubmitEnabled: true,
                         }
-                    })
+                    });
+                });
+        } else {
+            let error = {
+                "non_field_errors": [
+                    "File size too large."
+                ]
+            }
+            let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
+            this.setState({
+                addCalPopup: {
+                    ...this.state.addCalPopup,
+                    errors: formattedErrors
                 }
-            });
+            })
+        }
+
+    }
+
+    isFileSizeGood(file) {
+        if (file !== '') {
+            let fileSizeMb = file.size / 1024 / 1024;
+            if (fileSizeMb > 32) {
+                return false;
+            }
+        }
+        return true
     }
 
     onAddCalibrationClose() {
@@ -449,8 +482,6 @@ class InstrumentDetailView extends Component {
                 lbPK: e.target.value
             }
         })
-
-        console.log(`Load bank requested for cal event with pk: ${e.target.value}`);
     }
 
     onModelLinkClicked() {

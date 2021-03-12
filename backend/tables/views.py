@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+from rest_framework_jwt.views import ObtainJSONWebToken
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks, annotate_instruments
@@ -447,11 +448,11 @@ def get_example_instrument_csv(request):
 
 
 # USERS
-class TokenAuth(APIView):
+class TokenAuth(ObtainJSONWebToken):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-        error = Response("Unable to login with provided credentials", status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        error = Response({"non_field_errors": ["Unable to log in with provided credentials."]}, status=status.HTTP_400_BAD_REQUEST)
         if 'username' not in request.data: return error
         try:
             user = User.objects.get(username=request.data['username'])
@@ -459,11 +460,9 @@ class TokenAuth(APIView):
                 return error
         except User.DoesNotExist:
             return error
-        serializer = UserTokenSerializer(user, data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return error
+
+        response = super().post(request, *args, **kwargs)
+        return response
 
 
 @api_view(['PUT', 'DELETE'])

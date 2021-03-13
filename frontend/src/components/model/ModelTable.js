@@ -112,7 +112,6 @@ let makeConfig = (countStart, onMoreClicked) => {
                 sort: false,
                 title: (cell, row) => {
                     if (row.calibration_frequency === 0) {
-                        console.log(row);
                         return `Calibration Mode: Uncalibratable`;
                     } 
                     else if (cell[0] !== null) {

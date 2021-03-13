@@ -239,21 +239,23 @@ const getLatestCalText = (data) => {
                         let display = cell;
 
                         if (cell === 'Instrument not calibrated.') {
-                            display = 'Never Calibrated';
+                            display = 'Not Calibrated';
                         }
 
-                        return <span>{display}</span>;
+                        return <span>
+                            {display}
+                        </span>;
                     },
                     headerClasses: 'it-calibration-expiration-column',
                 },
                 {
                     dataField: 'icon',
-                    text: 'Status',
+                    text: 'Stat',
                     sort: false,
                     title: (cell, row) => { return (getCalStatusIcon(row).text) },
                     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                         let result = getCalStatusIcon(row);
-                        return <span><img src={result.icon} alt={result.text} className='calibration-status-icon' /></span>;
+                        return <img src={result.icon} alt={result.text} className='calibration-status-icon' />;
                     },
                     headerClasses: 'it-status-column',
                 },

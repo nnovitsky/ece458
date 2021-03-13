@@ -95,15 +95,15 @@
 }
 
 .it-latest-calibration-column {
-    width: 8%;
+    width: 80px;
 }
 
 .it-calibration-expiration-column {
-    width: 8%;
+    width: 90px;
 }
 
 .it-status-column {
-    width: 50px;
+    width: 40px;
 }
 
 /* .it-calibration-certificate-column {

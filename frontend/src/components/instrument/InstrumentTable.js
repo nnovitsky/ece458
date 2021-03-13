@@ -237,28 +237,29 @@ const getLatestCalText = (data) => {
                     title: (cell) => `Calibration Expiration: ${cell}`,
                     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                         let display = cell;
-
+                        let result = getCalStatusIcon(row);
                         if (cell === 'Instrument not calibrated.') {
-                            display = 'Not Calibrated';
+                            display = 'No History';
                         }
 
-                        return <span>
+                        return <div style={{display: "flex"}}>
                             {display}
-                        </span>;
+                            <img src={result.icon} alt={result.text} className='calibration-status-icon' />
+                        </div>;
                     },
                     headerClasses: 'it-calibration-expiration-column',
                 },
-                {
-                    dataField: 'icon',
-                    text: 'Stat',
-                    sort: false,
-                    title: (cell, row) => { return (getCalStatusIcon(row).text) },
-                    formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
-                        let result = getCalStatusIcon(row);
-                        return <img src={result.icon} alt={result.text} className='calibration-status-icon' />;
-                    },
-                    headerClasses: 'it-status-column',
-                },
+                // {
+                //     dataField: 'icon',
+                //     text: 'Stat',
+                //     sort: false,
+                //     title: (cell, row) => { return (getCalStatusIcon(row).text) },
+                //     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                //         let result = getCalStatusIcon(row);
+                //         return <img src={result.icon} alt={result.text} className='calibration-status-icon' />;
+                //     },
+                //     headerClasses: 'it-status-column',
+                // },
                 // {
                 //     dataField: 'b',
                 //     text: 'Calibration Certificate',

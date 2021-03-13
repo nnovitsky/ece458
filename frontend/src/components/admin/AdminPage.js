@@ -52,11 +52,11 @@ class AdminPage extends React.Component {
         this.onDeleteClose = this.onDeleteClose.bind(this);
     }
 
-    
+
 
     async componentDidMount() {
-        this.updateUserTable();
         this.getUsername();
+        this.updateUserTable();
     }
 
     render() {
@@ -66,16 +66,17 @@ class AdminPage extends React.Component {
         </div>)
 
         let deletePopup = (this.state.deletePopupIsShown) ? this.makeDeletePopup() : null;
-
+        let addUserPopup = (this.state.addUserPopup.isShown) ? this.makeAddUserPopup() : null;
         return (
             <div>
                 {deletePopup}
-                <AddUserPopup
+                {addUserPopup}
+{/*                 <AddUserPopup
                     isShown={this.state.addUserPopup.isShown}
                     onSubmit={this.onAddUserSubmit}
                     onClose={this.onAddUserClosed}
                     errors={this.state.addUserPopup.errors}
-                />
+                /> */}
 
                 <div className="background">
                     <div className="row mainContent">
@@ -118,8 +119,18 @@ class AdminPage extends React.Component {
         )
     }
 
-    onDeleteClose()
-    {
+    makeAddUserPopup() {
+        return (
+            <AddUserPopup
+                isShown={this.state.addUserPopup.isShown}
+                onSubmit={this.onAddUserSubmit}
+                onClose={this.onAddUserClosed}
+                errors={this.state.addUserPopup.errors}
+            />
+        )
+    }
+
+    onDeleteClose() {
         this.setState({
             deletePopupIsShown: false
         })
@@ -164,12 +175,11 @@ class AdminPage extends React.Component {
     }
 
 
-    async onUserDeleted(e){
+    async onUserDeleted(e) {
         let pk = Number(e.target.value)
         let name = e.target.name
-        adminServices.deleteUser(pk).then(result =>{
-            if(result.success)
-            {
+        adminServices.deleteUser(pk).then(result => {
+            if (result.success) {
                 this.setState({
                     deletePopupIsShown: true,
                     deletedUser: name
@@ -246,50 +256,46 @@ class AdminPage extends React.Component {
         )
     }
 
-    async giveAdminPriviledges(e){
+    async giveAdminPriviledges(e) {
         let pk = e.target.value
         adminServices.addAdminPriviledges(pk).then(result => {
-            if(result.success)
-            {
+            if (result.success) {
                 this.updateUserTable()
             }
-            else{
+            else {
 
             }
         })
     }
 
 
-    async revokeAdminPriviledges(e){
+    async revokeAdminPriviledges(e) {
         let pk = e.target.value
-        console.log(pk)
         adminServices.removeAdminPriviledges(pk).then(result => {
-            if(result.success)
-            {
+            if (result.success) {
                 this.updateUserTable()
             }
-            else{
+            else {
 
             }
         })
     }
 
-    async getUsername()
-    {
+    async getUsername() {
         authServices.getCurrentUser().then((result) => {
             if (result.success) {
-              this.setState({
-                username: result.data.username,
-              })
+                this.setState({
+                    username: result.data.username,
+                })
             } else {
-              this.emptyLocalStorage();
-              localStorage.removeItem('token');
-              this.setState({
-                logged_in: false,
-                username: '',
-              });
+                this.emptyLocalStorage();
+                localStorage.removeItem('token');
+                this.setState({
+                    logged_in: false,
+                    username: '',
+                });
             }
-          }
+        }
         )
     }
 }

@@ -3,6 +3,7 @@ import UserServices from "../../api/userServices.js";
 import AdminServices from "../../api/adminServices.js";
 import AuthServices from "../../api/authServices.js";
 import AddUserPopup from "./AddUserPopup";
+import DeletePopup from '../generic/GenericPopup';
 
 import './Admin.css';
 import '../generic/General.css';
@@ -36,7 +37,9 @@ class AdminPage extends React.Component {
                 currentPageNum: 1,
                 desiredPage: 1,
                 showAll: false
-            }
+            },
+            deletePopupIsShown: false,
+            userDeleted: '',
         };
 
         this.onAddUserClosed = this.onAddUserClosed.bind(this);
@@ -46,6 +49,7 @@ class AdminPage extends React.Component {
         this.revokeAdminPriviledges = this.revokeAdminPriviledges.bind(this);
         this.getUsername = this.getUsername.bind(this);
         this.onUserDeleted = this.onUserDeleted.bind(this);
+        this.onDeleteClose = this.onDeleteClose.bind(this);
     }
 
     
@@ -61,8 +65,11 @@ class AdminPage extends React.Component {
             <Button onClick={this.onAddUserClicked}>Add New User</Button>
         </div>)
 
+        let deletePopup = (this.state.deletePopupIsShown) ? this.makeDeletePopup() : null;
+
         return (
             <div>
+                {deletePopup}
                 <AddUserPopup
                     isShown={this.state.addUserPopup.isShown}
                     onSubmit={this.onAddUserSubmit}
@@ -93,6 +100,29 @@ class AdminPage extends React.Component {
             </div>
 
         );
+    }
+
+    makeDeletePopup() {
+        let body = (
+            <p>User {this.state.deletedUser} was deleted</p>
+        )
+        return (
+            <DeletePopup
+                show={this.state.deletePopupIsShown}
+                body={body}
+                headerText="Notice"
+                closeButtonText="Ok"
+                onClose={this.onDeleteClose}
+                isSubmitButtonShown={false}
+            />
+        )
+    }
+
+    onDeleteClose()
+    {
+        this.setState({
+            deletePopupIsShown: false
+        })
     }
 
     async onAddUserSubmit(newUser) {
@@ -136,10 +166,14 @@ class AdminPage extends React.Component {
 
     async onUserDeleted(e){
         let pk = Number(e.target.value)
+        let name = e.target.name
         adminServices.deleteUser(pk).then(result =>{
             if(result.success)
             {
-                console.log("Trying to update table");
+                this.setState({
+                    deletePopupIsShown: true,
+                    deletedUser: name
+                })
                 this.updateUserTable();
             }
         })

@@ -87,7 +87,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 formatter: (cell, row) => {   //TODO change to oauth
                     console.log(row)
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
-                    return <Button onClick={deleteUser} value={row.pk} hidden={isHidden} className="data-table-button red">Delete</Button>;
+                    return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
             },
             {

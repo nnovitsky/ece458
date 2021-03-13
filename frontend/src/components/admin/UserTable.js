@@ -2,6 +2,8 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
 import '../generic/ColumnSizeFormatting.css';
+import PrivilegePicklist from '../generic/picklist/PrivilegePicklist.js';
+import './Admin.css'
 
 // props
 // data: json data object to be displayed
@@ -27,16 +29,15 @@ const userTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.deleteUser, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser);
     return (
-        <DataTable
-            data={props.data}
-            onTableChange={props.onTableChange}
-            pagination={props.pagination}
-            keyField={keyField}
-            config={config}
-            noResults='No Users'
-            inlineElements={props.inlineElements}
-        />
-
+            <DataTable
+                data={props.data}
+                onTableChange={props.onTableChange}
+                pagination={props.pagination}
+                keyField={keyField}
+                config={config}
+                noResults='No Users'
+                inlineElements={props.inlineElements}
+            />
 
     )
 }
@@ -46,7 +47,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
         [
             // this is a column for a number for the table
             {
-                
+
                 dataField: '#', //json data key for this column
                 text: '#',      //displayed column header text
                 formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
@@ -62,14 +63,14 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 text: 'Username',
                 sort: false,
                 title: (cell) => `Username: ${cell}`,   //text displayed when hovering over a cell
-                headerClasses: 'username-column'
+                headerClasses: 'at-username-column'
             },
             {
                 dataField: 'a', //no field for just name but overwriting the display so it's ok
                 text: 'Name',
                 sort: false,
                 title: (cell, row) => `Name: ${row.first_name} ${row.last_name}`,
-                headerClasses: 'name-column',
+                headerClasses: 'at-name-column',
                 formatter: (user, row) => {
                     return <span>{`${row.first_name} ${row.last_name}`}</span>
                 }
@@ -79,7 +80,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 text: 'Email',
                 sort: false,
                 title: (cell) => `Email: ${cell}`,
-                headerClasses: 'email-column',
+                headerClasses: 'at-email-column',
             },
             {
                 dataField: 'delete',
@@ -88,8 +89,9 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
                     return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
+                headerClasses: 'at-delete-column',
             },
-            {
+/*             {
                 dataField: 'Priviledges',
                 text: 'Administrator Priviledges',
                 formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
@@ -98,20 +100,14 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                     let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
                     return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
                 },
+            }, */
+            {
+                dataField: 'Picklist',
+                text: 'Administrator Picklist',
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    return <div className="filter-picklist"><PrivilegePicklist selectedCategories={row.groups} onChange={null}/></div>;
+                },
             },
-            // this could be helpful for adding a column that has a button link for deleting users, feel free to use or delete
-            // {
-            //     dataField: '#',  //can put a nonexistent field if it's not directly displaying the data
-            //     text: 'More',
-            //     sort: false,
-            //     headerClasses: 'more-column',
-            //     title: (cell) => 'Go to instrument detail view',
-            //     formatter: (pk) => {
-            //         return (
-            //             <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-            //         )
-            //     }
-            // },
         ]
     )
 };

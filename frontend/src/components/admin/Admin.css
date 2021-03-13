@@ -1,6 +1,7 @@
-
 .alignLeft{
     margin-left: -22px;
 }
 
-
+.filter-picklist {
+    font-size: 1.1vw !important;
+}

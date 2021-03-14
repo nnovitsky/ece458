@@ -36,8 +36,7 @@ form.wizard {
 
 .custom-class{
     font-size: min(1.4vw, 20px) !important;
-    width: 1%;
-    margin-top: -10px;
+    width: 80%;
 }
 
 .short-headers{

@@ -10,7 +10,7 @@ let buttonArray =[]
 
 const loadTable = (props) => {
     let data = props.data
-    let config = makeConfig(props.onValidate);
+    let config = makeConfig();
     return (
         <div>
             <BootstrapTable
@@ -28,6 +28,7 @@ const loadTable = (props) => {
                     cellEditFactory({
                         mode: 'click',
                         autoSelectText: true,
+                        blurToSave: true,
                         beforeSaveCell: (oldValue, newValue, row, column) => { 
                             if(column.dataField == "ca")
                             {
@@ -37,15 +38,19 @@ const loadTable = (props) => {
                             {
                                 row.cr = newValue
                             }
-                            if(row.validate)
+                            let invalidated = false;
+                            if(row.validate || row.cr_ok && row.ca_ok)
                             {
                                 props.updateValidated(-1)
                                 row.validate = false
+                                invalidated = true
                             }
                                 row.cr_error = null
                                 row.ca_error = null
                                 row.cr_ok = false
                                 row.ca_ok = false
+
+                            props.onValidate(row.load, invalidated);
                         }
                     })
                 }
@@ -63,7 +68,7 @@ let rowStyle = (row, rowIndex) => {
 }
 
 
-let makeConfig = (onValidate) => {
+let makeConfig = () => {
     return (
         [
             {
@@ -72,19 +77,21 @@ let makeConfig = (onValidate) => {
                 text: 'Load Level',
                 headerClasses: 'format-width-load-level',
                 classes: 'format-basic-cells'
-                //headerClasses: 'vendor-column'
             },
             {
                 dataField: 'cr',
                 text: 'Current Reported',
                 classes: 'format-basic-cells',
+                editorClasses: 'custom-class',
+                headerClasses: 'input-headers'
             },
             {
                 dataField: 'ca',
                 text: 'Current Actual',
                 classes: 'format-basic-cells',
+                headerClasses: 'input-headers',
             },
-            {
+/*             {
                 dataField: 'button',
                 text: 'Check',
                 sort: false,
@@ -101,7 +108,7 @@ let makeConfig = (onValidate) => {
                         button
                     )
                 }
-            },
+            }, */
             {
                 dataField: 'ideal',
                 text: 'Ideal Current',
@@ -133,7 +140,8 @@ let makeConfig = (onValidate) => {
                 formatter: (cell) => {
                     if(cell) return <span>Yes</span>;
                     else return <span>No</span>
-                }
+                },
+                headerClasses: 'short-headers'
             },
             {
                 dataField: 'ca_error',
@@ -159,7 +167,8 @@ let makeConfig = (onValidate) => {
                 formatter: (cell) => {
                     if(cell) return <span>Yes</span>;
                     else return <span>No</span>
-                }
+                },
+                headerClasses: 'short-headers'
             },
         ]
     )

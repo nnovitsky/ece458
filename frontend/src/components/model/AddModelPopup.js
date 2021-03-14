@@ -62,7 +62,7 @@ class AddModelPopup extends Component {
                     comment: '',
                     calibration_frequency: '',
                     categories: [],
-                    calibration_modes: [], 
+                    calibration_modes: [],
                 },
                 vendorsArr: null
             }
@@ -115,7 +115,7 @@ class AddModelPopup extends Component {
                 <Form.Label className="required-field">Model Number</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.model_number} name={modelName} onChange={this.onTextInput} placeholder="Enter Model Number" />
 
-                
+
                 <Form.Label className="required-field">Description</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.description} name={descriptionName} onChange={this.onTextInput} placeholder="Enter Description" />
 
@@ -132,7 +132,7 @@ class AddModelPopup extends Component {
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
 
                 <Form.Label>Specialty Calibration Mode</Form.Label>
-                <Form.Check type="checkbox" label="Load Bank" onChange={this.onCalModeInput} checked={this.isLoadBank()} disabled={(this.state.newModel.calibration_frequency == 0) || (this.state.newModel.calibration_frequency === '')}/>
+                    <Form.Check id="load_bank_check" type="checkbox" label="Load Bank" onClick={this.onCalModeInput} checked={this.isLoadBank()} disabled={(this.state.newModel.calibration_frequency == 0) || (this.state.newModel.calibration_frequency === '')} />
                 <Form.Text muted>Must have a calibration frequency to be load bank calibratable</Form.Text>
                 <Form.Label>Model Categories</Form.Label>
                 {categoryPicklist}
@@ -170,10 +170,13 @@ class AddModelPopup extends Component {
     }
 
     onCalModeInput(e) {
-        this.setState({
+        this.setState(prevState => {
+            const wasChecked = prevState.newModel.calibration_modes.includes("load_bank");
+            return {
             newModel: {
                 ...this.state.newModel,
-                calibration_modes: (e.target.checked ? ["load_bank"] : [])
+                calibration_modes: (!wasChecked ? ["load_bank"] : [])
+            }
             }
         })
     }

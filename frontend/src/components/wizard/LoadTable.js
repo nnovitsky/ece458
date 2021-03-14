@@ -89,6 +89,7 @@ let makeConfig = () => {
                 dataField: 'ca',
                 text: 'Current Actual',
                 classes: 'format-basic-cells',
+                editorClasses: 'custom-class',
                 headerClasses: 'input-headers',
             },
 /*             {

@@ -63,10 +63,8 @@ def vendor_list(request):
     """
     List all vendors in DB.
     """
-    vendors = set()
-    for item_model in ItemModel.objects.all():
-        vendors.add(item_model.vendor)
-    return Response({'vendors': vendors}, status=status.HTTP_200_OK)
+    vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True)
+    return Response({'vendors': list(vendors)}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

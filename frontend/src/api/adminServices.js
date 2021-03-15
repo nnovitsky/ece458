@@ -6,7 +6,7 @@ export default class AdminServices {
 
     // handles modified/expired token
     async addAdminPriviledges(user_pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -48,7 +48,7 @@ export default class AdminServices {
 
 
     async removeAdminPriviledges(user_pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: false,
@@ -90,7 +90,7 @@ export default class AdminServices {
     }
 
     async deleteUser(user_pk){
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: false,

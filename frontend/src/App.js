@@ -28,7 +28,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logged_in: localStorage.getItem('token') ? true : false,
+      logged_in: window.sessionStorage.getItem('token') ? true : false,
       username: '',
       error_message: '',
       admin: false,
@@ -69,6 +69,7 @@ class App extends Component {
     authServices.getOauthToken(code).then(result => {
       if (result.success) {
         localStorage.setItem('token', result.data.token);
+        window.sessionStorage.setItem('token', result.data.token);
         this.setState({
           logged_in: true,
           username: result.data.user.username,
@@ -100,6 +101,7 @@ class App extends Component {
           }
           else {
             localStorage.setItem('token', json.token);
+            window.sessionStorage.setItem('token', json.token);
             this.setState({
               logged_in: true,
               username: json.user.username,
@@ -136,7 +138,7 @@ class App extends Component {
   // called with a page component that should only be displayed if the user is logged in
   // if not, they will be redirected to login
   loggedInPath = (protectedComponent) => {
-    const isAuthenticated = localStorage.getItem('token');
+    const isAuthenticated = window.sessionStorage.getItem('token');
 
     return isAuthenticated && typeof (isAuthenticated) !== 'undefined' ? protectedComponent : <Redirect to="/" />;
   }

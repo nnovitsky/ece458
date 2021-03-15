@@ -19,7 +19,7 @@ export default class AuthServices {
 
   // handles modified/expired token
   async getCurrentUser() {
-    const token = localStorage.getItem('token');
+    const token = window.sessionStorage.getItem('token');
 
     let result = {
       success: true,

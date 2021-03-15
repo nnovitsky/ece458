@@ -22,7 +22,7 @@ class AdminPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logged_in: localStorage.getItem('token') ? true : false,
+            logged_in: window.sessionStorage.getItem('token') ? true : false,
             username: '',
             tableData: [],
             addUserPopup: {

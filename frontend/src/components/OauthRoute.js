@@ -11,7 +11,8 @@ class OauthRoute extends React.Component {
         {
             this.props.handle_oauth_login(window.location.href.split("oauth/consume?code=")[1]);
         }
-        localStorage.setItem('oauth', 'true')
+        localStorage.setItem('oauth', 'true');
+        window.sessionStorage.setItem('oauth', 'true');
 
         return (
             <Redirect to={{ pathname: '/' }} />

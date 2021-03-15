@@ -6,7 +6,7 @@ export default class UserServices {
 
     // handles modified/expired token
     getUsers(desiredPage, isShowAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -65,7 +65,7 @@ export default class UserServices {
             success: true,
             errors: []
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/create_user/`, {
             method: 'POST',
@@ -120,7 +120,7 @@ export default class UserServices {
             success: false,
             errors: []
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/current_user/`, {
             method: 'PUT',

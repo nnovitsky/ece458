@@ -16,7 +16,7 @@ class ProtectedRoute extends React.Component {
         }
         const Component = this.props.component;
         //probably change
-        const isAuthenticated = localStorage.getItem('token');
+        const isAuthenticated = window.sessionStorage.getItem('token');
        
         return isAuthenticated && typeof(isAuthenticated)!== 'undefined' ? (
             returned

@@ -4,4 +4,17 @@
 
 .filter-picklist {
     font-size: 1.1vw !important;
+    position: absolute;
+    width: 29%;
+    height: 100%;
+}
+
+
+.tall-rows {
+    height: 45px;
+}
+
+.top{
+    position: relative;
+    z-index: 3;
 }

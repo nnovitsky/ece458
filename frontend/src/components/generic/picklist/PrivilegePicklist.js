@@ -1,38 +1,72 @@
-import React from 'react';
 import BasePicklist from './BaseListPicklist';
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
+import { PrivilegesDisplayMap } from '../Util';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onChange: an event handler that will be passed the array of selected name/pk pairs
 function PriviledgePicklist(props) {
+    const [allOptions, setAllOptions] = useState(null);
+    useEffect(() => {
+        async function fetchData() {
+            let result = await getTypesPrivilege();
+            setAllOptions(result);
+        }
+        if (!allOptions) {
+            fetchData();
+        }
+    }, [allOptions]);
+
     return (
-        <BasePicklist
-            selectedCategories={props.selectedCategories}
-            onChange={props.onChange}
-            getOptions={getTypesPrivilege}
-            placeholderText="Privledges..."
-            type="object"
-            displayField="name"
-            valueField="pk"
+        <Select
+            value={mapArrayToObject(props.selectedPrivileges)}
+            options={allOptions}
+            isSearchable={false}
+            onChange={(privileges) => { props.onChange(mapObjectToArray(privileges)) }}
+            placeholderText="Privilege..."
             isMulti={true}
+            styles={customStyles}
+            //maxMenuHeight={100}
         />
     )
 }
 
-async function getTypesPrivilege(){
-    return ['admin', 'oauth']
+function mapObjectToArray(object) {
+    let result = [];
+    object.forEach(element => {
+        result.push(element.value)
+    });
+    return result;
 }
 
-/* async function getModelCategories() {
-    let categoryServices = new CategoryServices();
-    return await categoryServices.getCategories('model', true, 1).then(
-        (result) => {
-            if (result.success) {
-                return result.data.data;
-            } else {
-                return [];
-            }
-        }
-    )
-} */
+
+function mapArrayToObject(input) {
+    let result = [];
+    input.forEach(element => {
+        let display = PrivilegesDisplayMap[element];
+        result.push({
+            "label": display,
+            "value": element,
+        })
+    });
+    return result;
+}
+
+async function getTypesPrivilege() {
+    return mapArrayToObject(['admin', 'oauth', 'model', 'instrument', 'cali']);
+}
+
+const customStyles = {
+    control: (base, state) => ({
+        ...base,
+        border: state.isFocused ? 0 : 0,
+        boxShadow: state.isFocused ? 0 : 0,
+        '&:hover': {
+            border: state.isFocused ? 0 : 0
+        },
+        backgroundColor: 'none',
+        width: '100%'
+    }),
+};
 
 export default PriviledgePicklist;

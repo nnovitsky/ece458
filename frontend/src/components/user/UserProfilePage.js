@@ -104,7 +104,7 @@ class UserPage extends React.Component {
 
     async onEditUserSubmit(updatedUser) {
         if(updatedUser.password === updatedUser.password_confirm) {
-        userServices.editUser(updatedUser.password, updatedUser.first_name, updatedUser.last_name)
+        userServices.editUser(updatedUser.password, updatedUser.first_name, updatedUser.last_name, [])
             .then((res) => {
                 if (res.success) {
                     localStorage.setItem('token', res.data.token)

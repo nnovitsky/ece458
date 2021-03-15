@@ -88,6 +88,8 @@ const NewModelTable = (props) => {
                                 bodyClasses='data-table'
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
+                                cellEdit={props.cellEdit}
+                                rowClasses={props.rowClasses}
                             />
                             {paginationPages}
                         </div>
@@ -172,4 +174,6 @@ export default NewModelTable;
 NewModelTable.defaultProps = {
     data: [],
     inlineElements: <></>,
+    cellEdit: false,
+    rowClasses: '',
 }

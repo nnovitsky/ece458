@@ -42,10 +42,11 @@ const loadTable = (props) => {
                                 props.updateValidated(-1)
                                 row.validate = false
                             }
-                                row.cr_error = null
-                                row.ca_error = null
-                                row.cr_ok = false
-                                row.ca_ok = false
+                            console.log(row)
+                            if(typeof(row.cr_error) !== 'undefined') row.cr_error = null;
+                            if(typeof(row.ca_error) !== 'undefined') row.ca_error = null;
+                            if(typeof(row.cr_ok) !== 'undefined') row.cr_ok = false;
+                            if(typeof(row.ca_ok) !== 'undefined') row.ca_ok = false;
                         }
                     })
                 }
@@ -131,7 +132,9 @@ let makeConfig = (onValidate) => {
                     return false;
                 },
                 formatter: (cell) => {
+                    console.log(cell)
                     if(cell) return <span>Yes</span>;
+                    else if(typeof(cell) === 'undefined') return <span></span>;
                     else return <span>No</span>
                 }
             },

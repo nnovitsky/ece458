@@ -150,7 +150,8 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 headerClasses: 'at-picklist-column top',
                 formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
                     console.log(row)
-                    return <div className="admin-filter-picklist"><PrivilegePicklist selectedPrivileges={row.groups} onChange={onChangePrivileges}/></div>;
+                    let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
+                return <div className="admin-filter-picklist">{isHidden ? null : <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/>}</div>;
                 },
             }, 
 /*             {

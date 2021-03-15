@@ -162,12 +162,11 @@ class App extends Component {
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} />)} exact />
               <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
               <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} username={this.state.username}/>)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
-              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.admin} />)} exact />
+              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.admin} username={this.state.username}/>)} exact />
               <Route path="/categories" render={() => this.adminPath(<CategoriesPage is_admin={this.state.admin} />)} exact />
               {/* routes below are oauth */}
             <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />

@@ -61,7 +61,7 @@ class Wizard extends React.Component {
                 return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} instrument_pk={this.state.instrument_pk}
                     setLBNum={this.setLoabankCalEventNumber} setCalEventPk={this.setCalEventPk} asset_tag={this.state.asset_tag} cal_event_pk={this.state.cal_event_pk}
-                    loadbank_pk={this.state.loadbank_pk} />;
+                    loadbank_pk={this.state.loadbank_pk} username={this.props.username}/>;
             case 1:
                 return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     loadbank_pk={this.state.loadbank_pk} />;

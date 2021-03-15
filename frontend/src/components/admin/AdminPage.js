@@ -92,7 +92,7 @@ class AdminPage extends React.Component {
                                 inlineElements={buttonRow}
                                 giveAdminPriviledges={this.giveAdminPriviledges}
                                 revokeAdminPriviledges={this.revokeAdminPriviledges}
-                                currentUser={this.state.username}
+                                currentUser={this.props.username}
                                 deleteUser={this.onUserDeleted}
                                 onChangePrivileges={this.changePrivileges}
                             />
@@ -302,9 +302,8 @@ class AdminPage extends React.Component {
 
     async changePrivileges(e)
     {
-        const empty = '';
         console.log(e)
-        userServices.editUser(empty, empty, empty, e).then(result =>{
+        adminServices.togglePriviledges(e.pk, e.groups).then(result =>{
             console.log(result)
             this.updateUserTable()
         })

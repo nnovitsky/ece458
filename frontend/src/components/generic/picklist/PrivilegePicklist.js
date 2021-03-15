@@ -2,6 +2,10 @@ import BasePicklist from './BaseListPicklist';
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { PrivilegesDisplayMap } from '../Util';
+import AdminServices from "../../../api/adminServices.js";
+
+
+const adminServices = new AdminServices();
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onChange: an event handler that will be passed the array of selected name/pk pairs
@@ -22,7 +26,7 @@ function PriviledgePicklist(props) {
             value={mapArrayToObject(props.selectedPrivileges)}
             options={allOptions}
             isSearchable={false}
-            onChange={(privileges) => { props.onChange(mapObjectToArray(privileges)) }}
+            onChange={(privileges) => { props.onChange(mapObjectToArray(privileges, props.pk)) }}
             placeholderText="Privilege..."
             isMulti={true}
             styles={customStyles}
@@ -31,11 +35,16 @@ function PriviledgePicklist(props) {
     )
 }
 
-function mapObjectToArray(object) {
-    let result = [];
+function mapObjectToArray(object, pk) {
+    let result = {
+        pk: pk,
+        groups: [],
+    };
+
     object.forEach(element => {
-        result.push(element.value)
+        result.groups.push(element.value)
     });
+
     return result;
 }
 
@@ -52,8 +61,14 @@ function mapArrayToObject(input) {
     return result;
 }
 
-async function getTypesPrivilege() {
-    return mapArrayToObject(['admin', 'oauth', 'model', 'instrument', 'cali']);
+const getTypesPrivilege = async () => {
+    return adminServices.getPriviledgeList().then(result => {
+        if(result.success)
+        {
+            return mapArrayToObject(result.data.groups)
+        }
+        return []
+    }) 
 }
 
 const customStyles = {

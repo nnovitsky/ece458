@@ -52,10 +52,9 @@ export const CalibrationModeDisplayMap = {
 
 export const PrivilegesDisplayMap = {
     "admin": "Admin",
-    "oauth": "Oauth",
-    "model": "Model",
-    "instrument": "Instrument",
-    "cali": "Calibration",
+    "models": "Model",
+    "instruments": "Instrument",
+    "calibrations": "Calibration",
 };
 
 

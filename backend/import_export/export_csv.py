@@ -148,10 +148,10 @@ def handler(queryset, export_code):
 
     if export_code == MODEL_EXPORT:
         output_buffer, file_name = write_model_sheet(queryset['models'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == INSTRUMENT_EXPORT:
         output_buffer, file_name = write_instrument_sheet(queryset['instruments'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == ZIP_EXPORT:
         model_buffer, model_file_name = write_model_sheet(queryset['models'], BytesIO())
         instrument_buffer, instrument_file_name = write_instrument_sheet(queryset['instruments'], BytesIO())

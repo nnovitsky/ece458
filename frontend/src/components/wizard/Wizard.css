@@ -34,4 +34,16 @@ form.wizard {
     font-size: min(1.4vw, 20px)
 }
 
+.custom-class{
+    font-size: min(1.4vw, 20px) !important;
+    width: 89% !important;
+}
+
+.short-headers{
+    width: 8%
+}
+
+.input-headers{
+    width: 15%
+}
 

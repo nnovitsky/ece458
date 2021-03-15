@@ -35,7 +35,7 @@ const ModelFilterBar = (props) => {
 
     return (
 
-        <Container className="filter-column">
+        <Container className="filter-column" onKeyPress={(e) => handleKeyPress(e, props.onSearch, filterState)}>
             <Col>
 
                 <h3>Filters</h3>
@@ -62,6 +62,7 @@ const ModelFilterBar = (props) => {
     )
 }
 
+
 function reducer(state, action) {
     switch (action.type) {
         case 'vendor':
@@ -83,6 +84,16 @@ function reducer(state, action) {
             return action.payload;
         default:
             throw new Error();
+    }
+}
+
+// searches on enter
+const handleKeyPress = (e, parentOnSubmit, filterState) => {
+    switch (e.code) {
+        case 'Enter':
+            onSubmit(parentOnSubmit, filterState);
+        default:
+            return;
     }
 }
 

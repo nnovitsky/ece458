@@ -29,7 +29,7 @@ const InstrumentFilterBar = (props) => {
     // modelCategories = formatCategories(props.modelCategories);
     // instrumentCategories = formatCategories(props.instrumentCategories);
     return (
-        <Container className="filter-column">
+        <Container className="filter-column" onKeyPress={(e) => handleKeyPress(e, props.onSearch, filterState)}>
             <Col>
                 <h3>Filters</h3>
                 <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={(e) => dispatch({ type: 'vendor', payload: e.target.value })} value={filterState.vendor} />
@@ -99,6 +99,16 @@ function reducer(state, action) {
             return action.payload;
         default:
             throw new Error();
+    }
+}
+
+// searches on enter
+const handleKeyPress = (e, parentOnSubmit, filterState) => {
+    switch (e.code) {
+        case 'Enter':
+            onSubmit(parentOnSubmit, filterState);
+        default:
+            return;
     }
 }
 

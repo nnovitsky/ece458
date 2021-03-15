@@ -109,6 +109,7 @@ const noResults = (text) => {
 }
 
 const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
+    const lastPage = Math.ceil(totalSize/sizePerPage);
     return ({
         custom: true,
         page: page,
@@ -117,15 +118,15 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         paginationSize: 3,
         pageStartIndex: 1,
         // alwaysShowAllBtns: true, // Always show next and previous button
-        // withFirstAndLast: false, // Hide the going to First and Last page button
+        withFirstAndLast: true, // Hide the going to First and Last page button
         // hideSizePerPage: true, // Hide the sizePerPage dropdown always
         hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
         // firstPageText: 'First',
         // prePageText: 'Back',
         // nextPageTitle: 'First page',
         // prePageTitle: 'Pre page',
-        // firstPageTitle: 'Next page',
-        // lastPageTitle: 'Last page',
+        firstPageText: '1...',
+        lastPageText: `...${lastPage}`,
         paginationTotalRenderer: customTotal,
         showTotal: true,
         disablePageTitle: true,

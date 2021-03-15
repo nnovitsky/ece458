@@ -60,3 +60,8 @@ nav ul li a:hover {
   color: black;
   text-decoration: none;
 }
+
+nav ul li a.active {
+  color: black;
+  text-decoration: none;
+}

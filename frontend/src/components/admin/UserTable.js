@@ -154,21 +154,6 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 return <div className="admin-filter-picklist">{isHidden ? null : <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/>}</div>;
                 },
             }, 
-/*             {
-                dataField: 'groups',
-                text: 'Administrator Picklist',
-                editor: {
-                    type: Type.SELECT,
-                    multiple: true,
-                    options: options
-                  },
-                  formatter: (cell, row) => {   //TODO change to oauth
-                    console.log(row)
-                    return <span>{getDisplayString(row.groups)}</span>;
-                },
-            }, */
-
-
         ]
     )
 };

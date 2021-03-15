@@ -2,6 +2,9 @@ ADMIN_USERNAME = "admin"
 
 USER_GROUPS = [
     "admin",
+    "models",
+    "instruments",
+    "calibrations",
     "oauth"
 ]
 

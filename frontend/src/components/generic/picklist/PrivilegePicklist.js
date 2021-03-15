@@ -82,6 +82,19 @@ const customStyles = {
         backgroundColor: 'none',
         width: '100%'
     }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        margin: -3 -1 -1 -1,
+    }), 
+    clearIndicator: (base, state) => ({
+        ...base,
+        margin: -1 -3 -1 -1,
+    }),
+    indicatorSeparator: (base, state) => ({
+        ...base,
+        width: 0,
+        marginLeft: -1,
+    }),
 };
 
 export default PriviledgePicklist;

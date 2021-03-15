@@ -50,6 +50,7 @@ class AdminPage extends React.Component {
         this.getUsername = this.getUsername.bind(this);
         this.onUserDeleted = this.onUserDeleted.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.changePrivileges = this.changePrivileges.bind(this);
     }
 
 
@@ -60,7 +61,6 @@ class AdminPage extends React.Component {
     }
 
     render() {
-        console.log(this.state.username)
         let buttonRow = (<div className="table-button-row">
             <Button onClick={this.onAddUserClicked}>Add New User</Button>
         </div>)
@@ -92,8 +92,9 @@ class AdminPage extends React.Component {
                                 inlineElements={buttonRow}
                                 giveAdminPriviledges={this.giveAdminPriviledges}
                                 revokeAdminPriviledges={this.revokeAdminPriviledges}
-                                currentUser={this.state.username}
+                                currentUser={this.props.username}
                                 deleteUser={this.onUserDeleted}
+                                onChangePrivileges={this.changePrivileges}
                             />
                         </div>
                     </div>
@@ -151,7 +152,6 @@ class AdminPage extends React.Component {
                         }
                     })
                 }
-
             }
             );
     }
@@ -298,6 +298,16 @@ class AdminPage extends React.Component {
         }
         )
     }
+
+
+    async changePrivileges(e)
+    {
+        console.log(e)
+        adminServices.togglePriviledges(e.pk, e.groups).then(result =>{
+            console.log(result)
+            this.updateUserTable()
+        })
+    }  
 }
 
 export default AdminPage;

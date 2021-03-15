@@ -1,6 +1,22 @@
-
 .alignLeft{
     margin-left: -22px;
 }
 
+.admin-filter-picklist {
+    /* margin: 1px 1px -20px 1px !important; */
+    margin-top: -30px;
+    font-size: 1.1vw !important;
+    position: absolute;
+    width: 29%;
+    height: 100%;
+}
 
+
+.tall-rows {
+    height: 80px;
+}
+
+.top{
+    position: relative;
+    z-index: 3;
+}

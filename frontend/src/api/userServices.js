@@ -99,7 +99,7 @@ export default class UserServices {
     }
 
     // handles modified/expired tokens
-    async editUser(password, first_name, last_name) {
+    async editUser(password, first_name, last_name, groups) {
         let data = {} 
 
         if(password !== ' ' && password !== '' && typeof(password) !== 'undefined')
@@ -114,6 +114,10 @@ export default class UserServices {
         if(last_name !== ' ' && last_name !== '' && typeof(last_name) !== 'undefined')
         {
             data['last_name'] = last_name;
+        }
+        if(groups !== [])
+        {
+            data['groups'] = groups;
         }
 
         let result = {

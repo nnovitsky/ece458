@@ -50,5 +50,12 @@ export const CalibrationModeDisplayMap = {
     "load_bank": "Load Bank"
 };
 
+export const PrivilegesDisplayMap = {
+    "admin": "Admin",
+    "models": "Model",
+    "instruments": "Instrument",
+    "calibrations": "Calibration",
+};
+
 
 export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };

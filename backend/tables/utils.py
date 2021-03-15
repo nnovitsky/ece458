@@ -11,6 +11,7 @@ from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
 from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
+from backend.config.admin_config import PERMISSION_GROUPS
 
 
 def validate_user(request, create=False):
@@ -55,6 +56,30 @@ def validate_user(request, create=False):
         elif len(request.data['password']) == 0:
             return Response({'input_error': ["Password is required."]}, status.HTTP_400_BAD_REQUEST)
     return None
+
+
+def edit_user_groups(groups, other_user):
+    # add related permissions
+    if 'admin' in groups:
+        groups.add('models')
+        groups.add('instruments')
+        groups.add('calibrations')
+    elif 'models' in groups:
+        groups.add('instruments')
+
+    # ensure groups exist
+    for groupname in groups:
+        if groupname not in PERMISSION_GROUPS:
+            return "ERROR"
+        try:
+            UserType.objects.get(name=groupname)
+        except UserType.DoesNotExist:
+            UserType(name=groupname).save()
+
+    # adjust user's permissions
+    qs = UserType.objects.filter(name__in=groups)
+    other_user.usertype_set.set(qs)
+    return groups
 
 
 def annotate_models(queryset):
@@ -164,10 +189,10 @@ def setUpTestAuth(class_object):
 def make_user(username, data, login, groups=[]):
     data['username'] = username
     login['username'] = username
-    data['groups'] = groups
     serializer = UserSerializerWithToken(data=data)
     if serializer.is_valid():
         u = serializer.save()
+    edit_user_groups(set(groups), u)
     return serializer.data['token'], u
 
 
@@ -212,7 +237,6 @@ def validate_lb_cal(lb_cal):
     for page in LOAD_LEVELS:
         for level in LOAD_LEVELS[page]:
             expected_load_readings[level['index']] = level['load']
-    print(expected_load_readings)
     unacceptable_load_readings = []
     for reading in lb_cal.loadcurrent_set.all():
         if not reading.cr_ok or not reading.ca_ok:

@@ -17,7 +17,7 @@ from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
-from backend.config.admin_config import ADMIN_USERNAME
+from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
@@ -460,18 +460,25 @@ class TokenAuth(ObtainJSONWebToken):
                 return error
         except User.DoesNotExist:
             return error
-
+        # generate admin group on login from ADMIN_USERNAME if doesn't exist
+        if user.username == ADMIN_USERNAME and not UserType.contains_user(user, "admin"):
+            try:
+                admin_group = UserType.objects.get(name="admin")
+            except UserType.DoesNotExist:
+                admin_group = UserType(name="admin")
+                admin_group.save()
+            admin_group.users.add(user)
         response = super().post(request, *args, **kwargs)
         return response
 
 
-@api_view(['PUT', 'DELETE'])
-def toggle_admin(request, user_pk):
-    try:
-        admin_group = UserType.objects.get(name="admin")
-    except UserType.DoesNotExist:
-        admin_group = UserType(name="admin").save()
+@api_view(['GET'])
+def get_permissions(request):
+    return Response({'groups': PERMISSION_GROUPS}, status=status.HTTP_200_OK)
 
+
+@api_view(['PUT'])
+def toggle_groups(request, user_pk):
     if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
@@ -480,19 +487,28 @@ def toggle_admin(request, user_pk):
     except User.DoesNotExist:
         return Response({"description": ["User does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'PUT':
-        if not UserType.contains_user(other_user, "admin"):
-            admin_group.users.add(other_user)
-        serializer = UserSerializer(other_user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # add related permissions
+    groups = set(request.data['groups'])
+    if 'admin' in groups:
+        groups.add('models')
+        groups.add('instruments')
+        groups.add('calibrations')
+    elif 'models' in groups:
+        groups.add('instruments')
 
-    elif request.method == 'DELETE':
-        if other_user.username == ADMIN_USERNAME:
-            return Response({"description": ["Cannot revoke this user's admin privileges."]}, status=status.HTTP_400_BAD_REQUEST)
-        if UserType.contains_user(other_user, "admin"):
-            admin_group.users.remove(other_user)
-        serializer = UserSerializer(other_user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # ensure groups exist
+    for groupname in groups:
+        if groupname not in PERMISSION_GROUPS:
+            return Response({"description": ["Invalid group name."]}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            UserType.objects.get(name=groupname)
+        except UserType.DoesNotExist:
+            UserType(name=groupname).save()
+
+    # adjust user's permissions
+    qs = UserType.objects.filter(name__in=groups)
+    other_user.usertype_set.set(qs)
+    return Response({'groups': list(groups)}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'PUT'])

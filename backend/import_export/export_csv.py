@@ -110,7 +110,7 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date = ""
             cal_comment = ""
         else:
-            last_cal = db_instrument.calibrationevent_set.order_by('date')[:1]
+            last_cal = db_instrument.calibrationevent_set.order_by('-date')[:1]
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 
@@ -148,10 +148,10 @@ def handler(queryset, export_code):
 
     if export_code == MODEL_EXPORT:
         output_buffer, file_name = write_model_sheet(queryset['models'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == INSTRUMENT_EXPORT:
         output_buffer, file_name = write_instrument_sheet(queryset['instruments'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == ZIP_EXPORT:
         model_buffer, model_file_name = write_model_sheet(queryset['models'], BytesIO())
         instrument_buffer, instrument_file_name = write_instrument_sheet(queryset['instruments'], BytesIO())

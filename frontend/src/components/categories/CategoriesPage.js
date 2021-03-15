@@ -104,11 +104,12 @@ class CategoriesPage extends Component {
                     isShown={this.state.isLoading}
                 />
                 <div className="row mainContent">
-
+                    <LogoHeader
+                        title="Category Management"
+                        headerButtons={null}
+                    />
                     <Col className="category-page-content">
-                        <LogoHeader
-                            title="Category Management"
-                        />
+
                         <Tabs defaultActiveKey={this.state.currentTab} onSelect={this.onTabChange}>
                             <Tab eventKey="model" title="Model Categories">
                                 <div className="categories-table">
@@ -133,7 +134,7 @@ class CategoriesPage extends Component {
                                     onCategoryEdit={this.onEditClicked}
                                     onCategoryDelete={this.onDeleteClick}
                                     inlineElements={buttonRow}
-                                        noResultsText="No Instrument Categories"
+                                    noResultsText="No Instrument Categories"
                                 />
                                 </div>
                             </Tab>

@@ -53,7 +53,7 @@ class login extends React.Component {
                     value={this.state.password}
                     onChange={this.handle_change}
                 />
-                <input type="submit" />
+                <input type="submit" value="Submit"/>
                 <h5>{this.props.error_message}</h5>
                 <p>
                 <h6> or </h6>

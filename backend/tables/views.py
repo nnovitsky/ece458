@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+from rest_framework_jwt.views import ObtainJSONWebToken
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
 from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks, annotate_instruments
@@ -36,15 +37,34 @@ class OauthConsume(APIView):
             return Response({"oauth_error": ["OAuth login failed."]}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CalibrationArtifact(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, cal_pk, format=None):
+        try:
+            calibration_event = CalibrationEvent.objects.get(pk=cal_pk)
+        except CalibrationEvent.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if calibration_event.file is None:
+            return Response({"description": ["Calibration event does not have a associated file"]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            file_path = MEDIA_ROOT + str(calibration_event.file)
+            if not os.path.exists(file_path):
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=str(calibration_event.file))
+        except IOError:
+            return Response(status=status.HTTP_418_IM_A_TEAPOT)
+
+
 @api_view(['GET'])
 def vendor_list(request):
     """
     List all vendors in DB.
     """
-    vendors = set()
-    for item_model in ItemModel.objects.all():
-        vendors.add(item_model.vendor)
-    return Response({'vendors': vendors}, status=status.HTTP_200_OK)
+    vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True).distinct()
+    return Response({'vendors': list(vendors)}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -426,11 +446,11 @@ def get_example_instrument_csv(request):
 
 
 # USERS
-class TokenAuth(APIView):
+class TokenAuth(ObtainJSONWebToken):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-        error = Response("Unable to login with provided credentials", status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        error = Response({"non_field_errors": ["Unable to log in with provided credentials."]}, status=status.HTTP_400_BAD_REQUEST)
         if 'username' not in request.data: return error
         try:
             user = User.objects.get(username=request.data['username'])
@@ -438,11 +458,9 @@ class TokenAuth(APIView):
                 return error
         except User.DoesNotExist:
             return error
-        serializer = UserTokenSerializer(user, data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return error
+
+        response = super().post(request, *args, **kwargs)
+        return response
 
 
 @api_view(['PUT', 'DELETE'])
@@ -558,9 +576,6 @@ class UserCreate(APIView):
 # CATEGORIES
 @api_view(['GET', 'POST'])
 def model_category_list(request):
-    if not UserType.contains_user(request.user, "admin"):
-        return Response(
-            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'GET':
         nextPage = 1
@@ -569,6 +584,9 @@ def model_category_list(request):
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -578,9 +596,6 @@ def model_category_list(request):
 
 @api_view(['GET', 'POST'])
 def instrument_category_list(request):
-    if not UserType.contains_user(request.user, "admin"):
-        return Response(
-            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'GET':
         nextPage = 1
@@ -589,6 +604,9 @@ def instrument_category_list(request):
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "admin"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = InstrumentCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

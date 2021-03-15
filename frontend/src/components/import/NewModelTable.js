@@ -51,29 +51,27 @@ let makeConfig = () => {
                 isKey: true,
                 dataField: 'pk', //json data key for this column
                 text: '#',      //displayed column header text
-                headerClasses: 'mt-num-column'
+                formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
+                    return <span>{rowIndex}</span>;
+                },
             },
             {
                 dataField: 'vendor',
                 text: 'Vendor',
-                headerClasses: 'mt-vendor-column'
             },
             {
                 dataField: 'model_number',
                 text: 'Model #',
-                headerClasses: 'mt-model-number-column',
             },
             {
                 dataField: 'description',
                 text: 'Description',
-                headerClasses: 'mt-description-column',
             },
 
             {
                 dataField: 'calibration_frequency',
                 text: 'Cal. Freq. (Days)',
                 sort: true,
-                headerClasses: 'mt-cal-column',
                 formatter: (cell) => {
                     if (cell === 0) {
                         return <span>N/A</span>

@@ -82,7 +82,7 @@ class Step5 extends React.Component {
                     <Form.Label style={{ display: "block" }}>VR Error: &nbsp;{this.state.vr_error}</Form.Label>
                     <Form.Label style={{ display: "block" }}>VR Ok?: &nbsp;{this.state.vr_ok}</Form.Label>
                     <Form.Label style={{ display: "block" }}>VA Error: &nbsp;{this.state.va_error}</Form.Label>
-                    <Form.Label style={{ display: "block" }}>VR Ok?: &nbsp;{this.state.va_ok}</Form.Label>
+                    <Form.Label style={{ display: "block" }}>VA Ok?: &nbsp;{this.state.va_ok}</Form.Label>
                 </Form.Group>
             </Form>
 

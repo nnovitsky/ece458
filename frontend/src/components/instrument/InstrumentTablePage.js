@@ -208,7 +208,6 @@ class InstrumentTablePage extends Component {
     }
 
     updateSessionStorage() {
-        console.log("updating session storage");
         let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
         instrumentSearchParams = JSON.parse(instrumentSearchParams);
 
@@ -305,7 +304,9 @@ class InstrumentTablePage extends Component {
     }
 
     async exportInstruments(isAll) {
-        instrumentServices.exportInstruments(this.state.instrumentSearchParams.filters, isAll).then(
+        let instrumentSearchParams = JSON.parse(window.sessionStorage.getItem("instrumentPageSearchParams"));
+        let filters = instrumentSearchParams.filters;
+        instrumentServices.exportInstruments(filters, isAll).then(
             (result) => {
                 if (result.success) {
                     let date = dateToString(new Date());

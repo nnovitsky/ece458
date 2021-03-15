@@ -333,9 +333,22 @@ export default class InstrumentServices {
         })
             .then(res => {
                 if (res.ok) {
+                    console.log(res);
+                    
                     return result;
                 } else {
+                    if (res.status === 413) {
+                        let error = {
+                            "non_field_errors": [
+                                "File size too large."
+                            ]
+                        }
+                        result.success = false;
+                        result.errors = error;
+                        return result;
+                    }
                     return res.json().then(json => {
+                        console.log(json);
                         result.success = false;
                         result.errors = json;
                         return result;

@@ -5,8 +5,7 @@ import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
 import "react-datepicker/dist/react-datepicker.css";
 import WizardServices from "../../api/wizardServices.js";
-import AuthServices from '../../api/authServices';
-const authServices = new AuthServices();
+
 const wizardServices = new WizardServices();
 
 const dateDetails = "T00:00:00";
@@ -22,7 +21,6 @@ class Step0 extends React.Component {
                 model_number: this.props.model_number,
                 serial_number: this.props.serial_number,
                 asset_tag: this.props.asset_tag,
-                engineer: '',
                 date_string: dateToString(new Date()),
                 date_object: new Date(),
                 instrument_pk: this.props.instrument_pk,
@@ -35,13 +33,11 @@ class Step0 extends React.Component {
         this.onCommentInput = this.onCommentInput.bind(this);
         this.createNewLoadbankEvent = this.createNewLoadbankEvent.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
-        this.getUser = this.getUser.bind(this);
         this.getDetails = this.getDetails.bind(this);
 
     }
 
     async componentDidMount() {
-        this.getUser();
         this.getDetails();
     }
 
@@ -79,7 +75,7 @@ class Step0 extends React.Component {
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.engineer}/>
+                    <Form.Control readOnly="readonly" type="text" value={this.props.username}/>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
                     <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()}/>
                 </Form.Group>
@@ -153,21 +149,6 @@ class Step0 extends React.Component {
                 }
             }
         })
-    }
-
-    async getUser(){
-        authServices.getCurrentUser().then((result) => {
-            if (result.success) {
-              this.setState({
-                calInfo: {
-                    ...this.state.calInfo,
-                    engineer: result.data.username,
-                }
-              })
-            } else {
-              window.sessionStorage.removeItem('token');
-            }
-          })
     }
 
     async getDetails()

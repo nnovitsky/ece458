@@ -10,13 +10,17 @@ import logo from '../../assets/HPT_logo_crop.png';
 // buttons: can be an array or some button element, will have some styling to have it float right
 const logoTitleHeader = (props) => {
     return (
-        <div className="logo-title-header">
-            <img src={logo} alt="Logo" />
-            <h1>{props.title}</h1>
-            <div className="logo-title-header-buttons-div">
-                {props.buttons}
+        <>
+            <div className="col-2 text-center button-col">
+                <img src={logo} alt="Logo" />
             </div>
-        </div>
+            <div className="col-10 logo-title-header">
+                <h1 className="logo-title-header">{props.title}</h1>
+                <div className="logo-title-header-buttons-div">
+                    {props.headerButtons}
+                </div>
+            </div>
+        </>
     )
 }
 

@@ -26,6 +26,10 @@ form.wizard {
 }
 
 .notValidated{
+    background-color: rgba(255, 125, 125, 0.418)
+}
+
+.blank{
     background-color: whitesmoke
 }
 

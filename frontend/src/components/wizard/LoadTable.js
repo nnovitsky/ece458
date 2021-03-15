@@ -63,7 +63,11 @@ const loadTable = (props) => {
 let rowStyle = (row, rowIndex) => {
     if(typeof(row) !== 'undefined' && (row.validate || row.cr_ok && row.ca_ok))
     {
-        return 'validated'
+        return 'validated';
+    }
+    else if(typeof(row) !== 'undefined' && typeof(row.cr_ok) === 'undefined' && typeof(row.ca_ok) === 'undefined')
+    {
+        return 'blank';
     }
     return 'notValidated';
 }

@@ -165,7 +165,7 @@ class Step0 extends React.Component {
                 }
               })
             } else {
-              localStorage.removeItem('token');
+              window.sessionStorage.removeItem('token');
             }
           })
     }

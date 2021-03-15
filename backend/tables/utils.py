@@ -237,7 +237,6 @@ def validate_lb_cal(lb_cal):
     for page in LOAD_LEVELS:
         for level in LOAD_LEVELS[page]:
             expected_load_readings[level['index']] = level['load']
-    print(expected_load_readings)
     unacceptable_load_readings = []
     for reading in lb_cal.loadcurrent_set.all():
         if not reading.cr_ok or not reading.ca_ok:

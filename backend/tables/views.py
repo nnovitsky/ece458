@@ -63,7 +63,7 @@ def vendor_list(request):
     """
     List all vendors in DB.
     """
-    vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True)
+    vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True).distinct()
     return Response({'vendors': list(vendors)}, status=status.HTTP_200_OK)
 
 

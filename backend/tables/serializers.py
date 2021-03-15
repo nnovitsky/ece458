@@ -464,6 +464,10 @@ class LoadCurrentWriteSerializer(serializers.ModelSerializer):
         ca_error = self.get_ca_error(obj)
         return abs(ca_error) < CA_THRESHOLD
 
+    def validate_ca(self, ca):
+        if self.initial_data['ideal'] != 0 and ca == 0: raise serializers.ValidationError([C_DIVIDE_BY_ZERO])
+        return ca
+
     class Meta:
         model = LoadCurrent
         fields = ('pk', 'lb_cal', 'load', 'cr', 'ca', 'ideal', 'cr_error', 'ca_error', 'index', 'cr_ok', 'ca_ok')
@@ -499,6 +503,10 @@ class LoadVoltageWriteSerializer(serializers.ModelSerializer):
     def get_va_ok(self, obj):
         va_error = self.get_va_error(obj)
         return abs(va_error) < VA_THRESHOLD
+
+    def validate_va(self, va):
+        if va == 0: raise serializers.ValidationError([V_DIVIDE_BY_ZERO])
+        return va
 
     class Meta:
         model = LoadVoltage

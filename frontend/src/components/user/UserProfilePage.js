@@ -107,7 +107,6 @@ class UserPage extends React.Component {
         userServices.editUser(updatedUser.password, updatedUser.first_name, updatedUser.last_name)
             .then((res) => {
                 if (res.success) {
-                    localStorage.setItem('token', res.data.token);
                     window.sessionStorage.setItem('token', res.data.token);
                     this.updateUserInfo();
                     this.onEditUserClosed();
@@ -155,7 +154,6 @@ class UserPage extends React.Component {
                     console.log("error");
                 }
                 else {
-                    localStorage.setItem('token', json.token);
                     window.sessionStorage.setItem('token', json.token);
                     this.setState({
                         logged_in: true,

@@ -46,8 +46,8 @@ class App extends Component {
             admin: result.admin,
           })
         } else {
-          this.emptyLocalStorage();
-          localStorage.removeItem('token');
+          this.emptyOauthStorage();
+          window.sessionStorage.removeItem('token');
           this.setState({
             logged_in: false,
             username: '',
@@ -68,7 +68,6 @@ class App extends Component {
     });
     authServices.getOauthToken(code).then(result => {
       if (result.success) {
-        localStorage.setItem('token', result.data.token);
         window.sessionStorage.setItem('token', result.data.token);
         this.setState({
           logged_in: true,
@@ -100,7 +99,6 @@ class App extends Component {
             this.setState({ error_message: 'Incorrect Login Credentials' });
           }
           else {
-            localStorage.setItem('token', json.token);
             window.sessionStorage.setItem('token', json.token);
             this.setState({
               logged_in: true,
@@ -115,8 +113,6 @@ class App extends Component {
 
 
   handle_logout = () => {
-    localStorage.removeItem('token');
-    this.emptyLocalStorage();
     this.emptySessionStorage();
     this.setState({
       logged_in: false,
@@ -126,8 +122,8 @@ class App extends Component {
     });
   };
 
-  emptyLocalStorage = () => {
-    localStorage.removeItem('oauth');
+  clearOauthStorage = () => {
+    window.sessionStorage.removeItem('oauth');
   }
 
   emptySessionStorage = () => {
@@ -154,7 +150,7 @@ class App extends Component {
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
     return (
-      <Beforeunload onBeforeunload={this.emptyLocalStorage}>
+      <Beforeunload onBeforeunload={this.clearOauthStorage}>
         <BrowserRouter>
           <div>
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>

@@ -46,9 +46,7 @@ a.green-link:hover {
 /* apply this css to any logo columns that will have buttons
 add 'button-col' to the classname for the div acting as the column
 */
-.button-col {
-  padding: 5px !important;
-}
+
 .button-col button {
   /* padding: 5px; */
   margin: 10px;

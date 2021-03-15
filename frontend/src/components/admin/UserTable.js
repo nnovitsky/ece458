@@ -53,17 +53,6 @@ const userTable = (props) => {
                 noResults='No Users'
                 inlineElements={props.inlineElements}
                 rowClasses="tall-rows"
-/*                 cellEdit={ cellEditFactory({ 
-                    mode: 'click', 
-                    //blurToSave: true,
-                    beforeSaveCell: (oldValue, newValue, row, column) => {
-                        //row.groups.push(newValue)
-                        console.log(newValue)
-                        console.log(oldValue)
-                        //console.log(row.groups)
-                        //props.editUser(groups);
-                    }
-                }) } */
             />
             </div>
 
@@ -134,47 +123,19 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 },
                 headerClasses: 'at-delete-column',
             },
-/*             {
-                dataField: 'Priviledges',
-                text: 'Administrator Priviledges',
-                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
-                    let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                    let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
-                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
-                    return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
-                },
-            }, */
              {
                 dataField: 'Picklist',
                 text: 'Privileges',
                 headerClasses: 'at-picklist-column top',
                 formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
-                    console.log(row)
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                return <div className="admin-filter-picklist">{isHidden ? null : <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/>}</div>;
+                    let hiddenText = currentUser == row.username ? "Cannot edit self privileges" : "Cannot edit super admin privileges";
+                return <div className="admin-filter-picklist">{isHidden ? <span>{hiddenText}</span> : <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/>}</div>;
                 },
             }, 
         ]
     )
 };
-
-let getDisplayString = (groups) =>{
-    let list = ""
-    //console.log(groups)
-    groups.forEach(element =>
-        {
-            console.log(element)
-            switch(element){
-                case "admin":
-                    list = list + "Admin, "
-                    break;
-                case "oauth":
-                    list = list + "Oauth, "
-                    break;
-            } 
-        })
-    return list;
-}
 
 export default userTable;
 

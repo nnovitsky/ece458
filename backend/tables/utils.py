@@ -11,7 +11,7 @@ from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
 from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
-from backend.config.admin_config import PERMISSION_GROUPS
+from backend.config.admin_config import USER_GROUPS
 
 
 def validate_user(request, create=False):
@@ -59,6 +59,9 @@ def validate_user(request, create=False):
 
 
 def edit_user_groups(groups, other_user):
+    # preserve oauth
+    if UserType.contains_user(other_user, "oauth"):
+        groups.add("oauth")
     # add related permissions
     if 'admin' in groups:
         groups.add('models')
@@ -69,7 +72,7 @@ def edit_user_groups(groups, other_user):
 
     # ensure groups exist
     for groupname in groups:
-        if groupname not in PERMISSION_GROUPS:
+        if groupname not in USER_GROUPS:
             return "ERROR"
         try:
             UserType.objects.get(name=groupname)

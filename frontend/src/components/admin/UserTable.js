@@ -53,17 +53,6 @@ const userTable = (props) => {
                 noResults='No Users'
                 inlineElements={props.inlineElements}
                 rowClasses="tall-rows"
-/*                 cellEdit={ cellEditFactory({ 
-                    mode: 'click', 
-                    //blurToSave: true,
-                    beforeSaveCell: (oldValue, newValue, row, column) => {
-                        //row.groups.push(newValue)
-                        console.log(newValue)
-                        console.log(oldValue)
-                        //console.log(row.groups)
-                        //props.editUser(groups);
-                    }
-                }) } */
             />
             </div>
 
@@ -130,66 +119,25 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 },
                 formatter: (cell, row) => {   //TODO change to oauth
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
+                    if(row.groups.includes(oauthGroup)) return <span>Oauth</span>
                     return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
                 headerClasses: 'at-delete-column',
             },
-/*             {
-                dataField: 'Priviledges',
-                text: 'Administrator Priviledges',
-                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
-                    let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                    let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
-                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
-                    return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
-                },
-            }, */
              {
                 dataField: 'Picklist',
                 text: 'Privileges',
                 headerClasses: 'at-picklist-column top',
                 formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
-                    console.log(row)
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                return <div className="admin-filter-picklist">{isHidden ? null : <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/>}</div>;
+                    let hiddenText = currentUser == row.username ? "Cannot edit self privileges" : "Cannot edit super admin privileges";
+                    let returnContent = isHidden ? <span>{hiddenText}</span> : <div className="admin-filter-picklist"> <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/></div>
+                return returnContent;
                 },
             }, 
-/*             {
-                dataField: 'groups',
-                text: 'Administrator Picklist',
-                editor: {
-                    type: Type.SELECT,
-                    multiple: true,
-                    options: options
-                  },
-                  formatter: (cell, row) => {   //TODO change to oauth
-                    console.log(row)
-                    return <span>{getDisplayString(row.groups)}</span>;
-                },
-            }, */
-
-
         ]
     )
 };
-
-let getDisplayString = (groups) =>{
-    let list = ""
-    //console.log(groups)
-    groups.forEach(element =>
-        {
-            console.log(element)
-            switch(element){
-                case "admin":
-                    list = list + "Admin, "
-                    break;
-                case "oauth":
-                    list = list + "Oauth, "
-                    break;
-            } 
-        })
-    return list;
-}
 
 export default userTable;
 

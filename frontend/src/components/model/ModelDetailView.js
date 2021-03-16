@@ -98,23 +98,6 @@ class ModelDetailView extends React.Component {
                     comments={comment}
                     bottomElement={this.makeSerialTable()}
                 />
-                {/* <div className="col-2 text-center button-col">
-                            <img src={logo} alt="Logo" />
-                            {this.props.is_admin ? adminButtons : null}
-                        </div>
-                        <div className="col-10">
-                            
-                            <Row>
-                                <Col>
-                                    <h2>{`Model: ${this.state.model_info.model_number}`}</h2>
-                                {this.makeDetailsTable()}
-                                </Col>
-                                <Col xs={6}>
-                                    <h2>Instrument Instances</h2>
-
-                                </Col>
-                            </Row>
-        </div>*/}
             </div>
         );
     }

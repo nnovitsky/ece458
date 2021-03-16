@@ -189,10 +189,10 @@ class App extends Component {
             <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.user.admin} user={this.state.user.username} />
             <Switch>
               {/* routes below require being logged in */}
-              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.user.admin} permissions={permissions}/>)} exact />
-              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.user.admin} permissions={permissions}/>)} exact />
-              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.user.admin} permissions={permissions}/>)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.user.admin} username={this.state.user.username} permissions={permissions}/>)} exact />
+              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
+              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage permissions={permissions}/>)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage permissions={permissions}/>)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView username={this.state.user.username} permissions={permissions}/>)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />

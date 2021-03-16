@@ -79,4 +79,4 @@ export const PrivilegesDisplayMap = {
 };
 
 
-export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };
+export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess };

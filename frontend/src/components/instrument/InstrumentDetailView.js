@@ -9,7 +9,7 @@ import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
@@ -90,12 +90,14 @@ class InstrumentDetailView extends Component {
         await this.getCalHistory();
     }
 
-    render(
-        adminButtons = <div className="detail-header-buttons-div">
-            <Button onClick={this.onEditInstrumentClicked}>Edit</Button>
-            <Button onClick={this.onDeleteClicked} variant="danger">Delete</Button>
-        </div>
-    ) {
+    render() {
+        const isInstrumentAdmin = hasInstrumentEditAccess(this.props.permissions);
+        const headerButtons = (<div className="detail-header-buttons-div">
+                            <Button onClick={this.onEditInstrumentClicked} hidden={!isInstrumentAdmin}>Edit</Button>
+                            <Button onClick={this.onDeleteClicked} hidden={!isInstrumentAdmin} variant="danger">Delete</Button>
+                    </div>)
+        
+
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
@@ -114,7 +116,7 @@ class InstrumentDetailView extends Component {
                 {wizardPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
-                    headerButtons={this.props.is_admin ? adminButtons : null}
+                    headerButtons={headerButtons}
                     col5={this.makeDetailsTable()}
                     comments={comment}
                     bottomElement={this.makeCalHistoryTable()}
@@ -402,7 +404,7 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        if(this.isFileSizeGood(calibrationEvent.file)) {
+        if (this.isFileSizeGood(calibrationEvent.file)) {
             await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
                 .then((result) => {
 

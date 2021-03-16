@@ -30,7 +30,7 @@ function PriviledgePicklist(props) {
             placeholderText="Privilege..."
             isMulti={true}
             styles={customStyles}
-            //maxMenuHeight={100}
+        //maxMenuHeight={100}
         />
     )
 }
@@ -52,23 +52,24 @@ function mapObjectToArray(object, pk) {
 function mapArrayToObject(input) {
     let result = [];
     input.forEach(element => {
-        let display = PrivilegesDisplayMap[element];
-        result.push({
-            "label": display,
-            "value": element,
-        })
+        if (element !== "oauth") {
+            let display = PrivilegesDisplayMap[element];
+            result.push({
+                "label": display,
+                "value": element,
+            })
+        }
     });
     return result;
 }
 
 const getTypesPrivilege = async () => {
     return adminServices.getPriviledgeList().then(result => {
-        if(result.success)
-        {
+        if (result.success) {
             return mapArrayToObject(result.data.groups)
         }
         return []
-    }) 
+    })
 }
 
 const customStyles = {
@@ -85,7 +86,7 @@ const customStyles = {
     dropdownIndicator: (base, state) => ({
         ...base,
         margin: -3 -1 -1 -1,
-    }), 
+    }),
     clearIndicator: (base, state) => ({
         ...base,
         margin: -1 -3 -1 -1,

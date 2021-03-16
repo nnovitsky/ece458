@@ -9,6 +9,7 @@ hr {
 /* wraps the entirety of the detail view content */
 .detail-view {
   margin-top: 10px;
+  width: 100%;
 }
 
 /* div that covers the title and detail info, NOT the cal history */

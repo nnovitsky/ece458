@@ -53,7 +53,7 @@ def write_model_sheet(db_models, buffer):
         model_list.append(model_row)
 
     model_sheet = pd.DataFrame(model_list, columns=model_headers)
-    model_sheet.to_csv(buffer, index=False)
+    model_sheet.to_csv(buffer, index=False, encoding='utf-8-sig')
     buffer.seek(0)
 
     return buffer, f"model_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.csv"

@@ -20,6 +20,7 @@ def login_oauth_user(id_token, user_details):
                     email=user_details['email'])
         user.set_password(oauth_pw)
         user.save()
+    if not UserType.contains_user(user, "oauth"):
         try:
             UserType.objects.get(name="oauth").users.add(user)
         except UserType.DoesNotExist:

@@ -9,7 +9,7 @@ import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
@@ -127,12 +127,13 @@ class InstrumentDetailView extends Component {
     }
 
     makeCalHistoryTable = () => {
+        const isCalibrationAdmin = hasCalibrationAccess(this.props.permissions);
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
         let calButtonRow = (
             <div className="table-button-row">
-                <Button hidden={!isCalibratable} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
-                <Button onClick={this.onWizardClicked} hidden={!isLoadBank}>Add Load Bank Calibration</Button>
+                <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
+                <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
             </div>
         )

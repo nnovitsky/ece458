@@ -32,7 +32,6 @@ class App extends Component {
       logged_in: window.sessionStorage.getItem('token') ? true : false,
       user: {
         username: '',
-        admin: false,
         permissions_groups: [],
       },
       error_message: '',
@@ -50,7 +49,6 @@ class App extends Component {
             user: {
               ...this.state.user,
               username: result.data.username,
-              admin: hasAdminAccess(result.data.groups),
               permissions_groups: result.data.groups,
             }
           })
@@ -61,7 +59,6 @@ class App extends Component {
             user: {
               ...this.state.user,
               username: '',
-              admin: false,
               permissions_groups: [],
             }
           });
@@ -90,7 +87,6 @@ class App extends Component {
           user: {
             ...this.state.user,
             username: result.data.user.username,
-            admin: hasAdminAccess(result.data.user.groups),
             permissions_groups: result.data.user.groups,
           }
           
@@ -125,7 +121,6 @@ class App extends Component {
             user: {
               ...this.state.user,
               username: json.user.username,
-              admin: hasAdminAccess(json.user.groups),
               permissions_groups: json.user.groups,
             }
           });
@@ -143,7 +138,6 @@ class App extends Component {
       user: {
         ...this.state.user,
         username: '',
-        admin: false,
         permissions_groups: [],
       }
     });
@@ -187,16 +181,16 @@ class App extends Component {
   }
 
   render(
-
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
     const permissions = this.state.user.permissions_groups;
+    const isAdmin = hasAdminAccess(permissions);
     return (
       <Beforeunload onBeforeunload={this.clearOauthStorage}>
         <BrowserRouter>
           <div>
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.user.admin} user={this.state.user.username} />
+            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={isAdmin} user={this.state.user.username} />
             <Switch>
               {/* routes below require being logged in */}
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
@@ -206,8 +200,8 @@ class App extends Component {
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
-              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.user.admin} username={this.state.user.username} />)} exact />
-              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={this.state.user.admin} permissions={this.state.user.permissions_groups}/>)} exact />
+              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={isAdmin} username={this.state.user.username} />)} exact />
+              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups}/>)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
 

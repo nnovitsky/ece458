@@ -130,7 +130,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 headerClasses: 'at-picklist-column top',
                 formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                    let hiddenText = currentUser == row.username ? "Cannot edit self privileges" : "Cannot edit super admin privileges";
+                    let hiddenText = currentUser == row.username ? "Cannot edit own privileges" : "Cannot edit super admin privileges";
                     let returnContent = isHidden ? <span>{hiddenText}</span> : <div className="admin-filter-picklist"> <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/></div>
                 return returnContent;
                 },

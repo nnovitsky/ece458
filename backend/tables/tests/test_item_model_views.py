@@ -84,7 +84,7 @@ class ItemModelTests(TestCase):
 
     def test_model_num_by_vendor_auth(self):
         vendor = 'v1'
-        models = ItemModel.objects.filter(vendor=vendor)
+        models = ItemModel.objects.order_by(Lower("model_number")).filter(vendor=vendor)
         serializer = ItemModelByVendorSerializer(models, many=True)
         response = self.client.get(reverse('models_by_vendor', args=[vendor]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(serializer.data, response.data)

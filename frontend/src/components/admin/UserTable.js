@@ -119,6 +119,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 },
                 formatter: (cell, row) => {   //TODO change to oauth
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
+                    if(row.groups.includes(oauthGroup)) return <span>Oauth</span>
                     return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
                 headerClasses: 'at-delete-column',

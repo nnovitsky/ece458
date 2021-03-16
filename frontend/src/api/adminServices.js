@@ -125,7 +125,7 @@ export default class AdminServices {
 
 
     async togglePriviledges(user_pk, groups_array) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let data = {
             groups: groups_array,
@@ -175,7 +175,7 @@ export default class AdminServices {
 
 
     async getPriviledgeList() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: false,

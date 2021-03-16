@@ -288,8 +288,7 @@ class AdminPage extends React.Component {
                     username: result.data.username,
                 })
             } else {
-                this.emptyLocalStorage();
-                localStorage.removeItem('token');
+                window.sessionStorage.clear();
                 this.setState({
                     logged_in: false,
                     username: '',

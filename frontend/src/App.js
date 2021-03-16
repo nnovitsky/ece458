@@ -18,6 +18,7 @@ import OauthRoute from './components/OauthRoute';
 import GenericLoader from './components/generic/GenericLoader.js';
 import AuthServices from './api/authServices';
 import Configs from './api/config.js';
+import { hasModelEditAccess, hasInstrumentEditAccess, hasAdminAccess } from './components/generic/Util';
 
 //const URL = 'http://localhost:3000/'
 const URL = Configs + '/'
@@ -49,7 +50,7 @@ class App extends Component {
             user: {
               ...this.state.user,
               username: result.data.username,
-              admin: result.data.groups.includes("admin"),
+              admin: hasAdminAccess(result.data.groups),
               permissions_groups: result.data.groups,
             }
           })
@@ -89,7 +90,7 @@ class App extends Component {
           user: {
             ...this.state.user,
             username: result.data.user.username,
-            admin: result.data.user.groups.includes("admin"),
+            admin: hasAdminAccess(result.data.user.groups),
             permissions_groups: result.data.user.groups,
           }
           
@@ -124,7 +125,7 @@ class App extends Component {
             user: {
               ...this.state.user,
               username: json.user.username,
-              admin: json.user.groups.includes("admin"),
+              admin: hasAdminAccess(json.user.groups),
               permissions_groups: json.user.groups,
             }
           });
@@ -173,7 +174,16 @@ class App extends Component {
   // called with a page component that should only be displayed if the user is an admin
   // if not, they will be redirected to the user profile page
   adminPath = (adminComponent) => {
-    return this.state.user.admin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
+    const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
+    return isAdmin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
+  }
+
+  // only allows a user to this page if they have model and/or instrument permissions
+  // the page itself will only display content that they should be able to see (ie hide stuff they shouldnt)
+  categoryPagePath = (component) => {
+    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
+    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);
+    return (isModelAdmin || isInstrumentAdmin) ? component : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
   render(
@@ -197,7 +207,7 @@ class App extends Component {
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
               <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.user.admin} username={this.state.user.username} />)} exact />
-              <Route path="/categories" render={() => this.adminPath(<CategoriesPage is_admin={this.state.user.admin} />)} exact />
+              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={this.state.user.admin} permissions={this.state.user.permissions_groups}/>)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
 

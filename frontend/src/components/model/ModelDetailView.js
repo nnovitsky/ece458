@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
-import { CalibrationModeDisplayMap, rawErrorsToDisplayed } from '../generic/Util';
+import { CalibrationModeDisplayMap, rawErrorsToDisplayed, hasModelEditAccess } from '../generic/Util';
 import ErrorFile from '../../api/ErrorMapping/ModelErrors.json';
 import SerialTable from './SerialTable';
 import DetailView from '../generic/DetailView';
@@ -71,12 +71,13 @@ class ModelDetailView extends React.Component {
         await this.getInstruments();
     }
 
-    render(
-        adminButtons = <div>
-            <Button onClick={this.onEditClicked}>Edit Model</Button>
-            <Button onClick={this.onDeleteClicked} variant="danger">Delete Model</Button>
+    render() {
+        const isModelAdmin = hasModelEditAccess(this.props.permissions);
+        const headerButtons = <div>
+            <Button onClick={this.onEditClicked} hidden={!isModelAdmin}>Edit Model</Button>
+            <Button onClick={this.onDeleteClicked} hidden={!isModelAdmin} variant="danger">Delete Model</Button>
         </div>
-    ) {
+
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
 
@@ -92,7 +93,7 @@ class ModelDetailView extends React.Component {
 
                 <DetailView
                     title={`${this.state.model_info.vendor} ${this.state.model_info.model_number}`}
-                    headerButtons={this.props.is_admin ? adminButtons : null}
+                    headerButtons={headerButtons}
                     col5={this.makeDetailsTable()}
                     comments={comment}
                     bottomElement={this.makeSerialTable()}

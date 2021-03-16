@@ -22,7 +22,7 @@ class UserPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logged_in: localStorage.getItem('token') ? true : false,
+            logged_in: window.sessionStorage.getItem('token') ? true : false,
             userData: [],
             editUserPopup: {
                 isShown: false,
@@ -107,7 +107,7 @@ class UserPage extends React.Component {
         userServices.editUser(updatedUser.password, updatedUser.first_name, updatedUser.last_name, [])
             .then((res) => {
                 if (res.success) {
-                    localStorage.setItem('token', res.data.token)
+                    window.sessionStorage.setItem('token', res.data.token);
                     this.updateUserInfo();
                     this.onEditUserClosed();
                 } else {
@@ -154,7 +154,7 @@ class UserPage extends React.Component {
                     console.log("error");
                 }
                 else {
-                    localStorage.setItem('token', json.token);
+                    window.sessionStorage.setItem('token', json.token);
                     this.setState({
                         logged_in: true,
                     });

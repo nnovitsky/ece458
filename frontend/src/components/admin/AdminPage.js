@@ -23,7 +23,7 @@ class AdminPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logged_in: localStorage.getItem('token') ? true : false,
+            logged_in: window.sessionStorage.getItem('token') ? true : false,
             username: '',
             tableData: [],
             addUserPopup: {
@@ -288,8 +288,7 @@ class AdminPage extends React.Component {
                     username: result.data.username,
                 })
             } else {
-                this.emptyLocalStorage();
-                localStorage.removeItem('token');
+                window.sessionStorage.clear();
                 this.setState({
                     logged_in: false,
                     username: '',

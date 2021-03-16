@@ -305,6 +305,7 @@ class InstrumentDetailView extends Component {
                 instrument_pk={this.state.instrument_info.pk}
                 asset_tag={this.state.instrument_info.asset_tag}
                 lb_pk={this.state.wizardPopup.lbPK}
+                username={this.props.username}
             />
         )
     }

@@ -2,6 +2,9 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
 import '../generic/ColumnSizeFormatting.css';
+import PrivilegePicklist from '../generic/picklist/PrivilegePicklist.js';
+import './Admin.css'
+import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
 
 // props
 // data: json data object to be displayed
@@ -23,35 +26,53 @@ const overallAdminUsername = 'admin'
 const adminGroup = 'admin'
 const oauthGroup = 'oauth'
 
+const privilegesDisplayMap = {
+    "admin": "Admin",
+    "oauth": "Oauth",
+}
+
+const options = [{
+    value: 'admin',
+    label: 'Admin'
+  }, {
+    value: 'oauth',
+    label: 'Oauth'
+  }]
+
 const userTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.deleteUser, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser);
+    let config = makeConfig(countStart, props.deleteUser, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser, props.onChangePrivileges);
     return (
-        <DataTable
-            data={props.data}
-            onTableChange={props.onTableChange}
-            pagination={props.pagination}
-            keyField={keyField}
-            config={config}
-            noResults='No Users'
-            inlineElements={props.inlineElements}
-        />
-
+        <div>
+            <DataTable
+                data={props.data}
+                onTableChange={props.onTableChange}
+                pagination={props.pagination}
+                keyField={keyField}
+                config={config}
+                noResults='No Users'
+                inlineElements={props.inlineElements}
+                rowClasses="tall-rows"
+            />
+            </div>
 
     )
 }
 
-let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPriviledges, currentUser) => {
+let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPriviledges, currentUser, onChangePrivileges) => {
     return (
         [
             // this is a column for a number for the table
             {
-                
+
                 dataField: '#', //json data key for this column
                 text: '#',      //displayed column header text
                 formatter: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                     let rowNumber = (countStart + rowIndex);
                     return <span>{rowNumber}</span>;
+                },
+                editable: () => {
+                    return false;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
                 headerClasses: 'num-column'     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
@@ -61,15 +82,21 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 dataField: 'username',
                 text: 'Username',
                 sort: false,
+                editable: () => {
+                    return false;
+                },
                 title: (cell) => `Username: ${cell}`,   //text displayed when hovering over a cell
-                headerClasses: 'username-column'
+                headerClasses: 'at-username-column'
             },
             {
                 dataField: 'a', //no field for just name but overwriting the display so it's ok
                 text: 'Name',
                 sort: false,
+                editable: () => {
+                    return false;
+                },
                 title: (cell, row) => `Name: ${row.first_name} ${row.last_name}`,
-                headerClasses: 'name-column',
+                headerClasses: 'at-name-column',
                 formatter: (user, row) => {
                     return <span>{`${row.first_name} ${row.last_name}`}</span>
                 }
@@ -78,40 +105,36 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 dataField: 'email',
                 text: 'Email',
                 sort: false,
+                editable: () => {
+                    return false;
+                },
                 title: (cell) => `Email: ${cell}`,
-                headerClasses: 'email-column',
+                headerClasses: 'at-email-column',
             },
             {
                 dataField: 'delete',
                 text: 'Delete User',
+                editable: () => {
+                    return false;
+                },
                 formatter: (cell, row) => {   //TODO change to oauth
                     let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
+                    if(row.groups.includes(oauthGroup)) return <span>Oauth</span>
                     return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
                 },
+                headerClasses: 'at-delete-column',
             },
-            {
-                dataField: 'Priviledges',
-                text: 'Administrator Priviledges',
-                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+             {
+                dataField: 'Picklist',
+                text: 'Privileges',
+                headerClasses: 'at-picklist-column top',
+                formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
-                    let revokeButton = <Button onClick={revokeAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Revoke</Button>
-                    let giveButton = <Button onClick={giveAdminPriviledges} value={row.pk} hidden={isHidden} className="data-table-button">Grant</Button>
-                    return <div>{ row.groups.includes(adminGroup) ? revokeButton : giveButton}</div>;
+                    let hiddenText = currentUser == row.username ? "Cannot edit self privileges" : "Cannot edit super admin privileges";
+                    let returnContent = isHidden ? <span>{hiddenText}</span> : <div className="admin-filter-picklist"> <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/></div>
+                return returnContent;
                 },
-            },
-            // this could be helpful for adding a column that has a button link for deleting users, feel free to use or delete
-            // {
-            //     dataField: '#',  //can put a nonexistent field if it's not directly displaying the data
-            //     text: 'More',
-            //     sort: false,
-            //     headerClasses: 'more-column',
-            //     title: (cell) => 'Go to instrument detail view',
-            //     formatter: (pk) => {
-            //         return (
-            //             <Button onClick={onMoreClicked} value={pk} className="data-table-button">More</Button>
-            //         )
-            //     }
-            // },
+            }, 
         ]
     )
 };

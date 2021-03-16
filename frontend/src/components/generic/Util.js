@@ -46,11 +46,6 @@ const nameAndDownloadFile = (blobURL, name) => {
     URL.revokeObjectURL(blobURL);
 }
 
-// maps the calibration modes to a frontend display name
-export const CalibrationModeDisplayMap = {
-    "load_bank": "Load Bank"
-};
-
 // returns true if the user's permission covers performing calibrations
 const hasCalibrationAccess = (permissionGroups) => {
     return (permissionGroups.includes('admin') || permissionGroups.includes('calibrations'));
@@ -70,6 +65,18 @@ const hasInstrumentEditAccess = (permissionGroups) => {
 const hasAdminAccess = (permissionGroups) => {
     return permissionGroups.includes('admin');
 }
+
+// maps the calibration modes to a frontend display name
+export const CalibrationModeDisplayMap = {
+    "load_bank": "Load Bank"
+};
+
+export const PrivilegesDisplayMap = {
+    "admin": "Admin",
+    "models": "Model",
+    "instruments": "Instrument",
+    "calibrations": "Calibration",
+};
 
 
 export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile };

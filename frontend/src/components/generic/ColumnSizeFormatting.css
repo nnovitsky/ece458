@@ -193,5 +193,19 @@ takes the leftover
 } */
 
 
-
+.at-name-column{
+    width: 15%
+}
+.at-username-column{
+    width: 15%
+}
+.at-email-column{
+    width: 18%
+}
+.at-picklist-column{
+    width: 30%
+}
+.at-delete-column{
+    width: 9%
+}
 

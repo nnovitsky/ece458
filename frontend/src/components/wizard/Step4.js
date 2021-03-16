@@ -60,8 +60,8 @@ class Step4 extends React.Component {
                 Instructions:
                     <ol>
                     <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
-                    <b><li>If the row appears green after inputting both values, your inputs were acceptable callibration values and you should continue entering values</li></b>
-                    <li>If your inputs were not acceptable, read the error message to change your calibration</li>
+                    <b><li>If the row appears green after inputting both values, your inputs were acceptable callibration values and you can continue entering values</li></b>
+                    <li>If your inputs were not acceptable, the row will appear red and you should read the error message to change your calibration</li>
                     <li>Click continue once you have entered and validated all inputs</li>
                 </ol>
                 <p>

@@ -77,9 +77,7 @@ class ItemModelTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_get_vendor_list_auth(self):
-        vendors = set()
-        for item_model in ItemModel.objects.order_by(Lower("vendor")):
-            vendors.add(item_model.vendor)
+        vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True).distinct()
         response = self.client.get(reverse('vendor_list'), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(response.data['vendors'], list(vendors))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

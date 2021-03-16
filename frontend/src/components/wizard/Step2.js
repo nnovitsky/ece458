@@ -48,10 +48,9 @@ class Step2 extends React.Component {
     makeBody() {
         return <div>
             <Form className="wizard" style={{textAlign: "center"}}>
-                <h2>Perform Visual Inspection of Resistors</h2>
+                <h5 style={{textAlign: "left"}} >Check when completed:</h5>
                 <br></br>
-                <h4>Check Box When Completed</h4>
-                <Form.Check onChange={this.toggleCheck} checked={this.state.checked}></Form.Check>
+                <Form.Check id="visual_inspection_check" label="Perform Visual Inspection of Resistors" type="checkbox" onChange={this.toggleCheck} checked={this.state.checked}></Form.Check>
             </Form>
 
         </div>

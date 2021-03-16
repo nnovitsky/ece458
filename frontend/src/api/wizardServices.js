@@ -5,7 +5,7 @@ export default class WizardServices {
     constructor() { }
 
     async getModelAssetTagByPK(model_pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: false,
@@ -49,7 +49,7 @@ export default class WizardServices {
     }
 
     async createLoadbankCalEvent(instrument_pk, date, cal_event_pk, comment) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let data = {
             instrument: instrument_pk,
             date: date,
@@ -108,7 +108,7 @@ export default class WizardServices {
     }
 
     async cancelLoadbankCalEvent(loadCalNum) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: false,
@@ -137,7 +137,7 @@ export default class WizardServices {
     }
 
     async addCurrentReading(load_level, cr, ca, ideal, index, lb_cal_num) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let data = {
             load: load_level,
             cr: cr,
@@ -220,7 +220,7 @@ export default class WizardServices {
 
 
     async addVoltageReading(vr, va, test_voltage, lb_cal_num) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let data = {
             vr: vr,
             va: va,
@@ -276,7 +276,7 @@ export default class WizardServices {
 
 
     async getTestVoltage() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let result = {
             success: false,
             data: [],
@@ -320,7 +320,7 @@ export default class WizardServices {
 
 
     async updateLBCal(key, value, lb_cal_num) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let result = {
             success: false,
             data: [],
@@ -396,7 +396,7 @@ export default class WizardServices {
 
 
     async getLoadLevelSet(lb_cal_num, index) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let result = {
             success: false,
             data: [],
@@ -440,7 +440,7 @@ export default class WizardServices {
     }
 
     async getDetails(lb_cal_num) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let result = {
             success: false,
             data: [],

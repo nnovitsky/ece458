@@ -11,6 +11,10 @@ form.wizard {
     align-content: left;
 }
 
+form.wizard .form-check-label{
+    font-size: min(2vw, 30px);
+}
+
 .format-width-load-level {
     width: min(20vw, 300px) !important;
     font-size: min(1.4vw, 20px);
@@ -26,6 +30,10 @@ form.wizard {
 }
 
 .notValidated{
+    background-color: rgba(255, 125, 125, 0.418)
+}
+
+.blank{
     background-color: whitesmoke
 }
 

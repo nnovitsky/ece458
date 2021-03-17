@@ -11,11 +11,18 @@
     height: 100%;
 }
 
+.check-div{
+    margin-top: 5px;
+    margin-bottom: -10px;
+}
 
 .tall-rows {
     height: 80px;
 }
 
+.spacing{
+    margin-left: 30px
+}
 .top{
     position: relative;
     z-index: 3;

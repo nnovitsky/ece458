@@ -192,7 +192,9 @@ takes up the rest of the space
 takes the leftover
 } */
 
-
+.at-num-column{
+    width: 5%
+}
 .at-name-column{
     width: 15%
 }

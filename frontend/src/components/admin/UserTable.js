@@ -3,8 +3,8 @@ import DataTable from '../generic/DataTable';
 import Button from 'react-bootstrap/Button';
 import '../generic/ColumnSizeFormatting.css';
 import PrivilegePicklist from '../generic/picklist/PrivilegePicklist.js';
-import './Admin.css'
-import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
+import './Admin.css';
+import PrivilegeChecks from './PrivilegeChecks.js';
 
 // props
 // data: json data object to be displayed
@@ -41,7 +41,7 @@ const options = [{
 
 const userTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.deleteUser, props.giveAdminPriviledges, props.revokeAdminPriviledges, props.currentUser, props.onChangePrivileges);
+    let config = makeConfig(countStart, props.deleteUser, props.currentUser, props.onChangePrivileges);
     return (
         <div>
             <DataTable
@@ -59,7 +59,7 @@ const userTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPriviledges, currentUser, onChangePrivileges) => {
+let makeConfig = (countStart, deleteUser, currentUser, onChangePrivileges) => {
     return (
         [
             // this is a column for a number for the table
@@ -71,30 +71,21 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                     let rowNumber = (countStart + rowIndex);
                     return <span>{rowNumber}</span>;
                 },
-                editable: () => {
-                    return false;
-                },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'num-column'     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
+                headerClasses: 'at-num-column'     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
             },
             {
                 isKey: true,    //one column needs to be the keyfield, this has to be unique or the table has errors
                 dataField: 'username',
                 text: 'Username',
                 sort: false,
-                editable: () => {
-                    return false;
-                },
                 title: (cell) => `Username: ${cell}`,   //text displayed when hovering over a cell
-                headerClasses: 'at-username-column'
+                headerClasses: 'at-username-column',
             },
             {
                 dataField: 'a', //no field for just name but overwriting the display so it's ok
                 text: 'Name',
                 sort: false,
-                editable: () => {
-                    return false;
-                },
                 title: (cell, row) => `Name: ${row.first_name} ${row.last_name}`,
                 headerClasses: 'at-name-column',
                 formatter: (user, row) => {
@@ -105,22 +96,20 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 dataField: 'email',
                 text: 'Email',
                 sort: false,
-                editable: () => {
-                    return false;
-                },
                 title: (cell) => `Email: ${cell}`,
                 headerClasses: 'at-email-column',
             },
             {
                 dataField: 'delete',
                 text: 'Delete User',
-                editable: () => {
-                    return false;
+                title: (cell, row) => {
+                    if(currentUser == row.username) return "Cannot delete own profile";
+                    if(row.groups.includes(oauthGroup)) return "Cannot delete OAuth user";
+                    if(row.username === overallAdminUsername) return "Cannot delete super admin";
                 },
                 formatter: (cell, row) => {   //TODO change to oauth
-                    let isHidden = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
-                    if(row.groups.includes(oauthGroup)) return <span>Oauth</span>
-                    return <Button onClick={deleteUser} value={row.pk} name={row.username} hidden={isHidden} className="data-table-button red">Delete</Button>;
+                    let isDisabled = (currentUser == row.username || row.groups.includes(oauthGroup) || row.username === overallAdminUsername)
+                    return <Button onClick={deleteUser} value={row.pk} name={row.username} disabled={isDisabled} className="data-table-button red">Delete</Button>;
                 },
                 headerClasses: 'at-delete-column',
             },
@@ -131,7 +120,7 @@ let makeConfig = (countStart, deleteUser, giveAdminPriviledges, revokeAdminPrivi
                 formatter: (cell, row, rowIndex) => {   //formats the data and the returned is displayed in the cell
                     let isHidden = (currentUser == row.username || row.username === overallAdminUsername)
                     let hiddenText = currentUser == row.username ? "Cannot edit own privileges" : "Cannot edit super admin privileges";
-                    let returnContent = isHidden ? <span>{hiddenText}</span> : <div className="admin-filter-picklist"> <PrivilegePicklist selectedPrivileges={row.groups} pk={row.pk} onChange={onChangePrivileges}/></div>
+                    let returnContent = isHidden ? <span style={{color: "#a5a8aa"}}>{hiddenText}</span> : <PrivilegeChecks groups={row.groups} pk={row.pk} onChange={onChangePrivileges}></PrivilegeChecks>
                 return returnContent;
                 },
             }, 

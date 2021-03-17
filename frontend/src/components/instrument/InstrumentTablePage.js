@@ -39,6 +39,10 @@ class InstrumentTablePage extends Component {
                 isShown: false,
                 errors: []
             },
+            barcodes: {
+                isSelecting: false,
+                selected: new Set(),
+            },
             isLoading: false,
         }
 
@@ -54,6 +58,7 @@ class InstrumentTablePage extends Component {
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
+        this.onBarcodeSelect = this.onBarcodeSelect.bind(this);
 
 
     }
@@ -106,6 +111,7 @@ class InstrumentTablePage extends Component {
                 <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
                 <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
+                <Button onClick={this.onBarcodeSelect}>Download Barcodes</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         )
@@ -131,10 +137,10 @@ class InstrumentTablePage extends Component {
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
-                                onMoreClicked={this.onDetailViewRequested}
                                 inlineElements={buttonRow}
+                                isSelecting={this.state.barcodes.isSelecting}
                             />
-                            <hr />
+                            <hr />``
                         </div>
 
                     </div>
@@ -216,6 +222,15 @@ class InstrumentTablePage extends Component {
         instrumentSearchParams.showAll = this.state.instrumentSearchParams.showAll;
 
         window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
+    }
+
+    onBarcodeSelect() {
+        this.setState({
+            barcodes: {
+                ...this.state.barcodes,
+                isSelecting: true,
+            }
+        })
     }
 
     onCategoriesClicked() {

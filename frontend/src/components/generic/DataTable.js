@@ -36,8 +36,25 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 
 // inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 
+// extraTableParams: optional, create an object of parameter to value and this will be added to the table
+//      example below: selectRow is a parameter to the bootstrap table, this is passed in and works
+        // {
+        //     selectRow: {
+        //         mode: 'checkbox',
+        //         clickToSelect: true, mode: 'checkbox',
+        //         clickToSelect: true,
+        //     }
+        // }
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
+    // let temp = {};
+    // console.log(...temp);
+    let addiitionalProps = null;
+    // if(props.selectRow) {
+    //     addiitionalProps = {selectRow: props.selectRow}
+    // }
+    console.log(props.selectRow);
+    
     return (
         <div className="data-table">
             <span>(Hover over a cell for more information)</span>
@@ -51,21 +68,21 @@ const NewModelTable = (props) => {
                         paginationTableProps
                     },
                         totalAndShowAll = (
-                        <div className="pagination-top-row">
-                            {props.inlineElements}
+                            <div className="pagination-top-row">
+                                {props.inlineElements}
                                 {(props.pagination.totalSize === 0) ? null : (
-                                <>
-                                    <SizePerPageDropdownStandalone
-                                        {...paginationProps}
+                                    <>
+                                        <SizePerPageDropdownStandalone
+                                            {...paginationProps}
 
-                                    />
-                                    <PaginationTotalStandalone
-                                        {...paginationProps}
-                                    />
-                                </>)}
-                            
+                                        />
+                                        <PaginationTotalStandalone
+                                            {...paginationProps}
+                                        />
+                                    </>)}
 
-                        </div>),
+
+                            </div>),
                         paginationPages = (props.pagination.totalSize === 0) ? null : (<div className="" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
                             <PaginationListStandalone
                                 {...paginationProps}
@@ -88,8 +105,8 @@ const NewModelTable = (props) => {
                                 bodyClasses='data-table'
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
-                                cellEdit={props.cellEdit}
                                 rowClasses={props.rowClasses}
+                                {...props.selectRow}
                             />
                             {paginationPages}
                         </div>
@@ -109,7 +126,7 @@ const noResults = (text) => {
 }
 
 const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
-    const lastPage = Math.ceil(totalSize/sizePerPage);
+    const lastPage = Math.ceil(totalSize / sizePerPage);
     return ({
         custom: true,
         page: page,
@@ -177,4 +194,6 @@ NewModelTable.defaultProps = {
     inlineElements: <></>,
     cellEdit: false,
     rowClasses: '',
+    selectRow: false,
+    extraTableParams: {},
 }

@@ -24,13 +24,21 @@ import { Link } from 'react-router-dom';
 // }
 
 // onCertificateRequested: handler for when a calibration certificate is requested
-// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 // inlineElements: elements to be inline withe pagination components on the top of the screen
+// isSelecting: optional that defaults to false, boolean if row selection is happening
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
+    let config = makeConfig(countStart, props.onCertificateRequested, );
+    const selectRow = {
+        mode: 'checkbox',
+        clickToSelect: true,
+        selected: [6126],
+        onSelect: handleSelect,
+        onSelectAll: handleOnSelectAll
+    };
+    const selectParam = props.isSelecting ? {selectRow: selectRow} : null;
     return (
         <DataTable
             data={props.data}
@@ -40,10 +48,19 @@ const instrumentTable = (props) => {
             config={config}
             noResults='No Instrument Results'
             inlineElements={props.inlineElements}
+            selectRow={selectRow}
         />
 
 
     )
+}
+
+const handleSelect = (row, isSelect) => {
+    console.log(row);
+}
+
+const handleOnSelectAll = (isSelect, rows) => {
+    console.log(`Rows: ${rows}`)
 }
 
 const getLatestCalText = (data) => {
@@ -249,29 +266,6 @@ const getLatestCalText = (data) => {
                     },
                     headerClasses: 'it-calibration-expiration-column',
                 },
-                // {
-                //     dataField: 'icon',
-                //     text: 'Stat',
-                //     sort: false,
-                //     title: (cell, row) => { return (getCalStatusIcon(row).text) },
-                //     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
-                //         let result = getCalStatusIcon(row);
-                //         return <img src={result.icon} alt={result.text} className='calibration-status-icon' />;
-                //     },
-                //     headerClasses: 'it-status-column',
-                // },
-                // {
-                //     dataField: 'b',
-                //     text: 'Calibration Certificate',
-                //     sort: false,
-                //     headerClasses: 'it-calibration-certificate-column',
-                //     title: (cell) => 'Download Instrument Calibration Certificate',
-                //     formatter: (cell, row) => {
-                //         return (
-                //             <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>Download</Button>
-                //         )
-                //     }
-                // }
             ]
         )
     }
@@ -281,4 +275,5 @@ const getLatestCalText = (data) => {
 
     instrumentTable.defaultProps = {
         data: [],
+        isSelecting: false,
     }

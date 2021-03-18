@@ -33,7 +33,7 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
 const nameAndDownloadFile = (blobURL, name) => {
     const link = document.createElement("a");
     link.href = blobURL
-    link.download = name;
+    link.download = name+'.csv';
     document.body.appendChild(link);
     link.dispatchEvent(
         new MouseEvent('click', {
@@ -68,7 +68,8 @@ const hasAdminAccess = (permissionGroups) => {
 
 // maps the calibration modes to a frontend display name
 export const CalibrationModeDisplayMap = {
-    "load_bank": "Load Bank"
+    "load_bank": "Load Bank",
+    "klufe_k5700": "Guided Hardware Calibration"
 };
 
 export const PrivilegesDisplayMap = {

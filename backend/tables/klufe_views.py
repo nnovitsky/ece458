@@ -15,20 +15,75 @@ from backend.tables.utils import *
 from backend.tables.filters import *
 
 
-
 @api_view(['GET', 'PUT'])
 def start_klufe(request):
+    """
+    GET: connect to SSH and provide login credentials.
+    PUT: create Klufe 5700 calibration event; return primary key of created event.
+    """
     if request.method == 'GET':
-        # connect to ssh via terminal
 
+        return False
     elif request.method == 'PUT':
-        # create klufe cal_event, return pk
+
+        return False
 
 
 @api_view(['GET', 'PUT'])
 def klufe_cal_detail(request, pk):
+    """
+    GET: get calibration summary.
+    PUT: edit existing calibration event.
+    """
     if request.method == 'GET':
-        # get calibration fields/summary
+
+        return False
 
     elif request.method == 'PUT':
-        # edit existing event
+
+        return False
+
+
+@api_view(['PUT'])
+def turn_source_on(request):
+    """
+    Sets the Klufe K5700 calibrator to ON.
+    """
+
+    return False
+
+
+@api_view(['PUT'])
+def turn_source_off(request):
+    """
+    Sets the Klufe K5700 calibrator to OFF.
+    """
+
+    return False
+
+
+@api_view(['PUT'])
+def set_source(request):
+    """
+    Sets the Klufe K5700 calibrator to the desired DC or AV voltage.
+    """
+
+    return False
+
+
+@api_view(['PUT'])
+def save_calibration(request):
+    """
+    Validate and safe the current calibration.
+    """
+
+    return False
+
+
+@api_view(['PUT'])
+def disconnect_source(request):
+    """
+    Disconnect from Klufe K5700 calibrator via SSH.
+    """
+
+    return False

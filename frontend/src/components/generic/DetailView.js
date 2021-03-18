@@ -1,6 +1,5 @@
 import React from 'react';
 import './DetailView.css';
-import logo from '../../assets/HPT_logo_crop.png';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';

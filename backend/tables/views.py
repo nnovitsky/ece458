@@ -505,6 +505,7 @@ def current_user(request):
             return Response(
                 {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
+        if 'groups' in request.data: request.data.pop('groups')
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
         if 'password' in request.data:

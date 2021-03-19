@@ -32,13 +32,12 @@ const instrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onCertificateRequested, );
     const selectRow = {
-        mode: 'checkbox',
-        clickToSelect: true,
         selected: [6126],
         onSelect: handleSelect,
-        onSelectAll: handleOnSelectAll
+        onSelectAll: handleOnSelectAll,
+        isHidden: !props.isSelecting,
     };
-    const selectParam = props.isSelecting ? {selectRow: selectRow} : null;
+
     return (
         <DataTable
             data={props.data}

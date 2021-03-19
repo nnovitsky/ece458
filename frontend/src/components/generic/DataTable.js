@@ -36,25 +36,32 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 
 // inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 
-// extraTableParams: optional, create an object of parameter to value and this will be added to the table
-//      example below: selectRow is a parameter to the bootstrap table, this is passed in and works
-        // {
-        //     selectRow: {
-        //         mode: 'checkbox',
-        //         clickToSelect: true, mode: 'checkbox',
-        //         clickToSelect: true,
-        //     }
-        // }
+// this is optional, but if select row is to be enabled, every props must be filled out
+// selectRow: {
+//     isHidden  //boolean set to true if the select column should be hidden
+//     onSelect    // handler that will be called on a row being selected
+//     onSelectAll //handler that will be called on select all being clicked
+//     selected    //an array of keys (the field that is set to be the key for the table) of selected rows
+// }
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
-    // let temp = {};
-    // console.log(...temp);
-    let addiitionalProps = null;
-    // if(props.selectRow) {
-    //     addiitionalProps = {selectRow: props.selectRow}
-    // }
-    console.log(props.selectRow);
-    
+    let selectRowProps = props.selectRow ? {
+        mode: 'checkbox',
+        clickToSelect: true,
+        selected: props.selectRow.selected,
+        onSelect: props.selectRow.onSelect,
+        onSelectAll: props.selectRow.onSelectAll,
+        hideSelectColumn: props.selectRow.isHidden,
+        selectColumnStyle: {
+            width: "5px",
+        },
+        classes: "selection-row",
+    } : {
+        mode: 'checkbox',
+        clickToSelect: false,
+        hideSelectColumn: true,
+    };
+
     return (
         <div className="data-table">
             <span>(Hover over a cell for more information)</span>
@@ -106,7 +113,7 @@ const NewModelTable = (props) => {
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
                                 rowClasses={props.rowClasses}
-                                {...props.selectRow}
+                                selectRow={selectRowProps}
                             />
                             {paginationPages}
                         </div>

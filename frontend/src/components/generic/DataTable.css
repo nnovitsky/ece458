@@ -82,3 +82,14 @@
 .data-table-no-results {
     padding: 50px;
 }
+
+/* used to format the cell for the select row checkbox */
+.selection-cell input {
+    margin: auto !important;
+    width: 100%;
+}
+
+.selection-cell-header input {
+        margin: auto !important;
+    width: 100%;
+}

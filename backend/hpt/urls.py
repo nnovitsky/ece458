@@ -18,6 +18,7 @@ from django.urls import path
 from backend.tables import views
 from backend.tables import api_views
 from backend.tables import loadbank_views
+from backend.tables import klufe_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
@@ -66,5 +67,12 @@ urlpatterns = [
     path('api/lb_cal_event_details/<int:lb_cal_pk>/', loadbank_views.lb_cal_details),
     path('api/calibration_modes/', views.get_calibration_modes),
     path('api/cal_download/<int:cal_pk>/', views.CalibrationArtifact.as_view()),
-
+    path('api/start_klufe_cal/', klufe_views.start_klufe),
+    path('api/klufe_detail/<int:cal_pk>/', klufe_views.klufe_cal_detail),
+    path('api/klufe_on/', klufe_views.turn_source_on),
+    path('api/klufe_off/', klufe_views.turn_source_off),
+    path('api/klufe_off/', klufe_views.turn_source_off),
+    path('api/set_klufe/', klufe_views.set_source),
+    path('api/save_klufe/<int:cal_pk>/', klufe_views.save_calibration),
+    path('api/disconnect_klufe/', klufe_views.disconnect_source),
 ]

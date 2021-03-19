@@ -72,7 +72,7 @@ def set_source(request):
 
 
 @api_view(['PUT'])
-def save_calibration(request):
+def save_calibration(request, pk):
     """
     Validate and safe the current calibration.
     """

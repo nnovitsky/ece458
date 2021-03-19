@@ -1,0 +1,33 @@
+form.guidedCal {
+    text-align: left;
+    align-content: left;
+}
+
+
+form.guidedCal .form-control{
+    width: min(12vw, 215px);
+    font-size: min(1.4vw, 20px);
+    text-align: left;
+    align-content: left;
+}
+
+form.guidedCal .form-label{
+    font-size: min(1.4vw, 20px);
+    text-align: left;
+    align-content: left;
+}
+
+form.guidedCal .form-check-label{
+    font-size: min(1.4vw, 30px);
+    text-align: left;
+    align-content: left;
+}
+
+.fluke-display{
+    background-color: #d6d6d6;
+    font-size: min(1.4vw, 20px);
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 50px;
+    margin-top: 10px;
+}

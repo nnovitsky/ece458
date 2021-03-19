@@ -484,6 +484,9 @@ def toggle_groups(request, user_pk):
         return Response({"description": ["User does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
     groups = set(request.data['groups'])
+    if other_user.username == ADMIN_USERNAME and "admin" not in groups:
+        return Response({"description": ["Cannot remove permissions of superadmin."]}, status=status.HTTP_400_BAD_REQUEST)
+
     groups = edit_user_groups(groups, other_user)
     if groups == 'ERROR':
         return Response({"description": ["Invalid group name."]}, status=status.HTTP_400_BAD_REQUEST)
@@ -505,6 +508,7 @@ def current_user(request):
             return Response(
                 {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
+        if 'groups' in request.data: request.data.pop('groups')
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
         if 'password' in request.data:

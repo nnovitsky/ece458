@@ -113,7 +113,7 @@ class InstrumentTablePage extends Component {
                 <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
                 <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
-                <Button onClick={this.onBarcodeSelect}>Select Instruments</Button>
+                <Button onClick={this.onBarcodeSelect}>Download Barcodes</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         );
@@ -141,7 +141,7 @@ class InstrumentTablePage extends Component {
                             />
                         </div>
                         <div className="col-10">
-                            <h1>Instrument Table</h1>
+                            <h1>{this.state.barcodes.isSelecting ? 'Instruments Barcode Download' : 'Instrument Table'}</h1>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
@@ -382,6 +382,9 @@ class InstrumentTablePage extends Component {
     }
 
     async exportInstruments(isAll) {
+        this.setState({
+            isLoading: true,
+        })
         let instrumentSearchParams = JSON.parse(window.sessionStorage.getItem("instrumentPageSearchParams"));
         let filters = instrumentSearchParams.filters;
         instrumentServices.exportInstruments(filters, isAll).then(
@@ -390,6 +393,9 @@ class InstrumentTablePage extends Component {
                     let date = dateToString(new Date());
                     nameAndDownloadFile(result.url, `${date}-instrument-export`);
                 }
+                this.setState({
+                    isLoading: false,
+                })
             }
         )
     }

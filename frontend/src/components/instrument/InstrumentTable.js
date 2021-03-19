@@ -41,8 +41,7 @@ const instrumentTable = (props) => {
         onSelectAll: props.handleSelectAll,
         isHidden: !props.isSelecting,
     };
-    console.log(props.selected);
-
+    
     return (
         <DataTable
             data={props.data}

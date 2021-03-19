@@ -41,7 +41,7 @@ class InstrumentTablePage extends Component {
             },
             barcodes: {
                 isSelecting: false,
-                selected: new Set(),
+                selected: [],
             },
             isLoading: false,
         }
@@ -59,8 +59,10 @@ class InstrumentTablePage extends Component {
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
         this.onBarcodeSelect = this.onBarcodeSelect.bind(this);
-
-
+        this.onBarcodeCancel = this.onBarcodeCancel.bind(this);
+        this.onBarcodeDownload = this.onBarcodeDownload.bind(this);
+        this.onInstrumentSelect = this.onInstrumentSelect.bind(this);
+        this.onInstrumentSelectAll = this.onInstrumentSelectAll.bind(this);
     }
 
     initializeInstrumentSessionStorage() {
@@ -106,15 +108,23 @@ class InstrumentTablePage extends Component {
                 <Redirect push to={this.state.redirect} />
             )
         }
-        let buttonRow = (
+        const defaultButtonRow = (
             <div className="table-button-row">
                 <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
                 <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
-                <Button onClick={this.onBarcodeSelect}>Download Barcodes</Button>
+                <Button onClick={this.onBarcodeSelect}>Select Instruments</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
+        );
+        const assetTagButtonRow = (
+            <div className="table-button-row">
+                <Button onClick={this.onBarcodeCancel} variant="secondary">Cancel</Button>
+                <Button onClick={this.onBarcodeDownload} variant="primary" disabled={this.state.barcodes.selected.size === 0}>Download Barcodes</Button>
+            </div>
         )
+
+        const displayedButtonRow = this.state.barcodes.isSelecting ? assetTagButtonRow : defaultButtonRow;
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         return (
             <div>
@@ -137,8 +147,11 @@ class InstrumentTablePage extends Component {
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
-                                inlineElements={buttonRow}
+                                inlineElements={displayedButtonRow}
                                 isSelecting={this.state.barcodes.isSelecting}
+                                handleSelect={this.onInstrumentSelect}
+                                handleSelectAll={this.onInstrumentSelectAll}
+                                selected={this.state.barcodes.selected}
                             />
                             <hr />``
                         </div>
@@ -203,7 +216,7 @@ class InstrumentTablePage extends Component {
                         }
                     })
                 }
-                
+
             } else {
                 this.setState({
                     isLoading: false,
@@ -230,7 +243,57 @@ class InstrumentTablePage extends Component {
                 ...this.state.barcodes,
                 isSelecting: true,
             }
-        })
+        });
+    }
+
+    onBarcodeCancel() {
+        this.setState({
+            barcodes: {
+                ...this.state.barcodes,
+                isSelecting: false,
+            }
+        });
+    }
+
+    onBarcodeDownload() {
+
+    }
+
+    onInstrumentSelect(row, isSelect) {
+        if (isSelect) {
+            this.setState(() => ({
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: [...this.state.barcodes.selected, row.pk]
+                }
+            }));
+        } else {
+            this.setState(() => ({
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: this.state.barcodes.selected.filter(x => x !== row.pk)
+                }
+            }));
+        }
+    }
+
+    onInstrumentSelectAll(isSelect, rows) {
+        const ids = rows.map(r => r.pk);
+        if (isSelect) {
+            this.setState(() => ({
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: ids
+                }
+            }));
+        } else {
+            this.setState(() => ({
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: []
+                }
+            }));
+        }
     }
 
     onCategoriesClicked() {

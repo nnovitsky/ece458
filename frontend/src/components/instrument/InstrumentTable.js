@@ -26,17 +26,22 @@ import { Link } from 'react-router-dom';
 // onCertificateRequested: handler for when a calibration certificate is requested
 // inlineElements: elements to be inline withe pagination components on the top of the screen
 // isSelecting: optional that defaults to false, boolean if row selection is happening
+    //the following are required if isSelecting is true
+    //handleSelect: an event handler that will be called on a select/deselect
+    //handleSelectAll: an event handler that will be called on select/deselct all
+    //selected: an array of the keyfield values of all selected rows
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onCertificateRequested, );
     const selectRow = {
-        selected: [6126],
-        onSelect: handleSelect,
-        onSelectAll: handleOnSelectAll,
+        selected: props.selected,
+        onSelect: props.handleSelect,
+        onSelectAll: props.handleSelectAll,
         isHidden: !props.isSelecting,
     };
+    console.log(props.selected);
 
     return (
         <DataTable
@@ -275,4 +280,7 @@ const getLatestCalText = (data) => {
     instrumentTable.defaultProps = {
         data: [],
         isSelecting: false,
+        handleSelect: () => {},
+        handleSelectAll: () => {},
+        selected: [],
     }

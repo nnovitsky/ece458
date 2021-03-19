@@ -52,9 +52,6 @@ const NewModelTable = (props) => {
         onSelect: props.selectRow.onSelect,
         onSelectAll: props.selectRow.onSelectAll,
         hideSelectColumn: props.selectRow.isHidden,
-        selectColumnStyle: {
-            width: "5px",
-        },
         classes: "selection-row",
     } : {
         mode: 'checkbox',
@@ -149,8 +146,8 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         // prePageText: 'Back',
         // nextPageTitle: 'First page',
         // prePageTitle: 'Pre page',
-        firstPageText: '1...',
-        lastPageText: `...${lastPage}`,
+        firstPageText: '1 ...',
+        lastPageText: `... ${lastPage}`,
         paginationTotalRenderer: customTotal,
         showTotal: true,
         disablePageTitle: true,

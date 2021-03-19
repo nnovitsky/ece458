@@ -93,3 +93,7 @@
         margin: auto !important;
     width: 100%;
 }
+
+.selection-cell-header {
+    width: 25px !important;
+}

@@ -83,6 +83,11 @@
     padding: 50px;
 }
 
+/* applies to the entire data table row when its selected */
+.selection-row {
+    background-color: rgba(0,0,0,.15) !important;
+}
+
 /* used to format the cell for the select row checkbox */
 .selection-cell input {
     margin: auto !important;

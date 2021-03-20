@@ -53,7 +53,7 @@ class Step0 extends React.Component {
 
     makeBody() {
         return <div>
-            <Form style={{textAlign: "Left"}}>
+            <Form className="guidedCal" style={{textAlign: "Left"}}>
             <h3>Calibration Info</h3>
                 <p>Please select a date for this calibration event. <br></br>Next, click continue to begin the Guided Calibration.</p>
                 <Form.Group className="form-inline">

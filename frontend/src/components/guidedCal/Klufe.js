@@ -22,7 +22,7 @@ const klufe = (props) => {
                     <h7>Frequency: {props.freq}Hz</h7>
                 </div>
                 <div className="col">
-                    <h7>Output Voltage</h7>
+                    <h7>Output Voltage:</h7>
                     <h4>{props.voltage} V</h4>
                 </div>
             </div>

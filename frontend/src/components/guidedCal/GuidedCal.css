@@ -5,11 +5,28 @@ form.guidedCal {
 
 
 form.guidedCal .form-control{
-    width: min(12vw, 215px);
+    margin-left: 5px;
+    width: min(15vw, 215px);
     font-size: min(1.4vw, 20px);
     text-align: left;
     align-content: left;
 }
+
+form.guidedCal .btn{
+    margin-left: 5px;
+    width: min(15vw, 215px);
+    font-size: min(1.2vw, 18px);
+}
+
+form.guidedCal .form-check{
+    margin-left: 5px;
+    width: min(15vw, 215px);
+}
+
+form.guidedCal .disabled{
+    color: #a1a1a1;
+}
+
 
 form.guidedCal .form-label{
     font-size: min(1.4vw, 20px);
@@ -17,8 +34,15 @@ form.guidedCal .form-label{
     align-content: left;
 }
 
+
+form.guidedCal .form-label.subtext{
+    font-size: min(1vw, 16px);
+    text-align: left;
+    align-content: left;
+}
+
 form.guidedCal .form-check-label{
-    font-size: min(1.4vw, 30px);
+    font-size: min(1.2vw, 16px);
     text-align: left;
     align-content: left;
 }

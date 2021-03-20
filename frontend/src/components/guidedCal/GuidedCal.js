@@ -3,6 +3,8 @@ import DeletePopup from '../generic/GenericPopup';
 import Step0 from './Step0.js'
 import Step1 from './Step1.js'
 import Step2 from './Step2.js'
+import Step3 from './Step3.js'
+import Summary from './Summary.js'
 
 
 
@@ -52,9 +54,11 @@ class GuidedCal extends React.Component {
             case 2:
                 return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}/>
             case 3:
-                return <div>Step 3</div>
+                return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                        index={1}/>
             case 4:
-                return <div>Step 4</div>
+                return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>
             case 5:
                 return <div>Step 5</div>
             case 6:

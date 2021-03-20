@@ -72,12 +72,6 @@ class AdminPage extends React.Component {
             <div>
                 {deletePopup}
                 {addUserPopup}
-{/*                 <AddUserPopup
-                    isShown={this.state.addUserPopup.isShown}
-                    onSubmit={this.onAddUserSubmit}
-                    onClose={this.onAddUserClosed}
-                    errors={this.state.addUserPopup.errors}
-                /> */}
 
                 <div className="background">
                     <div className="row mainContent">

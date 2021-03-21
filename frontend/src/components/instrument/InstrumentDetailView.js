@@ -143,6 +143,7 @@ class InstrumentDetailView extends Component {
         const isCalibrationAdmin = hasCalibrationAccess(this.props.permissions);
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
+        const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>

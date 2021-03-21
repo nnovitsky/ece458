@@ -52,6 +52,7 @@ const userTable = (props) => {
                 config={config}
                 noResults='No Users'
                 inlineElements={props.inlineElements}
+                isHoverMessageDisplayed={false}
             />
             </div>
 

@@ -58,14 +58,6 @@ const instrumentTable = (props) => {
     )
 }
 
-const handleSelect = (row, isSelect) => {
-    console.log(row);
-}
-
-const handleOnSelectAll = (isSelect, rows) => {
-    console.log(`Rows: ${rows}`)
-}
-
 const getLatestCalText = (data) => {
     if (data.calibration_expiration === "Uncalibratable.") {
         return "Uncalibratable"
@@ -260,6 +252,8 @@ const getLatestCalText = (data) => {
                         let result = getCalStatusIcon(row);
                         if (cell === 'Instrument not calibrated.') {
                             display = 'No History';
+                        } else if(cell === 'Uncalibratable.') {
+                            display = 'Uncalibratable';
                         }
 
                         return <div style={{display: "flex"}}>

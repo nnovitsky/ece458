@@ -64,6 +64,7 @@ class AdminPage extends React.Component {
     render() {
         let buttonRow = (<div className="table-button-row">
             <Button onClick={this.onAddUserClicked}>Add New User</Button>
+            <span>(Hover over a cell for more information)</span>
         </div>)
 
         let deletePopup = (this.state.deletePopupIsShown) ? this.makeDeletePopup() : null;

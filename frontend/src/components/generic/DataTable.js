@@ -34,6 +34,7 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 
 //noResults: text to be displayed when no data is present
 
+// isHoverMessageDisplayed: optional text about hovering over a cell, defaults to true
 // inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 
 // this is optional, but if select row is to be enabled, every props must be filled out
@@ -59,9 +60,10 @@ const NewModelTable = (props) => {
         hideSelectColumn: true,
     };
 
+    const hoverMessage = props.isHoverMessageDisplayed ? (<span>(Hover over a cell for more information)</span>) : null;
     return (
         <div className="data-table">
-            <span>(Hover over a cell for more information)</span>
+            {hoverMessage}
 
             <PaginationProvider
                 pagination={paginationFactory(options)}
@@ -200,4 +202,5 @@ NewModelTable.defaultProps = {
     rowClasses: '',
     selectRow: false,
     extraTableParams: {},
+    isHoverMessageDisplayed: true,
 }

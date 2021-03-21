@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
-import Select from 'react-select/creatable';
 import ModelServices from '../../api/modelServices';
 import GenericPopup from '../generic/GenericPopup';
-import CalModePicklist from '../generic/picklist/CalModePicklist';
 import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
 import VendorPicklist from '../generic/picklist/VendorPicklist';
+import {CalibrationModeDisplayMap} from '../generic/Util';
 
 //props
 //'isShown' a boolean if the popup is visible
@@ -49,7 +48,7 @@ class AddModelPopup extends Component {
                     categories: props.currentModel.categories,
                     calibration_modes: props.currentModel.calibration_modes,
                 },
-                vendorsArr: null,
+                allCalModes: [],
             }
         } else {
             this.state = {
@@ -64,7 +63,7 @@ class AddModelPopup extends Component {
                     categories: [],
                     calibration_modes: [],
                 },
-                vendorsArr: null
+                allCalModes: [],
             }
         }
 
@@ -74,7 +73,19 @@ class AddModelPopup extends Component {
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onCalModeInput = this.onCalModeInput.bind(this);
         this.onClose = this.onClose.bind(this);
-        //this.getVendorsArr = this.getVendorsArr.bind(this);
+    }
+
+    async componentDidMount() {
+        await modelServices.getCalModes().then((result) => {
+            if(result.success) {
+                this.setState({
+                    allCalModes: result.data.modes,
+                })
+            } else {
+                console.log(`Failed to get the cal modes for the add/edit model popup`);
+                console.log(result.errors);
+            }
+        })
     }
 
     render() {
@@ -132,23 +143,65 @@ class AddModelPopup extends Component {
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
 
                 <Form.Label>Specialty Calibration Mode</Form.Label>
-                    <Form.Check id="load_bank_check" type="checkbox" label="Load Bank" onClick={this.onCalModeInput} checked={this.isLoadBank()} disabled={(this.state.newModel.calibration_frequency == 0) || (this.state.newModel.calibration_frequency === '')} />
-                <Form.Text muted>Must have a calibration frequency to be load bank calibratable</Form.Text>
+                {this.makeCheckboxes()}
+                <Form.Text muted>Must have a calibration frequency and only one mode may be selected</Form.Text>
                 <Form.Label>Model Categories</Form.Label>
                 {categoryPicklist}
             </Form>
         )
     }
 
-    isLoadBank() {
-        let result = false;
-        let isCalibratable = (this.state.newModel.calibration_frequency > 0) && (this.state.newModel.calibration_frequency != 0);
-        this.state.newModel.calibration_modes.forEach(el => {
-            if (el === "load_bank" && isCalibratable) {
-                result = true;
+    makeCheckboxes() {
+        const checkBoxes = [];
+        this.state.allCalModes.forEach((calMode) => {
+            const box = (
+                <Form.Check 
+                    id={calMode} 
+                    type="checkbox" 
+                    label={CalibrationModeDisplayMap[calMode]} 
+                    onClick={() => this.onCalModeInput(calMode)} 
+                    checked={this.isChecked(calMode)} 
+                    disabled={this.isDisabled(calMode)} />
+            );
+            checkBoxes.push(box);
+        });
+        return checkBoxes;
+    }
+
+    isChecked(calMode) {
+        const newModel = this.state.newModel;
+        if(newModel.calibration_modes.includes(null)) {
+            return false;
+        }
+    }
+
+    isDisabled(calMode) {
+        const newModel = this.state.newModel;
+        const calFrequency = newModel.calibration_frequency;
+
+        const isSelectedCalMode = newModel.calibration_modes.includes(calMode);
+        const isCalFreqValid = calFrequency > 0 && !isNaN(calFrequency);
+        const hasNoCalMode = newModel.calibration_modes.includes(null) || newModel.calibration_modes.length === 0;
+
+        if(isSelectedCalMode) {
+            return false;
+        }
+        if(!isCalFreqValid) {
+            return true;
+        }
+        return !hasNoCalMode ;
+    }
+
+    onCalModeInput(calMode) {
+        this.setState(prevState => {
+            const wasChecked = prevState.newModel.calibration_modes.includes(calMode);
+            return {
+                newModel: {
+                    ...this.state.newModel,
+                    calibration_modes: (!wasChecked ? [calMode] : [])
+                }
             }
         })
-        return result;
     }
 
     onVendorInput(e) {
@@ -165,18 +218,6 @@ class AddModelPopup extends Component {
             newModel: {
                 ...this.state.newModel,
                 categories: categoryList
-            }
-        })
-    }
-
-    onCalModeInput(e) {
-        this.setState(prevState => {
-            const wasChecked = prevState.newModel.calibration_modes.includes("load_bank");
-            return {
-            newModel: {
-                ...this.state.newModel,
-                calibration_modes: (!wasChecked ? ["load_bank"] : [])
-            }
             }
         })
     }
@@ -220,7 +261,6 @@ class AddModelPopup extends Component {
                 })
                 return
             case callibrationName:
-                console.log(`calibration frequency to ${val}`);
                 this.setState({
                     newModel: {
                         ...this.state.newModel,
@@ -270,7 +310,6 @@ class AddModelPopup extends Component {
                 calibration_modes: [],
 
             },
-            vendorsArr: null,
         })
         this.props.onClose();
     }

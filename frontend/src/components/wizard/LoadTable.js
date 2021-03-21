@@ -30,28 +30,28 @@ const loadTable = (props) => {
                         autoSelectText: true,
                         blurToSave: true,
                         beforeSaveCell: (oldValue, newValue, row, column) => { 
-                            if(column.dataField == "ca")
+                            if(newValue !== '')
                             {
-                                row.ca = newValue
+                                if(column.dataField == "ca")
+                                {
+                                    row.ca = newValue
+                                }
+                                if(column.dataField == "cr")
+                                {
+                                    row.cr = newValue
+                                }
+                                if(row.validate || row.cr_ok && row.ca_ok)
+                                {
+                                    props.updateValidated(-1)
+                                    row.validate = false
+                                }
+                                if(typeof(row.cr_error) !== 'undefined') row.cr_error = null;
+                                if(typeof(row.ca_error) !== 'undefined') row.ca_error = null;
+                                if(typeof(row.cr_ok) !== 'undefined') row.cr_ok = false;
+                                if(typeof(row.ca_ok) !== 'undefined') row.ca_ok = false;
                             }
-                            if(column.dataField == "cr")
-                            {
-                                row.cr = newValue
-                            }
-                            let invalidated = false;
-                            if(row.validate || row.cr_ok && row.ca_ok)
-                            {
-                                props.updateValidated(-1)
-                                row.validate = false
-                                invalidated = true
-                            }
-                            console.log(row)
-                            if(typeof(row.cr_error) !== 'undefined') row.cr_error = null;
-                            if(typeof(row.ca_error) !== 'undefined') row.ca_error = null;
-                            if(typeof(row.cr_ok) !== 'undefined') row.cr_ok = false;
-                            if(typeof(row.ca_ok) !== 'undefined') row.ca_ok = false;
 
-                            props.onValidate(row.load, invalidated);
+                            props.onValidate(row.load);
                         }
                     })
                 }
@@ -65,7 +65,7 @@ let rowStyle = (row, rowIndex) => {
     {
         return 'validated';
     }
-    else if(typeof(row) !== 'undefined' && typeof(row.cr_ok) === 'undefined' && typeof(row.ca_ok) === 'undefined')
+    else if(typeof(row) !== 'undefined' && (typeof(row.cr_ok) === 'undefined' && typeof(row.ca_ok) === 'undefined'))
     {
         return 'blank';
     }
@@ -97,24 +97,6 @@ let makeConfig = () => {
                 editorClasses: 'custom-class',
                 headerClasses: 'input-headers',
             },
-/*             {
-                dataField: 'button',
-                text: 'Check',
-                sort: false,
-                classes: 'format-basic-cells',
-                editable: () => {
-                    return false;
-                },
-                formatter: (cell, row) => {
-                    let button = <Button onClick={e => {onValidate(e).then(res => {
-                                                            row.validate = res.validate
-                                                        })}} value={row.load} className="data-table-button format-basic-cells">Validate</Button>
-                    buttonArray.push(button)
-                    return (
-                        button
-                    )
-                }
-            }, */
             {
                 dataField: 'ideal',
                 text: 'Ideal Current',
@@ -144,7 +126,6 @@ let makeConfig = () => {
                     return false;
                 },
                 formatter: (cell) => {
-                    console.log(cell)
                     if(cell) return <span>Yes</span>;
                     else if(typeof(cell) === 'undefined') return <span></span>;
                     else return <span>No</span>

@@ -73,6 +73,14 @@
     color: red !important;
 }
 
+.data-table-button:disabled.red {
+    color: #6c757d !important;
+}
+.data-table-button:disabled:hover.red {
+    color: #6c757d !important;
+    text-decoration: none !important;
+}
+
 .data-table-button:hover.red {
     color: red !important;
     text-decoration: underline !important;

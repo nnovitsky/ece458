@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import WizardServices from "../../api/wizardServices.js";
@@ -48,9 +48,10 @@ class Step2 extends React.Component {
     makeBody() {
         return <div>
             <Form className="wizard" style={{textAlign: "center"}}>
-                <h5 style={{textAlign: "left"}} >Check when completed:</h5>
+            <h2>Perform Visual Inspection of Resistors</h2>
                 <br></br>
-                <Form.Check id="visual_inspection_check" label="Perform Visual Inspection of Resistors" type="checkbox" onChange={this.toggleCheck} checked={this.state.checked}></Form.Check>
+                <h4>Check Box When Completed</h4>
+                <Form.Check onChange={this.toggleCheck} checked={this.state.checked}></Form.Check>
             </Form>
 
         </div>

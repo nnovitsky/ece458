@@ -123,6 +123,8 @@ export default class ModelServices {
             calibration_modes: calMode
         }
 
+        console.log(data);
+
         let result = {
             success: true,
             errors: []

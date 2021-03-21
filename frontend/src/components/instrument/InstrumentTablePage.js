@@ -6,7 +6,7 @@ import InstrumentTable from "./InstrumentTable";
 import AddInstrumentPopup from "./AddInstrumentPopup";
 import logo from '../../assets/HPT_logo_crop.png';
 import ErrorsFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed, hasInstrumentEditAccess } from '../generic/Util';
 
 
 import Button from 'react-bootstrap/Button';
@@ -59,9 +59,9 @@ class InstrumentTablePage extends Component {
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
-        this.onBarcodeSelect = this.onBarcodeButtonClick.bind(this);
-        this.onBarcodeCancel = this.onBarcodeButtonCancelClick.bind(this);
-        this.onBarcodeDownload = this.onBarcodeButtonDownloadClick.bind(this);
+        this.onBarcodeButtonClick = this.onBarcodeButtonClick.bind(this);
+        this.onBarcodeButtonCancelClick = this.onBarcodeButtonCancelClick.bind(this);
+        this.onBarcodeButtonDownloadClick = this.onBarcodeButtonDownloadClick.bind(this);
         this.onInstrumentSelect = this.onInstrumentSelect.bind(this);
         this.onInstrumentSelectAll = this.onInstrumentSelectAll.bind(this);
     }
@@ -119,11 +119,13 @@ class InstrumentTablePage extends Component {
                 <Redirect push to={this.state.redirect} />
             )
         }
+
+        const isInstrumentAdmin = hasInstrumentEditAccess(this.props.permissions);
         const defaultButtonRow = (
             <div className="table-button-row">
-                <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
+                <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!isInstrumentAdmin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
-                <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
+                <Button onClick={this.onCategoriesClicked} hidden={!isInstrumentAdmin}>Manage Categories</Button>
                 <Button onClick={this.onBarcodeButtonClick}>Download Barcodes</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>

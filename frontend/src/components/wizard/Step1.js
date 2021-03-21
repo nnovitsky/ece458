@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import WizardServices from "../../api/wizardServices.js";

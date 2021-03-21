@@ -11,7 +11,7 @@ import GenericLoader from '../generic/GenericLoader.js';
 
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
-import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed } from '../generic/Util';
+import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed, hasModelEditAccess } from '../generic/Util';
 import ErrorsFile from "../../api/ErrorMapping/ModelErrors.json";
 
 const modelServices = new ModelServices();
@@ -102,10 +102,11 @@ class ModelTablePage extends Component {
             return (<Redirect push to={this.state.redirect} />)
         }
         let addModelPopup = (this.state.addModelPopup.isShown) ? this.makeAddModelPopup() : null;
+        const isModelAdmin = hasModelEditAccess(this.props.permissions);
         let buttonRow = (<div className="table-button-row">
-            <Button onClick={this.onAddModelClicked} hidden={!this.props.is_admin}>Create</Button>
+            <Button onClick={this.onAddModelClicked} hidden={!isModelAdmin}>Create</Button>
             <Button onClick={this.onExportModelsClicked}>Export</Button>
-            <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
+            <Button onClick={this.onCategoriesClicked} hidden={!isModelAdmin}>Manage Categories</Button>
 
             {/* <Button onClick={this.onExportAllClicked}>Export Models and Instruments</Button> */}
         </div>)

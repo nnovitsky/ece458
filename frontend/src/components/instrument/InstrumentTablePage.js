@@ -154,7 +154,7 @@ class InstrumentTablePage extends Component {
                             />
                         </div>
                         <div className="col-10">
-                            <h1>{this.state.barcodes.isSelecting ? 'Instruments Barcode Download' : 'Instrument Table'}</h1>
+                            <h1>{this.state.barcodes.isSelecting ? 'Select Instruments for Barcode Download' : 'Instrument Table'}</h1>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
@@ -321,22 +321,27 @@ class InstrumentTablePage extends Component {
 
     // will update the visual state for either select all/deselect all
     async selectAllDisplayed(isSelect, rows) {
+        this.setState({
+            isLoading: true,
+        });
         const ids = rows.map(r => r.pk);
         if (isSelect) {
             this.setState({
+                isLoading: false,
                 barcodes: {
                     ...this.state.barcodes,
                     selected: ids,
-                    numSelected: this.state.pagination.resultCount,
+                    numSelected: (this.state.pagination.resultCount - this.state.barcodes.instrumentPks.length),
                     isSelectAll: isSelect,
                 }
             });
         } else {
             this.setState({
+                isLoading: false,
                 barcodes: {
                     ...this.state.barcodes,
                     selected: [],
-                    numSelected: 0,
+                    numSelected: (this.state.barcodes.instrumentPks.length),
                     isSelectAll: isSelect,
                 }
             });

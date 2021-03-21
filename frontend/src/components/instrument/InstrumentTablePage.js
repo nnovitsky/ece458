@@ -13,8 +13,6 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
-import TableHoverTooltip from '../generic/TableHoverTooltip';
-
 
 const instrumentServices = new InstrumentServices();
 
@@ -42,6 +40,9 @@ class InstrumentTablePage extends Component {
             barcodes: {
                 isSelecting: false,
                 selected: [],
+                numSelected: 0,
+                instrumentPks: [],
+                isSelectAll: false,
             },
             isLoading: false,
         }
@@ -58,9 +59,9 @@ class InstrumentTablePage extends Component {
         this.onExportAll = this.onExportAll.bind(this);
         this.onExportInstruments = this.onExportInstruments.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
-        this.onBarcodeSelect = this.onBarcodeSelect.bind(this);
-        this.onBarcodeCancel = this.onBarcodeCancel.bind(this);
-        this.onBarcodeDownload = this.onBarcodeDownload.bind(this);
+        this.onBarcodeSelect = this.onBarcodeButtonClick.bind(this);
+        this.onBarcodeCancel = this.onBarcodeButtonCancelClick.bind(this);
+        this.onBarcodeDownload = this.onBarcodeButtonDownloadClick.bind(this);
         this.onInstrumentSelect = this.onInstrumentSelect.bind(this);
         this.onInstrumentSelectAll = this.onInstrumentSelectAll.bind(this);
     }
@@ -100,6 +101,16 @@ class InstrumentTablePage extends Component {
         }, () => this.updateTable());
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const hasPageChange = this.state.pagination.currentPageNum !== prevState.pagination.currentPageNum;
+        const hasShowAllChange = this.state.instrumentSearchParams.showAll !== prevState.instrumentSearchParams.showAll;
+        const isSelectingAssets = this.state.barcodes.isSelecting;
+        // a page change happened while selecting assets
+        if ((hasPageChange || hasShowAllChange) && isSelectingAssets) {
+            this.handlePaginationChangeForBarcodes();
+        }
+    }
+
 
     render() {
         //handle if it's time to redirect
@@ -113,14 +124,14 @@ class InstrumentTablePage extends Component {
                 <Button onClick={this.onAddInstrumentClicked} style={{ width: "75px", float: "left" }} hidden={!this.props.is_admin}>Create</Button>
                 <Button onClick={this.onExportInstruments}>Export</Button>
                 <Button onClick={this.onCategoriesClicked} hidden={!this.props.is_admin}>Manage Categories</Button>
-                <Button onClick={this.onBarcodeSelect}>Download Barcodes</Button>
+                <Button onClick={this.onBarcodeButtonClick}>Download Barcodes</Button>
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         );
         const assetTagButtonRow = (
             <div className="table-button-row">
-                <Button onClick={this.onBarcodeCancel} variant="secondary">Cancel</Button>
-                <Button onClick={this.onBarcodeDownload} variant="primary" disabled={this.state.barcodes.selected.size === 0}>Download Barcodes</Button>
+                <Button onClick={this.onBarcodeButtonCancelClick} variant="secondary">Cancel</Button>
+                <Button onClick={this.onBarcodeButtonDownloadClick} variant="primary" disabled={this.state.barcodes.numSelected === 0}>{`Download ${this.state.barcodes.numSelected} Barcodes`}</Button>
             </div>
         )
 
@@ -153,7 +164,7 @@ class InstrumentTablePage extends Component {
                                 handleSelectAll={this.onInstrumentSelectAll}
                                 selected={this.state.barcodes.selected}
                             />
-                            <hr />``
+                            <hr />
                         </div>
 
                     </div>
@@ -237,7 +248,7 @@ class InstrumentTablePage extends Component {
         window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
     }
 
-    onBarcodeSelect() {
+    onBarcodeButtonClick() {
         this.setState({
             barcodes: {
                 ...this.state.barcodes,
@@ -246,53 +257,109 @@ class InstrumentTablePage extends Component {
         });
     }
 
-    onBarcodeCancel() {
+    onBarcodeButtonCancelClick() {
         this.setState({
             barcodes: {
                 ...this.state.barcodes,
                 isSelecting: false,
+                selected: [],
+                numSelected: 0,
+                instrumentPks: [],
+                isSelectAll: false,
             }
         });
     }
 
-    onBarcodeDownload() {
-
+    onBarcodeButtonDownloadClick() {
+        console.log('tried to download barcodes, not integrated with backend');
     }
 
     onInstrumentSelect(row, isSelect) {
+        this.setState((prevState) => {
+            // defining nice constants from the state to be used
+            const isSelectAll = this.state.barcodes.isSelectAll;
+            // determining what the instrument pks array should be
+            let instrumentPksArr;
+            if ((isSelect && !isSelectAll) || (!isSelect && isSelectAll)) {
+                instrumentPksArr = [...this.state.barcodes.instrumentPks, row.pk];
+            } else {
+                instrumentPksArr = this.state.barcodes.instrumentPks.filter(x => x !== row.pk);
+            }
+
+            // determining what the number selected and the selected array should be
+            let selectedArr;
+            let numSelected;
+            if (isSelect) {
+                selectedArr = [...this.state.barcodes.selected, row.pk];
+                numSelected = prevState.barcodes.numSelected + 1;
+            } else {
+                selectedArr = this.state.barcodes.selected.filter(x => x !== row.pk);
+                numSelected = prevState.barcodes.numSelected - 1;
+            }
+            // updating the state according to the above
+            return {
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: selectedArr,
+                    numSelected: numSelected,
+                    instrumentPks: instrumentPksArr,
+                }
+            }
+        });
+    }
+
+    async onInstrumentSelectAll(isSelect, rows) {
+        this.setState({
+            barcodes: {
+                ...this.state.barcodes,
+                instrumentPks: [],
+            }
+        }, async () => await this.selectAllDisplayed(isSelect, rows));
+    }
+
+    // will update the visual state for either select all/deselect all
+    async selectAllDisplayed(isSelect, rows) {
+        const ids = rows.map(r => r.pk);
         if (isSelect) {
-            this.setState(() => ({
+            this.setState({
                 barcodes: {
                     ...this.state.barcodes,
-                    selected: [...this.state.barcodes.selected, row.pk]
+                    selected: ids,
+                    numSelected: this.state.pagination.resultCount,
+                    isSelectAll: isSelect,
                 }
-            }));
+            });
         } else {
-            this.setState(() => ({
+            this.setState({
                 barcodes: {
                     ...this.state.barcodes,
-                    selected: this.state.barcodes.selected.filter(x => x !== row.pk)
+                    selected: [],
+                    numSelected: 0,
+                    isSelectAll: isSelect,
                 }
-            }));
+            });
         }
     }
 
-    onInstrumentSelectAll(isSelect, rows) {
-        const ids = rows.map(r => r.pk);
-        if (isSelect) {
-            this.setState(() => ({
+    async handlePaginationChangeForBarcodes() {
+        // if select all, need to select all and remove any that are in the pks array
+        if (this.state.barcodes.isSelectAll) {
+            await this.selectAllDisplayed(true, this.state.tableData);
+            this.setState({
                 barcodes: {
                     ...this.state.barcodes,
-                    selected: ids
+                    selected: this.state.barcodes.selected.filter(x => !this.state.barcodes.instrumentPks.includes(x))
                 }
-            }));
-        } else {
-            this.setState(() => ({
+            })
+        }
+        // if not select all, need to select any that are in the pks array
+        else {
+            this.setState({
                 barcodes: {
                     ...this.state.barcodes,
-                    selected: []
+                    selected: this.state.barcodes.instrumentPks,
                 }
-            }));
+            })
         }
     }
 
@@ -345,14 +412,6 @@ class InstrumentTablePage extends Component {
                 return;
         }
     }
-
-
-    // onDetailViewRequested(e) {
-    //     this.setState({
-    //         ...this.state,
-    //         redirect: `/instruments-detail/${e.target.value}`
-    //     });
-    // }
 
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)

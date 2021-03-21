@@ -90,3 +90,23 @@
 .data-table-no-results {
     padding: 50px;
 }
+
+/* applies to the entire data table row when its selected */
+.selection-row {
+    background-color: rgba(0,0,0,.15) !important;
+}
+
+/* used to format the cell for the select row checkbox */
+.selection-cell input {
+    margin: auto !important;
+    width: 100%;
+}
+
+.selection-cell-header input {
+        margin: auto !important;
+    width: 100%;
+}
+
+.selection-cell-header {
+    width: 25px !important;
+}

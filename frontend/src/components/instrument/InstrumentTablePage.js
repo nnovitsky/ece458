@@ -321,9 +321,6 @@ class InstrumentTablePage extends Component {
 
     // will update the visual state for either select all/deselect all
     async selectAllDisplayed(isSelect, rows) {
-        this.setState({
-            isLoading: true,
-        });
         const ids = rows.map(r => r.pk);
         if (isSelect) {
             this.setState({

@@ -12,6 +12,7 @@ from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
 from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
 from backend.config.admin_config import USER_GROUPS
+from backend.config.klufe_config import VOLTAGE_LEVELS
 
 
 def validate_user(request, create=False):
@@ -287,4 +288,37 @@ def validate_lb_cal(lb_cal):
         "shunt_meter_error": shunt_error,
         "valid": valid
     }
+    return error
+
+
+def validate_klufe_cal(klufe_cal):
+    expected_readings = range(len(VOLTAGE_LEVELS))
+    readings = KlufeVoltageReading.objects.filter(klufe_cal=klufe_cal.pk).values_list('index', flat=True)
+
+    failed_tests = []
+    missing_tests =[]
+
+    for test_number in expected_readings:
+        if test_number in readings:
+            current_test = VOLTAGE_LEVELS[test_number]
+            reported_v = KlufeVoltageReading.objects.filter(klufe_cal=klufe_cal.pk,
+                                                            index=test_number)[0].reported_voltage
+            if reported_v > current_test['upper'] or reported_v < current_test['lower']:
+                failed_test = {
+                    'index':test_number,
+                    'source_voltage':current_test['source_voltage'],
+                    'description':current_test['description'],
+                    'reported_voltage':reported_v
+                }
+                failed_tests.append(failed_test)
+        else:
+            missing_tests.append(VOLTAGE_LEVELS[test_number])
+
+    valid = len(missing_tests) == 0 and len(failed_tests) == 0
+    error = {
+        "valid":valid,
+        "missing_tests":missing_tests,
+        "failed_tests":failed_tests
+    }
+
     return error

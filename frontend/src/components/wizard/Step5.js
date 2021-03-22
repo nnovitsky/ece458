@@ -56,6 +56,7 @@ class Step5 extends React.Component {
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
                 disableContinue={!this.state.validated}
+                progress={this.props.progress}
 
             />
         );

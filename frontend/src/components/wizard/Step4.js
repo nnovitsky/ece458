@@ -49,6 +49,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
+                progress={this.props.progress + (this.state.index - 1)*10}
             />
         );
     }

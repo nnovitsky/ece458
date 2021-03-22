@@ -59,6 +59,7 @@ class Step1 extends React.Component {
                 incrementStep={this.props.incrementStep}
                 disableContinue={!(this.state.voltmeter.validated && this.state.shuntmeter.validated)}
                 decrementStep={this.props.decrementStep}
+                progress={this.props.progress}
             />
         );
     }

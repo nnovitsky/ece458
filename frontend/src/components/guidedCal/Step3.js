@@ -88,6 +88,7 @@ class Step2 extends React.Component {
                 disableContinue={!this.state.validDisplay}
                 decrementStep={this.prevCal}
                 continueButtonText={this.state.index === 4 ? "Submit Final Step and Finish Calibration" : "Continue"}
+                progress={this.props.progress + Math.round((this.state.index-1)/7*100)}
             />
         );
     }

@@ -33,6 +33,7 @@ class Summary extends React.Component {
                 isBackHidden={true}
                 isCancelHidden={true}
                 continueButtonText="Exit"
+                progressBarHidden={true}
             />
         );
     }

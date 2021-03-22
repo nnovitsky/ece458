@@ -48,14 +48,16 @@ class GuidedCal extends React.Component {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} instrument_pk={this.state.instrument_pk}
-                    asset_tag={this.state.asset_tag} username={this.props.username}/>;
+                    asset_tag={this.state.asset_tag} username={this.props.username} progress={0}/>;
             case 1:
-                return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}/>;
+                return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                progress={Math.round(1/7 * 100)}/>;
             case 2:
-                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}/>
+                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                progress={Math.round(2/7 * 100)}/>
             case 3:
                 return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                        index={1}/>
+                        index={1} progress={Math.round(3/7 * 100)}/>
             case 4:
                 return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>

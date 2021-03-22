@@ -52,6 +52,7 @@ class Step2 extends React.Component {
                 incrementStep={this.props.incrementStep}
                 disableContinue={!this.state.sucessfulFunction}
                 decrementStep={this.props.decrementStep}
+                progress={this.props.progress}
             />
         );
     }

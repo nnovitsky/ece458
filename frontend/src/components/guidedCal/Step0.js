@@ -46,6 +46,8 @@ class Step0 extends React.Component {
                 body={body}
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
+                progress={this.props.progress}
+                progressBarHidden={true}
                 
             />
         );

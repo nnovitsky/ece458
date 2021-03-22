@@ -60,6 +60,7 @@ class Step3 extends React.Component {
                 decrementStep={this.props.cancelEvent}
                 backButtonText='Delete'
                 continueButtonText='Finish'
+                progressBarHidden={true}
             />
         );
     }

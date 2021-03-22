@@ -52,6 +52,18 @@ def klufe_cal_detail(request, pk):
     """
     if request.method == 'GET':
 
+        try:
+            klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        except KlufeCalibration.DoesNotExist:
+            return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        errors = validate_klufe_cal(klufe_cal)
+        serializer = KlufeCalReadSerializer(lb_cal)
+        return Response({"data": serializer.data, "errors": errors}, status=status.HTTP_200_OK)
+
+
+
         return False
 
     elif request.method == 'PUT':

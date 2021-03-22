@@ -44,7 +44,7 @@ def klufe_cal_detail(request, pk):
         return False
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 def turn_source_on(request):
     """
     Sets the Klufe K5700 calibrator to ON.
@@ -53,7 +53,7 @@ def turn_source_on(request):
     return False
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 def turn_source_off(request):
     """
     Sets the Klufe K5700 calibrator to OFF.
@@ -62,7 +62,7 @@ def turn_source_off(request):
     return False
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 def set_source(request):
     """
     Sets the Klufe K5700 calibrator to the desired DC or AV voltage.
@@ -80,7 +80,7 @@ def save_calibration(request, pk):
     return False
 
 
-@api_view(['PUT'])
+@api_view(['GET'])
 def disconnect_source(request):
     """
     Disconnect from Klufe K5700 calibrator via SSH.

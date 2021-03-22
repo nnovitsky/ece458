@@ -71,7 +71,6 @@ urlpatterns = [
     path('api/klufe_detail/<int:cal_pk>/', klufe_views.klufe_cal_detail),
     path('api/klufe_on/', klufe_views.turn_source_on),
     path('api/klufe_off/', klufe_views.turn_source_off),
-    path('api/klufe_off/', klufe_views.turn_source_off),
     path('api/set_klufe/', klufe_views.set_source),
     path('api/save_klufe/<int:cal_pk>/', klufe_views.save_calibration),
     path('api/disconnect_klufe/', klufe_views.disconnect_source),

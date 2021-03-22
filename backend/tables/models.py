@@ -178,6 +178,9 @@ class CalibrationMode(models.Model):
 class KlufeCalibration(models.Model):
     cal_event = models.ForeignKey(CalibrationEvent, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.cal_event) + ' Klufe Calibration'
+
 
 class KlufeVoltageReading(models.Model):
     klufe_cal = models.ForeignKey(KlufeCalibration, on_delete=models.CASCADE)
@@ -186,3 +189,6 @@ class KlufeVoltageReading(models.Model):
     source_hertz = models.FloatField(null=True)
     reported_voltage = models.FloatField(null=True)
     voltage_okay = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.klufe_cal) + f' Test {self.index}'

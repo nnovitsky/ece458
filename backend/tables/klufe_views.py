@@ -9,7 +9,7 @@ from django.http import FileResponse
 from django.http.request import QueryDict
 from django.db.models.functions import Lower
 
-from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
+from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType, KlufeCalibration
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
@@ -21,12 +21,27 @@ def start_klufe(request):
     GET: connect to SSH and provide login credentials.
     PUT: create Klufe 5700 calibration event; return primary key of created event.
     """
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    request.data['user'] = request.user.pk
     if request.method == 'GET':
 
         return False
     elif request.method == 'PUT':
-
-        return False
+        serializer = CalibrationEventWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            cal_modes = serializer.validated_data['instrument'].item_model.calibrationmode_set.values_list("name", flat=True)
+            if "klufe_k5700" not in cal_modes:
+                return Response({"calibration_event_error": ["Model is not eligible for klufe calibration."]}, status=status.HTTP_400_BAD_REQUEST)
+            cal_event = serializer.save()
+            klufe_cal = KlufeCalibration(cal_event=cal_event)
+            klufe_cal.save()
+            return Response({'klufe_calibration': {'pk': klufe_cal.pk, 'cal_event_pk': cal_event.pk}},
+                            status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT'])
@@ -40,7 +55,9 @@ def klufe_cal_detail(request, pk):
         return False
 
     elif request.method == 'PUT':
-
+        if not UserType.contains_user(request.user, "calibrations"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         return False
 
 
@@ -65,7 +82,7 @@ def turn_source_off(request):
 @api_view(['POST'])
 def set_source(request):
     """
-    Sets the Klufe K5700 calibrator to the desired DC or AV voltage.
+    Set the Klufe K5700 calibrator to the desired DC or AV voltage.
     """
 
     return False
@@ -74,7 +91,7 @@ def set_source(request):
 @api_view(['PUT'])
 def save_calibration(request, pk):
     """
-    Validate and safe the current calibration.
+    Validate and save the current calibration.
     """
 
     return False
@@ -87,3 +104,18 @@ def disconnect_source(request):
     """
 
     return False
+
+
+@api_view(['DELETE'])
+def cancel_klufe_cal(request, pk):
+    """
+    Should a user disconnect or exit the calibration before a Klufe calibration
+    event has been saved and validated.
+    """
+    try:
+        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        cal_event = CalibrationEvent.objects.get(pk=klufe_cal.cal_event.pk)
+    except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
+        return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+    cal_event.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

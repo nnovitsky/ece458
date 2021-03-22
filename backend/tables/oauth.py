@@ -6,6 +6,7 @@ import base64
 import jwt
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.models import update_last_login
 from backend.tables.models import *
 from backend.tables.serializers import UserTokenSerializer
 
@@ -20,6 +21,7 @@ def login_oauth_user(id_token, user_details):
                     email=user_details['email'])
         user.set_password(oauth_pw)
         user.save()
+    update_last_login(None, user)
     if not UserType.contains_user(user, "oauth"):
         try:
             UserType.objects.get(name="oauth").users.add(user)

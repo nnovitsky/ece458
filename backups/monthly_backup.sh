@@ -23,10 +23,10 @@ dbname="evolution_two"
 artifactpath="/home/jay18/evo2/ece458/backend/media/"
 
 # generate postgresql dump of database named 'evolution_two' using provided credentials, from localhost on $server, save on backup server as $today.sql
-ssh ${server} "PGPASSWORD=$dbpass pg_dump -U $dbuser -h localhost $dbname" > ${monthlypath}${today}.sql
+ssh ${server} "PGPASSWORD=$dbpass pg_dump -U $dbuser -h localhost $dbname --clean" > ${monthlypath}${today}.sql
 
 # generate zip file of calibration artifacts on $server
-ssh ${server} "cd $artifactpath; sudo zip -r temp.zip cal_event_artifacts"
+ssh ${server} "cd $artifactpath; sudo zip -q -r temp.zip cal_event_artifacts"
 
 # scp artifact zip file to backup server
 scp ${server}:${artifactpath}temp.zip ${monthlypath}artifacts.zip
@@ -34,7 +34,7 @@ scp ${server}:${artifactpath}temp.zip ${monthlypath}artifacts.zip
 cd ${monthlypath}
 
 # zip artifacts and sql dump together as $today.zip
-zip -r ${today}.zip artifacts.zip ${today}.sql
+zip -q -r ${today}.zip artifacts.zip ${today}.sql
 
 # remove temp zip file from $server
 ssh ${server} "cd $artifactpath; sudo rm temp.zip"

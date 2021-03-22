@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.http import FileResponse
 from django.http.request import QueryDict
 from django.db.models.functions import Lower
+from django.contrib.auth.models import update_last_login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
@@ -465,6 +466,8 @@ class TokenAuth(ObtainJSONWebToken):
         if user.username == ADMIN_USERNAME and not UserType.contains_user(user, "admin"):
             edit_user_groups({"admin"}, user)
         response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            update_last_login(None, user)
         return response
 
 

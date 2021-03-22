@@ -58,7 +58,7 @@ To manually run the scripts, cd into /home/vcm/backups/scripts/ and run `bash da
 ### Setting Up Dev Server 
 1. Use ssh-keygen to add persistent login to your backup server: `ssh-keygen; ssh-copy-id vcm@vcm-18807.vm.duke.edu` (replacing `vcm@vcm-18807.vm.duke.edu` with your backup server's address).
 2. Install required package: `sudo apt-get install zip` (this will also install `unzip`).
-3. Copy restoration script ('restore_backup.sh' in /ece458/backups/ folder) onto dev server (ours is in /home/vcm/ directory) and update variables in the script as described in the comments to reflect server names, database credentials, and paths in your system.
+3. Copy restoration script and validation script ('restore_backup.sh' and 'validate_backup.sh' in /ece458/backups/ folder) onto dev server (ours are in /home/vcm/ directory) and update variables in the scripts as described in the comments to reflect server names, database credentials, and paths in your system.
 
 ### Restoring Backups
 
@@ -70,3 +70,7 @@ At any input stage, enter 'x' to quit the program.
 
 
 ### Validating Backups
+
+To perform a backup, run `bash validate_backup.sh` from directory you put it in setup step 3 (ours is /home/vcm/) on dev server.
+
+Similarly to the script that restores a backup, you will be asked to select a folder, then a filename to validate. The backup file will be temporarily loaded onto the dev server, unzipped, and uploaded to a temporary test database (called "trial"). You will be shown a list of the files in the 'cal_event_artifacts' folder for this backup, as well as the most recent login date in the restored users table. This field is updated whenever a user logs in, implying that data created/modified up to that login is included in the backup. The test database is deleted, along with backup files, at the end of the validation script.

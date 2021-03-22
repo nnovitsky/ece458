@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import WizardServices from "../../api/wizardServices.js";
@@ -50,6 +50,7 @@ class Step6 extends React.Component {
                 decrementStep={this.props.decrementStep}
                 disableContinue={!(this.state.checkCutoff && this.state.checkAlarm && this.state.checkRecordedData && this.state.checkPrinter)}
                 continueButtonText="Submit Final Step and Finish Calibration Event"
+                progress={this.props.progress}
             />
         );
     }

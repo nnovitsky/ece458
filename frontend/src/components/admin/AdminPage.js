@@ -5,6 +5,7 @@ import AuthServices from "../../api/authServices.js";
 import AddUserPopup from "./AddUserPopup";
 import DeletePopup from '../generic/GenericPopup';
 
+import LogoTitleHeader from '../generic/LogoTitleHeader';
 import './Admin.css';
 import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
@@ -63,6 +64,7 @@ class AdminPage extends React.Component {
     render() {
         let buttonRow = (<div className="table-button-row">
             <Button onClick={this.onAddUserClicked}>Add New User</Button>
+            <span>(Hover over a cell for more information)</span>
         </div>)
 
         let deletePopup = (this.state.deletePopupIsShown) ? this.makeDeletePopup() : null;
@@ -71,20 +73,14 @@ class AdminPage extends React.Component {
             <div>
                 {deletePopup}
                 {addUserPopup}
-{/*                 <AddUserPopup
-                    isShown={this.state.addUserPopup.isShown}
-                    onSubmit={this.onAddUserSubmit}
-                    onClose={this.onAddUserClosed}
-                    errors={this.state.addUserPopup.errors}
-                /> */}
 
                 <div className="background">
                     <div className="row mainContent">
-                        <div className="col-2 text-center">
-                            <img src={logo} alt="Logo" />
-                        </div>
-                        <div className="col-10">
-                            <h2>Hello, Administrator</h2>
+                        <LogoTitleHeader
+                            title='Hello, Administrator'
+                            headerButtons={null}
+                        />
+                        <div className="user-table-div">
                             <UserTable
                                 data={this.state.tableData}
                                 onTableChange={this.onUserTableChange}
@@ -97,6 +93,7 @@ class AdminPage extends React.Component {
                                 onChangePrivileges={this.changePrivileges}
                             />
                         </div>
+                            
                     </div>
                 </div>
             </div>

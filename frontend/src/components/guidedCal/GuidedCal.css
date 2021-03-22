@@ -1,0 +1,57 @@
+form.guidedCal {
+    text-align: left;
+    align-content: left;
+}
+
+
+form.guidedCal .form-control{
+    margin-left: 5px;
+    width: min(15vw, 215px);
+    font-size: min(1.4vw, 20px);
+    text-align: left;
+    align-content: left;
+}
+
+form.guidedCal .btn{
+    margin-left: 5px;
+    width: min(15vw, 215px);
+    font-size: min(1.2vw, 18px);
+}
+
+form.guidedCal .form-check{
+    margin-left: 5px;
+    width: min(15vw, 215px);
+}
+
+form.guidedCal .disabled{
+    color: #a1a1a1;
+}
+
+
+form.guidedCal .form-label{
+    font-size: min(1.4vw, 20px);
+    text-align: left;
+    align-content: left;
+}
+
+
+form.guidedCal .form-label.subtext{
+    font-size: min(1vw, 16px);
+    text-align: left;
+    align-content: left;
+}
+
+form.guidedCal .form-check-label{
+    font-size: min(1.2vw, 16px);
+    text-align: left;
+    align-content: left;
+}
+
+.fluke-display{
+    background-color: #d6d6d6;
+    font-size: min(1.4vw, 20px);
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 50px;
+    margin-top: 10px;
+}

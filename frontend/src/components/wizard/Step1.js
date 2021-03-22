@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import WizardServices from "../../api/wizardServices.js";
@@ -59,6 +59,7 @@ class Step1 extends React.Component {
                 incrementStep={this.props.incrementStep}
                 disableContinue={!(this.state.voltmeter.validated && this.state.shuntmeter.validated)}
                 decrementStep={this.props.decrementStep}
+                progress={this.props.progress}
             />
         );
     }

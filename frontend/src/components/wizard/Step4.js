@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import LoadTable from './LoadTable.js'
@@ -49,6 +49,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
+                progress={this.props.progress + (this.state.index - 1)*10}
             />
         );
     }

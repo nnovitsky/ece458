@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
@@ -52,6 +52,8 @@ class Step0 extends React.Component {
                 body={body}
                 incrementStep={this.createNewLoadbankEvent}
                 decrementStep={this.props.decrementStep}
+                progress={this.props.progress}
+                progressBarHidden={true}
             />
         );
     }

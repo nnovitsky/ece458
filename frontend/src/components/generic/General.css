@@ -24,7 +24,7 @@
   max-width: 90px;
   max-height: 90px;
   margin: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 /* add 'green-link' to any <a> element to get a green hyperlink */
@@ -92,6 +92,11 @@ be made to be more specific */
   margin-left: 5px;
   /* max-width: 150px; */
   height: min-content;
+}
+
+.table-button-row span {
+  height: 100%;
+  margin: auto 0px auto 10px;
 }
 
 /* popup is a classname that is used for some of the body's of the popups */
@@ -194,4 +199,21 @@ form.popup .form-group {
 
 .loader {
   margin-top: 20%;
+}
+
+.base-progress-bar .progress-bar{
+  background-color: rgb(57, 127, 60) !important; 
+}
+
+.base-progress-bar{
+  margin-top: 0.7%;
+  width: 70% !important;
+}
+
+.base-progress-bar p{
+  font-size: min(0.9vw, 11px);
+  margin-bottom: -10%;
+}
+.base-header-title{
+  width: min(30%, 230px);
 }

@@ -1,7 +1,9 @@
-import React from 'react'
+import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert'
+import Alert from 'react-bootstrap/Alert';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import './General.css'
 
 class Base extends React.Component {
 
@@ -10,10 +12,15 @@ class Base extends React.Component {
     }
 
     render() {
+        let progressBar = <div className="base-progress-bar">
+            <ProgressBar className="base-progress-bar" now={this.props.progress} label={`${this.props.progress}%`} />
+            <p>{this.props.progress === 0 ? "0% Completed" : "Completed"}</p>
+        </div>
         return (
             <Modal className="popup" show={this.props.isShown} onHide={this.props.onClose} size="xl" backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{this.props.title}</Modal.Title>
+                    <Modal.Title className="base-header-title">{this.props.title}</Modal.Title>
+                    {this.props.progressBarHidden ? null : progressBar}
                 </Modal.Header>
 
                 <Modal.Body>
@@ -32,7 +39,7 @@ class Base extends React.Component {
         );
     }
 
-    makeErrorsParagraphs(errorsArr){
+    makeErrorsParagraphs(errorsArr) {
         let result = [];
         errorsArr.forEach(e => {
             result.push(<p>{e}</p>)
@@ -50,5 +57,6 @@ Base.defaultProps = {
     backButtonText: 'Back',
     isCancelHidden: false,
     isBackHidden: false,
-    isContinueHidden: false
+    isContinueHidden: false,
+    progressBarHidden: false,
 }

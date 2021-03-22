@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import Table from 'react-bootstrap/Table';
@@ -60,6 +60,7 @@ class Step3 extends React.Component {
                 decrementStep={this.props.cancelEvent}
                 backButtonText='Delete'
                 continueButtonText='Finish'
+                progressBarHidden={true}
             />
         );
     }

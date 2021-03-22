@@ -192,22 +192,23 @@ takes up the rest of the space
 takes the leftover
 } */
 
+/* user table columns widths */
 .at-num-column{
-    width: 5%
+    width: 30px;
 }
 .at-name-column{
-    width: 15%
+    width: 15%;
 }
 .at-username-column{
-    width: 15%
+    width: 15%;
 }
 .at-email-column{
-    width: 18%
+    width: 18%;
 }
 .at-picklist-column{
-    width: 30%
+    width: 350px;
 }
 .at-delete-column{
-    width: 9%
+    width: 60px;
 }
 

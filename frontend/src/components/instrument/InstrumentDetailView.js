@@ -8,6 +8,7 @@ import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
+import GuidedCal from '../guidedCal/GuidedCal.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess } from '../generic/Util';
 
@@ -63,6 +64,10 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 lbPK: null,
             },
+            guidedCalPopup: {
+                isShown: false,
+                pk: null,
+            },
             isDeleteShown: false,
             currentUser: this.props.user,
         }
@@ -78,6 +83,12 @@ class InstrumentDetailView extends Component {
         this.onWizardClicked = this.onWizardClicked.bind(this);
         this.onWizardClose = this.onWizardClose.bind(this);
         this.makeWizardPopup = this.makeWizardPopup.bind(this);
+
+        this.onGuidedCalClicked = this.onGuidedCalClicked.bind(this);
+        this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
+        this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
+
+
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
@@ -102,6 +113,7 @@ class InstrumentDetailView extends Component {
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
+        let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -114,6 +126,7 @@ class InstrumentDetailView extends Component {
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
                 {wizardPopup}
+                {guidedCalPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={headerButtons}
@@ -130,11 +143,14 @@ class InstrumentDetailView extends Component {
         const isCalibrationAdmin = hasCalibrationAccess(this.props.permissions);
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
+        const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
         let calButtonRow = (
             <div className="table-button-row">
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
+                {/* // TODO add disabled check for things that can't be calibrated this way */}
+                <Button onClick={this.onGuidedCalClicked} hidden={!isCalibrationAdmin}>Add Guided Calibration</Button>
             </div>
         )
         return (
@@ -309,6 +325,23 @@ class InstrumentDetailView extends Component {
                 asset_tag={this.state.instrument_info.asset_tag}
                 lb_pk={this.state.wizardPopup.lbPK}
                 username={this.props.username}
+            />
+        )
+    }
+
+    makeGuidedCalPopup() {
+        return (
+            <GuidedCal
+                isShown={this.state.guidedCalPopup.isShown}
+                onClose={this.onGuidedCalClose}
+                pk={this.state.guidedCalPopup.pk}
+                username={this.props.username}
+                model_number={this.state.instrument_info.model_number}
+                vendor={this.state.instrument_info.vendor}
+                serial_number={this.state.instrument_info.serial_number}
+                instrument_pk={this.state.instrument_info.pk}
+                asset_tag={this.state.instrument_info.asset_tag}
+
             />
         )
     }
@@ -568,6 +601,28 @@ class InstrumentDetailView extends Component {
                 ...this.state.wizardPopup,
                 isShown: false,
                 lbPK: null,
+            }
+        })
+        this.getCalHistory();
+    }
+
+    onGuidedCalClicked() {
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: true,
+                pk: null,
+            }
+        })
+    }
+
+
+    onGuidedCalClose() {
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: false,
+                pk: null,
             }
         })
         this.getCalHistory();

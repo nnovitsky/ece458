@@ -2,6 +2,7 @@ import json
 from rest_framework import status
 from django.test import TestCase
 from django.urls import reverse
+from django.db.models.functions import Lower
 from backend.tables.models import *
 from backend.tables.serializers import *
 from backend.tables.utils import setUpTestAuth, annotate_models
@@ -76,16 +77,14 @@ class ItemModelTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_get_vendor_list_auth(self):
-        vendors = set()
-        for item_model in ItemModel.objects.all():
-            vendors.add(item_model.vendor)
+        vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True).distinct()
         response = self.client.get(reverse('vendor_list'), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
-        self.assertEqual(response.data['vendors'], vendors)
+        self.assertEqual(response.data['vendors'], list(vendors))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_model_num_by_vendor_auth(self):
         vendor = 'v1'
-        models = ItemModel.objects.filter(vendor=vendor)
+        models = ItemModel.objects.order_by(Lower("model_number")).filter(vendor=vendor)
         serializer = ItemModelByVendorSerializer(models, many=True)
         response = self.client.get(reverse('models_by_vendor', args=[vendor]), HTTP_AUTHORIZATION='JWT {}'.format(self.token_staff))
         self.assertEqual(serializer.data, response.data)

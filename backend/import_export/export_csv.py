@@ -53,7 +53,7 @@ def write_model_sheet(db_models, buffer):
         model_list.append(model_row)
 
     model_sheet = pd.DataFrame(model_list, columns=model_headers)
-    model_sheet.to_csv(buffer, index=False)
+    model_sheet.to_csv(buffer, index=False, encoding='utf-8-sig')
     buffer.seek(0)
 
     return buffer, f"model_export_{datetime.now(pytz.timezone('America/New_York')).strftime('%Y_%m_%d')}.csv"
@@ -148,10 +148,10 @@ def handler(queryset, export_code):
 
     if export_code == MODEL_EXPORT:
         output_buffer, file_name = write_model_sheet(queryset['models'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == INSTRUMENT_EXPORT:
         output_buffer, file_name = write_instrument_sheet(queryset['instruments'], BytesIO())
-        response = FileResponse(output_buffer, as_attachment=True, filename=file_name)
+        response = FileResponse(output_buffer, as_attachment=True, filename=file_name, content_type='text/csv')
     elif export_code == ZIP_EXPORT:
         model_buffer, model_file_name = write_model_sheet(queryset['models'], BytesIO())
         instrument_buffer, instrument_file_name = write_instrument_sheet(queryset['instruments'], BytesIO())

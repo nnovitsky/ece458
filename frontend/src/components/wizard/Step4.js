@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import './Wizard.css'
 import LoadTable from './LoadTable.js'
@@ -49,6 +49,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
+                progress={this.props.progress + (this.state.index - 1)*10}
             />
         );
     }
@@ -57,13 +58,13 @@ class Step4 extends React.Component {
         return <div>
             <Form>
                 <h3>Turn on Load Steps and Check Values</h3>
-                    Instructions:
+                Instructions:
                     <ol>
-                        <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
-                        <li><b>Press [Enter] after each time you enter input to hold your input in the cell</b></li>
-                        <li>Click validate to validate your inputs and save them to the calibration event. If the row appears green, your inputs were acceptable callibration values</li>
-                        <li>Click continue once you have entered and validated all inputs</li>
-                    </ol>
+                    <li>Click a cell to enter the current reported (from the display) and the current actual (from the shutmeter) for a load level</li>
+                    <b><li>If the row appears green after inputting both values, your inputs were acceptable callibration values and you can continue entering values</li></b>
+                    <li>If your inputs were not acceptable, the row will appear red and you should read the error message to change your calibration</li>
+                    <li>Click continue once you have entered and validated all inputs</li>
+                </ol>
                 <p>
                     Note: If you change an input, you will be required to revalidate that input. If you do not revalidate, the old input will be held in the calibration record.
                 </p>
@@ -73,18 +74,15 @@ class Step4 extends React.Component {
         </div>
     }
 
-    async getInitialData(index)
-    {
-        wizardServices.getLoadLevelSet(this.state.loadbank_pk, index).then(result =>{
-            if(result.success)
-            {
+    async getInitialData(index) {
+        wizardServices.getLoadLevelSet(this.state.loadbank_pk, index).then(result => {
+            if (result.success) {
                 this.setState({
                     validationData: result.data,
                 })
                 let count = 0;
                 result.data.forEach(element => {
-                    if(element.ca_ok && element.cr_ok)
-                    {
+                    if (element.ca_ok && element.cr_ok) {
                         count++;
                     }
                 })
@@ -95,27 +93,22 @@ class Step4 extends React.Component {
         })
     }
 
-    getStrippedVal(value)
-    {
+    getStrippedVal(value) {
         let ret = null;
-            if(typeof(value) !== 'undefined' && value !== null)
-            {
-                let stripped = value.trim();
-                if(stripped.length !== 0)
-                {
-                    ret = Number(value)
-                }
+        if (typeof(value) !== 'undefined' && value !== null) {
+            let stripped = value.toString().trim();
+            if (stripped.length !== 0) {
+                ret = Number(value)
             }
+        }
         return ret;
     }
 
-    async validate(e) {
+    async validate(load, invalidated) {
 
         this.setState({
             errors: []
         })
-
-        const load = e.target.value
         let res = {
             validate: false
         }
@@ -124,30 +117,34 @@ class Step4 extends React.Component {
             if (element.load === load) {
                 let cr = this.getStrippedVal(element.cr);
                 let ca = this.getStrippedVal(element.ca);
-                wizardServices.addCurrentReading(element.load, cr, ca, Number(element.ideal), Number(element.index), this.state.loadbank_pk)
-                .then(result => {
-                    if(result.success){
-                            element.ca_error = result.data.ca_error
-                            element.cr_error = result.data.cr_error
-                            element.cr_ok = result.data.cr_ok
-                            element.ca_ok = result.data.ca_ok
-                            element.validate = (result.data.cr_ok && result.data.ca_ok)
-                            res.validate = element.validate
-                            if(element.validate) this.setState({num_validated: this.state.num_validated+1})
-                            this.setState({ validationData: this.state.validationData})
-                            if(result.error !== null)
-                            {
+
+                if (ca !== null && cr !== null || invalidated) {
+                    wizardServices.addCurrentReading(element.load, cr, ca, Number(element.ideal), Number(element.index), this.state.loadbank_pk)
+                        .then(result => {
+                            if (result.success) {
+                                element.ca_error = result.data.ca_error
+                                element.cr_error = result.data.cr_error
+                                element.cr_ok = result.data.cr_ok
+                                element.ca_ok = result.data.ca_ok
+                                element.validate = (result.data.cr_ok && result.data.ca_ok)
+                                res.validate = element.validate
+                                if (element.validate) this.setState({ num_validated: this.state.num_validated + 1 })
+                                this.setState({ validationData: this.state.validationData })
+                                if (result.error !== null) {
+                                    this.setState({
+                                        errors: [result.error]
+                                    })
+                                }
+                            }
+                            else {
                                 this.setState({
-                                    errors: [result.error]
+                                    errors: result.error
                                 })
                             }
-                    }
-                    else{
-                        this.setState({
-                            errors: result.error
                         })
-                    }
-                })
+
+                }
+
             }
         })
 
@@ -157,8 +154,7 @@ class Step4 extends React.Component {
         return res
     }
 
-    updateValidated(val)
-    {   
+    updateValidated(val) {
         this.setState({
             num_validated: this.state.num_validated + val
         })
@@ -175,8 +171,9 @@ class Step4 extends React.Component {
         if (currentIndex < 4) {
             this.setState({
                 index: currentIndex + 1,
+                errors: [],
             })
-            this.getInitialData((currentIndex+1))
+            this.getInitialData((currentIndex + 1))
         }
         else if (this.state.index === 4) {
             this.seeIfAllValidated();
@@ -189,31 +186,27 @@ class Step4 extends React.Component {
         if (currentIndex > 1) {
             this.setState({
                 index: currentIndex - 1,
+                errors: [],
             })
-            this.getInitialData((currentIndex-1))
+            this.getInitialData((currentIndex - 1))
         }
         else if (this.state.index === 1) {
             this.props.decrementStep()
         }
     }
 
-    async seeIfAllValidated()
-    {
+    async seeIfAllValidated() {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
-            if(result.success)
-            {
-                if(result.data.errors.unacceptable_load_readings.length === 0 && result.data.errors.missing_load_readings.length === 0)
-                {
+            if (result.success) {
+                if (result.data.errors.unacceptable_load_readings.length === 0 && result.data.errors.missing_load_readings.length === 0) {
                     this.props.incrementStep()
                 }
-                else if(result.data.errors.unacceptable_load_readings.length > 0)
-                {
+                else if (result.data.errors.unacceptable_load_readings.length > 0) {
                     this.setState({
                         errors: ["Cannot continue: Some inputted current readings contain unacceptable values. Please fix and validate them to continue."]
                     })
                 }
-                else if(result.data.errors.missing_load_readings.length > 0)
-                {
+                else if (result.data.errors.missing_load_readings.length > 0) {
                     this.setState({
                         errors: ["Cannot continue: Some current readings are missing, please enter and validate them to continue."]
                     })

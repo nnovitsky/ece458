@@ -4,17 +4,16 @@ import "./Login.css";
 import AuthServices from '../../api/authServices';
 import Button from 'react-bootstrap/Button';
 
-import { Redirect } from "react-router-dom";
-const authServices = new AuthServices();
+const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL;
+const clientID = process.env.REACT_APP_OAUTH_CLIENT_ID;
+const redirectURI = process.env.REACT_APP_OAUTH_REDIRECT_URI
 
 class login extends React.Component {
     state = {
         username: '',
         password: '',
         redirect: null,
-        //oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=http%3A//localhost%3A3000/oauth/consume&response_type=code',
-        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=ece458_2021_s_nen4&redirect_uri=https%3A//vcm-18278.vm.duke.edu/oauth/consume&response_type=code',
-
+        oauthLink: `${baseURL}?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`
     };
 
     async componentDidMount() {
@@ -53,7 +52,7 @@ class login extends React.Component {
                     value={this.state.password}
                     onChange={this.handle_change}
                 />
-                <input type="submit" />
+                <input type="submit" value="Submit"/>
                 <h5>{this.props.error_message}</h5>
                 <p>
                 <h6> or </h6>

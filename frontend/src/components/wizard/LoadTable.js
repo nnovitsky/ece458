@@ -10,7 +10,7 @@ let buttonArray =[]
 
 const loadTable = (props) => {
     let data = props.data
-    let config = makeConfig(props.onValidate);
+    let config = makeConfig();
     return (
         <div>
             <BootstrapTable
@@ -28,24 +28,30 @@ const loadTable = (props) => {
                     cellEditFactory({
                         mode: 'click',
                         autoSelectText: true,
+                        blurToSave: true,
                         beforeSaveCell: (oldValue, newValue, row, column) => { 
-                            if(column.dataField == "ca")
+                            if(newValue !== '')
                             {
-                                row.ca = newValue
+                                if(column.dataField == "ca")
+                                {
+                                    row.ca = newValue
+                                }
+                                if(column.dataField == "cr")
+                                {
+                                    row.cr = newValue
+                                }
+                                if(row.validate || row.cr_ok && row.ca_ok)
+                                {
+                                    props.updateValidated(-1)
+                                    row.validate = false
+                                }
+                                if(typeof(row.cr_error) !== 'undefined') row.cr_error = null;
+                                if(typeof(row.ca_error) !== 'undefined') row.ca_error = null;
+                                if(typeof(row.cr_ok) !== 'undefined') row.cr_ok = false;
+                                if(typeof(row.ca_ok) !== 'undefined') row.ca_ok = false;
                             }
-                            if(column.dataField == "cr")
-                            {
-                                row.cr = newValue
-                            }
-                            if(row.validate)
-                            {
-                                props.updateValidated(-1)
-                                row.validate = false
-                            }
-                                row.cr_error = null
-                                row.ca_error = null
-                                row.cr_ok = false
-                                row.ca_ok = false
+
+                            props.onValidate(row.load);
                         }
                     })
                 }
@@ -57,13 +63,17 @@ const loadTable = (props) => {
 let rowStyle = (row, rowIndex) => {
     if(typeof(row) !== 'undefined' && (row.validate || row.cr_ok && row.ca_ok))
     {
-        return 'validated'
+        return 'validated';
+    }
+    else if(typeof(row) !== 'undefined' && (typeof(row.cr_ok) === 'undefined' && typeof(row.ca_ok) === 'undefined'))
+    {
+        return 'blank';
     }
     return 'notValidated';
 }
 
 
-let makeConfig = (onValidate) => {
+let makeConfig = () => {
     return (
         [
             {
@@ -72,35 +82,20 @@ let makeConfig = (onValidate) => {
                 text: 'Load Level',
                 headerClasses: 'format-width-load-level',
                 classes: 'format-basic-cells'
-                //headerClasses: 'vendor-column'
             },
             {
                 dataField: 'cr',
                 text: 'Current Reported',
                 classes: 'format-basic-cells',
+                editorClasses: 'custom-class',
+                headerClasses: 'input-headers'
             },
             {
                 dataField: 'ca',
                 text: 'Current Actual',
                 classes: 'format-basic-cells',
-            },
-            {
-                dataField: 'button',
-                text: 'Check',
-                sort: false,
-                classes: 'format-basic-cells',
-                editable: () => {
-                    return false;
-                },
-                formatter: (cell, row) => {
-                    let button = <Button onClick={e => {onValidate(e).then(res => {
-                                                            row.validate = res.validate
-                                                        })}} value={row.load} className="data-table-button format-basic-cells">Validate</Button>
-                    buttonArray.push(button)
-                    return (
-                        button
-                    )
-                }
+                editorClasses: 'custom-class',
+                headerClasses: 'input-headers',
             },
             {
                 dataField: 'ideal',
@@ -132,8 +127,10 @@ let makeConfig = (onValidate) => {
                 },
                 formatter: (cell) => {
                     if(cell) return <span>Yes</span>;
+                    else if(typeof(cell) === 'undefined') return <span></span>;
                     else return <span>No</span>
-                }
+                },
+                headerClasses: 'short-headers'
             },
             {
                 dataField: 'ca_error',
@@ -159,7 +156,8 @@ let makeConfig = (onValidate) => {
                 formatter: (cell) => {
                     if(cell) return <span>Yes</span>;
                     else return <span>No</span>
-                }
+                },
+                headerClasses: 'short-headers'
             },
         ]
     )

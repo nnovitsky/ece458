@@ -4,6 +4,7 @@
     white-space:nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align:middle !important;
     padding: .1rem .1rem .1rem .1rem !important;
 }
 
@@ -72,6 +73,14 @@
     color: red !important;
 }
 
+.data-table-button:disabled.red {
+    color: #6c757d !important;
+}
+.data-table-button:disabled:hover.red {
+    color: #6c757d !important;
+    text-decoration: none !important;
+}
+
 .data-table-button:hover.red {
     color: red !important;
     text-decoration: underline !important;
@@ -80,4 +89,24 @@
 /* formats the no result message */
 .data-table-no-results {
     padding: 50px;
+}
+
+/* applies to the entire data table row when its selected */
+.selection-row {
+    background-color: rgba(0,0,0,.15) !important;
+}
+
+/* used to format the cell for the select row checkbox */
+.selection-cell input {
+    margin: auto !important;
+    width: 100%;
+}
+
+.selection-cell-header input {
+        margin: auto !important;
+    width: 100%;
+}
+
+.selection-cell-header {
+    width: 25px !important;
 }

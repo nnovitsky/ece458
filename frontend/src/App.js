@@ -18,40 +18,49 @@ import OauthRoute from './components/OauthRoute';
 import GenericLoader from './components/generic/GenericLoader.js';
 import AuthServices from './api/authServices';
 import Configs from './api/config.js';
+import { hasModelEditAccess, hasInstrumentEditAccess, hasAdminAccess } from './components/generic/Util';
 
 //const URL = 'http://localhost:3000/'
 const URL = Configs + '/'
 const authServices = new AuthServices();
 
 class App extends Component {
-
+ 
   constructor(props) {
     super(props);
     this.state = {
-      logged_in: localStorage.getItem('token') ? true : false,
-      username: '',
+      logged_in: window.sessionStorage.getItem('token') ? true : false,
+      user: {
+        username: '',
+        permissions_groups: [],
+      },
       error_message: '',
-      admin: false,
       redirect: null,
       isLoading: false,
     };
+    console.log('constructor');
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.state.logged_in) {
-      authServices.getCurrentUser().then((result) => {
+      await authServices.getCurrentUser().then((result) => {
         if (result.success) {
           this.setState({
-            username: result.data.username,
-            admin: result.admin,
+            user: {
+              ...this.state.user,
+              username: result.data.username,
+              permissions_groups: result.data.groups,
+            }
           })
         } else {
-          this.emptyLocalStorage();
-          localStorage.removeItem('token');
+          this.emptySessionStorage();
           this.setState({
             logged_in: false,
-            username: '',
-            admin: false
+            user: {
+              ...this.state.user,
+              username: '',
+              permissions_groups: [],
+            }
           });
         }
       }
@@ -63,18 +72,24 @@ class App extends Component {
   }
 
   handle_oath_login = (code) => {
+    console.log('oauth login');
     this.setState({
       isLoading: true
     });
     authServices.getOauthToken(code).then(result => {
       if (result.success) {
-        localStorage.setItem('token', result.data.token);
+        window.sessionStorage.setItem('token', result.data.token);
+        console.log(result.data.user);
         this.setState({
           logged_in: true,
-          username: result.data.user.username,
-          admin: result.data.user.groups.includes("admin"),
           redirect: true,
-          isLoading: false
+          isLoading: false,
+          user: {
+            ...this.state.user,
+            username: result.data.user.username,
+            permissions_groups: result.data.user.groups,
+          }
+          
         });
       }
       else {
@@ -87,45 +102,49 @@ class App extends Component {
 
   }
 
-  
+
 
   handle_login = (e, data) => {
     this.setState({ error_message: '' })
-      e.preventDefault();
-      authServices.login(data)
-        .then(res => res.json())
-        .then(json => {
-          if (typeof json.user === 'undefined') {
-            this.setState({ error_message: 'Incorrect Login Credentials' });
-          }
-          else {
-            localStorage.setItem('token', json.token);
-            this.setState({
-              logged_in: true,
+    e.preventDefault();
+    authServices.login(data)
+      .then(res => res.json())
+      .then(json => {
+        if (typeof json.user === 'undefined') {
+          this.setState({ error_message: 'Incorrect Login Credentials' });
+        }
+        else {
+          window.sessionStorage.setItem('token', json.token);
+          this.setState({
+            logged_in: true,
+            redirect: true,
+            user: {
+              ...this.state.user,
               username: json.user.username,
-              admin: json.user.groups.includes("admin"),
-              redirect: true
-            });
-            this.setState({ error_message: '' });
-          }
-        });
+              permissions_groups: json.user.groups,
+            }
+          });
+          this.setState({ error_message: '' });
+        }
+      });
   };
 
 
   handle_logout = () => {
-    localStorage.removeItem('token');
-    this.emptyLocalStorage();
     this.emptySessionStorage();
     this.setState({
       logged_in: false,
-      username: '',
-      admin: false,
-      redirect: false
+      redirect: false,
+      user: {
+        ...this.state.user,
+        username: '',
+        permissions_groups: [],
+      }
     });
   };
 
-  emptyLocalStorage = () => {
-    localStorage.removeItem('oauth');
+  clearOauthStorage = () => {
+    window.sessionStorage.removeItem('oauth');
   }
 
   emptySessionStorage = () => {
@@ -136,48 +155,62 @@ class App extends Component {
   // called with a page component that should only be displayed if the user is logged in
   // if not, they will be redirected to login
   loggedInPath = (protectedComponent) => {
-    const isAuthenticated = localStorage.getItem('token');
-
-    return isAuthenticated && typeof (isAuthenticated) !== 'undefined' ? protectedComponent : <Redirect to="/" />;
+    const token = window.sessionStorage.getItem('token');
+    const isLoggedIn = token && typeof (token) !== 'undefined';
+    if(isLoggedIn) {
+      return protectedComponent;
+    } else {
+      this.handle_logout();
+      return <Redirect to={{ pathname: '/' }}/>
+    }
   }
 
   // called with a page component that should only be displayed if the user is an admin
   // if not, they will be redirected to the user profile page
   adminPath = (adminComponent) => {
-    return this.state.admin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
+    const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
+    return isAdmin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
+  }
+
+  // only allows a user to this page if they have model and/or instrument permissions
+  // the page itself will only display content that they should be able to see (ie hide stuff they shouldnt)
+  categoryPagePath = (component) => {
+    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
+    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);
+    return (isModelAdmin || isInstrumentAdmin) ? component : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
   render(
-    
     form = <LoginPage handle_login={this.handle_login} error_message={this.state.error_message} isLoggedIn={this.state.logged_in} />,
   ) {
+    const permissions = this.state.user.permissions_groups;
+    const isAdmin = hasAdminAccess(permissions);
     return (
-      <Beforeunload onBeforeunload={this.emptyLocalStorage}>
+      <Beforeunload onBeforeunload={this.clearOauthStorage}>
         <BrowserRouter>
           <div>
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={this.state.admin} user={this.state.username} />
+            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={isAdmin} user={this.state.user.username} />
             <Switch>
               {/* routes below require being logged in */}
-              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage is_admin={this.state.admin} />)} exact />
-              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView is_admin={this.state.admin} />)} exact />
+              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
+              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage permissions={permissions}/>)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage permissions={permissions}/>)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView username={this.state.user.username} permissions={permissions}/>)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
-              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={this.state.admin} />)} exact />
-              <Route path="/categories" render={() => this.adminPath(<CategoriesPage is_admin={this.state.admin} />)} exact />
+              <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={isAdmin} username={this.state.user.username} />)} exact />
+              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups}/>)} exact />
               {/* routes below are oauth */}
-            <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
+              <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
 
-          </Switch>
-          {this.state.logged_in ? null : form}
-          {this.state.redirect ? (<Redirect to="/user-profile" />) : null}
-          {this.state.logged_in && window.location.href === URL ? (<Redirect to="/user-profile" />) : null}
-        </div>
-      </BrowserRouter>
+            </Switch>
+            {this.state.logged_in ? null : form}
+            {this.state.redirect ? (<Redirect to="/user-profile" />) : null}
+            {this.state.logged_in && window.location.href === URL ? (<Redirect to="/user-profile" />) : null}
+          </div>
+        </BrowserRouter>
       </Beforeunload>
     );
   }

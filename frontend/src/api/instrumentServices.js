@@ -5,7 +5,7 @@ export default class InstrumentServices {
 
     // handled modified/expired tokens
     async getInstruments(filters, sort_by, show_all, pageNum) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -68,7 +68,7 @@ export default class InstrumentServices {
 
     // used to get the serial numbers for the model detail view
     async getInstrumentsByModelPk(model_pk, pageNum, showAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -119,7 +119,7 @@ export default class InstrumentServices {
 
     // handled modified/expired tokens
     async getInstrument(instrumentPk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -180,7 +180,7 @@ export default class InstrumentServices {
             success: true,
             errors: {}
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/instruments/`, {
             method: 'POST',
@@ -233,7 +233,7 @@ export default class InstrumentServices {
             success: true,
             errors: []
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/instruments/${instrumentPk}/`, {
             method: 'PUT',
@@ -268,7 +268,7 @@ export default class InstrumentServices {
 
     // handled modified/expired token
     async deleteInstrument(instrumentPk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -322,7 +322,7 @@ export default class InstrumentServices {
             errors: []
         }
 
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/calibration_events/`, {
             method: 'POST',
@@ -358,7 +358,7 @@ export default class InstrumentServices {
     }
 
     async getCalFromInstrument(pk, pageNum, showAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -408,7 +408,7 @@ export default class InstrumentServices {
 
     // safely handled modified/expired tokens
     async getCalibrationPDF(pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -452,7 +452,7 @@ export default class InstrumentServices {
     }
 
     async getCalEventFile(cal_pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -498,7 +498,7 @@ export default class InstrumentServices {
 
 
     async importInstrumentCSV(csvFile) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -541,7 +541,7 @@ export default class InstrumentServices {
 
 
     async exportInstruments(filters, isAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -600,7 +600,7 @@ export default class InstrumentServices {
 
 
     async exportSampleInstrumentCSV() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,

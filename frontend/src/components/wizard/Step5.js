@@ -1,5 +1,5 @@
 import React from 'react'
-import Base from './Base.js';
+import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import './Wizard.css'
@@ -56,6 +56,7 @@ class Step5 extends React.Component {
                 incrementStep={this.props.incrementStep}
                 decrementStep={this.props.decrementStep}
                 disableContinue={!this.state.validated}
+                progress={this.props.progress}
 
             />
         );
@@ -82,7 +83,7 @@ class Step5 extends React.Component {
                     <Form.Label style={{ display: "block" }}>VR Error: &nbsp;{this.state.vr_error}</Form.Label>
                     <Form.Label style={{ display: "block" }}>VR Ok?: &nbsp;{this.state.vr_ok}</Form.Label>
                     <Form.Label style={{ display: "block" }}>VA Error: &nbsp;{this.state.va_error}</Form.Label>
-                    <Form.Label style={{ display: "block" }}>VR Ok?: &nbsp;{this.state.va_ok}</Form.Label>
+                    <Form.Label style={{ display: "block" }}>VA Ok?: &nbsp;{this.state.va_ok}</Form.Label>
                 </Form.Group>
             </Form>
 

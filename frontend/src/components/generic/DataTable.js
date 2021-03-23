@@ -34,13 +34,36 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 
 //noResults: text to be displayed when no data is present
 
+// isHoverMessageDisplayed: optional text about hovering over a cell, defaults to true
 // inlineElements: optional - elements to be displayed inline next to the total results/show all components, probs want that element to be float left
 
+// this is optional, but if select row is to be enabled, every props must be filled out
+// selectRow: {
+//     isHidden  //boolean set to true if the select column should be hidden
+//     onSelect    // handler that will be called on a row being selected
+//     onSelectAll //handler that will be called on select all being clicked
+//     selected    //an array of keys (the field that is set to be the key for the table) of selected rows
+// }
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
+    let selectRowProps = props.selectRow ? {
+        mode: 'checkbox',
+        clickToSelect: true,
+        selected: props.selectRow.selected,
+        onSelect: props.selectRow.onSelect,
+        onSelectAll: props.selectRow.onSelectAll,
+        hideSelectColumn: props.selectRow.isHidden,
+        classes: "selection-row",
+    } : {
+        mode: 'checkbox',
+        clickToSelect: false,
+        hideSelectColumn: true,
+    };
+
+    const hoverMessage = props.isHoverMessageDisplayed ? (<span>(Hover over a cell for more information)</span>) : null;
     return (
         <div className="data-table">
-            <span>(Hover over a cell for more information)</span>
+            {hoverMessage}
 
             <PaginationProvider
                 pagination={paginationFactory(options)}
@@ -51,21 +74,21 @@ const NewModelTable = (props) => {
                         paginationTableProps
                     },
                         totalAndShowAll = (
-                        <div className="pagination-top-row">
-                            {props.inlineElements}
+                            <div className="pagination-top-row">
+                                {props.inlineElements}
                                 {(props.pagination.totalSize === 0) ? null : (
-                                <>
-                                    <SizePerPageDropdownStandalone
-                                        {...paginationProps}
+                                    <>
+                                        <SizePerPageDropdownStandalone
+                                            {...paginationProps}
 
-                                    />
-                                    <PaginationTotalStandalone
-                                        {...paginationProps}
-                                    />
-                                </>)}
-                            
+                                        />
+                                        <PaginationTotalStandalone
+                                            {...paginationProps}
+                                        />
+                                    </>)}
 
-                        </div>),
+
+                            </div>),
                         paginationPages = (props.pagination.totalSize === 0) ? null : (<div className="" display={(props.pagination.totalSize === 0) ? 'none' : 'block'}>
                             <PaginationListStandalone
                                 {...paginationProps}
@@ -88,6 +111,8 @@ const NewModelTable = (props) => {
                                 bodyClasses='data-table'
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
+                                rowClasses={props.rowClasses}
+                                selectRow={selectRowProps}
                             />
                             {paginationPages}
                         </div>
@@ -107,6 +132,7 @@ const noResults = (text) => {
 }
 
 const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
+    const lastPage = Math.ceil(totalSize / sizePerPage);
     return ({
         custom: true,
         page: page,
@@ -115,15 +141,15 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         paginationSize: 3,
         pageStartIndex: 1,
         // alwaysShowAllBtns: true, // Always show next and previous button
-        // withFirstAndLast: false, // Hide the going to First and Last page button
+        withFirstAndLast: true, // Hide the going to First and Last page button
         // hideSizePerPage: true, // Hide the sizePerPage dropdown always
         hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
         // firstPageText: 'First',
         // prePageText: 'Back',
         // nextPageTitle: 'First page',
         // prePageTitle: 'Pre page',
-        // firstPageTitle: 'Next page',
-        // lastPageTitle: 'Last page',
+        firstPageText: '1 ...',
+        lastPageText: `... ${lastPage}`,
         paginationTotalRenderer: customTotal,
         showTotal: true,
         disablePageTitle: true,
@@ -172,4 +198,9 @@ export default NewModelTable;
 NewModelTable.defaultProps = {
     data: [],
     inlineElements: <></>,
+    cellEdit: false,
+    rowClasses: '',
+    selectRow: false,
+    extraTableParams: {},
+    isHoverMessageDisplayed: true,
 }

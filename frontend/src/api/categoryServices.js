@@ -6,7 +6,7 @@ export default class CategoryServices {
     // type is either 'instrument' or 'model'
     // showAll is a boolean
     async getCategories(type, showAll, desiredPage) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -70,7 +70,7 @@ export default class CategoryServices {
     // type is either instrument or model
     // name is the category name
     async addCategory(type, name) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let data = {
             name: name,
@@ -125,7 +125,7 @@ export default class CategoryServices {
 
     // type is either instrument or model
     async editCategory(type, name, pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let data = {
             name: name,
@@ -179,7 +179,7 @@ export default class CategoryServices {
     }
 
     async deleteCategory(type, pk, force_delete) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,

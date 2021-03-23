@@ -6,6 +6,7 @@ import base64
 import jwt
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.models import update_last_login
 from backend.tables.models import *
 from backend.tables.serializers import UserTokenSerializer
 
@@ -20,6 +21,8 @@ def login_oauth_user(id_token, user_details):
                     email=user_details['email'])
         user.set_password(oauth_pw)
         user.save()
+    update_last_login(None, user)
+    if not UserType.contains_user(user, "oauth"):
         try:
             UserType.objects.get(name="oauth").users.add(user)
         except UserType.DoesNotExist:
@@ -63,7 +66,7 @@ def get_token(code):
     if "OAUTH_REDIRECT_URI" in os.environ:
         redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
     else:
-        redirect_uri = "https://vcm-18278.vm.duke.edu/oauth/consume"
+        redirect_uri = "https://hptmanager.colab.duke.edu/oauth/consume"
 
     payload = urllib.parse.urlencode({
         'grant_type': "authorization_code",

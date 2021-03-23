@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import '../generic/General.css';
 import './CategoriesPage.css';
 import ErrorFile from "../../api/ErrorMapping/CategoryErrors.json";
-import { rawErrorsToDisplayed } from '../generic/Util';
+import { rawErrorsToDisplayed, hasModelEditAccess, hasInstrumentEditAccess } from '../generic/Util';
 
 import LogoHeader from '../generic/LogoTitleHeader';
 import CategoriesTable from './CategoriesTable';
@@ -88,13 +88,16 @@ class CategoriesPage extends Component {
     }
 
     render() {
-        let createPopup = (this.state.createPopup.isShown) ? this.makeCreatePopup() : null;
-        let renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
-        let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
-
-        let buttonRow = (<div className="table-button-row">
+        const createPopup = (this.state.createPopup.isShown) ? this.makeCreatePopup() : null;
+        const renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
+        const deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
+        const buttonRow = (<div className="table-button-row">
             <Button onClick={this.onCreateClicked}>Create</Button>
-        </div>)
+            </div>);
+    
+        const isModelAdmin = hasModelEditAccess(this.props.permissions);
+        const content = isModelAdmin ? this.makeTabs(buttonRow) : this.makeInstrumentContent(buttonRow);
+        const title = isModelAdmin ? 'Category Management' : 'Instrument Category Management';
         return (
             <div className="background">
                 {createPopup}
@@ -104,45 +107,64 @@ class CategoriesPage extends Component {
                     isShown={this.state.isLoading}
                 />
                 <div className="row mainContent">
-
+                    <LogoHeader
+                        title={title}
+                        headerButtons={null}
+                    />
                     <Col className="category-page-content">
-                        <LogoHeader
-                            title="Category Management"
-                        />
-                        <Tabs defaultActiveKey={this.state.currentTab} onSelect={this.onTabChange}>
-                            <Tab eventKey="model" title="Model Categories">
-                                <div className="categories-table">
-                                    <CategoriesTable
-                                        data={this.state.modelCategories.data}
-                                        onTableChange={this.onModelTableChange}
-                                        pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
-                                        onCategoryEdit={this.onEditClicked}
-                                        onCategoryDelete={this.onDeleteClick}
-                                        inlineElements={buttonRow}
-                                        noResultsText="No Model Categories"
-                                    />
-                                </div>
-
-                            </Tab>
-                            <Tab eventKey="instrument" title="Instrument Categories">
-                                <div className="categories-table">
-                                <CategoriesTable
-                                    data={this.state.instrumentCategories.data}
-                                    onTableChange={this.onInstrumentTableChange}
-                                    pagination={{ page: this.state.instrumentCategories.pagination.currentPageNum, sizePerPage: (this.state.instrumentCategories.pagination.showAll ? this.state.instrumentCategories.pagination.resultCount : this.state.instrumentCategories.pagination.resultsPerPage), totalSize: this.state.instrumentCategories.pagination.resultCount }}
-                                    onCategoryEdit={this.onEditClicked}
-                                    onCategoryDelete={this.onDeleteClick}
-                                    inlineElements={buttonRow}
-                                        noResultsText="No Instrument Categories"
-                                />
-                                </div>
-                            </Tab>
-
-                        </Tabs>
-
+                        {content}
                     </Col>
                 </div>
             </div>
+        )
+    }
+
+    makeTabs(buttonRow) {
+        return (
+            <Tabs defaultActiveKey={this.state.currentTab} onSelect={this.onTabChange}>
+                <Tab eventKey="model" title="Model Categories">
+                    <div className="categories-table">
+                        <CategoriesTable
+                            data={this.state.modelCategories.data}
+                            onTableChange={this.onModelTableChange}
+                            pagination={{ page: this.state.modelCategories.pagination.currentPageNum, sizePerPage: (this.state.modelCategories.pagination.showAll ? this.state.modelCategories.pagination.resultCount : this.state.modelCategories.pagination.resultsPerPage), totalSize: this.state.modelCategories.pagination.resultCount }}
+                            onCategoryEdit={this.onEditClicked}
+                            onCategoryDelete={this.onDeleteClick}
+                            inlineElements={buttonRow}
+                            noResultsText="No Model Categories"
+                        />
+                    </div>
+
+                </Tab>
+                <Tab eventKey="instrument" title="Instrument Categories">
+                    <div className="categories-table">
+                        <CategoriesTable
+                            data={this.state.instrumentCategories.data}
+                            onTableChange={this.onInstrumentTableChange}
+                            pagination={{ page: this.state.instrumentCategories.pagination.currentPageNum, sizePerPage: (this.state.instrumentCategories.pagination.showAll ? this.state.instrumentCategories.pagination.resultCount : this.state.instrumentCategories.pagination.resultsPerPage), totalSize: this.state.instrumentCategories.pagination.resultCount }}
+                            onCategoryEdit={this.onEditClicked}
+                            onCategoryDelete={this.onDeleteClick}
+                            inlineElements={buttonRow}
+                            noResultsText="No Instrument Categories"
+                        />
+                    </div>
+                </Tab>
+
+            </Tabs>
+        )
+    }
+
+    makeInstrumentContent(buttonRow) {
+        return(
+            <CategoriesTable
+                data={this.state.instrumentCategories.data}
+                onTableChange={this.onInstrumentTableChange}
+                pagination={{ page: this.state.instrumentCategories.pagination.currentPageNum, sizePerPage: (this.state.instrumentCategories.pagination.showAll ? this.state.instrumentCategories.pagination.resultCount : this.state.instrumentCategories.pagination.resultsPerPage), totalSize: this.state.instrumentCategories.pagination.resultCount }}
+                onCategoryEdit={this.onEditClicked}
+                onCategoryDelete={this.onDeleteClick}
+                inlineElements={buttonRow}
+                noResultsText="No Instrument Categories"
+            />
         )
     }
 

@@ -4,19 +4,21 @@ from django.contrib.auth.models import User
 from django.http import FileResponse
 from django.http.request import QueryDict
 from django.db.models.functions import Lower
+from django.contrib.auth.models import update_last_login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+from rest_framework_jwt.views import ObtainJSONWebToken
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType
 from backend.tables.serializers import *
-from backend.tables.utils import get_page_response, validate_user, get_calibration_mode_pks, annotate_instruments
+from backend.tables.utils import *
 from backend.tables.filters import *
 from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
-from backend.config.admin_config import ADMIN_USERNAME
+from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
@@ -62,10 +64,8 @@ def vendor_list(request):
     """
     List all vendors in DB.
     """
-    vendors = set()
-    for item_model in ItemModel.objects.all():
-        vendors.add(item_model.vendor)
-    return Response({'vendors': vendors}, status=status.HTTP_200_OK)
+    vendors = ItemModel.objects.order_by(Lower("vendor")).values_list('vendor', flat=True).distinct()
+    return Response({'vendors': list(vendors)}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -73,7 +73,7 @@ def model_by_vendor_list(request, vendor):
     """
     List model number and pk for all models by a given vendor.
     """
-    item_models = ItemModel.objects.filter(vendor=vendor)
+    item_models = ItemModel.objects.order_by(Lower("model_number")).filter(vendor=vendor)
     serializer = ItemModelByVendorSerializer(item_models, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -93,6 +93,9 @@ def calibration_event_list(request):
 
     elif request.method == 'POST':
         # set user to current user
+        if not UserType.contains_user(request.user, "calibrations"):
+            return Response(
+                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         request_data = request.data.dict() if type(request.data) == QueryDict else request.data
         if 'file' not in request_data or request_data['file'] == '':
             request_data['file'] = None
@@ -190,7 +193,7 @@ def instruments_list(request):
         return get_page_response(instruments, request, ListInstrumentReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "instruments"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'serial_number' in request.data and request.data['serial_number'] == '': request.data['serial_number'] = None
@@ -218,7 +221,7 @@ def instruments_detail(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "instruments"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         # disable changing instrument's model
@@ -233,7 +236,7 @@ def instruments_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "instruments"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         instrument.delete()
@@ -254,7 +257,7 @@ def models_list(request):
         return get_page_response(models, request, ItemModelReadSerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         mode_pks, error = get_calibration_mode_pks(request)
@@ -286,7 +289,7 @@ def models_detail(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if 'vendor' not in request.data: request.data['vendor'] = model.vendor
@@ -305,7 +308,7 @@ def models_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if len(model.instrument_set.all()) > 0:
@@ -351,7 +354,7 @@ def import_models_csv(request):
     Imports a .csv file that contains model information based on requirements
     and uploads the data to the db.
     """
-    if not UserType.contains_user(request.user, "admin"):
+    if not UserType.contains_user(request.user, "models"):
         return Response({"permission_error": ["User does not have permission."]},
                         status=status.HTTP_401_UNAUTHORIZED)
 
@@ -386,7 +389,7 @@ def import_instruments_csv(request):
     Imports a .csv file that contains instrument information based on requirements
     and uploads the data to the db.
     """
-    if not UserType.contains_user(request.user, "admin"):
+    if not UserType.contains_user(request.user, "instruments"):
         return Response({"permission_error": ["User does not have permission."]},
                         status=status.HTTP_401_UNAUTHORIZED)
 
@@ -447,11 +450,11 @@ def get_example_instrument_csv(request):
 
 
 # USERS
-class TokenAuth(APIView):
+class TokenAuth(ObtainJSONWebToken):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-        error = Response("Unable to login with provided credentials", status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        error = Response({"non_field_errors": ["Unable to log in with provided credentials."]}, status=status.HTTP_400_BAD_REQUEST)
         if 'username' not in request.data: return error
         try:
             user = User.objects.get(username=request.data['username'])
@@ -459,20 +462,22 @@ class TokenAuth(APIView):
                 return error
         except User.DoesNotExist:
             return error
-        serializer = UserTokenSerializer(user, data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return error
+        # generate admin group on login from ADMIN_USERNAME if doesn't exist
+        if user.username == ADMIN_USERNAME and not UserType.contains_user(user, "admin"):
+            edit_user_groups({"admin"}, user)
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            update_last_login(None, user)
+        return response
 
 
-@api_view(['PUT', 'DELETE'])
-def toggle_admin(request, user_pk):
-    try:
-        admin_group = UserType.objects.get(name="admin")
-    except UserType.DoesNotExist:
-        admin_group = UserType(name="admin").save()
+@api_view(['GET'])
+def get_permissions(request):
+    return Response({'groups': PERMISSION_GROUPS}, status=status.HTTP_200_OK)
 
+
+@api_view(['PUT'])
+def toggle_groups(request, user_pk):
     if not UserType.contains_user(request.user, "admin"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
@@ -481,19 +486,14 @@ def toggle_admin(request, user_pk):
     except User.DoesNotExist:
         return Response({"description": ["User does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'PUT':
-        if not UserType.contains_user(other_user, "admin"):
-            admin_group.users.add(other_user)
-        serializer = UserSerializer(other_user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    groups = set(request.data['groups'])
+    if other_user.username == ADMIN_USERNAME and "admin" not in groups:
+        return Response({"description": ["Cannot remove permissions of superadmin."]}, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        if other_user.username == ADMIN_USERNAME:
-            return Response({"description": ["Cannot revoke this user's admin privileges."]}, status=status.HTTP_400_BAD_REQUEST)
-        if UserType.contains_user(other_user, "admin"):
-            admin_group.users.remove(other_user)
-        serializer = UserSerializer(other_user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    groups = edit_user_groups(groups, other_user)
+    if groups == 'ERROR':
+        return Response({"description": ["Invalid group name."]}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'groups': list(groups)}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'PUT'])
@@ -511,6 +511,7 @@ def current_user(request):
             return Response(
                 {"oauth_error": ["Oauth users cannot edit profile."]}, status=status.HTTP_401_UNAUTHORIZED)
         error_check = validate_user(request, create=False)
+        if 'groups' in request.data: request.data.pop('groups')
         if error_check: return error_check
         if 'username' not in request.data: request.data['username'] = request.user.username
         if 'password' in request.data:
@@ -547,7 +548,7 @@ def user_list(request):
         if delete_user.pk == request.user.pk:
             return Response({"user_error": ["Cannot delete self."]}, status=status.HTTP_400_BAD_REQUEST)
         if UserType.contains_user(delete_user, "oauth"):
-            return Response({"user_error": ["Cannot delete oauth user."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"user_error": ["Cannot delete OAuth user."]}, status=status.HTTP_400_BAD_REQUEST)
         if delete_user.username == ADMIN_USERNAME:
             return Response({"user_error": ["Cannot delete main site administrator."]},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -587,7 +588,7 @@ def model_category_list(request):
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemModelCategorySerializer(data=request.data)
@@ -607,7 +608,7 @@ def instrument_category_list(request):
         return get_page_response(categories, request, ListInstrumentCategorySerializer, nextPage, previousPage)
 
     elif request.method == 'POST':
-        if not UserType.contains_user(request.user, "admin"):
+        if not UserType.contains_user(request.user, "instruments"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = InstrumentCategorySerializer(data=request.data)
@@ -628,7 +629,7 @@ def model_category_detail(request, pk):
         category = ItemModelCategory.objects.get(pk=pk)
     except ItemModelCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if not UserType.contains_user(request.user, "admin"):
+    if not UserType.contains_user(request.user, "models"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -661,7 +662,7 @@ def instrument_category_detail(request, pk):
         category = InstrumentCategory.objects.get(pk=pk)
     except InstrumentCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if not UserType.contains_user(request.user, "admin"):
+    if not UserType.contains_user(request.user, "instruments"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 

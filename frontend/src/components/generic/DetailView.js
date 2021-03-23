@@ -1,9 +1,9 @@
 import React from 'react';
 import './DetailView.css';
-import LogoTitleHeader from './LogoTitleHeader';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
+import LogoTitleHeader from './LogoTitleHeader';
 
 // props
 // title: a string to be displayed at the top of the page
@@ -15,7 +15,11 @@ const detailView = (props) => {
 
     return (
         <div className="background">
-            <div className="mainContent">
+            <div className="row mainContent">
+                <LogoTitleHeader
+                    title={props.title}
+                    headerButtons={props.headerButtons}
+                />
                 <div className="detail-view">
 
 
@@ -24,11 +28,6 @@ const detailView = (props) => {
                             
                             </div> */}
                     <div className="instrument-info-block">
-                        <LogoTitleHeader
-                            title={props.title}
-                            buttons={props.headerButtons}
-                        />
-
                         <Row>
                             <Col className="col-5">
                                 {props.col5}

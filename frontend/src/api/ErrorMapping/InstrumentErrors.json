@@ -11,9 +11,9 @@
       "This field may not be null.": "Both the vendor and the model number are required fields"
     },
     "asset_tag": {
-      "Ensure this value is greater than or equal to 100000.": "The asset tag must be greater than or equal to 100000",
-      "Ensure this value is less than or equal to 999999.": "The asset tag must be less than or equal to 999999",
-      "A valid integer is required.": "Please enter an integer",
+      "Ensure this value is greater than or equal to 100000.": "Please enter an asset tag greater than or equal to 100000",
+      "Ensure this value is less than or equal to 999999.": "Please enter an asset tag less than or equal to 999999",
+      "A valid integer is required.": "Please enter an integer for the asset tag",
       "instrument with this asset tag already exists.": "This asset tag is already in use by another instrument"
     },
     "non_field_errors": {

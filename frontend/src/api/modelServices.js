@@ -5,7 +5,7 @@ export default class ModelServices {
 
     // catches if the token is modified, good for error catching
     async getModels(filters, sort_by, show_all, pageNum) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -67,7 +67,7 @@ export default class ModelServices {
 
     async getNewModelPage(pageUrl) {
 
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -111,7 +111,7 @@ export default class ModelServices {
     // Catches errors from the backend and has 
     // appropriate error handling if the token gets bad
     async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let data = {
             vendor: vendor,
@@ -122,6 +122,8 @@ export default class ModelServices {
             itemmodelcategory_set: categories.map(el => el.pk),
             calibration_modes: calMode
         }
+
+        console.log(data);
 
         let result = {
             success: true,
@@ -164,7 +166,7 @@ export default class ModelServices {
     // Catches errors from the backend and has 
 
     async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let data = {
             vendor: vendor,
@@ -214,7 +216,7 @@ export default class ModelServices {
 
     // handling bad auth token
     async getModel(pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -253,7 +255,7 @@ export default class ModelServices {
     }
 
     async deleteModel(pk) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
         let result = {
             success: true,
             errors: [],
@@ -289,7 +291,7 @@ export default class ModelServices {
 
     // // handles bad token
     // async modelFilterSearch(filters) {
-    //     const token = localStorage.getItem('token');
+    //     const token = window.sessionStorage.getItem('token');
 
     //     let result = {
     //         success: true,
@@ -337,7 +339,7 @@ export default class ModelServices {
     // }
 
     async getCalModes() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -382,7 +384,7 @@ export default class ModelServices {
 
     // has handling if the token is modified/expired
     async getVendors() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -427,7 +429,7 @@ export default class ModelServices {
 
        // has handling if the token is modified/expired
     async getModelByVendor(vendor) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -470,7 +472,7 @@ export default class ModelServices {
     }
 
     async importModelCSV(csvFile) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -510,7 +512,7 @@ export default class ModelServices {
     }
 
     async exportModels(filters, isAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -568,7 +570,7 @@ export default class ModelServices {
     }
 
     async exportSampleModelCSV() {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,

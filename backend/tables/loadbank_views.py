@@ -110,8 +110,7 @@ def add_current_reading(request, lb_cal_pk):
         serializer = LoadCurrentWriteSerializer(prev_reading, data=request.data)
     except LoadCurrent.DoesNotExist:
         serializer = LoadCurrentWriteSerializer(data=request.data)
-
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         reading = serializer.save()
         data = serializer.data
         reading.cr_ok = data['cr_ok']

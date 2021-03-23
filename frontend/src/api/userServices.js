@@ -6,7 +6,7 @@ export default class UserServices {
 
     // handles modified/expired token
     getUsers(desiredPage, isShowAll) {
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         let result = {
             success: true,
@@ -65,7 +65,7 @@ export default class UserServices {
             success: true,
             errors: []
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/create_user/`, {
             method: 'POST',
@@ -99,7 +99,7 @@ export default class UserServices {
     }
 
     // handles modified/expired tokens
-    async editUser(password, first_name, last_name) {
+    async editUser(password, first_name, last_name, groups) {
         let data = {} 
 
         if(password !== ' ' && password !== '' && typeof(password) !== 'undefined')
@@ -115,12 +115,16 @@ export default class UserServices {
         {
             data['last_name'] = last_name;
         }
+        if(groups !== [])
+        {
+            data['groups'] = groups;
+        }
 
         let result = {
             success: false,
             errors: []
         }
-        const token = localStorage.getItem('token');
+        const token = window.sessionStorage.getItem('token');
 
         return fetch(`${API_URL}/api/current_user/`, {
             method: 'PUT',

@@ -172,7 +172,9 @@ class ImportPage extends Component {
                         this.setState({
                             status_message: "Upload Errors",
                             records_count: res.errors["Upload error"][0],
-                            isLoading: false
+                            isLoading: false,
+                            showModelTable: false,
+                            showInstrumentTable: false,
                         })
                     }
 
@@ -219,6 +221,8 @@ class ImportPage extends Component {
                             status_message: "Upload Errors",
                             records_count: res.errors["Upload error"][0],
                             isLoading: false,
+                            showModelTable: false,
+                            showInstrumentTable: false,
                         })
                     }
 

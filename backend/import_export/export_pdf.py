@@ -86,7 +86,7 @@ def get_image(path, width):
 
 
 def is_image_file(file_name):
-    return file_name.split('.')[-1].lower() in ['jpg', 'png', 'gif']
+    return file_name.split('.')[-1].lower() in ['jpg', 'jpeg', 'png', 'gif']
 
 
 def get_lb_metadata(lb_cal_event):
@@ -265,6 +265,7 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
         elements.append(Spacer(1, 10))
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
+        elements.append(Spacer(1, 10))
         elements.append(get_image(cal_file_data[FILE_NAME_INDEX], 4*inch))
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX].split('.')[-1].lower() == 'pdf':

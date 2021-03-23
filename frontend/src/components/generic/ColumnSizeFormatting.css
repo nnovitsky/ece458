@@ -95,15 +95,11 @@
 }
 
 .it-latest-calibration-column {
-    width: 8%;
+    width: 80px;
 }
 
 .it-calibration-expiration-column {
-    width: 8%;
-}
-
-.it-status-column {
-    width: 50px;
+    width: 105px;
 }
 
 /* .it-calibration-certificate-column {
@@ -196,6 +192,23 @@ takes up the rest of the space
 takes the leftover
 } */
 
-
-
+/* user table columns widths */
+.at-num-column{
+    width: 30px;
+}
+.at-name-column{
+    width: 15%;
+}
+.at-username-column{
+    width: 15%;
+}
+.at-email-column{
+    width: 18%;
+}
+.at-picklist-column{
+    width: 350px;
+}
+.at-delete-column{
+    width: 60px;
+}
 

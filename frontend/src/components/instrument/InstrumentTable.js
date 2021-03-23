@@ -24,13 +24,24 @@ import { Link } from 'react-router-dom';
 // }
 
 // onCertificateRequested: handler for when a calibration certificate is requested
-// onMoreClicked: event handler for detail view requested, the event.target.value passed in is the pk
 // inlineElements: elements to be inline withe pagination components on the top of the screen
+// isSelecting: optional that defaults to false, boolean if row selection is happening
+    //the following are required if isSelecting is true
+    //handleSelect: an event handler that will be called on a select/deselect
+    //handleSelectAll: an event handler that will be called on select/deselct all
+    //selected: an array of the keyfield values of all selected rows
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onCertificateRequested, props.onMoreClicked);
+    let config = makeConfig(countStart, props.onCertificateRequested, );
+    const selectRow = {
+        selected: props.selected,
+        onSelect: props.handleSelect,
+        onSelectAll: props.handleSelectAll,
+        isHidden: !props.isSelecting,
+    };
+    
     return (
         <DataTable
             data={props.data}
@@ -40,6 +51,7 @@ const instrumentTable = (props) => {
             config={config}
             noResults='No Instrument Results'
             inlineElements={props.inlineElements}
+            selectRow={selectRow}
         />
 
 
@@ -237,38 +249,20 @@ const getLatestCalText = (data) => {
                     title: (cell) => `Calibration Expiration: ${cell}`,
                     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                         let display = cell;
-
+                        let result = getCalStatusIcon(row);
                         if (cell === 'Instrument not calibrated.') {
-                            display = 'Never Calibrated';
+                            display = 'No History';
+                        } else if(cell === 'Uncalibratable.') {
+                            display = 'Uncalibratable';
                         }
 
-                        return <span>{display}</span>;
+                        return <div style={{display: "flex"}}>
+                            {display}
+                            <img src={result.icon} alt={result.text} className='calibration-status-icon' />
+                        </div>;
                     },
                     headerClasses: 'it-calibration-expiration-column',
                 },
-                {
-                    dataField: 'icon',
-                    text: 'Status',
-                    sort: false,
-                    title: (cell, row) => { return (getCalStatusIcon(row).text) },
-                    formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
-                        let result = getCalStatusIcon(row);
-                        return <span><img src={result.icon} alt={result.text} className='calibration-status-icon' /></span>;
-                    },
-                    headerClasses: 'it-status-column',
-                },
-                // {
-                //     dataField: 'b',
-                //     text: 'Calibration Certificate',
-                //     sort: false,
-                //     headerClasses: 'it-calibration-certificate-column',
-                //     title: (cell) => 'Download Instrument Calibration Certificate',
-                //     formatter: (cell, row) => {
-                //         return (
-                //             <Button onClick={onCertificateRequested} value={row.pk} className="data-table-button" hidden={row.calibration_event.length === 0}>Download</Button>
-                //         )
-                //     }
-                // }
             ]
         )
     }
@@ -278,4 +272,8 @@ const getLatestCalText = (data) => {
 
     instrumentTable.defaultProps = {
         data: [],
+        isSelecting: false,
+        handleSelect: () => {},
+        handleSelectAll: () => {},
+        selected: [],
     }

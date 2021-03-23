@@ -66,7 +66,7 @@ def get_token(code):
     if "OAUTH_REDIRECT_URI" in os.environ:
         redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
     else:
-        redirect_uri = "https://hptmanager.colab.duke.edu/oauth/consume"
+        redirect_uri = "https://hptmanager-dev.colab.duke.edu/oauth/consume"
 
     payload = urllib.parse.urlencode({
         'grant_type': "authorization_code",

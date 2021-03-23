@@ -1,13 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status, permissions
-from rest_framework.views import APIView
-from rest_framework_jwt.views import ObtainJSONWebToken
-
-from django.contrib.auth.models import User
-from django.http import FileResponse
-from django.http.request import QueryDict
-from django.db.models.functions import Lower
+from rest_framework import status
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType, KlufeCalibration
 from backend.tables.serializers import *
@@ -27,7 +20,6 @@ def start_klufe(request):
 
     request.data['user'] = request.user.pk
     if request.method == 'GET':
-
         return False
     elif request.method == 'PUT':
         serializer = CalibrationEventWriteSerializer(data=request.data)
@@ -51,7 +43,6 @@ def klufe_cal_detail(request, pk):
     PUT: edit existing calibration event.
     """
     if request.method == 'GET':
-
         try:
             klufe_cal = KlufeCalibration.objects.get(pk=pk)
         except KlufeCalibration.DoesNotExist:
@@ -59,12 +50,8 @@ def klufe_cal_detail(request, pk):
                             status=status.HTTP_404_NOT_FOUND)
 
         errors = validate_klufe_cal(klufe_cal)
-        serializer = KlufeCalReadSerializer(lb_cal)
+        serializer = KlufeCalReadSerializer(klufe_cal)
         return Response({"data": serializer.data, "errors": errors}, status=status.HTTP_200_OK)
-
-
-
-        return False
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "calibrations"):
@@ -105,8 +92,22 @@ def save_calibration(request, pk):
     """
     Validate and save the current calibration.
     """
+    try:
+        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+    except KlufeCalibration.DoesNotExist:
+        return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]},
+                        status=status.HTTP_404_NOT_FOUND)
 
-    return False
+    klufe_details = validate_klufe_cal(klufe_cal)
+
+    if klufe_details['valid']:
+        klufe_cal.completed_cal = True
+        serializer = KlufeCalSerializer(klufe_cal)
+        return Response({"data": serializer.data, "errors": klufe_details}, status=status.HTTP_200_OK)
+
+    else:
+        return Response({"klufe_calibration_error": [klufe_details['missing_tests'], klufe_details['failed_tests']]},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

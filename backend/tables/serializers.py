@@ -524,7 +524,7 @@ class KlufeCalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = KlufeCalibration
-        fields = ('pk', 'cal_event')
+        fields = ('pk', 'cal_event', 'completed_cal')
 
 
 class KlufeVoltageSerializer(serializers.ModelSerializer):

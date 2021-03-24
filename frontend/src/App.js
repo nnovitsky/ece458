@@ -172,6 +172,16 @@ class App extends Component {
     return isAdmin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
+
+  // called with a page component that should only be displayed if the user can inport things
+  // if not, they will be redirected to the user profile page
+  importPath = (importComponent) => {
+    const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
+    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
+    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);
+    return (isAdmin || isModelAdmin || isInstrumentAdmin) ? importComponent : <Redirect to={{ pathname: '/user-profile' }} />;
+  }
+
   // only allows a user to this page if they have model and/or instrument permissions
   // the page itself will only display content that they should be able to see (ie hide stuff they shouldnt)
   categoryPagePath = (component) => {
@@ -190,7 +200,7 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} is_admin={isAdmin} user={this.state.user.username} />
+            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} user={this.state.user.username} permissions={permissions}/>
             <Switch>
               {/* routes below require being logged in */}
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
@@ -199,7 +209,7 @@ class App extends Component {
               <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView username={this.state.user.username} permissions={permissions}/>)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
-              <Route path="/import" render={() => this.adminPath(<ImportPage />)} exact />
+              <Route path="/import" render={() => this.importPath(<ImportPage permissions={permissions}/>)} exact />
               <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={isAdmin} username={this.state.user.username} />)} exact />
               <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups}/>)} exact />
               {/* routes below are oauth */}

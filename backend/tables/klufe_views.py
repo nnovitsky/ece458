@@ -149,6 +149,7 @@ def save_calibration(request, klufe_pk):
 
     if klufe_details['valid']:
         klufe_cal.completed_cal = True
+        klufe_cal.save()
         serializer = KlufeCalSerializer(klufe_cal)
         return Response({"data": serializer.data, "errors": klufe_details}, status=status.HTTP_200_OK)
 

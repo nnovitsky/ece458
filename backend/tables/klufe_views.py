@@ -95,7 +95,16 @@ def klufe_test(request, klufe_pk):
                                                           f"Cannot be higher than {test['upper']}V ({test['description']}"
                                                           f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
     else:
-        return Response({'klufe_calibration_test_success': [test]}, status=status.HTTP_200_OK)
+        voltage_reading = {
+            'klufe_cal': klufe_cal.pk,
+            'index': test_index,
+            'source_voltage': test['source_voltage'],
+            'reported_voltage':value,
+            'voltage_okay':True
+        }
+        serializer = KlufeVoltageSerializer(data=voltage_reading)
+        if serializer.is_valid(): serializer.save()
+        return Response({'klufe_calibration_test_success': [voltage_reading]}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -126,12 +135,12 @@ def set_source(request):
 
 
 @api_view(['PUT'])
-def save_calibration(request, pk):
+def save_calibration(request, klufe_pk):
     """
     Validate and save the current calibration.
     """
     try:
-        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
     except KlufeCalibration.DoesNotExist:
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]},
                         status=status.HTTP_404_NOT_FOUND)
@@ -144,7 +153,7 @@ def save_calibration(request, pk):
         return Response({"data": serializer.data, "errors": klufe_details}, status=status.HTTP_200_OK)
 
     else:
-        return Response({"klufe_calibration_error": [klufe_details['missing_tests'], klufe_details['failed_tests']]},
+        return Response({"klufe_calibration_error": [klufe_details]},
                         status=status.HTTP_400_BAD_REQUEST)
 
 

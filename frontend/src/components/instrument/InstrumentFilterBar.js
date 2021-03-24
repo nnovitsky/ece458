@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/esm/Button';
 import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
 import InstrumentCategoriesPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
+import Alert from 'react-bootstrap/esm/Alert';
 
 const modelName = "model";
 const vendorName = "vendor";
@@ -16,9 +17,11 @@ const assetName = "assetTag";
 
 //'onSearch' prop event handler for when the search button is clicked, will receive a filters object ^seen above
 // 'onRemoveFilters' prop event handler for when the filters should be removed
+// 'isWarning' prop that will decide if a warning should be displayed when the user clicks in the filter box
 const InstrumentFilterBar = (props) => {
 
     const [filterState, dispatch] = useReducer(reducer, getEmptyFilters());
+    const [isWarningShown, setWarningShown] = useState(props.isWarning);
 
     useEffect(() => {
         let searchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
@@ -29,7 +32,7 @@ const InstrumentFilterBar = (props) => {
     // modelCategories = formatCategories(props.modelCategories);
     // instrumentCategories = formatCategories(props.instrumentCategories);
     return (
-        <Container className="filter-column" onKeyPress={(e) => handleKeyPress(e, props.onSearch, filterState)}>
+        <Container className="filter-column" onKeyPress={(e) => handleKeyPress(e, props.onSearch, filterState)} onMouseEnter={() => onMouseEnterHandler(props.isWarning, setWarningShown)} onMouseLeave={() => setWarningShown(false)}>
             <Col>
                 <h3>Filters</h3>
                 <Form.Control name={vendorName} type="text" placeholder="Enter Vendor" onChange={(e) => dispatch({ type: 'vendor', payload: e.target.value })} value={filterState.vendor} />
@@ -61,7 +64,7 @@ const InstrumentFilterBar = (props) => {
                 <Button className="filter-button" onClick={() => onSubmit(props.onSearch, filterState)}>Apply</Button>
                 <Button className="filter-button" onClick={() => onClear(props.onRemoveFilters, dispatch)}>Clear</Button>
 
-
+                <Alert hidden={!isWarningShown} variant={'danger'} className="alert-popup">Warning: new filters will clear selections</Alert>
             </Col>
         </Container>
     )
@@ -109,6 +112,13 @@ const handleKeyPress = (e, parentOnSubmit, filterState) => {
             onSubmit(parentOnSubmit, filterState);
         default:
             return;
+    }
+}
+
+const onMouseEnterHandler = (isWarning, setWarningShown) => {
+    console.log('entered');
+    if (isWarning) {
+        setWarningShown(true);
     }
 }
 

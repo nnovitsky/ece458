@@ -518,3 +518,32 @@ class LoadVoltageReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoadVoltage
         fields = ('vr', 'va', 'test_voltage', 'vr_error', 'va_error', 'vr_ok', 'va_ok')
+
+
+class KlufeCalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = KlufeCalibration
+        fields = ('pk', 'cal_event', 'completed_cal')
+
+
+class KlufeVoltageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = KlufeVoltageReading
+        fields = ('pk', 'klufe_cal', 'index', 'source_voltage', 'source_hertz', 'reported_voltage',
+                  'voltage_okay')
+
+
+class KlufeCalReadSerializer(serializers.ModelSerializer):
+    voltage_tests = serializers.SerializerMethodField()
+    cal_event = CalibrationEventReadSerializer()
+
+    def get_voltage_tests(self, obj):
+        voltage_readings = obj.klufevoltagereading_set.order_by('index')
+        serializer = KlufeVoltageSerializer(voltage_readings, many=True)
+        return serializer.data
+
+    class Meta:
+        model = KlufeCalibration
+        fields = ('pk', 'cal_event', 'voltage_tests')

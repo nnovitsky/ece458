@@ -6,6 +6,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserT
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
+from backend.config.klufe_config import VOLTAGE_LEVELS
 
 
 @api_view(['GET', 'PUT'])
@@ -37,14 +38,14 @@ def start_klufe(request):
 
 
 @api_view(['GET', 'PUT'])
-def klufe_cal_detail(request, pk):
+def klufe_cal_detail(request, klufe_pk):
     """
     GET: get calibration summary.
     PUT: edit existing calibration event.
     """
     if request.method == 'GET':
         try:
-            klufe_cal = KlufeCalibration.objects.get(pk=pk)
+            klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
         except KlufeCalibration.DoesNotExist:
             return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]},
                             status=status.HTTP_404_NOT_FOUND)
@@ -58,6 +59,43 @@ def klufe_cal_detail(request, pk):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         return False
+
+
+@api_view(['PUT'])
+def klufe_test(request, klufe_pk):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
+    except KlufeCalibration.DoesNotExist:
+        return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    if request.data['index'] is not None and request.data['value'] is not None:
+        test_index = request.data['index']
+        value = request.data['value']
+    else:
+        return Response({'klufe_calibration_request_error': ["Missing fields from request."]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        test = VOLTAGE_LEVELS[test_index]
+    except IndexError:
+        return Response({"klufe_calibration_request_error": [f"Index value {test_index} has no corresponding test."]},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    if value < test['lower']:
+        return Response({"klufe_calibration_test_failed": [f"Provided voltage value of {value}V is too low. "
+                                                          f"Cannot be lower than {test['lower']}V ({test['description']}"
+                                                           f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
+    elif value > test['upper']:
+        return Response({"klufe_calibration_test_failed": [f"Provided voltage value of {value}V is too high. "
+                                                          f"Cannot be higher than {test['upper']}V ({test['description']}"
+                                                          f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
+    else:
+        return Response({'klufe_calibration_test_success': [test]}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

@@ -94,6 +94,7 @@ class InstrumentDetailView extends Component {
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
         this.onLoadBankClick = this.onLoadBankClick.bind(this);
+        this.onKlufeClick = this.onKlufeClick.bind(this);
     }
 
     async componentDidMount() {
@@ -168,6 +169,7 @@ class InstrumentDetailView extends Component {
                     inlineElements={calButtonRow}
                     onSupplementDownload={this.onSupplementDownloadClicked}
                     onLoadBankClick={this.onLoadBankClick}
+                    onKlufeClick={this.onKlufeClick}
                 />
             </div>
         )
@@ -519,6 +521,10 @@ class InstrumentDetailView extends Component {
                 lbPK: e.target.value
             }
         })
+    }
+
+    onKlufeClick(e) {
+        // e.target.value = cal event pk
     }
 
     onModelLinkClicked() {

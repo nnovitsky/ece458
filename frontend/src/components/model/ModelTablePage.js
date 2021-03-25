@@ -301,7 +301,7 @@ class ModelTablePage extends Component {
         modelServices.exportModels(filters, isAll).then(result => {
             if (result.success) {
                 let date = dateToString(new Date());
-                nameAndDownloadFile(result.url, `${date}-model-export`);
+                nameAndDownloadFile(result.url, `${date}-model-export`, result.type);
             }
             this.setState({
                 isLoading: false,

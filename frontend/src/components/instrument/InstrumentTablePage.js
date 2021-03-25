@@ -438,9 +438,10 @@ class InstrumentTablePage extends Component {
     onCertificateRequested(e) {
         instrumentServices.getCalibrationPDF(e.target.value)
             .then((result) => {
+                console.log(result);
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`, result.type);
                 }
             })
     }
@@ -472,7 +473,7 @@ class InstrumentTablePage extends Component {
             (result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-instrument-export`);
+                    nameAndDownloadFile(result.url, `${date}-instrument-export`, result.type);
                 }
                 this.setState({
                     isLoading: false,

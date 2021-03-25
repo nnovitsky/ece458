@@ -29,13 +29,16 @@ def start_klufe(request):
             ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
             channel = ssh.invoke_shell()
             time.sleep(0.001)
+            channel.send('set dc 0.0\n')
+            time.sleep(0.001)
             channel_output = channel.recv(65535).decode('ascii')
         except paramiko.SSHException:
             return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
                              "connected": [False]})
 
         ssh.close()
-        return Response({"Klufe SSH data": [channel_output]}, status=status.HTTP_200_OK)
+        return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
     elif request.method == 'PUT':
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():

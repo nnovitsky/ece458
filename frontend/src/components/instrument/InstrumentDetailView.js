@@ -506,7 +506,7 @@ class InstrumentDetailView extends Component {
         instrumentServices.getCalEventFile(cal_pk)
             .then((result) => {
                 if (result.success) {
-                    nameAndDownloadFile(result.url, `supplement-file`);
+                    nameAndDownloadFile(result.url, `supplement-file`, result.type);
                 } else {
                     console.log('no file exists');
                 }
@@ -639,7 +639,7 @@ class InstrumentDetailView extends Component {
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`, result.type);
                 }
             })
     }

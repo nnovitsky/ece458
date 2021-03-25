@@ -52,7 +52,7 @@ class ImportPagePopup extends Component {
     async onModelCSVDOwnload() {
         modelServices.exportSampleModelCSV().then(result => {
             if (result.success) {
-                nameAndDownloadFile(result.url, `example-model-export`);
+                nameAndDownloadFile(result.url, `example-model-export`, result.type);
             }
         })
     }
@@ -60,7 +60,7 @@ class ImportPagePopup extends Component {
     async onInstrumentCSVDownload() {
         instrumentServices.exportSampleInstrumentCSV().then(result => {
             if (result.success) {
-                nameAndDownloadFile(result.url, `example-instrument-export`);
+                nameAndDownloadFile(result.url, `example-instrument-export`, result.type);
             }
         })
     }

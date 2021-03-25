@@ -28,12 +28,24 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
     return formattedErrors;
 }
 
+const mimeToExtension = {
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+    "application/pdf": ".pdf",
+    "image/png": ".png",
+    "image/gif": ".gif",
+    "text/csv": ".csv"
+}
+
 // url obtained from a blob object
 //name is the name of the file, doesnt need the extension
-const nameAndDownloadFile = (blobURL, name) => {
+const nameAndDownloadFile = (blobURL, name, mimeType) => {
     const link = document.createElement("a");
-    link.href = blobURL
-    link.download = name+'.csv';
+    link.href = blobURL;
+    if (!mimeToExtension[mimeType]) {
+        console.log(`Mime type not mapped, talk to carrie: ${mimeType}`);
+        return null;
+    }
+    link.download = name + mimeToExtension[mimeType];
     document.body.appendChild(link);
     link.dispatchEvent(
         new MouseEvent('click', {
@@ -80,4 +92,4 @@ export const PrivilegesDisplayMap = {
 };
 
 
-export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess };
+export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess, mimeToExtension };

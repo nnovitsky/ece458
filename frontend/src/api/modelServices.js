@@ -542,6 +542,7 @@ export default class ModelServices {
         }).then(res => {
             if (res.ok) {
                 return res.blob().then(blob => {
+                    result.type = blob.type;
                     return URL.createObjectURL(blob)
                 })
                     .then(url => {
@@ -588,6 +589,7 @@ export default class ModelServices {
         }).then(res => {
             if (res.ok) {
                 return res.blob().then(blob => {
+                    result.type = blob.type;
                     return URL.createObjectURL(blob)
                 })
                     .then(url => {

@@ -4,6 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 
 
@@ -19,11 +22,11 @@ class Step1 extends React.Component {
             sucessfulFunction: false,
             sucessfulConnection: false,
             klufe: {
-                connected: true,
-                outputOn: true,
-                mode: "AC",
-                freq: "75",
-                voltage: "10.000",
+                connected: false,
+                outputOn: false,
+                mode: "",
+                freq: "",
+                voltage: "",
             },
         }
 
@@ -90,8 +93,37 @@ class Step1 extends React.Component {
 
 
     async onSetSourceClicked() {
-        this.setState({
-            sucessfulSet: !this.state.sucessfulSet,
+        guidedCalServices.turnOnSource().then(result => {
+            console.log(result)
+            if(result.success)
+            {   
+                if(result.data.connected[0])
+                {
+                    this.setState({
+                        sucessfulSet: true,
+                        klufe: {
+                            ...this.state.klufe,
+                            connected: true,
+                        },
+                    })
+                    this.setState({
+                        sucessfulSet: true,
+                        klufe: {
+                            ...this.state.klufe,
+                            connected: true,
+                        },
+                    })
+                }
+            } else {
+                this.setState({
+                    sucessfulSet: true,
+                    klufe: {
+                        ...this.state.klufe,
+                        connected: false,
+                    },
+                    
+                })
+            }
         })
     }
 

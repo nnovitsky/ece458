@@ -29,7 +29,7 @@ def start_klufe(request):
             ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
             channel = ssh.invoke_shell()
             time.sleep(0.001)
-            channel.send('help')
+            channel.send('set dc 0.0\n')
             time.sleep(0.001)
             channel_output = channel.recv(65535).decode('ascii')
         except paramiko.SSHException:
@@ -37,7 +37,8 @@ def start_klufe(request):
                              "connected": [False]})
 
         ssh.close()
-        return Response({"Klufe SSH data": [channel_output]}, status=status.HTTP_200_OK)
+        return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
     elif request.method == 'PUT':
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():
@@ -111,6 +112,8 @@ def klufe_test(request, klufe_pk):
                                                           f"Cannot be higher than {test['upper']}V ({test['description']}"
                                                           f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
     else:
+        #Overwrite previous test
+        KlufeVoltageReading.objects.filter(klufe_cal=klufe_pk, index=test_index).delete()
         voltage_reading = {
             'klufe_cal': klufe_cal.pk,
             'index': test_index,
@@ -134,7 +137,7 @@ def turn_source_on(request):
         ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
         channel = ssh.invoke_shell()
         time.sleep(0.001)
-        channel.send('on')
+        channel.send('on\n')
         time.sleep(0.001)
         channel_output = channel.recv(65535).decode('ascii')
     except paramiko.SSHException:
@@ -158,7 +161,7 @@ def turn_source_off(request):
         ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
         channel = ssh.invoke_shell()
         time.sleep(0.001)
-        channel.send('off')
+        channel.send('off\n')
         time.sleep(0.001)
         channel_output = channel.recv(65535).decode('ascii')
     except paramiko.SSHException:
@@ -167,7 +170,7 @@ def turn_source_off(request):
 
     ssh.close()
 
-    return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+    return Response({"SSH_success": ["Successfully turned the Klufe calibrator off."],
                      "connected": [True]})
 
 
@@ -188,9 +191,9 @@ def set_source(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
     if test['is_AC']:
-        klufe_input = f"set ac {test['source_voltage']} {test['Hz']}"
+        klufe_input = f"set ac {test['source_voltage']} {test['Hz']}\n"
     else:
-        klufe_input = f"set dc {test['source_voltage']}"
+        klufe_input = f"set dc {test['source_voltage']}\n"
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -205,7 +208,8 @@ def set_source(request):
         return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
 
     ssh.close()
-    return False
+    return Response({"SSH_success": ["Successfully set the Klufe calibrator to the source value."],
+                     "connected": [True]})
 
 
 @api_view(['PUT'])
@@ -233,13 +237,13 @@ def save_calibration(request, klufe_pk):
 
 
 @api_view(['DELETE'])
-def cancel_klufe_cal(request, pk):
+def cancel_klufe_cal(request, klufe_pk):
     """
     Should a user disconnect or exit the calibration before a Klufe calibration
     event has been saved and validated.
     """
     try:
-        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
         cal_event = CalibrationEvent.objects.get(pk=klufe_cal.cal_event.pk)
     except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)

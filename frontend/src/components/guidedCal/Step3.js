@@ -210,7 +210,7 @@ class Step2 extends React.Component {
                 console.log(result.data.SSH_success)
                 this.setState({
                     klufe: {
-                        ...this.state.Klufe,
+                        ...this.state.klufe,
                         outputOn: false,
                     }
                 })

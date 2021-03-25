@@ -165,6 +165,12 @@ class GuidedCal extends React.Component {
             calEventPK: calEventPK
         })
     }
+
+    setKlufe(klufe){
+        this.setState({
+            klufe: klufe
+        })
+    }
 }
 
 

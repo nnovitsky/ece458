@@ -97,6 +97,7 @@ class Step1 extends React.Component {
             console.log(result)
             if(result.success)
             {
+                console.log("SSH connection success")
                 this.setState({
                     sucessfulSet: true,
                     klufe: {

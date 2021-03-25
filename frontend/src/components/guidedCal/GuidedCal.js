@@ -28,6 +28,7 @@ class GuidedCal extends React.Component {
             userPK: this.props.user.pk,
             klufePK: null,
             calEventPK: null,
+            klufe: null,
         }
 
         this.incrementStep = this.incrementStep.bind(this);
@@ -142,7 +143,7 @@ class GuidedCal extends React.Component {
             guidedCalServices.deleteKlufeCal(this.state.klufePK).then(result =>{
                 console.log(result)
                 if(result.success){
-                    console.log("deleted user")
+                    console.log("deleted event")
                     this.setState({
                         klufePk: null,
                         cal_event_pk: null,

@@ -58,10 +58,10 @@ class Step2 extends React.Component {
             functionSet: false,
             klufe: {
                 connected: true,
-                outputOn: true,
-                mode: "AC",
-                freq: "75",
-                voltage: "10.000",
+                outputOn: false,
+                mode: "DC",
+                freq: 0,
+                voltage: 0,
             },
             sucessfulSet: false,
             displayVoltage: '',
@@ -78,6 +78,8 @@ class Step2 extends React.Component {
         this.nextCal = this.nextCal.bind(this);
         this.onSetFunction = this.onSetFunction.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.turnOffSource = this.turnOffSource.bind(this);
+        this.turnOnSource = this.turnOnSource.bind(this);
     }
 
 
@@ -144,6 +146,26 @@ class Step2 extends React.Component {
 
 
     async onSetSourceClicked() {
+        // set it then turn it on
+        guidedCalServices.setSource(this.state.index).then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+                this.setState({
+                    klufe: {
+                        ...this.state.klufe,
+                        connected: true,
+                        outputOn: false,
+                        mode: this.state.sourceData.AC ? "AC" : "DC",
+                        freq: this.state.sourceData.freq,
+                        voltage: this.state.sourceData.source,
+                    },
+                })
+                this.turnOnSource();
+            }
+        })
+
+
         this.setState({
             sucessfulSet: !this.state.sucessfulSet,
         })
@@ -163,6 +185,7 @@ class Step2 extends React.Component {
                     errors: [],
                     validDisplay: true,
                 })
+                this.turnOffSource();
             }
             else{
                 this.setState({
@@ -178,6 +201,46 @@ class Step2 extends React.Component {
     }
 
         // if input validated need to turn off source
+    }
+
+    async turnOffSource(){
+        guidedCalServices.turnOffSource().then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+                this.setState({
+                    klufe: {
+                        ...this.state.Klufe,
+                        outputOn: false,
+                    }
+                })
+            }
+        })
+    }
+
+    async turnOnSource(){
+        guidedCalServices.turnOnSource().then(result => {
+            if(result.success)
+            {   
+                console.log(result.data.SSH_success)
+                if(result.data.connected[0])
+                {
+                    this.setState({
+                        sucessfulSet: true,
+                        klufe: {
+                            ...this.state.klufe,
+                            connected: true,
+                            outputOn: true,
+                        },
+
+                    })
+                }
+            } else {
+                this.setState({
+                        sucessfulSet: false,
+                })
+            }
+        })
     }
 
     async onSetFunction() {

@@ -93,35 +93,20 @@ class Step1 extends React.Component {
 
 
     async onSetSourceClicked() {
-        guidedCalServices.turnOnSource().then(result => {
+        guidedCalServices.connectSSH().then(result =>{
             console.log(result)
             if(result.success)
-            {   
-                if(result.data.connected[0])
-                {
-                    this.setState({
-                        sucessfulSet: true,
-                        klufe: {
-                            ...this.state.klufe,
-                            connected: true,
-                        },
-                    })
-                    this.setState({
-                        sucessfulSet: true,
-                        klufe: {
-                            ...this.state.klufe,
-                            connected: true,
-                        },
-                    })
-                }
-            } else {
+            {
                 this.setState({
                     sucessfulSet: true,
                     klufe: {
                         ...this.state.klufe,
-                        connected: false,
-                    },
-                    
+                        connected: true,
+                        outputOn: false,
+                        mode: "DC",
+                        freq: 0,
+                        voltage: 0,
+                },
                 })
             }
         })

@@ -111,6 +111,8 @@ def klufe_test(request, klufe_pk):
                                                           f"Cannot be higher than {test['upper']}V ({test['description']}"
                                                           f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
     else:
+        #Overwrite previous test
+        KlufeVoltageReading.objects.filter(klufe_cal=klufe_pk, index=test_index).delete()
         voltage_reading = {
             'klufe_cal': klufe_cal.pk,
             'index': test_index,

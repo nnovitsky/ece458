@@ -12,6 +12,11 @@ form.guidedCal .form-control{
     align-content: left;
 }
 
+.datepicker{
+    width: min(15vw, 215px);
+    font-size: min(1.4vw, 20px);
+}
+
 form.guidedCal .btn{
     margin-left: 5px;
     width: min(15vw, 215px);

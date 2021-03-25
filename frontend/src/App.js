@@ -33,6 +33,7 @@ class App extends Component {
       user: {
         username: '',
         permissions_groups: [],
+        userPK: null,
       },
       error_message: '',
       redirect: null,
@@ -50,6 +51,7 @@ class App extends Component {
               ...this.state.user,
               username: result.data.username,
               permissions_groups: result.data.groups,
+              userPK: result.data.pk,
             }
           })
         } else {
@@ -60,6 +62,7 @@ class App extends Component {
               ...this.state.user,
               username: '',
               permissions_groups: [],
+              userPK: null,
             }
           });
         }
@@ -88,6 +91,7 @@ class App extends Component {
             ...this.state.user,
             username: result.data.user.username,
             permissions_groups: result.data.user.groups,
+            userPK: result.data.user.pk,
           }
           
         });
@@ -122,6 +126,7 @@ class App extends Component {
               ...this.state.user,
               username: json.user.username,
               permissions_groups: json.user.groups,
+              userPK: json.user.pk,
             }
           });
           this.setState({ error_message: '' });
@@ -206,7 +211,7 @@ class App extends Component {
               <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
               <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage permissions={permissions}/>)} exact />
               <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage permissions={permissions}/>)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView username={this.state.user.username} permissions={permissions}/>)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView user={this.state.user} permissions={permissions}/>)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.importPath(<ImportPage permissions={permissions}/>)} exact />

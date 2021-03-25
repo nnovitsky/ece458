@@ -145,5 +145,230 @@ export default class GuidedCalServices {
             }
         })
     }
+
+    async createKlufeCal(instrument, date, userPK)
+    {
+        const token = window.sessionStorage.getItem('token');
+
+        let data = {
+            instrument: instrument,
+            date: date,
+            user: userPK,
+        }
+
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/start_klufe_cal/`;
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`,
+            },
+            body: JSON.stringify(data),
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json;
+                    return result;
+                });
+            }
+            else {
+                console.log(res)
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.data = this.identifyErrors(json);
+                    return result;
+                })
+            }
+        })
+
+    }
+
+
+    async validateMultimeterDisplay(klufePK, index, voltage)
+    {
+        const token = window.sessionStorage.getItem('token');
+
+        let data = {
+            index: index,
+            value: voltage,
+        }
+
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/klufe_test/${klufePK}/`;
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`,
+            },
+            body: JSON.stringify(data),
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json;
+                    return result;
+                });
+            }
+            else {
+                console.log(res)
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.data = this.identifyErrors(json);
+                    return result;
+                })
+            }
+        })
+
+    }
+
+    async getKlufeCalDetails(klufePK)
+    {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: false,
+            data: [],
+            errors: [],
+        }
+
+        let url = `${API_URL}/api/klufe_detail/${klufePK}/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json.data;
+                    result.errors = json.errors;
+                    return result;
+                });
+            }
+            else {
+                console.log(res)
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.data = this.identifyErrors(json);
+                    return result;
+                })
+            }
+        })
+
+    }
+
+
+    async deleteKlufeCal(klufePK)
+    {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: false,
+            data: [],
+            errors: [],
+        }
+
+        let url = `${API_URL}/api/cancel_klufe_cal/${klufePK}/`;
+
+        return fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json.data;
+                    result.errors = json.errors;
+                    return result;
+                });
+            }
+            else {
+                console.log(res)
+                return res.json().then(json => {
+                    if (json.detail === 'Signature has expired.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    if (json.detail === 'Error decoding signature.') {
+                        window.location.reload();
+                        result.success = false;
+                        return result;
+                    }
+                    result.success = false;
+                    result.data = this.identifyErrors(json);
+                    return result;
+                })
+            }
+        })
+
+    }
+
+
+
+
+    identifyErrors(json) {
+        let error = []
+        if (json.instrument) {
+            error = ["Instrument: " + json.instrument]
+        }
+        else if (json.date) {
+            error = [json.date]
+        }
+        else if (json.user) {
+            error = ["User: " + json.user]
+        }
+        else if (json.klufe_calibration_test_failed) {
+            error = [json.klufe_calibration_test_failed]
+        }
+        return error
+    }
     
 }

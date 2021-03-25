@@ -3,8 +3,11 @@ import Base from '../generic/Base.js';
 import Form from 'react-bootstrap/Form';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
+import GuidedCalServices from "../../api/guidedCalServices.js";
 import "react-datepicker/dist/react-datepicker.css";
 
+const guidedCalServices = new GuidedCalServices();
+const dateDetails = "T00:00:00";
 
 class Step0 extends React.Component {
 
@@ -13,7 +16,8 @@ class Step0 extends React.Component {
 
         this.state = {
             errors: [],
-            pk: this.props.pk,
+            klufePK: this.props.klufePK,
+            cal_event_pk: this.props.calEventPk,
             calInfo: {
                 vendor: this.props.vendor,
                 model_number: this.props.model_number,
@@ -22,11 +26,12 @@ class Step0 extends React.Component {
                 date_string: dateToString(new Date()),
                 date_object: new Date(),
                 instrument_pk: this.props.instrument_pk,
-                pk: this.props.pk,
             },
+            user: this.props.user
         }
 
         this.onDateChange = this.onDateChange.bind(this);
+        this.createKlufeCal = this.createKlufeCal.bind(this);
 
     }
 
@@ -44,7 +49,7 @@ class Step0 extends React.Component {
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
-                incrementStep={this.props.incrementStep}
+                incrementStep={this.createKlufeCal}
                 decrementStep={this.props.decrementStep}
                 progress={this.props.progress}
                 progressBarHidden={true}
@@ -72,7 +77,7 @@ class Step0 extends React.Component {
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" value={this.props.username}/>
+                    <Form.Control readOnly="readonly" type="text" value={this.props.user.username}/>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
                     <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()}/>
                 </Form.Group>
@@ -91,7 +96,34 @@ class Step0 extends React.Component {
         })
     }
 
-    // async createNewGuidedCalEvent()
+    async createKlufeCal(){
+        if(this.state.klufePK === null)
+        {
+            guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.user.userPK).then(result => {
+                console.log(result)
+                if(result.success)
+                {
+                    this.props.setEventPKs(result.data.klufe_calibration.pk, result.data.klufe_calibration.cal_event_pk);
+                    this.setState({
+                        klufePK: result.data.klufe_calibration.pk,
+                        cal_event_pk: result.data.klufe_calibration.cal_event_pk,
+                    })
+                    this.props.incrementStep();
+                }
+                else {
+                        this.setState({
+                        errors: result.data
+                    })
+                }
+
+            })
+        }
+        else {
+            console.log("not creating new event and moving forward")
+            // TODO: call an edit
+            this.props.incrementStep();
+        }
+    }
     // createEvent.then(connect to ssh)
 
 /*     async getStatus()

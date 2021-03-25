@@ -324,7 +324,7 @@ class InstrumentDetailView extends Component {
                 instrument_pk={this.state.instrument_info.pk}
                 asset_tag={this.state.instrument_info.asset_tag}
                 lb_pk={this.state.wizardPopup.lbPK}
-                username={this.props.username}
+                username={this.props.user.username}
             />
         )
     }
@@ -335,7 +335,7 @@ class InstrumentDetailView extends Component {
                 isShown={this.state.guidedCalPopup.isShown}
                 onClose={this.onGuidedCalClose}
                 pk={this.state.guidedCalPopup.pk}
-                username={this.props.username}
+                user={this.props.user}
                 model_number={this.state.instrument_info.model_number}
                 vendor={this.state.instrument_info.vendor}
                 serial_number={this.state.instrument_info.serial_number}

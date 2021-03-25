@@ -4,12 +4,16 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 class Summary extends React.Component {
 
     constructor(props) { 
         super(props)
         this.state = {
+            klufePK: this.props.klufePK,
             calInfo: {
                 engineer: 'Engineer',
                 date: 'Date',
@@ -18,6 +22,12 @@ class Summary extends React.Component {
             },
             errors: [],
         }
+        this.getKlufeDetails = this.getKlufeDetails.bind(this);
+    }
+
+    async componentDidMount()
+    {
+        await this.getKlufeDetails();
     }
 
     render() {
@@ -74,6 +84,32 @@ class Summary extends React.Component {
                 </Row>
             </Form>
         </div>
+    }
+
+
+    async getKlufeDetails()
+    {
+        guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
+            console.log(result)
+            if(result.success)
+            {
+                console.log("Success")
+                this.setState({
+                    calInfo: {
+                        ...this.state.calInfo,
+                        engineer: result.data.cal_event.user.username,
+                        date: result.data.cal_event.date,
+                        instrument: result.data.cal_event.instrument.item_model.model_number + " (" +result.data.cal_event.instrument.asset_tag + ")",
+                        comment: result.data.cal_event.comment,
+                    },
+                })
+            }
+            else{
+                this.setState({
+                    errors: result.data
+                })
+            }
+        })
     }
 
 

@@ -4,30 +4,40 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 const sourceData = {
-    1 : {
+    0: {
+        source: 3.500,
+        AC: false,
+        freq: 0,
+        display: "3.500+-0.001",
+        adjustment: "R21",
+    },
+    1: {
         source: 3.513,
         AC: true,
         freq: 50,
         display: "3.500+-0.002",
         adjustment: "R34",
     },
-    2 : {
+    2: {
         source: 100,
         AC: true,
         freq: 20000,
         display: "100.0+-0.2",
         adjustment: "C37",
     },
-    3 : {
+    3: {
         source: 3.500,
         AC: true,
         freq: 10000,
         display: "3.50.0+-0.004",
         adjustment: "C2",
     },
-    4 : {
+    4: {
         source: 35.00,
         AC: true,
         freq: 10000,
@@ -43,8 +53,9 @@ class Step2 extends React.Component {
 
         this.state = {
             errors: [],
-            pk: this.props.pk,
+            klufePK: this.props.klufePK,
             validDisplay: false,
+            functionSet: false,
             klufe: {
                 connected: true,
                 outputOn: true,
@@ -64,6 +75,7 @@ class Step2 extends React.Component {
         this.onTextInput = this.onTextInput.bind(this);
         this.prevCal = this.prevCal.bind(this);
         this.nextCal = this.nextCal.bind(this);
+        this.onSetFunction = this.onSetFunction.bind(this);
     }
 
 
@@ -85,16 +97,21 @@ class Step2 extends React.Component {
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.nextCal}
-                disableContinue={!this.state.validDisplay}
+                disableContinue={(this.state.index === 0 && !this.state.functionSet) || !this.state.validDisplay}
                 decrementStep={this.prevCal}
                 continueButtonText={this.state.index === 4 ? "Submit Final Step and Finish Calibration" : "Continue"}
-                progress={this.props.progress + Math.round((this.state.index-1)/7*100)}
+                progress={this.props.progress + Math.round((this.state.index - 1) / 7 * 100)}
             />
         );
     }
 
 
     makeBody() {
+        let extraIndexZeroStep = <Form.Group className={(this.state.sucessfulSet && this.state.validDisplay) ? "form-inline" : "form-inline disabled"}>
+            <Form.Label className="col-sm-6 col-form-label">3. Set the Model 87 to the V~ function</Form.Label>
+            <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={!this.state.sucessfulSet || !this.state.validDisplay}></Form.Check>
+        </Form.Group>
+
         return <div>
             <Form className="guidedCal">
                 <h3>Calibration: {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</h3>
@@ -111,6 +128,7 @@ class Step2 extends React.Component {
                             <Form.Control disabled={!this.state.sucessfulSet} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
                             <Form.Label className="col-sm-11 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display</Form.Label>
                         </Form.Group>
+                        {this.state.index === 0 ? extraIndexZeroStep : null}
                     </div>
                     <div className="col">
                         <Klufe connected={this.state.klufe.connected} outputOn={this.state.klufe.outputOn}
@@ -130,13 +148,43 @@ class Step2 extends React.Component {
     }
 
     onTextInput(e) {
-        let val = e.target.value;
-        this.setState({
-            displayVoltage: val,
-            validDisplay: true,
+        let val = Number(e.target.value);
+         this.setState({
+            displayVoltage: e.target.value,
+            validDisplay: false,
         })
+        console.log(val)
+        if(!isNaN(val)) 
+        {
+        guidedCalServices.validateMultimeterDisplay(this.state.klufePK, Number(this.state.index), val).then(result =>{
+            console.log(result)
+            if(result.success){
+                console.log(result)
+                this.setState({
+                    errors: [],
+                    validDisplay: true,
+                })
+            }
+            else{
+                this.setState({
+                    errors: [`Adjust ${this.state.sourceData.adjustment}: ` + result.data[0]]
+                })
+            }
+        })
+    }
+    else{
+        this.setState({
+            errors: ["Invald Input: Your input is not a number, please review your inputted voltage try again"]
+        })
+    }
 
         // if input validated need to turn off source
+    }
+
+    async onSetFunction() {
+        this.setState({
+            functionSet: !this.state.functionSet,
+        })
     }
 
 
@@ -162,7 +210,7 @@ class Step2 extends React.Component {
     prevCal() {
         console.log("here")
         let currentIndex = this.state.index;
-        if (currentIndex > 1) {
+        if (currentIndex > 0) {
             let newIndex = currentIndex - 1;
             this.setState({
                 index: newIndex,
@@ -170,21 +218,20 @@ class Step2 extends React.Component {
                 sourceData: sourceData[newIndex],
             })
         }
-        else if (this.state.index === 1) {
+        else if (this.state.index === 0) {
             this.props.decrementStep()
         }
     }
 
-    getHzString(hz)
-    {
+    getHzString(hz) {
         const mega = 1000000
         const kilo = 1000
 
-        if(hz >= mega){
-            return hz/mega + "MHz"
+        if (hz >= mega) {
+            return hz / mega + "MHz"
         }
-        else if(hz >= kilo){
-            return hz/kilo + "kHz"
+        else if (hz >= kilo) {
+            return hz / kilo + "kHz"
         }
         else {
             return hz + "Hz"

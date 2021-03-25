@@ -14,7 +14,7 @@ class Step1 extends React.Component {
 
         this.state = {
             errors: [],
-            pk: this.props.pk,
+            klufePK: this.props.klufePK,
             sucessfulSet: false,
             sucessfulFunction: false,
             sucessfulConnection: false,
@@ -24,7 +24,7 @@ class Step1 extends React.Component {
                 mode: "AC",
                 freq: "75",
                 voltage: "10.000",
-            }
+            },
         }
 
         //this.getStatus = this.getStatus.bind(this);

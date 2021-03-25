@@ -72,6 +72,7 @@ class CalibrationEventFile(models.TextChoices):
     NONE = 'None'
     ARTIFACT = 'Artifact'
     LOAD_BANK = 'Load Bank'
+    KLUFE = 'Klufe'
 
 
 class CalibrationEvent(models.Model):

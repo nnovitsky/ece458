@@ -146,7 +146,7 @@ export default class GuidedCalServices {
         })
     }
 
-    async createKlufeCal(instrument, date, userPK)
+    async createKlufeCal(instrument, date, comment, userPK)
     {
         const token = window.sessionStorage.getItem('token');
 
@@ -154,6 +154,7 @@ export default class GuidedCalServices {
             instrument: instrument,
             date: date,
             user: userPK,
+            comment: comment,
         }
 
         let result = {

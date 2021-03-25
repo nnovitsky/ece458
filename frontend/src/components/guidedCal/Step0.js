@@ -26,17 +26,19 @@ class Step0 extends React.Component {
                 date_string: dateToString(new Date()),
                 date_object: new Date(),
                 instrument_pk: this.props.instrument_pk,
+                comment: '',
             },
             user: this.props.user
         }
 
         this.onDateChange = this.onDateChange.bind(this);
         this.createKlufeCal = this.createKlufeCal.bind(this);
+        this.onCommentInput = this.onCommentInput.bind(this);
 
     }
 
     async componentDidMount() {
-        //await this.getStatus()
+        await this.getStatus()
     }
 
 
@@ -81,6 +83,10 @@ class Step0 extends React.Component {
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
                     <DatePicker className="datepicker" onSelect={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()}/>
                 </Form.Group>
+                <Form.Group className="form-inline">
+                    <Form.Label className="col-sm-3 col-form-label">Comment:</Form.Label>
+                    <Form.Control className="col-sm-7" as="textarea" type="text" value={this.state.calInfo.comment} onChange={this.onCommentInput}/>
+                </Form.Group>
             </Form>
 
         </div>
@@ -96,11 +102,19 @@ class Step0 extends React.Component {
         })
     }
 
+    onCommentInput(e) {
+        this.setState({
+            calInfo: {
+                ...this.state.calInfo,
+                comment: e.target.value
+            }
+        })
+    }
+
     async createKlufeCal(){
         if(this.state.klufePK === null)
         {
-            guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.user.userPK).then(result => {
-                console.log(result)
+            guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.calInfo.comment, this.state.user.userPK).then(result => {
                 if(result.success)
                 {
                     this.props.setEventPKs(result.data.klufe_calibration.pk, result.data.klufe_calibration.cal_event_pk);
@@ -124,18 +138,25 @@ class Step0 extends React.Component {
             this.props.incrementStep();
         }
     }
-    // createEvent.then(connect to ssh)
 
-/*     async getStatus()
+    async getStatus()
     {
-        wizardServices.getDetails(this.state.loadbank_pk).then(result => {
-            if (result.success) {
-                this.setState({
-                    checked: result.data.data.visual_inspection
-                })
-            }
-        })
-    } */
+        if(this.state.klufePK !== null)
+        {
+            guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
+                if (result.success) {
+                    this.setState({
+                        calInfo: {
+                            ...this.state.calInfo,
+                            comment: result.data.cal_event.comment,
+                            date_object: new Date(result.data.cal_event.date + dateDetails),
+                            date_string: result.data.cal_event.date,
+                        }
+                    })
+                }
+            })
+        }
+    }
 }
 
 

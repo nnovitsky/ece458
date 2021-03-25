@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import GuidedCalServices from "../../api/guidedCalServices.js";
+import DisplayTable from './DisplayTable.js'
 
 const guidedCalServices = new GuidedCalServices();
 
@@ -15,10 +16,11 @@ class Summary extends React.Component {
         this.state = {
             klufePK: this.props.klufePK,
             calInfo: {
-                engineer: 'Engineer',
-                date: 'Date',
-                instrument: 'Instrument',
-                comment: 'Comment',
+                engineer: '',
+                date: '',
+                instrument: '',
+                comment: '',
+                voltageData: [],
             },
             errors: [],
         }
@@ -82,6 +84,7 @@ class Summary extends React.Component {
                         </Table>
                     </Col>
                 </Row>
+                <DisplayTable data={this.state.calInfo.voltageData}/> 
             </Form>
         </div>
     }
@@ -90,7 +93,6 @@ class Summary extends React.Component {
     async getKlufeDetails()
     {
         guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
-            console.log(result)
             if(result.success)
             {
                 console.log("Success")
@@ -101,8 +103,10 @@ class Summary extends React.Component {
                         date: result.data.cal_event.date,
                         instrument: result.data.cal_event.instrument.item_model.model_number + " (" +result.data.cal_event.instrument.asset_tag + ")",
                         comment: result.data.cal_event.comment,
+                        voltageData: result.data.voltage_tests,
                     },
                 })
+                console.log(result.data.voltage_tests)
             }
             else{
                 this.setState({

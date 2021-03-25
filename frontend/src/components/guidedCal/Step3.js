@@ -64,23 +64,25 @@ class Step2 extends React.Component {
                 voltage: "10.000",
             },
             sucessfulSet: false,
-            displayVoltage: null,
+            displayVoltage: '',
             // Use to toggle between different steps!!
-            index: props.index,
-            sourceData: sourceData[props.index],
+            index: this.props.index,
+            sourceData: sourceData[this.props.index],
+            forceDisable: false,
         }
 
-        //this.getStatus = this.getStatus.bind(this);
+        this.getStatus = this.getStatus.bind(this);
         this.onSetSourceClicked = this.onSetSourceClicked.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
         this.prevCal = this.prevCal.bind(this);
         this.nextCal = this.nextCal.bind(this);
         this.onSetFunction = this.onSetFunction.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
     }
 
 
     async componentDidMount() {
-        //await this.getStatus()
+        await this.getStatus(this.props.index)
         await this.setState({
             sourceData: sourceData[this.state.index]
         })
@@ -109,7 +111,7 @@ class Step2 extends React.Component {
     makeBody() {
         let extraIndexZeroStep = <Form.Group className={(this.state.sucessfulSet && this.state.validDisplay) ? "form-inline" : "form-inline disabled"}>
             <Form.Label className="col-sm-6 col-form-label">3. Set the Model 87 to the V~ function</Form.Label>
-            <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={!this.state.sucessfulSet || !this.state.validDisplay}></Form.Check>
+            <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={!this.state.sucessfulSet || !this.state.validDisplay || this.state.forceDisable}></Form.Check>
         </Form.Group>
 
         return <div>
@@ -121,11 +123,11 @@ class Step2 extends React.Component {
                     <div className="col">
                         <Form.Group className="form-inline" style={{ marginTop: "20px" }}>
                             <Form.Label className="col-sm-6 col-form-label">1. Set the source for VAC = {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</Form.Label>
-                            <Button onClick={this.onSetSourceClicked}>Click to set source</Button>
+                            <Button onClick={this.onSetSourceClicked} disabled={this.state.forceDisable}>Click to set source</Button>
                         </Form.Group>
                         <Form.Group className={this.state.sucessfulSet ? "form-inline" : "form-inline disabled"}>
                             <Form.Label className="col-sm-6 col-form-label">2. Enter the displayed voltage on the Model 87</Form.Label>
-                            <Form.Control disabled={!this.state.sucessfulSet} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
+                            <Form.Control disabled={!this.state.sucessfulSet || this.state.forceDisable} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
                             <Form.Label className="col-sm-11 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display</Form.Label>
                         </Form.Group>
                         {this.state.index === 0 ? extraIndexZeroStep : null}
@@ -153,13 +155,10 @@ class Step2 extends React.Component {
             displayVoltage: e.target.value,
             validDisplay: false,
         })
-        console.log(val)
         if(!isNaN(val)) 
         {
         guidedCalServices.validateMultimeterDisplay(this.state.klufePK, Number(this.state.index), val).then(result =>{
-            console.log(result)
             if(result.success){
-                console.log(result)
                 this.setState({
                     errors: [],
                     validDisplay: true,
@@ -199,7 +198,9 @@ class Step2 extends React.Component {
                 validDisplay: false,
                 sucessfulSet: false,
                 displayVoltage: '',
+                forceDisable: false,
             })
+            this.getStatus(newIndex);
         }
         else if (this.state.index === 4) {
             this.props.incrementStep();
@@ -208,7 +209,6 @@ class Step2 extends React.Component {
 
 
     prevCal() {
-        console.log("here")
         let currentIndex = this.state.index;
         if (currentIndex > 0) {
             let newIndex = currentIndex - 1;
@@ -217,9 +217,33 @@ class Step2 extends React.Component {
                 errors: [],
                 sourceData: sourceData[newIndex],
             })
+            this.getStatus(newIndex);
         }
         else if (this.state.index === 0) {
             this.props.decrementStep()
+        }
+    }
+
+    async getStatus(newIndex){
+        if(this.state.klufePK !== null)
+        {
+            guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
+                if (result.success) {
+                    result.data.voltage_tests.forEach(element =>{
+                        if(element.index === newIndex && element.voltage_okay)
+                        {
+                            console.log("Element matches with index " + element.index)
+                            this.setState({
+                                sucessfulSet: true,
+                                displayVoltage: element.reported_voltage,
+                                validDisplay: true,
+                                functionSet: true,
+                                forceDisable: true
+                            })
+                        }
+                    })
+                }
+            })
         }
     }
 

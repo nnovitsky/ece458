@@ -149,8 +149,7 @@ class InstrumentDetailView extends Component {
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
-                {/* // TODO add disabled check for things that can't be calibrated this way */}
-                <Button onClick={this.onGuidedCalClicked} hidden={!isCalibrationAdmin}>Add Guided Calibration</Button>
+                <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
             </div>
         )
         return (

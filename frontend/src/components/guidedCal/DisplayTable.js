@@ -3,7 +3,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import './GuidedCal.js'
 
 
-const loadLevel = 'voltage'
+const index = 'index'
 
 const displayTable = (props) => {
     let config = makeConfig();
@@ -15,7 +15,7 @@ const displayTable = (props) => {
                 striped
                 condensed={true}
                 data={props.data}
-                keyField={loadLevel}
+                keyField={index}
                 columns={config}
                 onTableChange={null}
                 headerClasses='data-table-header'
@@ -31,21 +31,28 @@ let makeConfig = () => {
         [
             {
                 isKey: true,
-                dataField: 'load',
-                text: 'Load Level',
-                headerClasses: 'format-width-load-level'
+                dataField: 'index',
+                text: 'Test Number',
+                headerClasses: 'gc-num-column'
             },
             {
-                dataField: 'cr',
-                text: 'Current Reported',
+                dataField: 'source_voltage',
+                text: 'Source Voltage (V)',
+                headerClasses: 'gc-sv-column'
             },
             {
-                dataField: 'ca',
-                text: 'Current Actual',
+                dataField: 'source_hertz',
+                text: 'Source Frequency (Hz)',
+                formatter: (cell, row) => {
+                    if(row.source_hertz === null) return<span>N/A</span>;
+                    else return<span>{row.source_hertz}</span>
+                },
+                headerClasses: 'gc-sf-column'
             },
             {
-                dataField: 'ideal',
-                text: 'Ideal Current',
+                dataField: 'reported_voltage',
+                text: 'Display Voltage (V)',
+                headerClasses: 'gc-dv-column'
             },
         ]
     )

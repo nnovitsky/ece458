@@ -323,12 +323,8 @@ export default class GuidedCalServices {
             },
         }).then(res => {
             if (res.ok) {
-                return res.json().then(json => {
-                    result.success = true;
-                    result.data = json.data;
-                    result.errors = json.errors;
-                    return result;
-                });
+                result.success = true;
+                return result;
             }
             else {
                 console.log(res)

@@ -83,6 +83,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
+                    console.log(row)
                     switch (cell) {
                         case 'None':
                             return <span>N/A</span>;

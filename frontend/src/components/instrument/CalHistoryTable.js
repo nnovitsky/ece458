@@ -74,7 +74,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                             return `Supplement file: click to download`;
                         case 'Load Bank':
                             return 'Load Bank Data: click to view';
-                        case 'Klufe Hardware':
+                        case 'Klufe':
                             return 'Guided Hardware Data: click to view';
                         default:
                             return 'No supplement documents';
@@ -90,7 +90,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
                         case 'Load Bank':
                             return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
-                        case 'klufe5700':
+                        case 'Klufe':
                             return <Button onClick={onKlufeClick} value={row.lb_cal_pk} className="data-table-button">Guided Hardware Cal. Data</Button>
                         default:
                             return <span>N/A</span>

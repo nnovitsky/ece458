@@ -14,7 +14,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserT
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
-from backend.import_export import export_csv, export_pdf
+from backend.import_export import export_csv, export_pdf, export_barcodes
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
@@ -447,6 +447,18 @@ def get_example_instrument_csv(request):
         return FileResponse(open(path + file_name, 'rb'), as_attachment=True, filename=file_name)
     except IOError:
         return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def export_barcodes_pdf(request):
+    """
+    Generates a pdf that contains barcodes of all the specified instruments.
+    Each barcode contains an HPT label with the respective instrument's asset tag number.
+    """
+    return export_barcodes.handler(instrument_pks=, select_all=True)
+
+
+
 
 
 # USERS

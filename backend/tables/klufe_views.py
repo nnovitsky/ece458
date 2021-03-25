@@ -33,7 +33,8 @@ def start_klufe(request):
             time.sleep(0.001)
             channel_output = channel.recv(65535).decode('ascii')
         except paramiko.SSHException:
-            return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+            return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                             "connected": [False]})
 
         ssh.close()
         return Response({"Klufe SSH data": [channel_output]}, status=status.HTTP_200_OK)
@@ -137,11 +138,13 @@ def turn_source_on(request):
         time.sleep(0.001)
         channel_output = channel.recv(65535).decode('ascii')
     except paramiko.SSHException:
-        return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+        return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                         "connected": [False]})
 
     ssh.close()
 
-    return False
+    return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
 
 
 @api_view(['POST'])
@@ -159,10 +162,13 @@ def turn_source_off(request):
         time.sleep(0.001)
         channel_output = channel.recv(65535).decode('ascii')
     except paramiko.SSHException:
-        return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+        return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                         "connected": [False]})
 
     ssh.close()
-    return False
+
+    return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
 
 
 @api_view(['POST'])

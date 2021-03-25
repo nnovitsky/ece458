@@ -1,3 +1,9 @@
+HOST = 'hpt-k5700.colab.duke.edu'
+PORT = 2222
+SSH_USER = 'admin2'
+SSH_PASS = 'betW458'
+
+
 VOLTAGE_LEVELS = [
     {
         'source_voltage': 3.500,

@@ -523,7 +523,14 @@ class InstrumentDetailView extends Component {
     }
 
     onKlufeClick(e) {
-        // e.target.value = cal event pk
+        console.log(e.target.value)
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: true,
+                pk: e.target.value
+            }
+        })
     }
 
     onModelLinkClicked() {

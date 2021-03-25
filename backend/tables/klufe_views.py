@@ -233,13 +233,13 @@ def save_calibration(request, klufe_pk):
 
 
 @api_view(['DELETE'])
-def cancel_klufe_cal(request, pk):
+def cancel_klufe_cal(request, klufe_pk):
     """
     Should a user disconnect or exit the calibration before a Klufe calibration
     event has been saved and validated.
     """
     try:
-        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
         cal_event = CalibrationEvent.objects.get(pk=klufe_cal.cal_event.pk)
     except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)

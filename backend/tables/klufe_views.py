@@ -33,7 +33,8 @@ def start_klufe(request):
             time.sleep(0.001)
             channel_output = channel.recv(65535).decode('ascii')
         except paramiko.SSHException:
-            return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+            return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                             "connected": [False]})
 
         ssh.close()
         return Response({"Klufe SSH data": [channel_output]}, status=status.HTTP_200_OK)
@@ -127,8 +128,23 @@ def turn_source_on(request):
     """
     Sets the Klufe K5700 calibrator to ON.
     """
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
+        channel = ssh.invoke_shell()
+        time.sleep(0.001)
+        channel.send('on')
+        time.sleep(0.001)
+        channel_output = channel.recv(65535).decode('ascii')
+    except paramiko.SSHException:
+        return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                         "connected": [False]})
 
-    return False
+    ssh.close()
+
+    return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
 
 
 @api_view(['POST'])
@@ -136,8 +152,23 @@ def turn_source_off(request):
     """
     Sets the Klufe K5700 calibrator to OFF.
     """
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
+        channel = ssh.invoke_shell()
+        time.sleep(0.001)
+        channel.send('off')
+        time.sleep(0.001)
+        channel_output = channel.recv(65535).decode('ascii')
+    except paramiko.SSHException:
+        return Response({"SSH_error": ["Failed to connect to remote Klufe server."],
+                         "connected": [False]})
 
-    return False
+    ssh.close()
+
+    return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
+                     "connected": [True]})
 
 
 @api_view(['POST'])
@@ -145,7 +176,35 @@ def set_source(request):
     """
     Set the Klufe K5700 calibrator to the desired DC or AV voltage.
     """
+    if request.data['index'] is not None:
+        try:
+            test = VOLTAGE_LEVELS[request.data['index']]
+        except IndexError:
+            return Response(
+                {"klufe_calibration_request_error": [f"Index value {request.data['index']} has no corresponding test."]},
+                status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'klufe_calibration_request_error': ["Missing fields from request."]},
+                        status=status.HTTP_400_BAD_REQUEST)
 
+    if test['is_AC']:
+        klufe_input = f"set ac {test['source_voltage']} {test['Hz']}"
+    else:
+        klufe_input = f"set dc {test['source_voltage']}"
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
+        channel = ssh.invoke_shell()
+        time.sleep(0.001)
+        channel.send(klufe_input)
+        time.sleep(0.001)
+        channel_output = channel.recv(65535).decode('ascii')
+    except paramiko.SSHException:
+        return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+
+    ssh.close()
     return False
 
 
@@ -171,15 +230,6 @@ def save_calibration(request, klufe_pk):
     else:
         return Response({"klufe_calibration_error": [klufe_details]},
                         status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def disconnect_source(request):
-    """
-    Disconnect from Klufe K5700 calibrator via SSH.
-    """
-
-    return False
 
 
 @api_view(['DELETE'])

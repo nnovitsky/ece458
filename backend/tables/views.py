@@ -458,9 +458,6 @@ def export_barcodes_pdf(request):
     return export_barcodes.handler(instrument_pks=, select_all=True)
 
 
-
-
-
 # USERS
 class TokenAuth(ObtainJSONWebToken):
     permission_classes = (permissions.AllowAny,)

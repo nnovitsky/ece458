@@ -64,6 +64,7 @@ class InstrumentTablePage extends Component {
         this.onBarcodeButtonDownloadClick = this.onBarcodeButtonDownloadClick.bind(this);
         this.onInstrumentSelect = this.onInstrumentSelect.bind(this);
         this.onInstrumentSelectAll = this.onInstrumentSelectAll.bind(this);
+        this.onFilterChange = this.onFilterChange.bind(this);
     }
 
     initializeInstrumentSessionStorage() {
@@ -149,8 +150,9 @@ class InstrumentTablePage extends Component {
                         <div className="col-2 text-center button-col">
                             <img src={logo} alt="Logo" />
                             <FilterBar
-                                onSearch={this.updateTable}
-                                onRemoveFilters={this.updateTable}
+                                onSearch={this.onFilterChange}
+                                onRemoveFilters={this.onFilterChange}
+                                isWarning={this.state.barcodes.isSelecting}
                             />
                         </div>
                         <div className="col-10">
@@ -188,6 +190,22 @@ class InstrumentTablePage extends Component {
         )
     }
 
+    async onFilterChange() {
+        if (this.state.barcodes.isSelecting) {
+            this.setState({
+                barcodes: {
+                    ...this.state.barcodes,
+                    selected: [],
+                    numSelected: 0,
+                    instrumentPks: [],
+                    isSelectAll: false,
+                }
+            }, () => this.updateTable());
+        } else {
+            this.updateTable();
+        }
+    }
+
     async updateTable() {
         this.setState({
             isLoading: true,
@@ -202,7 +220,7 @@ class InstrumentTablePage extends Component {
         filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
         filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
 
-        instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
+        await instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -211,7 +229,7 @@ class InstrumentTablePage extends Component {
                         resultCount: result.data.count,
                     },
                     isLoading: false
-                })
+                });
                 if (!this.state.instrumentSearchParams.showAll) {
                     this.setState({
                         pagination: {

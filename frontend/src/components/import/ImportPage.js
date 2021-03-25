@@ -5,6 +5,7 @@ import logo from '../../assets/HPT_logo_crop.png';
 import ModelServices from "../../api/modelServices.js";
 import InstrumentServices from "../../api/instrumentServices.js";
 import ImportPagePopup from './ImportPagePopup';
+import { hasModelEditAccess, hasInstrumentEditAccess } from '../generic/Util';
 
 import ModelTable from "./NewModelTable.js";
 import InstrumentTable from "./NewIntrumentTable";
@@ -49,18 +50,29 @@ class ImportPage extends Component {
                 <ModelTable
                     data={this.state.tableData}
                     onTableChange={null}
-                 />
+                />
             </div>,
 
 
-        instrumentTable = 
+        instrumentTable =
             <div>
                 <InstrumentTable
                     data={this.state.tableData}
                     onTableChange={null}
                 />
-            </div>
+            </div>,
+
+        instrumentAndModelImportButtons = <div className="popup-button-row lowerMargin">
+            <Button onClick={this.importModelClicked}>Import Model</Button>
+            <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
+        </div>,
+
+        instrumentImportButton = <div className="popup-button-row lowerMargin">
+            <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
+        </div>
+
     ) {
+        console.log(this.props.permissions)
         return (
             <div>
                 <ImportPagePopup
@@ -78,10 +90,7 @@ class ImportPage extends Component {
                                     <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
                                 </div>
                             </form>
-                            <div className="popup-button-row lowerMargin">
-                                <Button onClick={this.importModelClicked}>Import Model</Button>
-                                <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
-                            </div>
+                            {hasModelEditAccess(this.props.permissions) ? instrumentAndModelImportButtons : instrumentImportButton}
                             <div className="popup-button-row" >
                                 <Button className="button-matching" style={{ width: "100%" }} onClick={this.onShowInstructionsClicked}>How to Import</Button>
 
@@ -98,13 +107,13 @@ class ImportPage extends Component {
                                 </p>
                             </div>
                         </div>
-                            <div className="row">
+                        <div className="row">
                             <div className="col-2"></div>
-                                <div className="col-9">
-                                    {this.state.showModelTable ? modelTable : null}
-                                    {this.state.showInstrumentTable ? instrumentTable : null}
-                                </div>
+                            <div className="col-9">
+                                {this.state.showModelTable ? modelTable : null}
+                                {this.state.showInstrumentTable ? instrumentTable : null}
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -111,6 +111,8 @@ def klufe_test(request, klufe_pk):
                                                           f"Cannot be higher than {test['upper']}V ({test['description']}"
                                                           f")"]}, status=status.HTTP_412_PRECONDITION_FAILED)
     else:
+        #Overwrite previous test
+        KlufeVoltageReading.objects.filter(klufe_cal=klufe_pk, index=test_index).delete()
         voltage_reading = {
             'klufe_cal': klufe_cal.pk,
             'index': test_index,
@@ -233,13 +235,13 @@ def save_calibration(request, klufe_pk):
 
 
 @api_view(['DELETE'])
-def cancel_klufe_cal(request, pk):
+def cancel_klufe_cal(request, klufe_pk):
     """
     Should a user disconnect or exit the calibration before a Klufe calibration
     event has been saved and validated.
     """
     try:
-        klufe_cal = KlufeCalibration.objects.get(pk=pk)
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
         cal_event = CalibrationEvent.objects.get(pk=klufe_cal.cal_event.pk)
     except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)

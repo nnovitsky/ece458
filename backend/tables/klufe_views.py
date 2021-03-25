@@ -1,12 +1,15 @@
+import time
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+import paramiko
 
 from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserType, KlufeCalibration
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
-from backend.config.klufe_config import VOLTAGE_LEVELS
+from backend.config.klufe_config import HOST, PORT, SSH_USER, SSH_PASS, VOLTAGE_LEVELS
 
 
 @api_view(['GET', 'PUT'])
@@ -19,9 +22,21 @@ def start_klufe(request):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
-    request.data['user'] = request.user.pk
     if request.method == 'GET':
-        return False
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            ssh.connect(HOST, PORT, SSH_USER, SSH_PASS)
+            channel = ssh.invoke_shell()
+            time.sleep(0.001)
+            channel.send('help')
+            time.sleep(0.001)
+            channel_output = channel.recv(65535).decode('ascii')
+        except paramiko.SSHException:
+            return Response({"SSH_error": ["Failed to connect to remote Klufe server."]})
+
+        ssh.close()
+        return Response({"Klufe SSH data": [channel_output]}, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = CalibrationEventWriteSerializer(data=request.data)
         if serializer.is_valid():

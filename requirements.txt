@@ -9,3 +9,4 @@ requests~=2.25.1
 PyJWT~=1.7.1
 pytz~=2021.1
 PyPDF2~=1.26.0
+paramiko~=2.7.2

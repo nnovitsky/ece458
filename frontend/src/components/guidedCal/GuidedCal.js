@@ -17,7 +17,7 @@ class GuidedCal extends React.Component {
         super(props);
         this.state = {
             errors: [],
-            currentStep: 0,
+            currentStep: this.props.klufePK !== null ? 3 : 0,
             isDeleteShown: false,
             model_number: this.props.model_number,
             vendor: this.props.vendor,
@@ -26,7 +26,7 @@ class GuidedCal extends React.Component {
             asset_tag: this.props.asset_tag,
             username: this.props.user.username,
             userPK: this.props.user.pk,
-            klufePK: null,
+            klufePK: this.props.klufePK,
             calEventPK: null,
             klufe: null,
         }
@@ -53,6 +53,7 @@ class GuidedCal extends React.Component {
     }
 
     makeBody() {
+        console.log(this.state.klufePK)
         switch (this.state.currentStep) {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
@@ -127,12 +128,11 @@ class GuidedCal extends React.Component {
     }
 
     async onClose() {
-        console.log("here")
         if(this.state.klufePK !== null && this.state.currentStep < 3) {
             this.onDeleteClicked();
         }
         else {
-            console.log("Didn't need to cancel an event")
+            console.log("Exited and didn't need to cancel an event")
             this.props.onClose();
         }
     }

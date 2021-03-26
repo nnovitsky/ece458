@@ -65,3 +65,7 @@ form.guidedCal .form-check-label{
     margin-right: 50px;
     margin-top: 10px;
 }
+
+.cell-padding span{
+    padding-left: 5px;
+}

@@ -216,15 +216,18 @@ takes the leftover
 /* guided cal columns widths */
 
 .gc-num-column{
-    width: 10%;
+    width: 6%;
 }
 .gc-sv-column{
-    width: 30%;
+    width: 16%;
 }
 .gc-sf-column{
-    width: 30%;
+    width: 16%;
 }
 .gc-dv-column{
-    width: 30%;
+    width: 16%;
+}
+.gc-vo-column{
+    width: 16%;
 }
 

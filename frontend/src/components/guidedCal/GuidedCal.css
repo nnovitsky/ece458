@@ -12,6 +12,16 @@ form.guidedCal .form-control{
     align-content: left;
 }
 
+.validated{
+    background-color: rgba(200, 255, 187, 0.411) !important;
+}
+
+
+.datepicker{
+    width: min(15vw, 215px);
+    font-size: min(1.4vw, 20px);
+}
+
 form.guidedCal .btn{
     margin-left: 5px;
     width: min(15vw, 215px);

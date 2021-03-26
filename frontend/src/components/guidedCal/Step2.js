@@ -4,6 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 
 
@@ -14,7 +17,7 @@ class Step2 extends React.Component {
 
         this.state = {
             errors: [],
-            pk: this.props.pk,
+            klufePK: this.props.klufePK,
             sucessfulSet: false,
             sucessfulFunction: false,
             validDisplay: false,

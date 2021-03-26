@@ -449,19 +449,6 @@ def get_example_instrument_csv(request):
         return Response({"description": ["File requested not found."]}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
-def export_barcodes_pdf(request):
-    """
-    Generates a pdf that contains barcodes of all the specified instruments.
-    Each barcode contains an HPT label with the respective instrument's asset tag number.
-    """
-    #[thing for thing in list_of_things]
-    # n_items = 400
-    # sample_pks = [87978+i for i in range(n_items)]
-    # return export_barcodes.handler(instrument_pks=sample_pks, select_all=False)
-    return export_barcodes.handler(instrument_pks=request.data['instrument_pks'], select_all=True)
-
-
 # USERS
 class TokenAuth(ObtainJSONWebToken):
     permission_classes = (permissions.AllowAny,)

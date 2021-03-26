@@ -75,5 +75,5 @@ urlpatterns = [
     path('api/set_klufe/', klufe_views.set_source),
     path('api/save_klufe/<int:klufe_pk>/', klufe_views.save_calibration),
     path('api/cancel_klufe_cal/<int:klufe_pk>/', klufe_views.cancel_klufe_cal),
-    path('api/export_barcodes/', views.export_barcodes_pdf)
+    path('api/export_barcodes/', api_views.BarcodeExport.as_view())
 ]

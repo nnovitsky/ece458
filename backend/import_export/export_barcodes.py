@@ -12,9 +12,10 @@ TOP_MARGIN = 0.5*inch
 HORIZONTAL_GAP = 0.28125*inch
 BARCODE_HEIGHT = 0.5*inch
 BARCODE_WIDTH = 1.75*inch
-TAGS_PER_PAGE = 80
 PAGE_WIDTH = 8.5*inch
 PAGE_HEIGHT = 11*inch
+
+TAGS_PER_PAGE = 80
 
 N_COLUMNS = 4
 N_ROWS = 20
@@ -59,10 +60,6 @@ def make_pdf(asset_tags):
     return buffer
 
 
-def filter_instrument_pks(raw_pks):
-
-    return True
-
 
 def get_asset_tags(instrument_pks):
 
@@ -73,13 +70,9 @@ def get_asset_tags(instrument_pks):
     return tags
 
 
-def handler(instrument_pks, select_all):
-    if not select_all:
-        asset_tags = get_asset_tags(instrument_pks)
-    else:
-        filtered_pks = filter_instrument_pks(instrument_pks)
-        asset_tags = get_asset_tags(filtered_pks)
+def handler(instrument_pks):
 
+    asset_tags = get_asset_tags(instrument_pks)
     buffer = make_pdf(asset_tags)
 
     filename = f"{date.today().strftime('%Y_%m_%d')}_barcodes.pdf"

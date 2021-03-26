@@ -35,6 +35,7 @@ class Step3 extends React.Component {
         }
         this.getDeatils = this.getDeatils.bind(this);
         this.getData = this.getData.bind(this);
+        this.onClose = this.onClose.bind(this);
 
     }
 
@@ -51,9 +52,9 @@ class Step3 extends React.Component {
             <Base
                 isShown={this.props.isShown}
                 errors={this.state.errors}
-                onClose={this.props.onClose}
+                onClose={this.onClose}
                 body={body}
-                incrementStep={this.props.onClose}
+                incrementStep={this.onClose}
                 decrementStep={this.props.decrementStep}
                 isCancelHidden={true}
                 isBackHidden={!this.state.canDelete}
@@ -165,6 +166,12 @@ class Step3 extends React.Component {
             })
         })
 
+    }
+
+    onClose()
+    {
+        window.sessionStorage.removeItem("loadbank");
+        this.props.onClose();
     }
 
 }

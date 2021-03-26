@@ -19,8 +19,9 @@ import GenericLoader from './components/generic/GenericLoader.js';
 import AuthServices from './api/authServices';
 import Configs from './api/config.js';
 import { hasModelEditAccess, hasInstrumentEditAccess, hasAdminAccess } from './components/generic/Util';
+import GuidedCalServices from './api/guidedCalServices.js';
 
-//const URL = 'http://localhost:3000/'
+const guidedCalServices = new GuidedCalServices();
 const URL = Configs + '/'
 const authServices = new AuthServices();
 
@@ -43,12 +44,25 @@ class App extends Component {
   }
 
   async componentDidMount() {
+    if(window.sessionStorage.getItem("source"))
+    {
+      await this.turnOffSource();
+    }
     if (this.state.logged_in) {
       await this.setCurrentUser();
     }
     else {
       console.log("Not Logged in")
     }
+  }
+
+  async turnOffSource(){
+    await guidedCalServices.turnOffSource().then(result => {
+        if(result.success)
+        {
+            console.log(result.data.SSH_success)
+        }
+    })
   }
 
   async setCurrentUser() {

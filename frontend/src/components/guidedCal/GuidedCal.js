@@ -68,7 +68,6 @@ class GuidedCal extends React.Component {
             default:
                 return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     klufePK={this.state.klufePK} serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>
-
         }
 
     }
@@ -138,7 +137,7 @@ class GuidedCal extends React.Component {
     }
 
     async cancelEvent() {
-            guidedCalServices.deleteKlufeCal(this.state.klufePK).then(result =>{
+            await guidedCalServices.deleteKlufeCal(this.state.klufePK).then(async result =>{
                 console.log(result)
                 if(result.success){
                     console.log("deleted event")
@@ -146,7 +145,8 @@ class GuidedCal extends React.Component {
                         klufePk: null,
                         cal_event_pk: null,
                     })
-                    this.turnOffSource()
+                    await this.turnOffSource();
+                    window.sessionStorage.removeItem("klufe");
                     this.props.onClose()
                 }
                 else{
@@ -159,7 +159,7 @@ class GuidedCal extends React.Component {
     }
 
     async turnOffSource(){
-        guidedCalServices.turnOffSource().then(result => {
+        await guidedCalServices.turnOffSource().then(result => {
             if(result.success)
             {
                 console.log(result.data.SSH_success)
@@ -168,6 +168,7 @@ class GuidedCal extends React.Component {
     }
 
     async setEventPKs(klufePK, calEventPK){
+        window.sessionStorage.setItem("klufe", JSON.stringify(klufePK));
         this.setState({
             klufePK: klufePK,
             calEventPK: calEventPK

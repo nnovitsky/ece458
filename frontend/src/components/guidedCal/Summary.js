@@ -25,6 +25,7 @@ class Summary extends React.Component {
             errors: [],
         }
         this.getKlufeDetails = this.getKlufeDetails.bind(this);
+        this.onClose = this.onClose.bind(this);
     }
 
     async componentDidMount()
@@ -39,9 +40,9 @@ class Summary extends React.Component {
                 title="Guided Calibration"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
-                onClose={this.props.onClose}
+                onClose={this.onClose}
                 body={body}
-                incrementStep={this.props.onClose}
+                incrementStep={this.onClose}
                 isBackHidden={true}
                 isCancelHidden={true}
                 continueButtonText="Exit"
@@ -114,6 +115,12 @@ class Summary extends React.Component {
                 })
             }
         })
+    }
+
+    onClose()
+    {
+        window.sessionStorage.removeItem("klufe");
+        this.props.onClose();
     }
 
 

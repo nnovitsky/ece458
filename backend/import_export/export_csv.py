@@ -10,11 +10,10 @@ from rest_framework.response import Response
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 
 image_types = ['gif', 'jpg', 'png']
-model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Model-Categories', 'Load-Bank-Support',
-                 'Calibration-Frequency']
+model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Model-Categories',
+                 'Special-Calibration-Support', 'Calibration-Frequency']
 instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Asset-Tag', 'Comment', 'Calibration-Date',
-                      'Calibration-Comment', 'Instrument-Categories', 'Calibration-File-Attachment',
-                      'Calibration-Load-Bank-Result-Exists']
+                      'Calibration-Comment', 'Instrument-Categories', 'Calibration-Attachment-Type']
 
 
 def get_model_categories(model):
@@ -26,11 +25,13 @@ def get_model_categories(model):
     return ""
 
 
-def get_load_bank_compatibility(model):
+def get_cal_modes(model):
     modes = model.calibrationmode_set.all()
 
     if len(modes) > 0 and modes[0].name == 'load_bank':
-        return "Y"
+        return "Load-Bank"
+    elif len(modes) > 0 and modes[0].name == 'klufe_k5700':
+        return "Klufe"
 
     return ""
 
@@ -39,7 +40,7 @@ def write_model_sheet(db_models, buffer):
     model_list = []
     for db_model in db_models:
         model_categories = get_model_categories(db_model)
-        load_bank_support = get_load_bank_compatibility(db_model)
+        cal_modes = get_cal_modes(db_model)
 
         model_row = [
             str(db_model.vendor),
@@ -47,7 +48,7 @@ def write_model_sheet(db_models, buffer):
             str(db_model.description),
             str(db_model.comment),
             model_categories,
-            load_bank_support,
+            cal_modes,
             str(db_model.calibration_frequency)
         ]
         model_list.append(model_row)
@@ -86,14 +87,17 @@ def get_file_info(db_instrument):
     return f"Attachment: {file_ext.upper()} file"
 
 
-def check_calibration_for_lb(instrument):
+def check_calibration_type(instrument):
     most_recent_cal = instrument.calibrationevent_set.order_by('-date')[:1]
 
     if len(most_recent_cal) != 0:
         file_type = most_recent_cal[0].file_type
         if file_type == 'Load Bank':
             return "Calibration via load-bank wizard"
-
+        elif file_type == 'Artifact':
+            return get_file_info(instrument)
+        elif file_type == 'Klufe':
+            return "Calibration via Klufe calibrator"
     return ""
 
 
@@ -103,8 +107,7 @@ def write_instrument_sheet(db_instruments, buffer):
         instrument_model = db_instrument.item_model
 
         categories = get_instrument_categories(db_instrument)
-        file_info = get_file_info(db_instrument)
-        load_bank_check = check_calibration_for_lb(db_instrument)
+        calibration_attachment = check_calibration_type(db_instrument)
 
         if instrument_model.calibration_frequency < 1:
             cal_date = ""
@@ -123,8 +126,7 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date,
             cal_comment,
             categories,
-            file_info,
-            load_bank_check
+            calibration_attachment
         ]
 
         instrument_list.append(instrument_row)

@@ -123,6 +123,9 @@ def klufe_test(request, klufe_pk):
             'reported_voltage':value,
             'voltage_okay':True
         }
+
+        if test['is_AC']: voltage_reading['source_hertz'] = test['Hz']
+
         serializer = KlufeVoltageSerializer(data=voltage_reading)
         if serializer.is_valid(): serializer.save()
         return Response({'klufe_calibration_test_success': [voltage_reading]}, status=status.HTTP_200_OK)

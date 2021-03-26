@@ -14,7 +14,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserT
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
-from backend.import_export import export_csv, export_pdf, export_barcodes
+from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT

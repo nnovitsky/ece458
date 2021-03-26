@@ -8,6 +8,9 @@
     },
     "non_field_errors": {
       "Category name cannot have spaces.": "Please enter a category name without spaces"
+    },
+    "permission_error": {
+      "User does not have permission.": "You no longer have access to perform this action"
     }
   }
 }

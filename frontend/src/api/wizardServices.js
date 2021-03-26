@@ -1,9 +1,8 @@
 import Configs from './config.js';
+import { checkBadResponse } from './apiUtil';
 const API_URL = Configs
 
 export default class WizardServices {
-    constructor() { }
-
     async getModelAssetTagByPK(model_pk) {
         const token = window.sessionStorage.getItem('token');
 
@@ -28,21 +27,9 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -86,22 +73,9 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    console.log(json)
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -128,8 +102,9 @@ export default class WizardServices {
                 return result;
             }
             else {
-                result.success = false;
-                return result;
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -172,21 +147,10 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.error = this.identifyErrors(json);
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    result.data = this.identifyErrors(json);
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -252,22 +216,10 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.data = json;
-                    result.errors = this.identifyErrors(json);
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    result.data = this.identifyErrors(json);
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -298,21 +250,10 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    result.data = this.identifyErrors(json);
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -347,21 +288,10 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    result.data = this.identifyErrors(json);
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -390,7 +320,9 @@ export default class WizardServices {
                 return data
             case "printer":
                 data = { printer: value }
-                return data
+                return data;
+            default:
+                return null;
         }
     }
 
@@ -419,21 +351,9 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -463,22 +383,9 @@ export default class WizardServices {
                 });
             }
             else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    console.log(json)
-                    result.success = false;
-                    result.data = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 

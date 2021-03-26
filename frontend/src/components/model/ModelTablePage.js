@@ -411,7 +411,3 @@ class ModelTablePage extends Component {
 }
 
 export default ModelTablePage;
-
-ModelTablePage.propTypes = {
-    is_admin: PropTypes.bool.isRequired
-}

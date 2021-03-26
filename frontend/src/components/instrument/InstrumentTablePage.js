@@ -558,7 +558,3 @@ class InstrumentTablePage extends Component {
     }
 }
 export default InstrumentTablePage;
-
-InstrumentTablePage.propTypes = {
-    is_admin: PropTypes.bool.isRequired
-}

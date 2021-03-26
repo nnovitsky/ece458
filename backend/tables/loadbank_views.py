@@ -10,6 +10,9 @@ from backend.config.load_bank_config import LOAD_LEVELS
 
 @api_view(['POST'])
 def start_loadbank_cal(request):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     request.data['user'] = request.user.pk
     request.data['file_type'] = 'Load Bank'
     if 'cal_event_pk' in request.data:
@@ -42,6 +45,9 @@ def start_loadbank_cal(request):
 
 @api_view(['PUT'])
 def update_lb_cal_field(request, lb_cal_pk):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
     except LoadBankCalibration.DoesNotExist:
@@ -99,6 +105,9 @@ def get_test_voltage(request):
 
 @api_view(['PUT'])
 def add_current_reading(request, lb_cal_pk):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
     except LoadBankCalibration.DoesNotExist:
@@ -135,6 +144,9 @@ def add_current_reading(request, lb_cal_pk):
 
 @api_view(['PUT'])
 def add_voltage_reading(request, lb_cal_pk):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
     except LoadBankCalibration.DoesNotExist:
@@ -170,6 +182,9 @@ def add_voltage_reading(request, lb_cal_pk):
 
 @api_view(['DELETE'])
 def cancel_lb_cal(request, lb_cal_pk):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
         cal_event = CalibrationEvent.objects.get(pk=lb_cal.cal_event.pk)

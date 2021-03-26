@@ -48,10 +48,10 @@ let makeConfig = () => {
             },
             {
                 dataField: 'source_hertz',
-                text: 'Source Frequency (Hz)',
+                text: 'Source Frequency',
                 formatter: (cell, row) => {
                     if(row.source_hertz === null) return<span>N/A</span>;
-                    else return<span>{row.source_hertz}</span>
+                    else return<span>{getHzString(row.source_hertz)}</span>
                 },
                 headerClasses: 'gc-sf-column'
             },
@@ -75,5 +75,20 @@ let makeConfig = () => {
         ]
     )
 };
+
+const getHzString  = (hz) => {
+    const mega = 1000000
+    const kilo = 1000
+
+    if (hz >= mega) {
+        return hz / mega + " MHz"
+    }
+    else if (hz >= kilo) {
+        return hz / kilo + " kHz"
+    }
+    else {
+        return hz + " Hz"
+    }
+}
 
 export default displayTable;

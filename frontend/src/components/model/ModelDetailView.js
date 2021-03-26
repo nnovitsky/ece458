@@ -6,7 +6,6 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
 import '../generic/General.css';
-import PropTypes from 'prop-types';
 
 import ModelServices from "../../api/modelServices";
 import InstrumentServices from '../../api/instrumentServices';
@@ -382,7 +381,3 @@ class ModelDetailView extends React.Component {
 
 }
 export default withRouter(ModelDetailView);
-
-ModelDetailView.propTypes = {
-    is_admin: PropTypes.bool.isRequired
-}

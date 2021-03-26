@@ -1,9 +1,8 @@
 import Configs from './config.js';
+import { checkBadResponse } from './apiUtil';
 const API_URL = Configs
 
 export default class UserServices {
-    constructor() { }
-
     // handles modified/expired token
     getUsers(desiredPage, isShowAll) {
         const token = window.sessionStorage.getItem('token');
@@ -32,21 +31,9 @@ export default class UserServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -79,21 +66,9 @@ export default class UserServices {
                 if (res.ok) {
                     return result;
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -142,21 +117,9 @@ export default class UserServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }

@@ -676,7 +676,3 @@ class InstrumentDetailView extends Component {
 }
 
 export default withRouter(InstrumentDetailView);
-
-InstrumentDetailView.propTypes = {
-    is_admin: PropTypes.bool.isRequired
-}

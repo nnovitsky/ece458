@@ -25,7 +25,7 @@ const URL = Configs + '/'
 const authServices = new AuthServices();
 
 class App extends Component {
- 
+
   constructor(props) {
     super(props);
     this.state = {
@@ -44,34 +44,38 @@ class App extends Component {
 
   async componentDidMount() {
     if (this.state.logged_in) {
-      await authServices.getCurrentUser().then((result) => {
-        if (result.success) {
-          this.setState({
-            user: {
-              ...this.state.user,
-              username: result.data.username,
-              permissions_groups: result.data.groups,
-              userPK: result.data.pk,
-            }
-          })
-        } else {
-          this.emptySessionStorage();
-          this.setState({
-            logged_in: false,
-            user: {
-              ...this.state.user,
-              username: '',
-              permissions_groups: [],
-              userPK: null,
-            }
-          });
-        }
-      }
-      )
+      await this.setCurrentUser();
     }
     else {
       console.log("Not Logged in")
     }
+  }
+
+  async setCurrentUser() {
+    await authServices.getCurrentUser().then((result) => {
+      if (result.success) {
+        this.setState({
+          user: {
+            ...this.state.user,
+            username: result.data.username,
+            permissions_groups: result.data.groups,
+            userPK: result.data.pk,
+          }
+        })
+      } else {
+        this.emptySessionStorage();
+        this.setState({
+          logged_in: false,
+          user: {
+            ...this.state.user,
+            username: '',
+            permissions_groups: [],
+            userPK: null,
+          }
+        });
+      }
+    }
+    )
   }
 
   handle_oath_login = (code) => {
@@ -93,7 +97,7 @@ class App extends Component {
             permissions_groups: result.data.user.groups,
             userPK: result.data.user.pk,
           }
-          
+
         });
       }
       else {
@@ -162,11 +166,11 @@ class App extends Component {
   loggedInPath = (protectedComponent) => {
     const token = window.sessionStorage.getItem('token');
     const isLoggedIn = token && typeof (token) !== 'undefined';
-    if(isLoggedIn) {
+    if (isLoggedIn) {
       return protectedComponent;
     } else {
       this.handle_logout();
-      return <Redirect to={{ pathname: '/' }}/>
+      return <Redirect to={{ pathname: '/' }} />
     }
   }
 
@@ -205,18 +209,18 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <GenericLoader isShown={this.state.isLoading}></GenericLoader>
-            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} user={this.state.user.username} permissions={permissions}/>
+            <Navigation logged_in={this.state.logged_in} handle_logout={this.handle_logout} user={this.state.user.username} permissions={permissions} />
             <Switch>
               {/* routes below require being logged in */}
-              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions}/>)} exact />
-              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage permissions={permissions}/>)} exact />
-              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage permissions={permissions}/>)} exact />
-              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView user={this.state.user} permissions={permissions}/>)} exact />
+              <Route path="/models" render={() => this.loggedInPath(<ModelTablePage permissions={permissions} />)} exact />
+              <Route path="/models-detail/:pk" render={() => this.loggedInPath(<ModelDetailPage permissions={permissions} />)} exact />
+              <Route path="/instruments" render={() => this.loggedInPath(<InstrumentTablePage permissions={permissions} />)} exact />
+              <Route path="/instruments-detail/:pk" render={() => this.loggedInPath(<InstrumentDetailView user={this.state.user} permissions={permissions} />)} exact />
               <Route path="/user-profile" render={() => this.loggedInPath(<UserProfilePage />)} exact />
               {/* routes below require user to be an admin */}
-              <Route path="/import" render={() => this.importPath(<ImportPage permissions={permissions}/>)} exact />
+              <Route path="/import" render={() => this.importPath(<ImportPage permissions={permissions} />)} exact />
               <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={isAdmin} username={this.state.user.username} />)} exact />
-              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups}/>)} exact />
+              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups} />)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
 

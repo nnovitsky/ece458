@@ -1,8 +1,8 @@
 import Configs from './config.js';
+import { checkBadResponse } from './apiUtil';
 const API_URL = Configs
 
 export default class AdminServices {
-    constructor() { }
 
     // handles modified/expired token
     async addAdminPriviledges(user_pk) {
@@ -27,21 +27,9 @@ export default class AdminServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -70,21 +58,9 @@ export default class AdminServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -116,8 +92,9 @@ export default class AdminServices {
                         result.success = true;
                         return result;
                 } else {
-                        result.success = false;
-                        return result;
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -153,21 +130,9 @@ export default class AdminServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -197,21 +162,9 @@ export default class AdminServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }

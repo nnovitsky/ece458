@@ -192,7 +192,7 @@ takes up the rest of the space
 takes the leftover
 } */
 
-/* user table columns widths */
+/* admin table columns widths */
 .at-num-column{
     width: 30px;
 }
@@ -210,5 +210,21 @@ takes the leftover
 }
 .at-delete-column{
     width: 60px;
+}
+
+
+/* guided cal columns widths */
+
+.gc-num-column{
+    width: 10%;
+}
+.gc-sv-column{
+    width: 30%;
+}
+.gc-sf-column{
+    width: 30%;
+}
+.gc-dv-column{
+    width: 30%;
 }
 

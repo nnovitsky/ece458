@@ -5,6 +5,9 @@ import Step1 from './Step1.js'
 import Step2 from './Step2.js'
 import Step3 from './Step3.js'
 import Summary from './Summary.js'
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 
 
@@ -21,7 +24,11 @@ class GuidedCal extends React.Component {
             serial_number: this.props.serial_number,
             instrument_pk: this.props.instrument_pk,
             asset_tag: this.props.asset_tag,
-            username: this.props.username
+            username: this.props.user.username,
+            userPK: this.props.user.pk,
+            klufePK: null,
+            calEventPK: null,
+            klufe: null,
         }
 
         this.incrementStep = this.incrementStep.bind(this);
@@ -30,6 +37,8 @@ class GuidedCal extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.setEventPKs = this.setEventPKs.bind(this);
+        this.turnOffSource = this.turnOffSource.bind(this);
     }
 
     render() {
@@ -48,25 +57,16 @@ class GuidedCal extends React.Component {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     model_number={this.state.model_number} vendor={this.state.vendor} serial_number={this.state.serial_number} instrument_pk={this.state.instrument_pk}
-                    asset_tag={this.state.asset_tag} username={this.props.username} progress={0}/>;
+                    asset_tag={this.state.asset_tag} user={this.props.user} setEventPKs={this.setEventPKs} klufePK={this.state.klufePK} calEventPK={this.state.calEventPK} progress={0}/>;
             case 1:
                 return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                progress={Math.round(1/7 * 100)}/>;
+                    klufePK={this.state.klufePK} progress={Math.round(1/7 * 100)}/>;
             case 2:
-                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                progress={Math.round(2/7 * 100)}/>
-            case 3:
                 return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                        index={1} progress={Math.round(3/7 * 100)}/>
-            case 4:
-                return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                    serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>
-            case 5:
-                return <div>Step 5</div>
-            case 6:
-                return <div>Step 6</div>
+                    klufePK={this.state.klufePK} index={0} progress={Math.round(3/7 * 100)}/>
             default:
-                return <div>Step 7</div>
+                return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
+                    klufePK={this.state.klufePK} serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>
 
         }
 
@@ -127,12 +127,57 @@ class GuidedCal extends React.Component {
     }
 
     async onClose() {
-            this.props.onClose()
+        console.log("here")
+        if(this.state.klufePK !== null && this.state.currentStep < 3) {
+            this.onDeleteClicked();
+        }
+        else {
+            console.log("Didn't need to cancel an event")
+            this.props.onClose();
+        }
     }
 
     async cancelEvent() {
-        // Backend call to cancel event
+            guidedCalServices.deleteKlufeCal(this.state.klufePK).then(result =>{
+                console.log(result)
+                if(result.success){
+                    console.log("deleted event")
+                    this.setState({
+                        klufePk: null,
+                        cal_event_pk: null,
+                    })
+                    this.turnOffSource()
+                    this.props.onClose()
+                }
+                else{
+                    this.setState({
+                        errors: result.data
+                    })
+                }
+            })
 
+    }
+
+    async turnOffSource(){
+        guidedCalServices.turnOffSource().then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+            }
+        })
+    }
+
+    async setEventPKs(klufePK, calEventPK){
+        this.setState({
+            klufePK: klufePK,
+            calEventPK: calEventPK
+        })
+    }
+
+    setKlufe(klufe){
+        this.setState({
+            klufe: klufe
+        })
     }
 }
 

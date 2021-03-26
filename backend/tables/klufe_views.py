@@ -40,7 +40,9 @@ def start_klufe(request):
         return Response({"SSH_success": ["Successfully turned the Klufe calibrator on."],
                      "connected": [True]})
     elif request.method == 'PUT':
+        request.data['file_type'] = 'Klufe'
         serializer = CalibrationEventWriteSerializer(data=request.data)
+
         if serializer.is_valid():
             cal_modes = serializer.validated_data['instrument'].item_model.calibrationmode_set.values_list("name", flat=True)
             if "klufe_k5700" not in cal_modes:

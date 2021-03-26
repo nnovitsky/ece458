@@ -10,7 +10,7 @@ column_types = [
     'Short-Description',
     'Comment',
     'Model-Categories',
-    'Load-Bank-Support',
+    'Special-Calibration-Support',
     'Calibration-Frequency',
 ]
 
@@ -49,8 +49,8 @@ def validate_row(current_row):
                 for category in item.split(' '):
                     sheet_categories.append(category)
 
-        elif column_type == 'Load-Bank-Support':
-            valid_cell, info = field_validators.is_valid_load_bank(item)
+        elif column_type == 'Special-Calibration-Support':
+            valid_cell, info = field_validators.is_valid_cal_type(item)
         elif column_type == 'Calibration-Frequency':
             valid_cell, info = field_validators.is_valid_calibration_freq(item)
 

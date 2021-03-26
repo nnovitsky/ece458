@@ -425,6 +425,7 @@ export default class InstrumentServices {
             .then(res => {
                 if (res.ok) {
                     return res.blob().then(blob => {
+                        result.type = blob.type;
                         return URL.createObjectURL(blob)
                     })
                         .then(url => {
@@ -468,11 +469,14 @@ export default class InstrumentServices {
         })
             .then(res => {
                 if (res.ok) {
+                    console.log(res);
                     return res.blob().then(blob => {
+                        result.type = blob.type;
                         return URL.createObjectURL(blob)
                     })
                         .then(url => {
                             result.url = url;
+                            console.log(result);
                             return result;
                         })
                 } else {
@@ -571,6 +575,7 @@ export default class InstrumentServices {
         }).then(res => {
             if (res.ok) {
                 return res.blob().then(blob => {
+                    result.type = blob.type;
                     return URL.createObjectURL(blob)
                 })
                     .then(url => {
@@ -618,6 +623,7 @@ export default class InstrumentServices {
         }).then(res => {
             if (res.ok) {
                 return res.blob().then(blob => {
+                    result.type = blob.type;
                     return URL.createObjectURL(blob)
                 })
                     .then(url => {

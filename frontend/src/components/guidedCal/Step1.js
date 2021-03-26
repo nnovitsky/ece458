@@ -4,6 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
+import GuidedCalServices from "../../api/guidedCalServices.js";
+
+const guidedCalServices = new GuidedCalServices();
 
 
 
@@ -14,17 +17,17 @@ class Step1 extends React.Component {
 
         this.state = {
             errors: [],
-            pk: this.props.pk,
+            klufePK: this.props.klufePK,
             sucessfulSet: false,
             sucessfulFunction: false,
             sucessfulConnection: false,
             klufe: {
-                connected: true,
-                outputOn: true,
-                mode: "AC",
-                freq: "75",
-                voltage: "10.000",
-            }
+                connected: false,
+                outputOn: false,
+                mode: "",
+                freq: "",
+                voltage: "",
+            },
         }
 
         //this.getStatus = this.getStatus.bind(this);
@@ -74,7 +77,7 @@ class Step1 extends React.Component {
                             <Form.Check id="set_function_instrument" label="Check when completed" onChange={this.onCheckMultimeter} checked={this.state.sucessfulFunction} disabled={!this.state.sucessfulSet}></Form.Check>
                         </Form.Group>
                         <Form.Group className={(this.state.sucessfulSet && this.state.sucessfulFunction) ? "form-inline" : "form-inline disabled"}>
-                            <Form.Label className="col-sm-6 col-form-label">3. Connect the source to the Model 87 Ω ⏄</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">3. Connect the source to the Model 87V Ω ⏄</Form.Label>
                             <Form.Check id="connect_instrument" label="Check when completed" onChange={this.onCheckConnection} disabled={!this.state.sucessfulSet || !this.state.sucessfulFunction}></Form.Check>
                         </Form.Group>
                     </div>
@@ -90,8 +93,23 @@ class Step1 extends React.Component {
 
 
     async onSetSourceClicked() {
-        this.setState({
-            sucessfulSet: !this.state.sucessfulSet,
+        guidedCalServices.connectSSH().then(result =>{
+            console.log(result)
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+                this.setState({
+                    sucessfulSet: true,
+                    klufe: {
+                        ...this.state.klufe,
+                        connected: true,
+                        mode: "DC",
+                        freq: "0Hz",
+                        voltage: 0,
+                },
+                })
+                this.turnOffSource();
+            }
         })
     }
 
@@ -104,6 +122,21 @@ class Step1 extends React.Component {
     async onCheckConnection() {
         this.setState({
             sucessfulConnection: !this.state.sucessfulConnection,
+        })
+    }
+
+    async turnOffSource(){
+        guidedCalServices.turnOffSource().then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+                this.setState({
+                    klufe: {
+                        ...this.state.klufe,
+                        outputOn: false,
+                    }
+                })
+            }
         })
     }
 

@@ -150,8 +150,7 @@ class InstrumentDetailView extends Component {
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
-                {/* // TODO add disabled check for things that can't be calibrated this way */}
-                <Button onClick={this.onGuidedCalClicked} hidden={!isCalibrationAdmin}>Add Guided Calibration</Button>
+                <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
             </div>
         )
         return (
@@ -326,7 +325,7 @@ class InstrumentDetailView extends Component {
                 instrument_pk={this.state.instrument_info.pk}
                 asset_tag={this.state.instrument_info.asset_tag}
                 lb_pk={this.state.wizardPopup.lbPK}
-                username={this.props.username}
+                username={this.props.user.username}
             />
         )
     }
@@ -337,7 +336,7 @@ class InstrumentDetailView extends Component {
                 isShown={this.state.guidedCalPopup.isShown}
                 onClose={this.onGuidedCalClose}
                 pk={this.state.guidedCalPopup.pk}
-                username={this.props.username}
+                user={this.props.user}
                 model_number={this.state.instrument_info.model_number}
                 vendor={this.state.instrument_info.vendor}
                 serial_number={this.state.instrument_info.serial_number}
@@ -506,7 +505,7 @@ class InstrumentDetailView extends Component {
         instrumentServices.getCalEventFile(cal_pk)
             .then((result) => {
                 if (result.success) {
-                    nameAndDownloadFile(result.url, `supplement-file`);
+                    nameAndDownloadFile(result.url, `supplement-file`, result.type);
                 } else {
                     console.log('no file exists');
                 }
@@ -524,7 +523,14 @@ class InstrumentDetailView extends Component {
     }
 
     onKlufeClick(e) {
-        // e.target.value = cal event pk
+        console.log(e.target.value)
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: true,
+                pk: e.target.value
+            }
+        })
     }
 
     onModelLinkClicked() {
@@ -639,7 +645,7 @@ class InstrumentDetailView extends Component {
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`);
+                    nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`, result.type);
                 }
             })
     }

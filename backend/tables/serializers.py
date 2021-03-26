@@ -318,6 +318,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     # use when reading instrument details
     user = UserSerializer()
     lb_cal_pk = serializers.SerializerMethodField()
+    klufe_cal_pk = serializers.SerializerMethodField()
 
     def get_lb_cal_pk(self, obj):
         lb_cals = obj.loadbankcalibration_set.all()

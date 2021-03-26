@@ -83,7 +83,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
-                    console.log(row)
                     switch (cell) {
                         case 'None':
                             return <span>N/A</span>;
@@ -92,7 +91,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Load Bank':
                             return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
                         case 'Klufe':
-                            return <Button onClick={onKlufeClick} value={row.lb_cal_pk} className="data-table-button">Guided Hardware Cal. Data</Button>
+                            return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Cal. Data</Button> 
                         default:
                             return <span>N/A</span>
                     }

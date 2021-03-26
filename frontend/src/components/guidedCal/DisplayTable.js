@@ -19,7 +19,7 @@ const displayTable = (props) => {
                 columns={config}
                 onTableChange={null}
                 headerClasses='data-table-header'
-                bodyClasses='data-table'
+                bodyClasses='data-table cell-padding'
             />
         </div>
     )
@@ -33,11 +33,17 @@ let makeConfig = () => {
                 isKey: true,
                 dataField: 'index',
                 text: 'Test Number',
-                headerClasses: 'gc-num-column'
+                formatter: (cell, row) => {
+                    return<span>{row.index + 1}</span>
+                },
+                headerClasses: 'gc-num-column',
             },
             {
                 dataField: 'source_voltage',
                 text: 'Source Voltage (V)',
+                formatter: (cell, row) => {
+                    return<span>{row.source_voltage}</span>
+                },
                 headerClasses: 'gc-sv-column'
             },
             {
@@ -52,7 +58,19 @@ let makeConfig = () => {
             {
                 dataField: 'reported_voltage',
                 text: 'Display Voltage (V)',
+                formatter: (cell, row) => {
+                    return<span>{row.reported_voltage}</span>
+                },
                 headerClasses: 'gc-dv-column'
+            },
+            {
+                dataField: 'voltage_okay',
+                text: 'Display Voltage Within Acceptable Range',
+                formatter: (cell, row) => {
+                    if(row.voltage_okay) return<span>Yes</span>;
+                    else return<span>No</span>
+                },
+                headerClasses: 'gc-vo-column'
             },
         ]
     )

@@ -38,7 +38,7 @@ class UserPage extends React.Component {
 
 
     async componentDidMount() {
-        this.updateUserInfo();
+        await this.updateUserInfo();
     }
 
 

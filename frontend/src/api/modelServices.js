@@ -1,4 +1,5 @@
 import Configs from './config.js';
+import { checkBadResponse } from './apiUtil';
 const API_URL = Configs
 
 export default class ModelServices {
@@ -45,21 +46,9 @@ export default class ModelServices {
                     return result;
                 });
             } else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.errors = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         }
         )
@@ -88,21 +77,9 @@ export default class ModelServices {
                     return result;
                 });
             } else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.errors = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         }
         )
@@ -145,19 +122,9 @@ export default class ModelServices {
                         return result;
                     })
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -197,19 +164,9 @@ export default class ModelServices {
                 if (res.ok) {
                     return result;
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -237,19 +194,9 @@ export default class ModelServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -271,19 +218,9 @@ export default class ModelServices {
             if (res.ok) {
                 return result;
             } else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                    }
-                    result.success = false;
-                    result.errors = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         })
 
@@ -363,21 +300,9 @@ export default class ModelServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -408,21 +333,9 @@ export default class ModelServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -452,21 +365,9 @@ export default class ModelServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                            return result;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -494,19 +395,9 @@ export default class ModelServices {
                         return result;
                     });
                 } else {
-                    return res.json().then(json => {
-                        if (json.detail === 'Signature has expired.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        if (json.detail === 'Error decoding signature.') {
-                            window.location.reload();
-                            result.success = false;
-                        }
-                        result.success = false;
-                        result.errors = json;
-                        return result;
-                    })
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
                 }
             })
     }
@@ -550,21 +441,9 @@ export default class ModelServices {
                         return result;
                     })
             } else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.errors = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         }
         )
@@ -597,21 +476,9 @@ export default class ModelServices {
                         return result;
                     })
             } else {
-                return res.json().then(json => {
-                    if (json.detail === 'Signature has expired.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    if (json.detail === 'Error decoding signature.') {
-                        window.location.reload();
-                        result.success = false;
-                        return result;
-                    }
-                    result.success = false;
-                    result.errors = json;
-                    return result;
-                })
+                return res.json().then(async (json) => {
+                    return await checkBadResponse(json, result);
+                });
             }
         }
         )

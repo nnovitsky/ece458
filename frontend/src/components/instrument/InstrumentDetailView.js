@@ -335,7 +335,7 @@ class InstrumentDetailView extends Component {
             <GuidedCal
                 isShown={this.state.guidedCalPopup.isShown}
                 onClose={this.onGuidedCalClose}
-                pk={this.state.guidedCalPopup.pk}
+                klufePK={this.state.guidedCalPopup.pk}
                 user={this.props.user}
                 model_number={this.state.instrument_info.model_number}
                 vendor={this.state.instrument_info.vendor}
@@ -523,7 +523,6 @@ class InstrumentDetailView extends Component {
     }
 
     onKlufeClick(e) {
-        console.log(e.target.value)
         this.setState({
             guidedCalPopup: {
                 ...this.state.guidedCalPopup,
@@ -677,7 +676,3 @@ class InstrumentDetailView extends Component {
 }
 
 export default withRouter(InstrumentDetailView);
-
-InstrumentDetailView.propTypes = {
-    is_admin: PropTypes.bool.isRequired
-}

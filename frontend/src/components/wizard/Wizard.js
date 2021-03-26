@@ -153,6 +153,7 @@ class Wizard extends React.Component {
     }
 
     async setLoabankCalEventNumber(lb_pk) {
+        window.sessionStorage.setItem("loadbank", JSON.stringify(lb_pk));
         this.setState({
             loadbank_pk: lb_pk
         })
@@ -181,6 +182,7 @@ class Wizard extends React.Component {
         wizardServices.cancelLoadbankCalEvent(this.state.loadbank_pk).then(result => {
             console.log(result)
             if (result.success) {
+                window.sessionStorage.removeItem("loadbank");
                 this.props.onClose()
             }
             else {

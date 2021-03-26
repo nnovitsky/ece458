@@ -16,6 +16,11 @@ import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
 import "./InstrumentDetailView.css";
 import DetailView from '../generic/DetailView';
+import GuidedCalServices from '../../api/guidedCalServices.js';
+import WizardServices from '../../api/wizardServices.js';
+
+const guidedCalServices = new GuidedCalServices();
+const wizardServices = new WizardServices();
 
 const instrumentServices = new InstrumentServices();
 
@@ -95,9 +100,20 @@ class InstrumentDetailView extends Component {
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
         this.onLoadBankClick = this.onLoadBankClick.bind(this);
         this.onKlufeClick = this.onKlufeClick.bind(this);
+
+        this.cancelKlufeEvent = this.cancelKlufeEvent.bind(this);
+        this.cancelLoadbankEvent = this.cancelLoadbankEvent.bind(this);
     }
 
     async componentDidMount() {
+        if(window.sessionStorage.getItem("klufe"))
+        {
+          await this.cancelKlufeEvent();
+        }
+        if(window.sessionStorage.getItem("loadbank"))
+        {
+          await this.cancelLoadbankEvent();
+        }
         await this.getInstrumentInfo();
         await this.getCalHistory();
     }
@@ -672,7 +688,28 @@ class InstrumentDetailView extends Component {
             this.getCalHistory();
         })
     }
+    
+      async cancelKlufeEvent(){
+        let klufePK = window.sessionStorage.getItem("klufe");
+        await guidedCalServices.deleteKlufeCal(klufePK).then(result =>{
+          if(result.success){
+              console.log("deleted klufe event")
+              window.sessionStorage.removeItem("klufe");
+          }
+      })
+      }
+
+      async cancelLoadbankEvent(){
+        let loadbankPK = window.sessionStorage.getItem("loadbank");
+        await wizardServices.cancelLoadbankCalEvent(loadbankPK).then(result => {
+            if (result.success) {
+                console.log("deleted loadbank event")
+                window.sessionStorage.removeItem("loadbank");
+            }
+        })
+      }
 
 }
+
 
 export default withRouter(InstrumentDetailView);

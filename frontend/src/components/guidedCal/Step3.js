@@ -80,6 +80,7 @@ class Step2 extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.turnOffSource = this.turnOffSource.bind(this);
         this.turnOnSource = this.turnOnSource.bind(this);
+        this.validateInput = this.validateInput.bind(this);
     }
 
 
@@ -93,6 +94,7 @@ class Step2 extends React.Component {
 
     render() {
         let body = this.makeBody();
+        console.log(this.state.validDisplay)
         return (
             <Base
                 title="Guided Calibration"
@@ -100,10 +102,10 @@ class Step2 extends React.Component {
                 errors={this.state.errors}
                 onClose={this.props.onClose}
                 body={body}
-                incrementStep={this.nextCal}
-                disableContinue={(this.state.index === 0 && !this.state.functionSet) || !this.state.validDisplay}
+                incrementStep={this.validateInput}
+                disableContinue={this.state.displayVoltage === ''}
                 decrementStep={this.prevCal}
-                continueButtonText={this.state.index === 4 ? "Submit Final Step and Finish Calibration" : "Continue"}
+                continueButtonText={this.state.index === 4 ? "Validate Final Step and Finish Calibration" : "Validate And Continue"}
                 progress={this.props.progress + Math.round((this.state.index - 1) / 7 * 100)}
             />
         );
@@ -111,32 +113,35 @@ class Step2 extends React.Component {
 
 
     makeBody() {
-        let extraIndexZeroStep = <Form.Group className={(this.state.sucessfulSet && this.state.validDisplay) ? "form-inline" : "form-inline disabled"}>
-            <Form.Label className="col-sm-6 col-form-label">3. Set the Model 87 to the V~ function</Form.Label>
-            <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={!this.state.sucessfulSet || !this.state.validDisplay || this.state.forceDisable}></Form.Check>
+        let extraIndexOneStep = <Form.Group className="form-inline">
+            <Form.Label className="col-sm-6 col-form-label">1. Set the Model 87 to the V~ function</Form.Label>
+            <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={this.state.forceDisable}></Form.Check>
         </Form.Group>
 
         return <div>
             <Form className="guidedCal">
                 <h3>Calibration: {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</h3>
-                <h7>Follow the steps in order to set up your instrument for the guided calibration.
-                <br></br>Once you complete a step, the next step will become enabled.</h7>
+                <h7>Follow the steps in order to calibrate your instrument.
+                 <br></br>Click <b>Validate and Continue</b> to validate the voltage displayed on the mulitmeter. 
+                 <br></br>If you entered an acceptable value, you will be taken to the next calibration step. If not, 
+                    follow the error message to correct your device.
+                </h7>
                 <div className="row">
                     <div className="col">
-                        <Form.Group className="form-inline" style={{ marginTop: "20px" }}>
-                            <Form.Label className="col-sm-6 col-form-label">1. Set the source for VAC = {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</Form.Label>
-                            <Button onClick={this.onSetSourceClicked} disabled={this.state.forceDisable}>Click to set source</Button>
+                        {this.state.index === 1 ? extraIndexOneStep : null}
+                        <Form.Group className={(this.state.index === 1 && !this.state.functionSet) ? "form-inline disabled" : "form-inline"} style={{ marginTop: "20px" }}>
+                            <Form.Label className="col-sm-6 col-form-label">{this.state.index === 1 ? 2 : 1}. Set the source for VAC = {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</Form.Label>
+                            <Button onClick={this.onSetSourceClicked} disabled={this.state.forceDisable || (this.state.index === 1 && !this.state.functionSet)}>Click to set source</Button>
                         </Form.Group>
                         <Form.Group className={this.state.sucessfulSet ? "form-inline" : "form-inline disabled"}>
-                            <Form.Label className="col-sm-6 col-form-label">2. Enter the displayed voltage on the Model 87</Form.Label>
-                            <Form.Control disabled={!this.state.sucessfulSet || this.state.forceDisable} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
-                            <Form.Label className="col-sm-11 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">{this.state.index === 1 ? 3 : 2}. Enter the displayed voltage on the Model 87</Form.Label>
+                            <Form.Control className={this.state.validDisplay ? "validated" : null} disabled={!this.state.sucessfulSet || this.state.forceDisable} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
+                            <Form.Label className="col-sm-6 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display</Form.Label>
                         </Form.Group>
-                        {this.state.index === 0 ? extraIndexZeroStep : null}
                     </div>
                     <div className="col">
                         <Klufe connected={this.state.klufe.connected} outputOn={this.state.klufe.outputOn}
-                            mode={this.state.klufe.mode} freq={this.state.klufe.freq} voltage={this.state.klufe.voltage} />
+                            mode={this.state.klufe.mode} freq={this.getHzString(this.state.klufe.freq)} voltage={this.state.klufe.voltage} />
                     </div>
                 </div>
             </Form>
@@ -164,43 +169,13 @@ class Step2 extends React.Component {
                 this.turnOnSource();
             }
         })
-
-
-        this.setState({
-            sucessfulSet: !this.state.sucessfulSet,
-        })
     }
 
     onTextInput(e) {
-        let val = Number(e.target.value);
          this.setState({
             displayVoltage: e.target.value,
             validDisplay: false,
         })
-        if(!isNaN(val)) 
-        {
-        guidedCalServices.validateMultimeterDisplay(this.state.klufePK, Number(this.state.index), val).then(result =>{
-            if(result.success){
-                this.setState({
-                    errors: [],
-                    validDisplay: true,
-                })
-                this.turnOffSource();
-            }
-            else{
-                this.setState({
-                    errors: [`Adjust ${this.state.sourceData.adjustment}: ` + result.data[0]]
-                })
-            }
-        })
-    }
-    else{
-        this.setState({
-            errors: ["Invald Input: Your input is not a number, please review your inputted voltage try again"]
-        })
-    }
-
-        // if input validated need to turn off source
     }
 
     async turnOffSource(){
@@ -249,6 +224,33 @@ class Step2 extends React.Component {
         })
     }
 
+    async validateInput(){
+        let val = Number(this.state.displayVoltage);
+        if(!isNaN(val)) 
+        {
+        guidedCalServices.validateMultimeterDisplay(this.state.klufePK, Number(this.state.index), val).then(result =>{
+            if(result.success){
+                this.setState({
+                    errors: [],
+                    validDisplay: true,
+                })
+                this.turnOffSource();
+                this.nextCal();
+            }
+            else{
+                this.setState({
+                    errors: [`Adjust ${this.state.sourceData.adjustment}: ` + result.data[0]]
+                })
+            }
+        })
+    }
+    else{
+        this.setState({
+            errors: ["Invald Input: Your input is not a number, please review your inputted voltage try again"]
+        })
+    }
+    }
+
 
     nextCal() {
         let currentIndex = this.state.index;
@@ -262,6 +264,7 @@ class Step2 extends React.Component {
                 sucessfulSet: false,
                 displayVoltage: '',
                 forceDisable: false,
+                functionSet: false,
             })
             this.getStatus(newIndex);
         }

@@ -13,13 +13,13 @@ const klufe = (props) => {
             </div>
             <div className="row">
                 <div className="col">
-                    <h7>Status: {props.connected ? <b>Connected</b> : "Not connected"}</h7>
+                    <h7>Status: {props.connected ? <b>SSH Connected</b> : "Not Connected"}</h7>
                     <br></br>
                     <h7>Output: {props.outputOn ? <b>On</b> : "Off"}</h7>
                     <br></br>
                     <h7>Mode: {props.mode}</h7>
                     <br></br>
-                    <h7>Frequency: {props.freq !== '' ? `${props.freq} Hz` : ''}</h7>
+                    <h7>Frequency: {props.freq !== '' ? props.freq : ''}</h7>
                 </div>
                 <div className="col">
                     <h7>Output Voltage:</h7>

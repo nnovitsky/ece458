@@ -60,9 +60,6 @@ class GuidedCal extends React.Component {
             case 1:
                 return <Step1 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     klufePK={this.state.klufePK} progress={Math.round(1/7 * 100)}/>;
-/*             case 2:
-                return <Step2 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                    klufePK={this.state.klufePK} progress={Math.round(2/7 * 100)}/> */
             case 2:
                 return <Step3 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     klufePK={this.state.klufePK} index={0} progress={Math.round(3/7 * 100)}/>

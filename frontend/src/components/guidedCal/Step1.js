@@ -97,18 +97,18 @@ class Step1 extends React.Component {
             console.log(result)
             if(result.success)
             {
-                console.log("SSH connection success")
+                console.log(result.data.SSH_success)
                 this.setState({
                     sucessfulSet: true,
                     klufe: {
                         ...this.state.klufe,
                         connected: true,
-                        outputOn: false,
                         mode: "DC",
-                        freq: 0,
+                        freq: "0Hz",
                         voltage: 0,
                 },
                 })
+                this.turnOffSource();
             }
         })
     }
@@ -122,6 +122,21 @@ class Step1 extends React.Component {
     async onCheckConnection() {
         this.setState({
             sucessfulConnection: !this.state.sucessfulConnection,
+        })
+    }
+
+    async turnOffSource(){
+        guidedCalServices.turnOffSource().then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+                this.setState({
+                    klufe: {
+                        ...this.state.klufe,
+                        outputOn: false,
+                    }
+                })
+            }
         })
     }
 

@@ -38,6 +38,7 @@ class GuidedCal extends React.Component {
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.setEventPKs = this.setEventPKs.bind(this);
+        this.turnOffSource = this.turnOffSource.bind(this);
     }
 
     render() {
@@ -145,6 +146,7 @@ class GuidedCal extends React.Component {
                         klufePk: null,
                         cal_event_pk: null,
                     })
+                    this.turnOffSource()
                     this.props.onClose()
                 }
                 else{
@@ -154,6 +156,15 @@ class GuidedCal extends React.Component {
                 }
             })
 
+    }
+
+    async turnOffSource(){
+        guidedCalServices.turnOffSource().then(result => {
+            if(result.success)
+            {
+                console.log(result.data.SSH_success)
+            }
+        })
     }
 
     async setEventPKs(klufePK, calEventPK){

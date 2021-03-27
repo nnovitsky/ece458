@@ -138,7 +138,7 @@ class Step4 extends React.Component {
                             }
                             else {
                                 this.setState({
-                                    errors: result.error
+                                    errors: result.data
                                 })
                             }
                         })

@@ -273,6 +273,9 @@ class InstrumentTablePage extends Component {
             barcodes: {
                 ...this.state.barcodes,
                 isSelecting: true,
+                selected: [],
+                numSelected: 0,
+                instrumentPks: [],
             }
         });
     }

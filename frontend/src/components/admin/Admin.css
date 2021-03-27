@@ -31,3 +31,7 @@
 .user-table-div {
     margin: 5px 20px 5px 20px;
 }
+
+.cell-padding span{
+    padding-left: 4px;
+}

@@ -126,6 +126,10 @@ const getLatestCalText = (data) => {
                         let rowNumber = (countStart + rowIndex);
                         return <span>{rowNumber}</span>;
                     },
+                    title: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
+                        let rowNumber = (countStart + rowIndex);
+                        return `#${rowNumber}`;
+                    },
                     formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
                     headerClasses: 'it-num-column'
                 },

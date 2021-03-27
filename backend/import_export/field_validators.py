@@ -12,12 +12,17 @@ CALIBRATION_DATE_MAX_LENGTH = 20
 MODEL_CATEGORIES_MAX_LENGTH = 100
 INSTRUMENT_CATEGORIES_MAX_LENGTH = 100
 
-LOAD_BANK_SUPPORT_MAX_LENGTH = 1
 
 ASSET_TAG_LENGTH = 6
 ASSET_TAG_MAX_VALUE = 999999
 
 EXPECTED_DATE_FORMAT = '%m/%d/%Y'
+
+VALID_CAL_TYPES = [
+    '',
+    'Load-Bank',
+    'Klufe'
+]
 
 
 def validate_column_headers(headers, expected_headers):
@@ -152,19 +157,15 @@ def is_valid_model_categories(model_categories):
     return True, "Valid set of model categories."
 
 
-def is_valid_load_bank(load_bank_field):
+def is_valid_cal_type(cal_type_field):
 
-    stripped_field = load_bank_field.strip()
+    stripped_field = cal_type_field.strip()
 
-    if len(stripped_field) > LOAD_BANK_SUPPORT_MAX_LENGTH:
-        return False, f"Load-bank-support entry \'{stripped_field}\' too long, " \
-                      f"Max: {LOAD_BANK_SUPPORT_MAX_LENGTH} chars long"
-
-    if stripped_field == 'Y' or stripped_field == '':
+    if stripped_field in VALID_CAL_TYPES:
         return True, "Valid load-bank-support entry"
 
-    return False, f"\'{load_bank_field}\' is not a valid load-bank-support entry. " \
-                  f"Must be \'Y\' or blank."
+    return False, f"\'{cal_type_field}\' is not a valid load-bank-support entry. " \
+                  f"Must be one of the following {len(VALID_CAL_TYPES)} possibilities: {VALID_CAL_TYPES}."
 
 
 def is_blank_row(row):

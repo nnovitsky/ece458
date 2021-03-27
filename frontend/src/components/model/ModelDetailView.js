@@ -148,6 +148,7 @@ class ModelDetailView extends React.Component {
 
     makeDetailsTable() {
         let modelInfo = this.state.model_info;
+        const isCalibratable = this.state.model_info.calibration_frequency !== 0;
         return (
             <Table size="sm" bordered>
                 <tbody>
@@ -168,7 +169,7 @@ class ModelDetailView extends React.Component {
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{this.getCalFrequencyString()} </td>
                     </tr>
-                    <tr>
+                    <tr hidden={!isCalibratable}>
                         <td><strong>Calibration Mode</strong></td>
                         <td>{this.getCalModesString()}</td>
                     </tr>

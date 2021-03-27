@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { Link, Redirect, withRouter } from "react-router-dom";
-import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';

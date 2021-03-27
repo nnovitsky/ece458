@@ -173,6 +173,9 @@ class AddModelPopup extends Component {
         if(newModel.calibration_modes.includes(null)) {
             return false;
         }
+        if(newModel.calibration_modes.includes(calMode)) {
+            return true;
+        }
     }
 
     isDisabled(calMode) {

@@ -1,3 +1,4 @@
-Vendor,Model-Number,Short-Description,Comment,Model-Categories,Load-Bank-Support,Calibration-Frequency
-VendorA,Model123,Multimeter with temp probes,An example of a calibratable model,load_bank_support,Y,90
+Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency
+VendorA,Model123,Multimeter with temp probes,An example of a calibratable model,,Klufe,90
 VendorB,Model456,External Battery,An example of a noncalibratable model,probe void_warranty,,N/A
+VendorB,Model789,Battery Bank,An example of a load bank model,load_bank_support,Load-Bank,120

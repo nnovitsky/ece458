@@ -91,7 +91,7 @@ def check_calibration_type(instrument):
     most_recent_cal = instrument.calibrationevent_set.order_by('-date')[:1]
 
     if len(most_recent_cal) != 0:
-        file_type = most_recent_cal[0].file_type
+        file_type = str(most_recent_cal[0].file_type).strip()
         if file_type == 'Load Bank':
             return "Calibration via load-bank wizard"
         elif file_type == 'Artifact':

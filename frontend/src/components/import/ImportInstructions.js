@@ -6,7 +6,7 @@ Please upload a “.csv” file that contains the following seven headers locate
 <li>Short-Description</li>
 <li>Comment</li>
 <li>Model-Categories</li>
-<li>Load-Bank-Support</li>
+<li>Special-Calibration-Support</li>
 <li>Calibration-Frequency</li>
 </ul>
 All subsequent rows must contain the appropriate information that falls under the correct column and corresponds to the desired models to upload. Every field is required except for those that fall under the ‘Comment’ column. A model that does not require calibration should have a ‘N/A’ as its calibration frequency. 

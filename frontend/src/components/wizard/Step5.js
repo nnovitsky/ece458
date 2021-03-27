@@ -149,7 +149,7 @@ class Step5 extends React.Component {
                 }
                 else {
                     this.setState({
-                        errors: result.errors,
+                        errors: result.data,
                         vr_error: '',
                         va_error: '',
                         vr_ok: '',

@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 
 import GenericPopup from '../generic/GenericPopup';
 import myInstructions from './ImportInstructions.js';
+import myInstrumentInstructions from './InstrumentImportInstructions.js';
 import './ImportPage.css';
 import { nameAndDownloadFile } from '../generic/Util';
 import ModelServices from "../../api/modelServices";
@@ -15,7 +16,8 @@ const instrumentServices = new InstrumentServices();
 
 //props
 //'onClose' a handler for when the popup is closed NOTE: called after a function in this file
-const importInstructions = myInstructions;
+const AllImportInstructions = myInstructions;
+const InstrumentImportInstructions = myInstrumentInstructions;
 
 class ImportPagePopup extends Component {
     constructor(props) {
@@ -39,11 +41,11 @@ class ImportPagePopup extends Component {
         return (
             <Form className="popup">
                 <div className="popup-button-row lowerMargin">
-                    <Button onClick={this.onModelCSVDOwnload}>Download Sample Model CSV</Button>
+                    {this.props.hasModelPrivileges ? <Button onClick={this.onModelCSVDOwnload}>Download Sample Model CSV</Button> : null}
                     <Button onClick={this.onInstrumentCSVDownload}>Download Sample Instrument CSV</Button>
                 </div>
                 <div className="popupScrolling overflow-auto">
-                    {importInstructions}
+                    {this.props.hasModelPrivileges ? AllImportInstructions : InstrumentImportInstructions}
                 </div>
             </Form>
         )

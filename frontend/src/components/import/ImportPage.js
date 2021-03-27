@@ -78,6 +78,7 @@ class ImportPage extends Component {
                 <ImportPagePopup
                     isShown={this.state.showInstructionsPopup.isShown}
                     onClose={this.onShowInstructionsClosed}
+                    hasModelPrivileges={hasModelEditAccess(this.props.permissions)}
                 />
                 <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 <div className="background">

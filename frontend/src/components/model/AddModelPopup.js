@@ -170,12 +170,7 @@ class AddModelPopup extends Component {
 
     isChecked(calMode) {
         const newModel = this.state.newModel;
-        if(newModel.calibration_modes.includes(null)) {
-            return false;
-        }
-        if(newModel.calibration_modes.includes(calMode)) {
-            return true;
-        }
+        return newModel.calibration_modes.includes(calMode);
     }
 
     isDisabled(calMode) {
@@ -227,6 +222,7 @@ class AddModelPopup extends Component {
 
     onTextInput(e) {
         let val = e.target.value;
+        console.log(val);
         switch (e.target.name) {
             case modelName:
                 this.setState({
@@ -264,10 +260,15 @@ class AddModelPopup extends Component {
                 })
                 return
             case callibrationName:
+                let calMode = [...this.state.newModel.calibration_modes];
+                if(val < "1") {
+                    calMode = [];
+                }
                 this.setState({
                     newModel: {
                         ...this.state.newModel,
-                        calibration_frequency: val
+                        calibration_frequency: val,
+                        calibration_modes: calMode
                     }
                 })
                 return;

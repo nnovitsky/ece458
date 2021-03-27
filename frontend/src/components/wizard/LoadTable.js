@@ -39,11 +39,9 @@ const loadTable = (props) => {
                                 if(column.dataField == "cr")
                                 {
                                     row.cr = newValue
-                                }                            
+                                }                         
                                 if(typeof(row.cr_error) !== 'undefined') row.cr_error = null;
                                 if(typeof(row.ca_error) !== 'undefined') row.ca_error = null;
-                                if(typeof(row.cr_ok) !== 'undefined') row.cr_ok = false;
-                                if(typeof(row.ca_ok) !== 'undefined') row.ca_ok = false;
                             }
 
                             props.onValidate(row.load);

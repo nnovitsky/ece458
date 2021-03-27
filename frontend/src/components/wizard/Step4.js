@@ -49,7 +49,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
-                progress={this.props.progress + (this.state.index - 1)*10}
+                progress={this.props.progress + (this.state.index - 1) * 10}
             />
         );
     }
@@ -143,13 +143,16 @@ class Step4 extends React.Component {
                             }
                         })
                 }
-                else
-                {
-                    let invalidValue = (cr === null || isNaN(cr)) ? "Current Reported" : "Current Actual";
-                    this.setState({
-                        errors: [`${invalidValue}: Please enter a valid number. Your input will not be saved.`]
-                    })
-                    element.validate = false;
+                else {
+                    if (typeof(element.cr) !== 'undefined' && typeof(element.ca) !== 'undefined') {
+                        let invalidValue = (cr === null || isNaN(cr)) ? "Current Reported" : "Current Actual";
+                        this.setState({
+                            errors: [`${invalidValue}: Please enter a valid number. Your input will not be saved.`]
+                        })
+                        element.validate = false;
+                        element.cr_ok = false;
+                        element.ca_ok = false;
+                    }
                 }
 
             }

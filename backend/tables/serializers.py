@@ -193,7 +193,7 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
         return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     def _get_most_recent_calibration(self, obj):
-        cal_event = obj.calibrationevent_set.order_by('-date')[:1]
+        cal_event = obj.calibrationevent_set.order_by('-date', '-pk')[:1]
         serializer = CalibrationEventWriteSerializer(cal_event, many=True)
         return serializer.data
 

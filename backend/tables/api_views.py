@@ -81,7 +81,7 @@ class InstrumentList(ListAPIView):
 
 
 class CalibrationEventList(ListAPIView):
-    queryset = CalibrationEvent.objects.order_by('-date')
+    queryset = CalibrationEvent.objects.order_by('-date', '-pk')
     serializer_class = SimpleCalibrationEventReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = CalibrationEventFilter

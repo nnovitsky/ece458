@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import '../generic/General.css';
 import './CategoriesPage.css';
 import ErrorFile from "../../api/ErrorMapping/CategoryErrors.json";
+import { withRouter } from "react-router-dom";
 import { rawErrorsToDisplayed, hasModelEditAccess, hasInstrumentEditAccess } from '../generic/Util';
 
 import LogoHeader from '../generic/LogoTitleHeader';
@@ -20,9 +21,10 @@ const categoryServices = new CategoryServices();
 class CategoriesPage extends Component {
     constructor(props) {
         super(props);
-
+        console.log(props.location);
+        const arr = props.location.pathname.split('/');
         this.state = {
-            currentTab: 'model',
+            currentTab: arr[arr.length - 1],
             isLoading: false,
             renamePopup: {
                 pk: null,
@@ -97,7 +99,7 @@ class CategoriesPage extends Component {
     
         const isModelAdmin = hasModelEditAccess(this.props.permissions);
         const content = isModelAdmin ? this.makeTabs(buttonRow) : this.makeInstrumentContent(buttonRow);
-        const title = isModelAdmin ? 'Category Management' : 'Instrument Category Management';
+        const title = `${this.toUpperCase(this.state.currentTab)} Category Management`;
         return (
             <div className="background">
                 {createPopup}
@@ -117,6 +119,10 @@ class CategoriesPage extends Component {
                 </div>
             </div>
         )
+    }
+
+    toUpperCase(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     makeTabs(buttonRow) {
@@ -474,4 +480,4 @@ class CategoriesPage extends Component {
 
 }
 
-export default CategoriesPage;
+export default withRouter(CategoriesPage);

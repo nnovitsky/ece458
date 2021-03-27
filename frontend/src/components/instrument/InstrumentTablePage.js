@@ -388,7 +388,7 @@ class InstrumentTablePage extends Component {
     onCategoriesClicked() {
         this.setState({
             ...this.state,
-            redirect: '/categories'
+            redirect: '/categories/instrument'
         });
     }
 

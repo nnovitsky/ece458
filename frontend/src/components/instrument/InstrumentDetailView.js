@@ -27,7 +27,7 @@ const instrumentServices = new InstrumentServices();
 class InstrumentDetailView extends Component {
     constructor(props) {
         super(props);
-        const arr = props.location.pathname.split('/')
+        const arr = props.location.pathname.split('/');
 
         this.state = {
             redirect: null,

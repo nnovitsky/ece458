@@ -39,6 +39,7 @@ class GuidedCal extends React.Component {
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.setEventPKs = this.setEventPKs.bind(this);
         this.turnOffSource = this.turnOffSource.bind(this);
+        this.cancelEvent = this.cancelEvent.bind(this);
     }
 
     render() {
@@ -67,7 +68,8 @@ class GuidedCal extends React.Component {
                     klufePK={this.state.klufePK} index={0} progress={Math.round(3/7 * 100)}/>
             default:
                 return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
-                    klufePK={this.state.klufePK} serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}/>
+                    klufePK={this.state.klufePK} serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}
+                    cancelEvent={this.cancelEvent}/>
         }
 
     }

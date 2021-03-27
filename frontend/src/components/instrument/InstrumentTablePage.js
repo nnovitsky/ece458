@@ -273,6 +273,9 @@ class InstrumentTablePage extends Component {
             barcodes: {
                 ...this.state.barcodes,
                 isSelecting: true,
+                selected: [],
+                numSelected: 0,
+                instrumentPks: [],
             }
         });
     }
@@ -388,7 +391,7 @@ class InstrumentTablePage extends Component {
     onCategoriesClicked() {
         this.setState({
             ...this.state,
-            redirect: '/categories'
+            redirect: '/categories/instrument'
         });
     }
 

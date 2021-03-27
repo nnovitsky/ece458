@@ -234,7 +234,7 @@ class App extends Component {
               {/* routes below require user to be an admin */}
               <Route path="/import" render={() => this.importPath(<ImportPage permissions={permissions} />)} exact />
               <Route path="/admin" render={() => this.adminPath(<AdminPage is_admin={isAdmin} username={this.state.user.username} />)} exact />
-              <Route path="/categories" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups} />)} exact />
+              <Route path="/categories/:type" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups} />)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
 

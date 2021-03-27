@@ -53,7 +53,7 @@ const NewModelTable = (props) => {
         onSelect: props.selectRow.onSelect,
         onSelectAll: props.selectRow.onSelectAll,
         hideSelectColumn: props.selectRow.isHidden,
-        classes: "selection-row",
+        classes: (props.selectRow.isHidden ? "" : "selection-row"),
     } : {
         mode: 'checkbox',
         clickToSelect: false,

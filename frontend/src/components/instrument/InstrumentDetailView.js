@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { Link, Redirect, withRouter } from "react-router-dom";
-import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
@@ -27,7 +26,7 @@ const instrumentServices = new InstrumentServices();
 class InstrumentDetailView extends Component {
     constructor(props) {
         super(props);
-        const arr = props.location.pathname.split('/')
+        const arr = props.location.pathname.split('/');
 
         this.state = {
             redirect: null,
@@ -163,9 +162,9 @@ class InstrumentDetailView extends Component {
         const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
         let calButtonRow = (
             <div className="table-button-row">
+                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
-                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
             </div>
         )

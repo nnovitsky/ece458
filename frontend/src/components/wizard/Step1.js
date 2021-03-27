@@ -130,6 +130,7 @@ class Step1 extends React.Component {
     async validateVoltmeter() {
         wizardServices.updateLBCal(voltmeter, this.state.voltmeter.asset_tag, this.state.loadbank_pk)
             .then(result => {
+                console.log(result)
                 if (result.success) {
                     this.setState({
                         errors: [],
@@ -144,7 +145,7 @@ class Step1 extends React.Component {
                 }
                 else {
                     this.setState({
-                        errors: ["Voltmeter: " + result.data.loadbank_error],
+                        errors: ["Voltmeter: " + result.errors.loadbank_error],
                         voltmeter: {
                             ...this.state.voltmeter,
                             validated: false,
@@ -176,7 +177,7 @@ class Step1 extends React.Component {
                 }
                 else {
                     this.setState({
-                        errors: ["Shuntmeter: " + result.data.loadbank_error],
+                        errors: ["Shuntmeter: " + result.errors.loadbank_error],
                         shuntmeter: {
                             ...this.state.shuntmeter,
                             shuntmeter: false,

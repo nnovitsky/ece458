@@ -129,7 +129,7 @@ const getLatestCalText = (data) => {
                     },
                     title: (cell, row, rowIndex, countStart) => {   //formats the data and the returned is displayed in the cell
                         let rowNumber = (countStart + rowIndex);
-                        return `#${rowNumber}`;
+                        return `#${rowNumber+1}`;
                     },
                     formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
                     headerClasses: 'it-num-column'

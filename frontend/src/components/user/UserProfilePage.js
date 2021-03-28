@@ -11,6 +11,7 @@ import EditUserPopup from './EditUserPopup.js'
 import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
 import { rawErrorsToDisplayed } from "../generic/Util";
 import Button from 'react-bootstrap/Button';
+import {PrivilegesDisplayMap} from '../generic/Util';
 
 
 const authServices = new AuthServices();
@@ -33,6 +34,7 @@ class UserPage extends React.Component {
 
         this.onEditUserClosed = this.onEditUserClosed.bind(this);
         this.onEditUserSubmit = this.onEditUserSubmit.bind(this);
+        this.getGroupsString = this.getGroupsString.bind(this);
     }
 
 
@@ -179,9 +181,33 @@ class UserPage extends React.Component {
                         <td><strong>Email</strong></td>
                         <td>{userInfo.email}</td>
                     </tr>
+                    <tr>
+                        <td><strong>Permissions</strong></td>
+                        <td>{this.getGroupsString()}</td>
+                    </tr>
                 </tbody>
             </Table>
         )
+    }
+
+    getGroupsString()
+    {
+        let groupString = "";
+
+
+        if(this.state.groups.length == 0){
+            groupString = "None";
+        }
+        else if(this.state.groups.length == 1){
+            groupString = PrivilegesDisplayMap[this.state.groups[0]];
+        }
+        else{
+            if(this.state.groups.includes("admin")) groupString = "Admin, ";
+            if(this.state.groups.includes("models")) groupString = groupString + "Model, ";
+            if(this.state.groups.includes("instruments")) groupString = groupString + "Instrument, ";
+            if(this.state.groups.includes("calibrations")) groupString = groupString + "Calibration, ";
+        }
+        return groupString;
     }
 
 }

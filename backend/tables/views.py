@@ -22,6 +22,7 @@ from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
+MAX_NUMBER_OF_RESULTS = 100
 
 
 class OauthConsume(APIView):
@@ -380,7 +381,11 @@ def import_models_csv(request):
     else:
         nextPage = 1
         previousPage = 1
-        return get_page_response(upload_list, request, ItemModelSerializer, nextPage, previousPage)
+        n_records = len(asset_tags)
+        if n_records > MAX_NUMBER_OF_RESULTS:
+            upload_list = upload_list[-MAX_NUMBER_OF_RESULTS:]
+        return get_upload_page_response(upload_list, request, ItemModelSerializer, nextPage, previousPage,
+                                        n_records)
 
 
 @api_view(['PUT'])
@@ -416,9 +421,14 @@ def import_instruments_csv(request):
     else:
         nextPage = 1
         previousPage = 1
+        n_records = len(asset_tags)
+        if n_records > MAX_NUMBER_OF_RESULTS:
+            asset_tags = asset_tags[-MAX_NUMBER_OF_RESULTS:]
         qs = Instrument.objects.filter(asset_tag__in=asset_tags)
         upload_list = annotate_instruments(qs)
-        return get_page_response(upload_list, request, InstrumentSearchSerializer, nextPage, previousPage)
+
+        return get_upload_page_response(upload_list, request, InstrumentSearchSerializer, nextPage, previousPage,
+                                            n_records)
 
 
 @api_view(['GET'])

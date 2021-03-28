@@ -396,6 +396,8 @@ export default class InstrumentServices {
             data: [],
         }
 
+        console.log(select_all)
+
         const body = {
             select_all,
             instrument_pks: pksArr
@@ -403,7 +405,6 @@ export default class InstrumentServices {
 
         const urlParams = new URLSearchParams({
             ...filters,
-            sort_by
         });
 
         let url = `${API_URL}/api/export_barcodes/?${urlParams}`;

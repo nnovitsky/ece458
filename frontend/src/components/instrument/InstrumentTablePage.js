@@ -309,7 +309,7 @@ class InstrumentTablePage extends Component {
         const sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
         const isSelectAll = this.state.barcodes.isSelectAll;
 
-        await instrumentServices.getAssetBarcodes(this.state.barcodes.selected, filters, sortingIndicator, isSelectAll).then((result) => {
+        await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
             if (result.success) {
                 nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
             } else {

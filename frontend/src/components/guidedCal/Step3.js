@@ -34,7 +34,7 @@ const sourceData = {
         source: 3.500,
         AC: true,
         freq: 10000,
-        display: "3.50.0+-0.004",
+        display: "3.500+-0.004",
         adjustment: "C2",
     },
     4: {

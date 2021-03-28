@@ -54,6 +54,7 @@ FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
 styles = getSampleStyleSheet()
 elements = []
+pdf_merge = False
 
 
 def get_fields(instrument):
@@ -69,7 +70,7 @@ def get_fields(instrument):
     fields.append(str(instrument.serial_number))
     fields.append(str(instrument.asset_tag))
 
-    cal_event = instrument.calibrationevent_set.order_by('-date')[:1][0]
+    cal_event = instrument.calibrationevent_set.order_by('-date', '-pk')[:1][0]
     calibration_event_data = serializer.data['calibration_event'][0]
     fields.append(calibration_event_data.get('date'))
     fields.append(str(serializer.data['calibration_expiration']))
@@ -338,8 +339,6 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX].split('.')[-1].lower() == 'pdf':
         global pdf_merge
         pdf_merge = True
-    else:
-        pdf_merge = False
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and cal_file_data[FILE_NAME_INDEX].split('.')[-1].lower() == 'xlsx':
         elements.append(get_xlsx_hyperlink(cal_pk))
@@ -351,7 +350,7 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
         get_klufe_table(cal_pk)
 
     doc.build(elements)
-    return buffer, pdf_merge
+    return buffer
 
 
 def merge_pdf(cal_pk, buffer):
@@ -367,11 +366,12 @@ def merge_pdf(cal_pk, buffer):
 
 
 def handler(instrument):
+    global pdf_merge
 
     certificate_info, cal_file_data, cal_pk = get_fields(instrument)
     instrument_name = str(instrument).replace(" ", "_")
     filename = f"{instrument_name}_calibration_record_{date.today().strftime('%Y_%m_%d')}.pdf"
-    buffer, pdf_merge = fill_pdf(BytesIO(), certificate_info, cal_file_data, cal_pk)
+    buffer = fill_pdf(BytesIO(), certificate_info, cal_file_data, cal_pk)
     buffer.seek(0)
 
     if pdf_merge:

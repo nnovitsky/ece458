@@ -125,7 +125,6 @@ class Step5 extends React.Component {
     async validateVoltages() {
         wizardServices.addVoltageReading(Number(this.state.voltage_reported), Number(this.state.voltage_actual), Number(this.state.test_voltage), this.state.loadbank_pk)
             .then(result => {
-                console.log(result)
                 if (result.success) {
                     this.setState({
                         vr_error: (result.data.vr_error * 100).toFixed(2) + "%",
@@ -136,8 +135,6 @@ class Step5 extends React.Component {
                         validated_text: (result.data.vr_ok && result.data.va_ok) ? "Valid" : "Invalid",
                     })
                     if (result.errors[0] !== null) {
-                        console.log("Here")
-                        console.log(result.errors)
                         this.setState({
                             errors: result.errors
                         })
@@ -149,7 +146,7 @@ class Step5 extends React.Component {
                 }
                 else {
                     this.setState({
-                        errors: result.errors,
+                        errors: result.data,
                         vr_error: '',
                         va_error: '',
                         vr_ok: '',
@@ -164,13 +161,11 @@ class Step5 extends React.Component {
     async getTestVoltage() {
         wizardServices.getTestVoltage().then(result => {
             if (result.success) {
-                console.log(result)
                 this.setState({
                     test_voltage: result.data.test_voltage
                 })
             }
             else {
-                console.log(result)
                 this.setState({
                     errors: result.data
                 })
@@ -183,8 +178,6 @@ class Step5 extends React.Component {
     async getStatus() {
         wizardServices.getDetails(this.state.loadbank_pk).then(result => {
             if (result.success) {
-                console.log(result.data)
-
                 if (result.data.data.voltage_test !== null && typeof (result.data.data.voltage_test) !== 'undefined') {
                     this.setState({
                         voltage_reported: result.data.data.voltage_test.vr,

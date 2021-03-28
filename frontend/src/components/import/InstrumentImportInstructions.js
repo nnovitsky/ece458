@@ -1,19 +1,4 @@
-const mytext = <div className="overflow-auto"> <p><b>Model Import Guidelines:</b><br></br>
-Please upload a “.csv” file that contains the following seven headers located in the first row:
-<ul>
-<li>Vendor</li>
-<li>Model-Number</li>
-<li>Short-Description</li>
-<li>Comment</li>
-<li>Model-Categories</li>
-<li>Special-Calibration-Support</li>
-<li>Calibration-Frequency</li>
-</ul>
-All subsequent rows must contain the appropriate information that falls under the correct column and corresponds to the desired models to upload. Every field is required except for those that fall under the ‘Comment’ column. A model that does not require calibration should have a ‘N/A’ as its calibration frequency. 
-All fields are case-sensitive; models and model categories with different capitalization will be considered different items. Uploaded models that have already been uploaded to the system will cause an upload error. Model categories that do not exist will be created upon import. Failure to adhere to these format requirements will result in a failed upload.
-<br></br>
-<br></br>
-<br></br>
+const mytext = <div className="overflow-auto"> <p>
 <b>Instrument Import Guidelines:</b>
 <br></br>
 Please upload a “.csv” file that contains the following eight headers located in the first row:

@@ -49,7 +49,7 @@ class Step4 extends React.Component {
                 body={body}
                 incrementStep={this.nextTable}
                 decrementStep={this.prevTable}
-                progress={this.props.progress + (this.state.index - 1)*10}
+                progress={this.props.progress + (this.state.index - 1) * 10}
             />
         );
     }
@@ -104,7 +104,7 @@ class Step4 extends React.Component {
         return ret;
     }
 
-    async validate(load, invalidated) {
+    async validate(load) {
 
         this.setState({
             errors: []
@@ -118,7 +118,7 @@ class Step4 extends React.Component {
                 let cr = this.getStrippedVal(element.cr);
                 let ca = this.getStrippedVal(element.ca);
 
-                if (ca !== null && cr !== null || invalidated) {
+                if (ca !== null && cr !== null && !isNaN(cr) && !isNaN(ca)) {
                     wizardServices.addCurrentReading(element.load, cr, ca, Number(element.ideal), Number(element.index), this.state.loadbank_pk)
                         .then(result => {
                             if (result.success) {
@@ -138,11 +138,21 @@ class Step4 extends React.Component {
                             }
                             else {
                                 this.setState({
-                                    errors: result.error
+                                    errors: result.data
                                 })
                             }
                         })
-
+                }
+                else {
+                    if (typeof(element.cr) !== 'undefined' && typeof(element.ca) !== 'undefined') {
+                        let invalidValue = (cr === null || isNaN(cr)) ? "Current Reported" : "Current Actual";
+                        this.setState({
+                            errors: [`${invalidValue}: Please enter a valid number. Your input will not be saved.`]
+                        })
+                        element.validate = false;
+                        element.cr_ok = false;
+                        element.ca_ok = false;
+                    }
                 }
 
             }

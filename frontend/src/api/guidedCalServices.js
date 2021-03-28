@@ -63,6 +63,7 @@ export default class GuidedCalServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
+                    window.sessionStorage.setItem("source", "on");
                     result.success = true;
                     result.data = json;
                     return result;
@@ -94,6 +95,7 @@ export default class GuidedCalServices {
             },
         }).then(res => {
             if (res.ok) {
+                window.sessionStorage.removeItem("source");
                 return res.json().then(json => {
                     result.success = true;
                     result.data = json;
@@ -126,6 +128,7 @@ export default class GuidedCalServices {
         }).then(res => {
             if (res.ok) {
                 return res.json().then(json => {
+                    window.sessionStorage.setItem("source", "on");
                     result.success = true;
                     result.data = json;
                     return result;

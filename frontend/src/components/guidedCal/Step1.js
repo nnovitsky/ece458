@@ -23,7 +23,7 @@ class Step1 extends React.Component {
             sucessfulConnection: false,
             klufe: {
                 connected: false,
-                outputOn: false,
+                outputOn: null,
                 mode: "",
                 freq: "",
                 voltage: "",

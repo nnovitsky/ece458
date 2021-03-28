@@ -1,5 +1,6 @@
 import time
 
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -232,6 +233,7 @@ def save_calibration(request, klufe_pk):
 
     if klufe_details['valid']:
         klufe_cal.completed_cal = True
+        klufe_cal.cal_event.file_type = 'Klufe'
         klufe_cal.save()
         serializer = KlufeCalSerializer(klufe_cal)
         return Response({"data": serializer.data, "errors": klufe_details}, status=status.HTTP_200_OK)
@@ -254,3 +256,37 @@ def cancel_klufe_cal(request, klufe_pk):
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
     cal_event.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['PUT'])
+def edit_klufe_cal(request, klufe_pk):
+    """
+    Endpoint for updating Klufe cal metadata (i.e. comment or date)
+    """
+    try:
+        klufe_cal = KlufeCalibration.objects.get(pk=klufe_pk)
+        calibration_event = CalibrationEvent.objects.get(pk=klufe_cal.cal_event.pk)
+    except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
+        return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if not UserType.contains_user(request.user, "admin"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+    # fill in immutable fields and grab new user's pk
+    request.data['instrument'] = calibration_event.instrument.pk
+    if 'username' in request.data:
+        try:
+            username = request.data['username']
+            user = User.objects.get(username=username)
+            request.data['user'] = user.pk
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        request.data['user'] = calibration_event.user.pk
+    if 'date' not in request.data: request.data['date'] = calibration_event.date
+
+    serializer = CalibrationEventWriteSerializer(calibration_event, data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

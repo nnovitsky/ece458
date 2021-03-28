@@ -53,6 +53,7 @@ const userTable = (props) => {
                 noResults='No Users'
                 inlineElements={props.inlineElements}
                 isHoverMessageDisplayed={false}
+                rowClasses='cell-padding'
             />
             </div>
 
@@ -72,13 +73,16 @@ let makeConfig = (countStart, deleteUser, currentUser, onChangePrivileges) => {
                     return <span>{rowNumber}</span>;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'at-num-column'     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
+                headerClasses: 'at-num-column',     //css class applied to the header, defined in generic/ColumnSizeFormatting.css
             },
             {
                 isKey: true,    //one column needs to be the keyfield, this has to be unique or the table has errors
                 dataField: 'username',
                 text: 'Username',
                 sort: false,
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    return <span>{row.username}</span>;
+                },
                 title: (cell) => `Username: ${cell}`,   //text displayed when hovering over a cell
                 headerClasses: 'at-username-column',
             },
@@ -96,6 +100,9 @@ let makeConfig = (countStart, deleteUser, currentUser, onChangePrivileges) => {
                 dataField: 'email',
                 text: 'Email',
                 sort: false,
+                formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
+                    return <span>{row.email}</span>;
+                },
                 title: (cell) => `Email: ${cell}`,
                 headerClasses: 'at-email-column',
             },

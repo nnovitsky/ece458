@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { Link, Redirect, withRouter } from "react-router-dom";
-import PropTypes from 'prop-types';
 
 import AddCalibrationPopup from './AddCalibrationPopup';
 import EditInstrumentPopop from './AddInstrumentPopup';
@@ -16,13 +15,18 @@ import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
 import "./InstrumentDetailView.css";
 import DetailView from '../generic/DetailView';
+import GuidedCalServices from '../../api/guidedCalServices.js';
+import WizardServices from '../../api/wizardServices.js';
+
+const guidedCalServices = new GuidedCalServices();
+const wizardServices = new WizardServices();
 
 const instrumentServices = new InstrumentServices();
 
 class InstrumentDetailView extends Component {
     constructor(props) {
         super(props);
-        const arr = props.location.pathname.split('/')
+        const arr = props.location.pathname.split('/');
 
         this.state = {
             redirect: null,
@@ -95,9 +99,20 @@ class InstrumentDetailView extends Component {
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
         this.onLoadBankClick = this.onLoadBankClick.bind(this);
         this.onKlufeClick = this.onKlufeClick.bind(this);
+
+        this.cancelKlufeEvent = this.cancelKlufeEvent.bind(this);
+        this.cancelLoadbankEvent = this.cancelLoadbankEvent.bind(this);
     }
 
     async componentDidMount() {
+        if(window.sessionStorage.getItem("klufe"))
+        {
+          await this.cancelKlufeEvent();
+        }
+        if(window.sessionStorage.getItem("loadbank"))
+        {
+          await this.cancelLoadbankEvent();
+        }
         await this.getInstrumentInfo();
         await this.getCalHistory();
     }
@@ -147,9 +162,9 @@ class InstrumentDetailView extends Component {
         const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
         let calButtonRow = (
             <div className="table-button-row">
+                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
-                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
             </div>
         )
@@ -672,7 +687,28 @@ class InstrumentDetailView extends Component {
             this.getCalHistory();
         })
     }
+    
+      async cancelKlufeEvent(){
+        let klufePK = window.sessionStorage.getItem("klufe");
+        await guidedCalServices.deleteKlufeCal(klufePK).then(result =>{
+          if(result.success){
+              console.log("deleted klufe event")
+              window.sessionStorage.removeItem("klufe");
+          }
+      })
+      }
+
+      async cancelLoadbankEvent(){
+        let loadbankPK = window.sessionStorage.getItem("loadbank");
+        await wizardServices.cancelLoadbankCalEvent(loadbankPK).then(result => {
+            if (result.success) {
+                console.log("deleted loadbank event")
+                window.sessionStorage.removeItem("loadbank");
+            }
+        })
+      }
 
 }
+
 
 export default withRouter(InstrumentDetailView);

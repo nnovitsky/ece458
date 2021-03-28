@@ -23,8 +23,10 @@ class Summary extends React.Component {
                 voltageData: [],
             },
             errors: [],
+            canDelete: false,
         }
         this.getKlufeDetails = this.getKlufeDetails.bind(this);
+        this.onClose = this.onClose.bind(this);
     }
 
     async componentDidMount()
@@ -39,10 +41,12 @@ class Summary extends React.Component {
                 title="Guided Calibration"
                 isShown={this.props.isShown}
                 errors={this.state.errors}
-                onClose={this.props.onClose}
+                onClose={this.onClose}
                 body={body}
-                incrementStep={this.props.onClose}
-                isBackHidden={true}
+                incrementStep={this.onClose}
+                isBackHidden={!this.state.canDelete}
+                decrementStep={this.props.cancelEvent}
+                backButtonText='Delete'
                 isCancelHidden={true}
                 continueButtonText="Exit"
                 progressBarHidden={true}
@@ -95,7 +99,6 @@ class Summary extends React.Component {
         guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
             if(result.success)
             {
-                console.log("Success")
                 this.setState({
                     calInfo: {
                         ...this.state.calInfo,
@@ -106,7 +109,13 @@ class Summary extends React.Component {
                         voltageData: result.data.voltage_tests,
                     },
                 })
-                console.log(result.data.voltage_tests)
+                if(result.errors.missing_tests.length !== 0 ||  result.errors.failed_tests.length !== 0)
+                {
+                    this.setState({
+                        errors: ["Error: Engineer did not complete complete this calibration event and failed to cancel it."],
+                        canDelete: true,
+                    })
+                } 
             }
             else{
                 this.setState({
@@ -114,6 +123,12 @@ class Summary extends React.Component {
                 })
             }
         })
+    }
+
+    onClose()
+    {
+        window.sessionStorage.removeItem("klufe");
+        this.props.onClose();
     }
 
 

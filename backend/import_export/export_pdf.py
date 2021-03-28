@@ -14,8 +14,10 @@ from PyPDF2 import PdfFileMerger
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import FileResponse
+from backend.config.klufe_config import VOLTAGE_LEVELS
 from backend.tables.serializers import ListInstrumentReadSerializer
-from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent
+from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent, KlufeCalibration, \
+                                  KlufeVoltageReading
 
 EXPECTED_FIELDS = [
     'Vendor',
@@ -37,6 +39,15 @@ lb_stage_headers = [
     'CR Error [%]',
     'CR OK? [<3%]',
     'CA Error [%]', 'CA OK? [<5%]'
+]
+
+klufe_cal_headers = [
+    'Test',
+    'Source Voltage',
+    'Frequency',
+    'Target Range',
+    'Reported Voltage',
+    'Voltage OK?'
 ]
 
 FILE_TYPE_INDEX = 0
@@ -235,6 +246,63 @@ def get_xlsx_hyperlink(cal_pk):
     elements.append(Paragraph(address, styles["Heading3"]))
 
 
+def get_klufe_data(klufe_tests):
+    cleaned_data = [klufe_cal_headers]
+    for test in klufe_tests:
+        test_num = str(test.index + 1)
+
+        source_voltage = f"{test.source_voltage}V"
+        if test.source_hertz is not None:
+            source_voltage += " AC"
+            if test.source_hertz > 1000:
+                frequency = f"{int(test.source_hertz/1000)} kHz"
+            else:
+                frequency = f"{int(test.source_hertz)} Hz"
+        else:
+            source_voltage += " DC"
+            frequency = "NA"
+
+        target_range = VOLTAGE_LEVELS[test.index]['description']
+        reported_voltage = f"{test.reported_voltage}V"
+        voltage_okay = "Yes" if test.voltage_okay else "No"
+
+        cleaned_data.append([
+            test_num,
+            source_voltage,
+            frequency,
+            target_range,
+            reported_voltage,
+            voltage_okay
+        ])
+
+    return cleaned_data
+
+
+def get_klufe_table(cal_pk):
+    global elements
+
+    klufe_header = '<font size="14">%s</font>' % "Guided Klufe k5700 Calibration Results:"
+    elements.append(Paragraph(klufe_header, styles["Heading2"]))
+
+    klufe_cal_event = KlufeCalibration.objects.filter(cal_event=cal_pk)[0]
+    klufe_tests_qs = KlufeVoltageReading.objects.filter(klufe_cal=klufe_cal_event.pk)
+
+    klufe_tests = []
+    for i in range(len(VOLTAGE_LEVELS)):
+        klufe_tests.append(klufe_tests_qs.filter(index=i)[0])
+
+    klufe_table = Table(get_klufe_data(klufe_tests))
+    klufe_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (5, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (5, 0), colors.white),
+        ('BACKGROUND', (5, 1), (5, 5), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 10)
+    ]))
+
+    elements.append(klufe_table)
+
+
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements
     elements.clear()
@@ -277,6 +345,9 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Load Bank':
         get_lb_tables(cal_pk)
+
+    if cal_file_data[FILE_TYPE_INDEX] == 'Klufe':
+        get_klufe_table(cal_pk)
 
     doc.build(elements)
     return buffer

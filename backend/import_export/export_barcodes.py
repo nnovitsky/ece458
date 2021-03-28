@@ -30,6 +30,7 @@ def split_tags(asset_tags):
 def make_pdf(asset_tags):
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
+    asset_tags.sort()
 
     for page in split_tags(asset_tags):
         c.setFont("Helvetica", size=10)

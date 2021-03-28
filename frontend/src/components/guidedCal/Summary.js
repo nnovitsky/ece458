@@ -113,7 +113,7 @@ class Summary extends React.Component {
                 if(result.errors.missing_tests.length !== 0 ||  result.errors.failed_tests.length !== 0)
                 {
                     this.setState({
-                        errors: ["Error: Engineer has not completed this calibration event or failed to cancel it."],
+                        errors: ["Error: Engineer has not yet completed this calibration event or failed to cancel it."],
                         canDelete: true,
                     })
                 } 

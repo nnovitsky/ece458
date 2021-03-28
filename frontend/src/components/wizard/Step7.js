@@ -8,6 +8,7 @@ import WizardServices from "../../api/wizardServices.js";
 import AccordionTableCard from './AccordionTableCard.js'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { hasCalibrationAccess } from '../generic/Util';
 
 const wizardServices = new WizardServices();
 
@@ -57,7 +58,7 @@ class Step3 extends React.Component {
                 incrementStep={this.onClose}
                 decrementStep={this.props.decrementStep}
                 isCancelHidden={true}
-                isBackHidden={!this.state.canDelete}
+                isBackHidden={!this.state.canDelete || !hasCalibrationAccess(this.props.currentUser.permissions_groups)}
                 decrementStep={this.props.cancelEvent}
                 backButtonText='Delete'
                 continueButtonText='Finish'
@@ -143,7 +144,7 @@ class Step3 extends React.Component {
             }
             else{
                 this.setState({
-                    errors: ["Error: Engineer did not complete complete this calibration event and failed to cancel it."],
+                    errors: ["Error: Engineer has not yet completed this calibration event or failed to cancel it."],
                     canDelete: true,
                 })
             }

@@ -182,9 +182,6 @@ def add_voltage_reading(request, lb_cal_pk):
 
 @api_view(['DELETE'])
 def cancel_lb_cal(request, lb_cal_pk):
-    if not UserType.contains_user(request.user, "calibrations"):
-        return Response(
-            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         lb_cal = LoadBankCalibration.objects.get(pk=lb_cal_pk)
         cal_event = CalibrationEvent.objects.get(pk=lb_cal.cal_event.pk)

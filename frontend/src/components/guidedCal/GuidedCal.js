@@ -54,7 +54,6 @@ class GuidedCal extends React.Component {
     }
 
     makeBody() {
-        console.log(this.state.klufePK)
         switch (this.state.currentStep) {
             case 0:
                 return <Step0 isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}

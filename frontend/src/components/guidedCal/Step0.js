@@ -133,9 +133,18 @@ class Step0 extends React.Component {
             })
         }
         else {
-            console.log("not creating new event and moving forward")
+            console.log("not creating new event and editing current")
             // TODO: call an edit
-            this.props.incrementStep();
+            guidedCalServices.updateKlufeCal(this.state.calInfo.date_string, this.state.calInfo.comment, this.state.klufePK).then(result =>{
+                if(result.success){
+                    this.props.incrementStep();
+                }
+                else{
+                    this.setState({
+                        errors: result.data
+                    })
+                }
+            })
         }
     }
 

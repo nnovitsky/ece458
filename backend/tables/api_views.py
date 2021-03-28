@@ -47,7 +47,7 @@ class BarcodeExport(ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_class = InstrumentFilter
 
-    def list(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
 
         request_pks = request.data['instrument_pks']
 

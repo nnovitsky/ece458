@@ -31,6 +31,7 @@ const rawErrorsToDisplayed = (errorArr, errorBlock) => {
 const mimeToExtension = {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
     "application/pdf": ".pdf",
+    "image/jpeg": ".jpeg",
     "image/png": ".png",
     "image/gif": ".gif",
     "text/csv": ".csv"

@@ -258,7 +258,7 @@ def cancel_klufe_cal(request, klufe_pk):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def edit_klufe_cal(request, klufe_pk):
     """
     Endpoint for updating Klufe cal metadata (i.e. comment or date)

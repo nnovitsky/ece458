@@ -63,7 +63,6 @@ def make_pdf(asset_tags):
     return buffer
 
 
-
 def get_asset_tags(instrument_pks):
 
     tags = []

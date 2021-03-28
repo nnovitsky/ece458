@@ -322,3 +322,30 @@ def validate_klufe_cal(klufe_cal):
     }
 
     return error
+
+
+def get_upload_page_response(objects, request, serializerType, nextPage, previousPage, originalCount):
+    # reusable pagination function
+    if 'get_all' in request.GET:
+        serializer = serializerType(objects, context={'request': request}, many=True)
+        return Response({'data': serializer.data, 'count': originalCount}, status=status.HTTP_200_OK)
+
+    page = int(request.GET.get('page', 1))
+    paginator = Paginator(objects, 10)
+    try:
+        data = paginator.page(page)
+    except PageNotAnInteger:
+        data = paginator.page(1)
+        page = 1
+    except EmptyPage:
+        data = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
+
+    serializer = serializerType(data, context={'request': request}, many=True)
+    if data.has_next():
+        nextPage = data.next_page_number()
+    if data.has_previous():
+        previousPage = data.previous_page_number()
+
+    return Response({'data': serializer.data, 'count': originalCount, 'numpages': paginator.num_pages,
+                     'currentpage': page, 'nextpage': nextPage, 'previouspage': previousPage})

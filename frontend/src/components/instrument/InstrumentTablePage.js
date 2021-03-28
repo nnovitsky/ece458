@@ -312,6 +312,7 @@ class InstrumentTablePage extends Component {
         await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
             if (result.success) {
                 nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
+                this.onBarcodeButtonCancelClick();
             } else {
 
             }

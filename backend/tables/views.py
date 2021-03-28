@@ -543,7 +543,7 @@ def user_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        users = User.objects.all().filter(is_active=True)
+        users = User.objects.filter(is_active=True).order_by("username")
         return get_page_response(users, request, UserSerializer, nextPage, previousPage)
 
     elif request.method == 'DELETE':

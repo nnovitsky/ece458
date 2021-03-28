@@ -215,10 +215,7 @@ class InstrumentTablePage extends Component {
 
         let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
         instrumentSearchParams = JSON.parse(instrumentSearchParams);
-
-        let filters = instrumentSearchParams.filters;
-        filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
-        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+        const filters = this.getFilters();
 
         await instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
             if (result.success) {
@@ -268,6 +265,17 @@ class InstrumentTablePage extends Component {
         window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
     }
 
+    getFilters() {
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
+
+        let filters = instrumentSearchParams.filters;
+        filters.instrument_categories = filters.instrument_categories.map(el => el.pk).join(',');
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+
+        return filters;
+    }
+
     onBarcodeButtonClick() {
         this.setState({
             barcodes: {
@@ -293,8 +301,21 @@ class InstrumentTablePage extends Component {
         });
     }
 
-    onBarcodeButtonDownloadClick() {
+    async onBarcodeButtonDownloadClick() {
         console.log('tried to download barcodes, not integrated with backend');
+        const filters = this.getFilters();
+        let instrumentSearchParams = window.sessionStorage.getItem("instrumentPageSearchParams");
+        instrumentSearchParams = JSON.parse(instrumentSearchParams);
+        const sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
+        const isSelectAll = this.state.barcodes.isSelectAll;
+
+        await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
+            if (result.success) {
+                nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
+            } else {
+
+            }
+        })
     }
 
     onInstrumentSelect(row, isSelect) {

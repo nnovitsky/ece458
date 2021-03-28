@@ -388,6 +388,69 @@ export default class InstrumentServices {
             })
     }
 
+    async getAssetBarcodes(pksArr, filters, sort_by, select_all) {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        console.log(select_all)
+
+        const body = {
+            select_all,
+            instrument_pks: pksArr
+        }
+
+        const urlParams = new URLSearchParams({
+            ...filters,
+        });
+
+        let url = `${API_URL}/api/export_barcodes/?${urlParams}`;
+        // let count = 0;
+        // for (var key in filters) {
+        //     if (count > 0) {
+        //         url += '&';
+        //     }
+        //     url += (key + `=${filters[key]}`);
+        //     count++;
+        // }
+
+        // if (sort_by !== '') {
+        //     url = `${url}&sort_by=${sort_by}`;
+        // }
+
+        // url += `&instrument_pks=${pksArr.join('')}`;
+        // url += `&show_all=${select_all}`;
+        console.log('making attempt');
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`,
+            },
+            body: JSON.stringify(body),
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.blob().then(blob => {
+                        result.type = blob.type;
+                        return URL.createObjectURL(blob)
+                    })
+                        .then(url => {
+                            result.url = url;
+                            return result;
+                        })
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            }
+            )
+    }
+
 
 
     async importInstrumentCSV(csvFile) {

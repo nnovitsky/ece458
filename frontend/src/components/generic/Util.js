@@ -82,7 +82,7 @@ const hasAdminAccess = (permissionGroups) => {
 // maps the calibration modes to a frontend display name
 export const CalibrationModeDisplayMap = {
     "load_bank": "Load Bank",
-    "klufe_k5700": "Guided Hardware Calibration"
+    "klufe_k5700": "Guided Hardware"
 };
 
 export const PrivilegesDisplayMap = {

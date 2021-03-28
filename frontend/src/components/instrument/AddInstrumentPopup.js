@@ -106,6 +106,7 @@ class AddInstrumentPopup extends Component {
                 <VendorPicklist
                     selectedVendor={this.state.newInstrument.vendor}
                     onChange={this.onVendorInput}
+                    isCreatable={false}
                 />
                 <Form.Label className="required-field">Model</Form.Label>
                 <Select

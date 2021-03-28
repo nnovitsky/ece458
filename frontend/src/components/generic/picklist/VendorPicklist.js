@@ -4,7 +4,7 @@ import BaseListPicklist from './BaseListPicklist';
 
 // selectedVendor: a string of the selected vendor
 // onChange: an event handler that will be passed a string of the newly selected vendor
-// isCreatable: true if can create new options
+// isCreatable: optional and defaults to false
 function VendorPicklist(props) {
     return (
         <BaseListPicklist
@@ -12,7 +12,7 @@ function VendorPicklist(props) {
             onFilterChange={props.onChange}
             getOptions={getVendors}
             placeholderText="Vendors..."
-            isCreatable={true}
+            isCreatable={props.isCreatable}
         />
     )
 }

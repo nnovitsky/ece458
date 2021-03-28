@@ -99,7 +99,6 @@ class InstrumentDetailView extends Component {
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
         this.onLoadBankClick = this.onLoadBankClick.bind(this);
         this.onKlufeClick = this.onKlufeClick.bind(this);
-
         this.cancelKlufeEvent = this.cancelKlufeEvent.bind(this);
         this.cancelLoadbankEvent = this.cancelLoadbankEvent.bind(this);
     }
@@ -177,7 +176,7 @@ class InstrumentDetailView extends Component {
                     pagination={
                         {
                             page: this.state.calibration_pagination.currentPageNum,
-                            sizePerPage: (this.state.calibration_pagination.showAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
+                            sizePerPage: (this.state.calibration_pagination.isShowAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
                             totalSize: this.state.calibration_pagination.resultCount
                         }}
                     inlineElements={calButtonRow}
@@ -422,7 +421,7 @@ class InstrumentDetailView extends Component {
                         calibration_pagination: {
                             ...this.state.calibration_pagination,
                             desiredPage: 1,
-                            showAll: true,
+                            isShowAll: true,
                         }
                     }, () => {
                         this.getCalHistory();
@@ -432,7 +431,7 @@ class InstrumentDetailView extends Component {
                         calibration_pagination: {
                             ...this.state.calibration_pagination,
                             desiredPage: page,
-                            showAll: false,
+                            isShowAll: false,
                         }
                     }, () => {
                         this.getCalHistory();

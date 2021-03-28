@@ -380,7 +380,7 @@ export default class ModelServices {
             errors: [],
             data:[]
         }
-
+        console.log("Import models /api/import_models_csv/?get_all")
         return fetch(`${API_URL}/api/import_models_csv/?get_all`, {
             method: 'PUT',
             headers: {
@@ -389,6 +389,7 @@ export default class ModelServices {
             body: csvFile
         })
             .then(res => {
+                console.log(res)
                 if (res.ok) {
                     return res.json().then(json => {
                         result.data = json;

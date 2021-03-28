@@ -462,6 +462,7 @@ export default class InstrumentServices {
             data:[]
         }
 
+        console.log("Import instrument /api/import_models_csv/?get_all")
         return fetch(`${API_URL}/api/import_instruments_csv/?get_all`, {
             method: 'PUT',
             headers: {

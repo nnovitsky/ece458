@@ -42,8 +42,6 @@ const instrumentTable = (props) => {
         isHidden: !props.isSelecting,
         nonSelectable: (!props.isSelecting ? props.data.map(x => x.pk) : [])
     };
-
-    console.log(props.data.map(x => x.pk));
     
     return (
         <DataTable

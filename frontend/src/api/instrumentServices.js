@@ -396,29 +396,40 @@ export default class InstrumentServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/export_barcodes/?`;
-        let count = 0;
-        for (var key in filters) {
-            if (count > 0) {
-                url += '&';
-            }
-            url += (key + `=${filters[key]}`);
-            count++;
+        const body = {
+            get_all: select_all,
+            instrument_pks: pksArr
         }
 
-        if (sort_by !== '') {
-            url = `${url}&sort_by=${sort_by}`;
-        }
+        const urlParams = new URLSearchParams({
+            ...filters,
+            sort_by
+        });
 
-        url += `&instrument_pks=${pksArr.join('')}`;
-        url += `&show_all=${select_all}`;
+        let url = `${API_URL}/api/export_barcodes/?${urlParams}`;
+        // let count = 0;
+        // for (var key in filters) {
+        //     if (count > 0) {
+        //         url += '&';
+        //     }
+        //     url += (key + `=${filters[key]}`);
+        //     count++;
+        // }
 
+        // if (sort_by !== '') {
+        //     url = `${url}&sort_by=${sort_by}`;
+        // }
+
+        // url += `&instrument_pks=${pksArr.join('')}`;
+        // url += `&show_all=${select_all}`;
+        console.log('making attempt');
         return fetch(url, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`,
             },
+            body: JSON.stringify(body),
         })
             .then(res => {
                 if (res.ok) {

@@ -69,7 +69,8 @@ class ImportPage extends Component {
 
         instrumentImportButton = <div className="popup-button-row lowerMargin">
             <Button onClick={this.importInstrumentClicked}>Import Instrument</Button>
-        </div>
+        </div>,
+        displaytext = <span className="noteText">Displaying last {this.state.pagination.resultCount > 100 ? 100 : this.state.pagination.resultCount} imported devices.</span>, 
 
     ) {
         console.log(this.props.permissions)
@@ -111,6 +112,7 @@ class ImportPage extends Component {
                         <div className="row">
                             <div className="col-2"></div>
                             <div className="col-9">
+                                {this.state.showModelTable || this.state.showInstrumentTable ? displaytext : null}
                                 {this.state.showModelTable ? modelTable : null}
                                 {this.state.showInstrumentTable ? instrumentTable : null}
                             </div>

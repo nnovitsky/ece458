@@ -5,7 +5,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import GuidedCalServices from "../../api/guidedCalServices.js";
-import DisplayTable from './DisplayTable.js'
+import DisplayTable from './DisplayTable.js';
+import { hasCalibrationAccess } from '../generic/Util';
 
 const guidedCalServices = new GuidedCalServices();
 
@@ -44,7 +45,7 @@ class Summary extends React.Component {
                 onClose={this.onClose}
                 body={body}
                 incrementStep={this.onClose}
-                isBackHidden={!this.state.canDelete}
+                isBackHidden={!this.state.canDelete || !hasCalibrationAccess(this.props.currentUser.permissions_groups)}
                 decrementStep={this.props.cancelEvent}
                 backButtonText='Delete'
                 isCancelHidden={true}
@@ -112,7 +113,7 @@ class Summary extends React.Component {
                 if(result.errors.missing_tests.length !== 0 ||  result.errors.failed_tests.length !== 0)
                 {
                     this.setState({
-                        errors: ["Error: Engineer did not complete complete this calibration event and failed to cancel it."],
+                        errors: ["Error: Engineer has not yet completed this calibration event or failed to cancel it."],
                         canDelete: true,
                     })
                 } 

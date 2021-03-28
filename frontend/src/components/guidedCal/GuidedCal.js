@@ -68,7 +68,7 @@ class GuidedCal extends React.Component {
             default:
                 return <Summary isShown={this.props.isShown} onClose={this.onClose} incrementStep={this.incrementStep} decrementStep={this.decrementStep}
                     klufePK={this.state.klufePK} serial_number={this.state.serial_number} asset_tag={this.state.asset_tag} username={this.props.username}
-                    cancelEvent={this.cancelEvent}/>
+                    cancelEvent={this.cancelEvent} currentUser={this.props.user}/>
         }
 
     }

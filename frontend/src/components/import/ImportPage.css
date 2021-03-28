@@ -54,3 +54,9 @@ input[type=file]{
     position: sticky;
     top: 0;
 }
+
+.noteText{
+    color: rgb(100, 100, 100) !important;
+    font-style: italic !important;
+    
+}

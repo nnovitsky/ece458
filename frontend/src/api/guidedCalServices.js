@@ -301,6 +301,49 @@ export default class GuidedCalServices {
     }
 
 
+    async updateKlufeCal(date, comment, klufePK)
+    {
+        const token = window.sessionStorage.getItem('token');
+
+        let data = {
+            date: date,
+            comment: comment,
+        }
+
+        let result = {
+            success: false,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/update_klufe_cal/${klufePK}/`;
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`,
+            },
+            body: JSON.stringify(data),
+        }).then(res => {
+            if (res.ok) {
+                return res.json().then(json => {
+                    result.success = true;
+                    result.data = json;
+                    return result;
+                });
+            }
+            else {
+                console.log(res)
+                return res.json().then(async (json) => {
+                    result.data = this.identifyErrors(json);
+                    return await checkBadResponse(json, result);
+                });
+            }
+        })
+
+    }
+
+
 
 
     identifyErrors(json) {

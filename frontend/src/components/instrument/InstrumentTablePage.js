@@ -131,10 +131,11 @@ class InstrumentTablePage extends Component {
                 {/* <Button onClick={this.onExportAll}>Export Instruments and Models</Button> */}
             </div>
         );
+        const numSelected = this.state.barcodes.numSelected;
         const assetTagButtonRow = (
             <div className="table-button-row">
                 <Button onClick={this.onBarcodeButtonCancelClick} variant="secondary">Cancel</Button>
-                <Button onClick={this.onBarcodeButtonDownloadClick} variant="primary" disabled={this.state.barcodes.numSelected === 0}>{`Download ${this.state.barcodes.numSelected} Barcodes`}</Button>
+                <Button onClick={this.onBarcodeButtonDownloadClick} variant="primary" disabled={numSelected === 0}>{`Download ${this.state.barcodes.numSelected} Barcode${numSelected === 1 ? `` : `s`}`}</Button>
             </div>
         )
 
@@ -312,6 +313,7 @@ class InstrumentTablePage extends Component {
         await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
             if (result.success) {
                 nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
+                this.onBarcodeButtonCancelClick();
             } else {
 
             }

@@ -378,7 +378,7 @@ class CategoriesPage extends Component {
             createPopup: {
                 ...this.state.createPopup,
                 isShown: false,
-                errors: []
+                errors: [],
             }
         })
     }
@@ -401,6 +401,7 @@ class CategoriesPage extends Component {
                 pk: null,
                 currentName: '',
                 isShown: false,
+                errors: [],
             }
         })
     }

@@ -6,10 +6,10 @@
 backupserver="vcm@vcm-18807.vm.duke.edu"
 
 # change to location of backups on your backup server
-backuppath="/home/vcm/backups/dev/"
+backuppath="/home/vcm/backups/prod/"
 
 # change to location of cal event artifacts on your dev server
-artifactpath="/home/jay18/evo2/ece458/backend/media/"
+artifactpath="/home/vcm/evo1/ece458/backend/media/"
 
 # change to location you'd like to use to store temp restoration files on dev server
 restorepath="/home/vcm/"

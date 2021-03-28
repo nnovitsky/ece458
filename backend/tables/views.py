@@ -381,7 +381,7 @@ def import_models_csv(request):
     else:
         nextPage = 1
         previousPage = 1
-        n_records = len(asset_tags)
+        n_records = len(upload_list)
         if n_records > MAX_NUMBER_OF_RESULTS:
             upload_list = upload_list[-MAX_NUMBER_OF_RESULTS:]
         return get_upload_page_response(upload_list, request, ItemModelSerializer, nextPage, previousPage,
@@ -543,7 +543,7 @@ def user_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        users = User.objects.all().filter(is_active=True)
+        users = User.objects.filter(is_active=True).order_by("username")
         return get_page_response(users, request, UserSerializer, nextPage, previousPage)
 
     elif request.method == 'DELETE':

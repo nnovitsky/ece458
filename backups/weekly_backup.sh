@@ -4,13 +4,13 @@
 
 today=$(date +"%Y-%m-%d")
 # change to your dev server name
-server="vcm@vcm-18868.vm.duke.edu"
+server="vcm@vcm-18278.vm.duke.edu"
 
 # change to desired confirmation email recipient
 email="nen4@duke.edu"
 
 # change to path to weekly backup files and message files (if not structure defined in BACKUP_GUIDE)
-weeklypath="/home/vcm/backups/dev/weekly/"
+weeklypath="/home/vcm/backups/prod/weekly/"
 messagepath="/home/vcm/backups/message_weekly.txt"
 
 # change to database credentials for your database
@@ -19,7 +19,7 @@ dbpass="fantasticfour2021!"
 dbname="evolution_two"
 
 # change to path to /media/ directory (of this repository) on your dev server
-artifactpath="/home/jay18/evo2/ece458/backend/media/"
+artifactpath="/home/vcm/evo1/ece458/backend/media/"
 
 # generate postgresql dump of database named 'evolution_two' using provided credentials, from localhost on $server, save on backup server as $today.sql
 ssh ${server} "PGPASSWORD=$dbpass pg_dump -U $dbuser -h localhost $dbname --clean" > ${weeklypath}${today}.sql

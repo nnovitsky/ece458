@@ -381,7 +381,7 @@ def import_models_csv(request):
     else:
         nextPage = 1
         previousPage = 1
-        n_records = len(asset_tags)
+        n_records = len(upload_list)
         if n_records > MAX_NUMBER_OF_RESULTS:
             upload_list = upload_list[-MAX_NUMBER_OF_RESULTS:]
         return get_upload_page_response(upload_list, request, ItemModelSerializer, nextPage, previousPage,

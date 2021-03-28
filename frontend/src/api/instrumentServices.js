@@ -397,7 +397,7 @@ export default class InstrumentServices {
         }
 
         const body = {
-            get_all: select_all,
+            select_all,
             instrument_pks: pksArr
         }
 

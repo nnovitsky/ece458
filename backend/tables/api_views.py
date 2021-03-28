@@ -56,7 +56,7 @@ class BarcodeExport(ListAPIView):
         else:
             queryset = self.filter_queryset(self.get_queryset())
             instrument_pks = list(queryset.values_list('pk', flat=True))
-            filtered_pks = [pk for pk in instrument_pks not in request_pks]
+            filtered_pks = [pk for pk in instrument_pks if pk not in request_pks]
             return export_barcodes.handler(instrument_pks=filtered_pks)
 
 

@@ -564,3 +564,138 @@ $ sudo systemctl restart gunicorn
 $ cd /your/path/to/ece458/frontend
 $ npm run build
 ```
+## Setting up React Environment Variables
+
+Environment variables make the Oauth and API sections of the React app simpler and more robust. The first step is to connect via SSH to yur server and navigate to the frontend folder of your project. Next, you will create a .env file to hold your environment variables
+```
+$ cd /your/path/to/ece458/frontend
+$ sudo nano .env
+```
+The newly created .env file will open up in editor. Configure the file to hold your Oauth variables as well as your API url. 
+```
+REACT_APP_OAUTH_REQUEST_URL = https://your_request_url
+REACT_APP_OAUTH_CLIENT_ID = your_client_id
+REACT_APP_OAUTH_REDIRECT_URI = https%3A//your_domain/oauth/consume
+REACT_APP_API_URL = https://your_domain
+```
+Now we will edit parts of the React code to use these variables instead. First, naviagte to `ece458/frontend/src/components/login/LoginPage.js` and open the file to edit. Change the oauthlink to now use your environment variables. 
+```
+const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL;
+const clientID = process.env.REACT_APP_OAUTH_CLIENT_ID;
+const redirectURI = process.env.REACT_APP_OAUTH_REDIRECT_URI
+
+class login extends React.Component {
+    state = {
+        username: '',
+        password: '',
+        redirect: null,
+        oauthLink: `${baseURL}?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`
+    };
+```
+Save your changes and then naviagte to `ece458/frontend/src/api/config.js` and open the file to edit. Change the API_URL to use your environment variable as shown below:
+```
+const API_URL = REACT_APP_API_URL;
+
+export default API_URL;
+```
+Save your changes and exit the editor. Last, navigate to your `ece458/frontend` folder and run a new build to apply the changes.
+```
+$ npm run build
+```
+Now your project will be making use of modular envorponment variables instead of hard-coded strings.
+
+
+## Aliasing Your Server
+
+Once you have your mangaement system up and running, you might have the desire to change the domain url which users type into the browser to navigate to your site. In this section, I will explain how to set up this new domain for the project. The first step is to create your alias and have it point to the IP of your server domain. Depending on how you have reserved your server, this can be done in a variety of ways. If you have your server reserved through the Duke Computing Manager, you can set up an alias by navigatng to the reservation management tab of your server and clicking the `[Create an alias]` button. You can type in your desire url name here and once it is activated, it will show up at the bottom of your server manager under `Aliases`. 
+
+In order to apply this Alias to your project, open a terminal window and connect to your server via SSH with a user that has sudo privileges. Next, open the Nginx 
+sites-available file with the following terminal command: 
+```
+$ sudo  nano /etc/nginx/sites-available/hpt_project
+```
+This is the file you edited in the `Configure Nginx to Proxy Pass to Gunicorn`  section. This file will contain the lines you write previously as well as some lines which were added by Certbot for SSL Certification. We will change the lines we wrote and not touch the specific Certbot verification lines. Change all domains in the sites-available page from your old server name to your new alias name as demonstrated below:
+
+```
+server {
+    server_name YOUR_NEW_ALIAS; # Change this to your new alias
+    root /home/hpt_project_folder/ece458/frontend/build;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/hpt_project_folder/ece458/frontend/build;
+    }
+
+        location /api {
+        include proxy_params;
+        proxy_pass http://unix:/home/hpt_project_folder/ece458/backend/backend.sock;
+    }
+	
+    # Lines added be Certbot, do not change 
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/hptmanager-dev.colab.duke.edu/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/hptmanager-dev.colab.duke.edu/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    # Lines added be Certbot, do not change ^^^^^
+}
+server {
+	# Change this to your new alias
+    if ($host = YOUR_NEW_ALIAS) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name YOUR_NEW_ALIAS; # Change this to your new alias
+    return 404; # managed by Certbot
+}
+```
+Once you have done this, you must get again get SSL certfied with your new alias. Since this server already has Snap adb Certbot after completng the Section (), you can run this line to allow Certbot to edit this new sites-available and SSL certify it. Follow the Certbot steps and when Certbot prompts you to choose the alias you want to add, choose YOUR_NEW_ALIAS. 
+```
+$ sudo certbot --nginx
+```
+Once your alias is SSL certified, restart Nginx to apply your changes.
+```
+$ sudo systemctl restart nginx
+```
+It may take a few minutes for your SSL certification to be applied. Wait a few mintues then navigate to your new alias n your browser. The login page of your project will now appear when you navigate to your new URL!
+
+IMPORTANT: For all aspects of OAuth to work with your new alias name, you will need to contact your OAuth connection and add your new aliased URL to the redirect URI of your Client ID account. All aspects of the project will not work unless you add the aliased url as an acceptable Redirect URI to your Client ID account.
+
+Once you know you can naviagte to your site via your new alias, the last step is to set up our api calls to point to this new url. All that you need to do is change the API_URL environment variable. Open the .env file in the terminal and edit the API_URL to point to your new alias
+```
+$ cd /your/path/to/ece458/frontend
+$ sudo nano .env
+```
+In the .env file change the REACT_APP_OAUTH_REQUEST_URL and REACT_APP_API_URL.
+```
+REACT_APP_OAUTH_REQUEST_URL = https://your_request_url
+REACT_APP_OAUTH_CLIENT_ID = your_client_id
+REACT_APP_OAUTH_REDIRECT_URI = https%3A//YOUR_NEW_ALIAS_DOMAIN/oauth/consume
+REACT_APP_API_URL = https://YOUR_NEW_ALIAS_DOMAIN 
+```
+Save your changes and exit the editor. Last, navigate to your `ece458/frontend` folder and run a new build to apply the changes.
+```
+$ npm run build
+```
+Finally, change the Redirect URI in the backend to point to your new Redirect URI. Open the file `ece458/backend/tables/oauth.py` to edit.
+
+In line 66, change your redirect uri.
+```
+if "OAUTH_REDIRECT_URI" in os.environ:
+	redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
+else:
+	redirect_uri = "https://YOUR_NEW_ALIAS_DOMAIN/oauth/consume"
+```
+Finally, update gunicorn and Nginx.
+```
+$ sudo systemctl restart gunicorn
+$ sudo systemctl restart nginx
+```
+Now you can use your project and make api calls with the new alias. 

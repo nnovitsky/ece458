@@ -15,7 +15,7 @@ const klufe = (props) => {
                 <div className="col">
                     <h7>Status: {props.connected ? <b>SSH Connected</b> : "Not Connected"}</h7>
                     <br></br>
-                    <h7>Output: {props.outputOn === null? "" : klufeOutput}</h7>
+                    <h7>Output: {props.outputOn === null ? "" : klufeOutput}</h7>
                     <br></br>
                     <h7>Mode: {props.mode}</h7>
                     <br></br>
@@ -23,7 +23,7 @@ const klufe = (props) => {
                 </div>
                 <div className="col">
                     <h7>Output Voltage:</h7>
-                    <h4>{props.voltage === '' ? 'No Output' : `${props.voltage} V`}</h4>
+                    <h4>{props.voltage === '' ? 'Unknown' : `${props.voltage} V`}</h4>
                 </div>
             </div>
         </div>

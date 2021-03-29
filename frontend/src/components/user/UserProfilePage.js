@@ -195,7 +195,7 @@ class UserPage extends React.Component {
         let groupString = "";
 
 
-        if(this.state.groups.length == 0){
+        if(this.state.groups.length == 0 || (this.state.groups.length == 1 && this.state.groups.includes("oauth"))){
             groupString = "None";
         }
         else if(this.state.groups.length == 1){

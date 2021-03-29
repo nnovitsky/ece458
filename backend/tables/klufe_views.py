@@ -269,7 +269,7 @@ def edit_klufe_cal(request, klufe_pk):
     except KlufeCalibration.DoesNotExist or CalibrationEvent.DoesNotExist:
         return Response({"klufe_calibration_error": ["Klufe calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
-    if not UserType.contains_user(request.user, "admin"):
+    if not UserType.contains_user(request.user, "calibrations"):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
     # fill in immutable fields and grab new user's pk

@@ -2,7 +2,7 @@
 This project was built using a React client-side frontend that connects to a Django backend with a Postgres Database. This connection is achieved using a RESTful API, allowing the backend to transfer representation of state with JSON to the frontend. The git repository for this project at the top level is broken into a frontend and backend directory.
 
 #### Overview Architecture Diagram
-![Architecture Diagram](architecture_diagram.png)
+![Architecture Diagram](architecture.png)
 
 ## High-Level Frontend
 The connection to the backend is facilitated through several JavaScript service files. These hit the endpoints established by the backend and return either the data desired or the errors received. On top of these files, are the components. These make up the user interface that presents the product to the user. 

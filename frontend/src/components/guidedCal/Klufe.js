@@ -8,7 +8,7 @@ const klufe = (props) => {
         <div className="fluke-display">
             <div className="row">
                 <div className="col">
-                    <h3>Klufe Calibrator</h3>
+                    <h3>Klufe K5700 Calibrator</h3>
                 </div>
             </div>
             <div className="row">

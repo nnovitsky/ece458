@@ -141,6 +141,8 @@ class InstrumentTablePage extends Component {
 
         const displayedButtonRow = this.state.barcodes.isSelecting ? assetTagButtonRow : defaultButtonRow;
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
+        const barcodeState = this.state.barcodes;
+        const isSelectAllChecked = barcodeState.isSelectAll && (barcodeState.instrumentPks.length===0);
         return (
             <div>
                 <GenericLoader isShown={this.state.isLoading}></GenericLoader>
@@ -153,21 +155,22 @@ class InstrumentTablePage extends Component {
                             <FilterBar
                                 onSearch={this.onFilterChange}
                                 onRemoveFilters={this.onFilterChange}
-                                isWarning={this.state.barcodes.isSelecting}
+                                isWarning={barcodeState.isSelecting}
                             />
                         </div>
                         <div className="col-10">
-                            <h1>{this.state.barcodes.isSelecting ? 'Select Instruments for Barcode Download' : 'Instrument Table'}</h1>
+                            <h1>{barcodeState.isSelecting ? 'Select Instruments for Barcode Download' : 'Instrument Table'}</h1>
                             <InstrumentTable
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
                                 onCertificateRequested={this.onCertificateRequested}
                                 inlineElements={displayedButtonRow}
-                                isSelecting={this.state.barcodes.isSelecting}
+                                isSelecting={barcodeState.isSelecting}
                                 handleSelect={this.onInstrumentSelect}
                                 handleSelectAll={this.onInstrumentSelectAll}
-                                selected={this.state.barcodes.selected}
+                                selected={barcodeState.selected}
+                                isSelectAllChecked={isSelectAllChecked}
                             />
                             <hr />
                         </div>

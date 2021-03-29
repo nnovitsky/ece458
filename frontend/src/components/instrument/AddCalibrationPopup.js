@@ -103,7 +103,7 @@ const onDateChange = (date, setCalDate) => {
 
 const onFileChange = (e) => {
     newCalibration.file = e.target.files[0];
-    console.log(newCalibration)
+    
 }
 
 export default AddCalibrationPopup;

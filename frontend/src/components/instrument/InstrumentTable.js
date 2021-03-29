@@ -30,18 +30,20 @@ import { Link } from 'react-router-dom';
     //handleSelect: an event handler that will be called on a select/deselect
     //handleSelectAll: an event handler that will be called on select/deselct all
     //selected: an array of the keyfield values of all selected rows
+    //isSelectAllChecked: boolean if check all checkbox should be checked
 const keyField = 'pk';
 
 const instrumentTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onCertificateRequested, );
-    const selectRow = {
+    const selectRow = props.isSelecting ? {
         selected: props.selected,
         onSelect: props.handleSelect,
         onSelectAll: props.handleSelectAll,
+        isSelectAllChecked: props.isSelectAllChecked,
         isHidden: !props.isSelecting,
         nonSelectable: (!props.isSelecting ? props.data.map(x => x.pk) : [])
-    };
+    } : null;
     
     return (
         <DataTable

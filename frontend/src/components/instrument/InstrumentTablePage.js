@@ -495,9 +495,8 @@ class InstrumentTablePage extends Component {
     async exportInstruments(isAll) {
         this.setState({
             isLoading: true,
-        })
-        let instrumentSearchParams = JSON.parse(window.sessionStorage.getItem("instrumentPageSearchParams"));
-        let filters = instrumentSearchParams.filters;
+        });
+        const filters = this.getFilters();
         instrumentServices.exportInstruments(filters, isAll).then(
             (result) => {
                 if (result.success) {

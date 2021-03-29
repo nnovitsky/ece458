@@ -89,7 +89,7 @@ class ImportPage extends Component {
                             <form className="text-center" method="post" action="#" id="#">
                                 <div className="form-group files">
                                     <label>Upload Your File</label>
-                                    <input type="file" className="form-control" multiple="" onChange={this.onUpload}></input>
+                                    <input type="file" className="form-control" multiple="" onChange={this.onUpload} accept=".csv"></input>
                                 </div>
                             </form>
                             {hasModelEditAccess(this.props.permissions) ? instrumentAndModelImportButtons : instrumentImportButton}

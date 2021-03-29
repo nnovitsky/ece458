@@ -564,6 +564,46 @@ $ sudo systemctl restart gunicorn
 $ cd /your/path/to/ece458/frontend
 $ npm run build
 ```
+## Setting up React Environment Variables
+
+Environment variables make the Oauth and API sections of the React app simpler and more robust. The first step is to connect via SSH to yur server and navigate to the frontend folder of your project. Next, you will create a .env file to hold your environment variables
+```
+$ cd /your/path/to/ece458/frontend
+$ sudo nano .env
+```
+The newly created .env file will open up in editor. Configure the file to hold your Oauth variables as well as your API url. 
+```
+REACT_APP_OAUTH_REQUEST_URL = https://your_request_url
+REACT_APP_OAUTH_CLIENT_ID = your_client_id
+REACT_APP_OAUTH_REDIRECT_URI = https%3A//your_domain/oauth/consume
+REACT_APP_API_URL = https://your_domain
+```
+Now we will edit parts of the React code to use these variables instead. First, naviagte to `ece458/frontend/src/components/login/LoginPage.js` and open the file to edit. Change the oauthlink to now use your environment variables. 
+```
+const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL;
+const clientID = process.env.REACT_APP_OAUTH_CLIENT_ID;
+const redirectURI = process.env.REACT_APP_OAUTH_REDIRECT_URI
+
+class login extends React.Component {
+    state = {
+        username: '',
+        password: '',
+        redirect: null,
+        oauthLink: `${baseURL}?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`
+    };
+```
+Save your changes and then naviagte to `ece458/frontend/src/api/config.js` and open the file to edit. Change the API_URL to use your environment variable as shown below:
+```
+const API_URL = REACT_APP_API_URL;
+
+export default API_URL;
+```
+Save your changes and exit the editor. Last, navigate to your `ece458/frontend` folder and run a new build to apply the changes.
+```
+$ npm run build
+```
+Now your project will be making use of modular envorponment variables instead of hard-coded strings.
+
 
 ## Aliasing Your Server
 
@@ -626,6 +666,20 @@ $ sudo systemctl restart nginx
 ```
 It may take a few minutes for your SSL certification to be applied. Wait a few mintues then navigate to your new alias n your browser. The login page of your project will now appear when you navigate to your new URL!
 
-Once you know you can naviagte to your site via your new alias, the last step is to set up our api calls to point to this new url. 
-
-
+Once you know you can naviagte to your site via your new alias, the last step is to set up our api calls to point to this new url. All that you need to do is change the API_URL environment variable. Open the .env file in the terminal and edit the API_URL to point to your new alias
+```
+$ cd /your/path/to/ece458/frontend
+$ sudo nano .env
+```
+In the .env file change the REACT_APP_API_URL.
+```
+REACT_APP_OAUTH_REQUEST_URL = https://your_request_url
+REACT_APP_OAUTH_CLIENT_ID = your_client_id
+REACT_APP_OAUTH_REDIRECT_URI = https%3A//your_domain/oauth/consume
+REACT_APP_API_URL = https://YOUR_NEW_ALIAS_DOMAIN 
+```
+Save your changes and exit the editor. Last, navigate to your `ece458/frontend` folder and run a new build to apply the changes.
+```
+$ npm run build
+```
+Now you can use your project and make api calls with the new alias. 

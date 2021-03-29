@@ -193,7 +193,7 @@ form.popup .form-group {
   background: rgba(255, 255, 255, 0.658);
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   text-align: center;
 }
 

@@ -17,6 +17,7 @@ import "./InstrumentDetailView.css";
 import DetailView from '../generic/DetailView';
 import GuidedCalServices from '../../api/guidedCalServices.js';
 import WizardServices from '../../api/wizardServices.js';
+import GenericLoader from '../generic/GenericLoader';
 
 const guidedCalServices = new GuidedCalServices();
 const wizardServices = new WizardServices();
@@ -29,6 +30,7 @@ class InstrumentDetailView extends Component {
         const arr = props.location.pathname.split('/');
 
         this.state = {
+            isLoading: false,
             redirect: null,
             instrument_info: {
                 pk: arr[arr.length - 1],
@@ -137,6 +139,7 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
+                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
@@ -453,44 +456,50 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        if (this.isFileSizeGood(calibrationEvent.file)) {
-            await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
-                .then((result) => {
+        this.setState({
+            isLoading: true,
+        }, async () => {
+                if (this.isFileSizeGood(calibrationEvent.file)) {
+                    await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
+                        .then((result) => {
 
-                    if (result.success) {
-                        this.getInstrumentInfo();
-                        this.getCalHistory();
-                        this.onAddCalibrationClose();
-                    } else {
-                        let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
-                        this.setState({
-                            addCalPopup: {
-                                ...this.state.addCalPopup,
-                                errors: formattedErrors
+                            if (result.success) {
+                                this.getInstrumentInfo();
+                                this.getCalHistory();
+                                this.onAddCalibrationClose();
+                            } else {
+                                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                                this.setState({
+                                    addCalPopup: {
+                                        ...this.state.addCalPopup,
+                                        errors: formattedErrors
+                                    }
+                                })
                             }
-                        })
+                            this.setState({
+                                isLoading: false,
+                                addCalPopup: {
+                                    ...this.state.addCalPopup,
+                                    isSubmitEnabled: true,
+                                }
+                            });
+                        });
+                } else {
+                    let error = {
+                        "non_field_errors": [
+                            "File size too large."
+                        ]
                     }
+                    let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
                     this.setState({
                         addCalPopup: {
                             ...this.state.addCalPopup,
-                            isSubmitEnabled: true,
+                            errors: formattedErrors
                         }
-                    });
-                });
-        } else {
-            let error = {
-                "non_field_errors": [
-                    "File size too large."
-                ]
-            }
-            let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
-            this.setState({
-                addCalPopup: {
-                    ...this.state.addCalPopup,
-                    errors: formattedErrors
+                    })
                 }
-            })
-        }
+        });
+        
 
     }
 

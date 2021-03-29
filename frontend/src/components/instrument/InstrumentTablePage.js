@@ -143,7 +143,6 @@ class InstrumentTablePage extends Component {
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
         const barcodeState = this.state.barcodes;
         const isSelectAllChecked = barcodeState.isSelectAll && (barcodeState.instrumentPks.length===0);
-        console.log(isSelectAllChecked);
         return (
             <div>
                 <GenericLoader isShown={this.state.isLoading}></GenericLoader>

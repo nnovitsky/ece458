@@ -188,7 +188,7 @@ form.popup .form-group {
 }
 
 .stack-top {
-  z-index: 1000;
+  z-index: 1060;
   margin: 0px; /* for demo purpose  */
   background: rgba(255, 255, 255, 0.658);
   position: absolute;

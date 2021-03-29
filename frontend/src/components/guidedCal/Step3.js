@@ -34,7 +34,7 @@ const sourceData = {
         source: 3.500,
         AC: true,
         freq: 10000,
-        display: "3.50.0+-0.004",
+        display: "3.500+-0.004",
         adjustment: "C2",
     },
     4: {
@@ -116,11 +116,13 @@ class Step2 extends React.Component {
         let extraIndexOneStep = <Form.Group className="form-inline">
             <Form.Label className="col-sm-6 col-form-label">1. Set the Model 87 to the V~ function</Form.Label>
             <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={this.state.forceDisable}></Form.Check>
-        </Form.Group>
+        </Form.Group>,
+        atFreqText = `${this.state.sourceData.AC ? "at" : ""} ${this.getHzString(this.state.sourceData.freq)}`,
+        voltageText = `${this.state.sourceData.AC ? "VAC" : "VDC"} = ${this.state.sourceData.source}V ${atFreqText}`;
 
         return <div>
             <Form className="guidedCal">
-                <h3>Calibration: {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</h3>
+                <h3>Calibration: {this.state.sourceData.source}V {atFreqText}</h3>
                 <h7>Follow the steps in order to calibrate your instrument.
                  <br></br>Click <b>Validate and Continue</b> to validate the voltage displayed on the mulitmeter. 
                  <br></br>If you entered an acceptable value, you will be taken to the next calibration step. If not, 
@@ -130,13 +132,13 @@ class Step2 extends React.Component {
                     <div className="col">
                         {this.state.index === 1 ? extraIndexOneStep : null}
                         <Form.Group className={(this.state.index === 1 && !this.state.functionSet) ? "form-inline disabled" : "form-inline"} style={{ marginTop: "20px" }}>
-                            <Form.Label className="col-sm-6 col-form-label">{this.state.index === 1 ? 2 : 1}. Set the source for VAC = {this.state.sourceData.source}V at {this.getHzString(this.state.sourceData.freq)}</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">{this.state.index === 1 ? 2 : 1}. Set the source for {voltageText}</Form.Label>
                             <Button onClick={this.onSetSourceClicked} disabled={this.state.forceDisable || (this.state.index === 1 && !this.state.functionSet)}>Click to set source</Button>
                         </Form.Group>
                         <Form.Group className={this.state.sucessfulSet ? "form-inline" : "form-inline disabled"}>
                             <Form.Label className="col-sm-6 col-form-label">{this.state.index === 1 ? 3 : 2}. Enter the displayed voltage on the Model 87</Form.Label>
                             <Form.Control className={this.state.validDisplay ? "validated" : null} disabled={!this.state.sucessfulSet || this.state.forceDisable} type="text" value={this.state.displayVoltage} onChange={this.onTextInput} />
-                            <Form.Label className="col-sm-6 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label subtext">The Model 87 should now display {this.state.sourceData.display}. If necessary, adjust {this.state.sourceData.adjustment} to obtain the propper display.</Form.Label>
                         </Form.Group>
                     </div>
                     <div className="col">
@@ -316,6 +318,8 @@ class Step2 extends React.Component {
     getHzString(hz) {
         const mega = 1000000
         const kilo = 1000
+
+        if(hz === 0) return '';
 
         if (hz >= mega) {
             return hz / mega + "MHz"

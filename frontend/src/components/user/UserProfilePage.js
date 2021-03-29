@@ -195,7 +195,7 @@ class UserPage extends React.Component {
         let groupString = "";
 
 
-        if(this.state.groups.length == 0){
+        if(this.state.groups.length == 0 || (this.state.groups.length == 1 && this.state.groups.includes("oauth"))){
             groupString = "None";
         }
         else if(this.state.groups.length == 1){
@@ -205,7 +205,7 @@ class UserPage extends React.Component {
             if(this.state.groups.includes("admin")) groupString = "Admin, ";
             if(this.state.groups.includes("models")) groupString = groupString + "Model, ";
             if(this.state.groups.includes("instruments")) groupString = groupString + "Instrument, ";
-            if(this.state.groups.includes("calibrations")) groupString = groupString + "Calibration, ";
+            if(this.state.groups.includes("calibrations")) groupString = groupString + "Calibration";
         }
         return groupString;
     }

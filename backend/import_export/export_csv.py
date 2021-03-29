@@ -71,7 +71,7 @@ def get_instrument_categories(instrument):
 
 def get_file_info(db_instrument):
     file_name = None
-    most_recent_cal = db_instrument.calibrationevent_set.order_by('-date')[:1]
+    most_recent_cal = db_instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
 
     if len(most_recent_cal) != 0:
         file_name = str(most_recent_cal[0].file)
@@ -88,7 +88,7 @@ def get_file_info(db_instrument):
 
 
 def check_calibration_type(instrument):
-    most_recent_cal = instrument.calibrationevent_set.order_by('-date')[:1]
+    most_recent_cal = instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
 
     if len(most_recent_cal) != 0:
         file_type = str(most_recent_cal[0].file_type).strip()
@@ -113,7 +113,7 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date = ""
             cal_comment = ""
         else:
-            last_cal = db_instrument.calibrationevent_set.order_by('-date')[:1]
+            last_cal = db_instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 

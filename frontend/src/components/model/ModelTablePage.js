@@ -295,6 +295,8 @@ class ModelTablePage extends Component {
     async exportModels(isAll) {
         let modelSearchParams = JSON.parse(window.sessionStorage.getItem("modelPageSearchParams"));
         let filters = modelSearchParams.filters;
+        filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
+        
         this.setState({
             isLoading: true,
         })

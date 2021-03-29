@@ -43,7 +43,7 @@ Beyond the service files and the components, the frontend has installed several 
 - react-select: used for a dropdown searchable picklist for assisted input
 
 ## High-Level Backend
-The backend of the project (contained in ./backend directory) uses Django from the main driver in the backend.hpt directory with a single app, backend.tables. The app contains 10 custom models in addition to a built-in Django model for User. Fields in models as well as relationships between models are defined below.
+The backend of the project (contained in ./backend directory) uses Django from the main driver in the backend.hpt directory with a single app, backend.tables. The app contains 12 custom models in addition to a built-in Django model for User. Fields in models as well as relationships between models are defined below.
 
 #### Tree structure of backend directory:
 
@@ -51,9 +51,12 @@ The backend of the project (contained in ./backend directory) uses Django from t
         ├───config: data rules defined by specs
         ├───hpt: main project, contains urls, settings, etc. for Django project
         ├───import_export: data validation script for importing/exporting data to csv
-        ├───media: contains uploaded supplemental files for calibration events
+            └───sample_csv: example import files
+        ├───media: contains uploaded supplemental files for calibration events (in cal_event_artifacts sub-directory)
         ├───static: static files for deployment build
         └───tables: Django app with models, views, serializers, migration files, and tests for views
+            ├───migrations: migration files for tables app
+            └───tests: unit tests for users, item models, instruments, and calibration events
 
 #### Packages used for the backend (details in requirements.txt):
 - Django: main project framework
@@ -67,19 +70,22 @@ The backend of the project (contained in ./backend directory) uses Django from t
 - PyJWT: used to handle JWT in OAuth
 - pytz: helps handle timezones
 - PyPDF2: used to help generate calibration certificates with PDFs as supplemental documents
+- paramiko: used for ssh connections for Klufe calibration
 
 #### Database Schema
-The database for this project is set up with 11 related models:
+The database for this project is set up with 13 related models:
 - User: login data for local user (built in Django model)
-- UserType: category for User, many-to-many relationships, used for “admin” and “oauth” groups
+- UserType: category for User, many-to-many relationships, used for permissions as well as “oauth” groups
 - ItemModel: data inherent to a single item model
 - ItemModelCategory: grouping for ItemModels in a user-defined category
-- CalibrationMode: grouping for ItemModels with a specific calibration mode (only used for “load_bank” mode at this point, flexible to enable ItemModels to have multiple calibration modes in the future)
+- CalibrationMode: grouping for ItemModels with a specific calibration mode
 - Instrument: data inherent to a single instrument
 - InstrumentCategory: grouping for Instruments in a user-defined category
 - CalibrationEvent: data inherent to a calibration event, regardless of type/calibration mode
 - LoadBankCalibration: detailed data for a load bank calibration (voltmeter, shunt meter, etc.)
 - LoadCurrent: details about a single current reading at a test current for a load bank calibration
 - LoadVoltage: details about a single voltage reading at test voltage for a load bank calibration
+- KlufeCalibration: detailed data for a Klufe hardware calibration
+- KlufeVoltageReading: details about a single voltage reading for a Klufe calibration
 
-![DB Diagram](db_diagram2.png)
+![DB Diagram](db_diagram3.png)

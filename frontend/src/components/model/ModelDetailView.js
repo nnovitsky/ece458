@@ -24,6 +24,7 @@ class ModelDetailView extends React.Component {
         const arr = props.location.pathname.split('/')
 
         this.state = {
+            isLoading: false,
             redirect: null,
             model_info: {
                 pk: arr[arr.length - 1],
@@ -96,6 +97,7 @@ class ModelDetailView extends React.Component {
                     col5={this.makeDetailsTable()}
                     comments={comment}
                     bottomElement={this.makeSerialTable()}
+                    isLoading={this.state.isLoading}
                 />
             </div>
         );

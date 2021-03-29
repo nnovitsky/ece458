@@ -139,7 +139,7 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
-                <GenericLoader isShown={this.state.isLoading}></GenericLoader>
+                
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
@@ -151,6 +151,7 @@ class InstrumentDetailView extends Component {
                     col5={this.makeDetailsTable()}
                     comments={comment}
                     bottomElement={this.makeCalHistoryTable()}
+                    isLoading={this.state.isLoading}
                 />
             </div>
 

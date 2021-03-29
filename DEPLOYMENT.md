@@ -666,20 +666,36 @@ $ sudo systemctl restart nginx
 ```
 It may take a few minutes for your SSL certification to be applied. Wait a few mintues then navigate to your new alias n your browser. The login page of your project will now appear when you navigate to your new URL!
 
+IMPORTANT: For all aspects of OAuth to work with your new alias name, you will need to contact your OAuth connection and add your new aliased URL to the redirect URI of your Client ID account. All aspects of the project will not work unless you add the aliased url as an acceptable Redirect URI to your Client ID account.
+
 Once you know you can naviagte to your site via your new alias, the last step is to set up our api calls to point to this new url. All that you need to do is change the API_URL environment variable. Open the .env file in the terminal and edit the API_URL to point to your new alias
 ```
 $ cd /your/path/to/ece458/frontend
 $ sudo nano .env
 ```
-In the .env file change the REACT_APP_API_URL.
+In the .env file change the REACT_APP_OAUTH_REQUEST_URL and REACT_APP_API_URL.
 ```
 REACT_APP_OAUTH_REQUEST_URL = https://your_request_url
 REACT_APP_OAUTH_CLIENT_ID = your_client_id
-REACT_APP_OAUTH_REDIRECT_URI = https%3A//your_domain/oauth/consume
+REACT_APP_OAUTH_REDIRECT_URI = https%3A//YOUR_NEW_ALIAS_DOMAIN/oauth/consume
 REACT_APP_API_URL = https://YOUR_NEW_ALIAS_DOMAIN 
 ```
 Save your changes and exit the editor. Last, navigate to your `ece458/frontend` folder and run a new build to apply the changes.
 ```
 $ npm run build
+```
+Finally, change the Redirect URI in the backend to point to your new Redirect URI. Open the file `ece458/backend/tables/oauth.py` to edit.
+
+In line 66, change your redirect uri.
+```
+if "OAUTH_REDIRECT_URI" in os.environ:
+	redirect_uri = os.environ["OAUTH_REDIRECT_URI"]
+else:
+	redirect_uri = "https://YOUR_NEW_ALIAS_DOMAIN/oauth/consume"
+```
+Finally, update gunicorn and Nginx.
+```
+$ sudo systemctl restart gunicorn
+$ sudo systemctl restart nginx
 ```
 Now you can use your project and make api calls with the new alias. 

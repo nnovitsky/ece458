@@ -77,7 +77,7 @@ class Step1 extends React.Component {
                             <Form.Check id="set_function_instrument" label="Check when completed" onChange={this.onCheckMultimeter} checked={this.state.sucessfulFunction} disabled={!this.state.sucessfulSet}></Form.Check>
                         </Form.Group>
                         <Form.Group className={(this.state.sucessfulSet && this.state.sucessfulFunction) ? "form-inline" : "form-inline disabled"}>
-                            <Form.Label className="col-sm-6 col-form-label">3. Connect the source to the Model 87V Ω ⏄</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">3. Connect the source to the Model 87 VΩ⏄ and COM inputs</Form.Label>
                             <Form.Check id="connect_instrument" label="Check when completed" onChange={this.onCheckConnection} disabled={!this.state.sucessfulSet || !this.state.sucessfulFunction}></Form.Check>
                         </Form.Group>
                     </div>

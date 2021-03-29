@@ -43,22 +43,27 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 //     onSelect    // handler that will be called on a row being selected
 //     onSelectAll //handler that will be called on select all being clicked
 //     selected    //an array of keys (the field that is set to be the key for the table) of selected rows
+//      isSelectAllChecked  //boolean if the select all checkbox should be checked
 // }
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
-    let selectRowProps = props.selectRow ? {
+    const selectProps = props.selectRow;
+    let selectRowProps = selectProps ? {
         mode: 'checkbox',
         clickToSelect: true,
-        selected: props.selectRow.selected,
-        onSelect: props.selectRow.onSelect,
-        onSelectAll: props.selectRow.onSelectAll,
-        hideSelectColumn: props.selectRow.isHidden,
+        selected: selectProps.selected,
+        onSelect: selectProps.onSelect,
+        onSelectAll: selectProps.onSelectAll,
+        hideSelectColumn: selectProps.isHidden,
+        selectionHeaderRenderer: ({ mode, disabled }) => {
+            return <input type={mode} checked={selectProps.isSelectAllChecked} disabled={disabled} />
+        },
         classes: (props.selectRow.isHidden ? "" : "selection-row"),
     } : {
-        mode: 'checkbox',
-        clickToSelect: false,
-        hideSelectColumn: true,
-    };
+            mode: 'checkbox',
+            clickToSelect: false,
+            hideSelectColumn: true,
+        };
 
     const hoverMessage = props.isHoverMessageDisplayed ? (<span>(Hover over a cell for more information)</span>) : null;
     return (
@@ -84,7 +89,7 @@ const NewModelTable = (props) => {
                                 )}
                                 {(props.pagination.totalSize === 0) ? null : (
                                     <>
-                                        
+
                                         <PaginationTotalStandalone
                                             {...paginationProps}
                                         />

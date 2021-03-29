@@ -493,9 +493,10 @@ class InstrumentDetailView extends Component {
                     }
                     let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
                     this.setState({
+                        isLoading: false,
                         addCalPopup: {
                             ...this.state.addCalPopup,
-                            errors: formattedErrors
+                            errors: formattedErrors,
                         }
                     })
                 }

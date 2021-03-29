@@ -239,7 +239,7 @@ def get_lb_tables(cal_pk):
 
 
 def get_xlsx_hyperlink(cal_pk):
-    prod_link = f"https://hptmanager-dev.colab.duke.edu/api/cal_download/{int(cal_pk)}/"
+    prod_link = f"https://hptmanager.colab.duke.edu/api/cal_download/{int(cal_pk)}/"
     local_link = f"http://localhost:8000/api/cal_download/{int(cal_pk)}/"
     address = '<link href="' + prod_link + '">' + 'Supplemental File' + '</link>'
     elements.append(Paragraph(address, styles["Heading3"]))

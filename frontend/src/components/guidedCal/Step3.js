@@ -117,7 +117,7 @@ class Step2 extends React.Component {
             <Form.Label className="col-sm-6 col-form-label">1. Set the Model 87 to the V~ function</Form.Label>
             <Form.Check id="set_function" label="Check when completed" checked={this.state.functionSet} onChange={this.onSetFunction} disabled={this.state.forceDisable}></Form.Check>
         </Form.Group>,
-        atFreqText = `${this.state.sourceData.AC ? "at" : ""} ${this.getHzString(this.state.sourceData.freq)}`,
+        atFreqText = `${this.state.sourceData.AC ? "at" : "DC"} ${this.getHzString(this.state.sourceData.freq)}`,
         voltageText = `${this.state.sourceData.AC ? "VAC" : "VDC"} = ${this.state.sourceData.source}V ${atFreqText}`;
 
         return <div>

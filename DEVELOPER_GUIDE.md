@@ -2,7 +2,7 @@
 This project was built using a React client-side frontend that connects to a Django backend with a Postgres Database. This connection is achieved using a RESTful API, allowing the backend to transfer representation of state with JSON to the frontend. The git repository for this project at the top level is broken into a frontend and backend directory.
 
 #### Overview Architecture Diagram
-![Architecture Diagram](architecture.png)
+![Architecture Diagram](architecture.PNG)
 
 ## High-Level Frontend
 The connection to the backend is facilitated through several JavaScript service files. These hit the endpoints established by the backend and return either the data desired or the errors received. On top of these files, are the components. These make up the user interface that presents the product to the user. 
@@ -91,4 +91,4 @@ The database for this project is set up with 13 related models:
 - KlufeCalibration: detailed data for a Klufe hardware calibration
 - KlufeVoltageReading: details about a single voltage reading for a Klufe calibration
 
-![DB Diagram](db_diagram3.png)
+![DB Diagram](db_diagram3.PNG)

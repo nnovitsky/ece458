@@ -6,7 +6,7 @@ Please upload a “.csv” file that contains the following eight headers locate
     <li>Vendor</li>
     <li>Model-Number</li>
     <li>Serial-Number</li>
-    <li>Asset-Tag</li>
+    <li>Asset-Tag-Number</li>
     <li>Comment</li>
     <li>Calibration-Date</li>
     <li>Calibration-Comment</li>

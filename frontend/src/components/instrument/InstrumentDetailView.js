@@ -106,13 +106,11 @@ class InstrumentDetailView extends Component {
     }
 
     async componentDidMount() {
-        if(window.sessionStorage.getItem("klufe"))
-        {
-          await this.cancelKlufeEvent();
+        if (window.sessionStorage.getItem("klufe")) {
+            await this.cancelKlufeEvent();
         }
-        if(window.sessionStorage.getItem("loadbank"))
-        {
-          await this.cancelLoadbankEvent();
+        if (window.sessionStorage.getItem("loadbank")) {
+            await this.cancelLoadbankEvent();
         }
         await this.getInstrumentInfo();
         await this.getCalHistory();
@@ -121,10 +119,10 @@ class InstrumentDetailView extends Component {
     render() {
         const isInstrumentAdmin = hasInstrumentEditAccess(this.props.permissions);
         const headerButtons = (<div className="detail-header-buttons-div">
-                            <Button onClick={this.onEditInstrumentClicked} hidden={!isInstrumentAdmin}>Edit</Button>
-                            <Button onClick={this.onDeleteClicked} hidden={!isInstrumentAdmin} variant="danger">Delete</Button>
-                    </div>)
-        
+            <Button onClick={this.onEditInstrumentClicked} hidden={!isInstrumentAdmin}>Edit</Button>
+            <Button onClick={this.onDeleteClicked} hidden={!isInstrumentAdmin} variant="danger">Delete</Button>
+        </div>)
+
 
         let addCalibrationPopup = (this.state.addCalPopup.isShown) ? this.makeAddCalibrationPopup() : null;
         let editInstrumentPopup = (this.state.editInstrumentPopup.isShown) ? this.makeEditInstrumentPopup() : null;
@@ -139,7 +137,7 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
-                
+
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
@@ -457,50 +455,51 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
-        this.setState({
-            isLoading: true,
-            isSubmitEnabled: false,
-        }, async () => {
-                if (this.isFileSizeGood(calibrationEvent.file)) {
-                    await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
-                        .then((result) => {
-                            if (result.success) {
-                                this.getInstrumentInfo();
-                                this.getCalHistory();
-                                this.onAddCalibrationClose();
-                            } else {
-                                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
-                                this.setState({
-                                    addCalPopup: {
-                                        ...this.state.addCalPopup,
-                                        errors: formattedErrors
-                                    }
-                                })
-                            }
+        if (this.isFileSizeGood(calibrationEvent.file)) {
+            this.setState({
+                isLoading: true,
+                isSubmitEnabled: false,
+            }, async () => {
+                await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
+                    .then((result) => {
+                        if (result.success) {
+                            this.getInstrumentInfo();
+                            this.getCalHistory();
+                            this.onAddCalibrationClose();
+                        } else {
+                            let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
                             this.setState({
-                                isLoading: false,
                                 addCalPopup: {
                                     ...this.state.addCalPopup,
-                                    isSubmitEnabled: true,
+                                    errors: formattedErrors
                                 }
-                            });
-                        });
-                } else {
-                    let error = {
-                        "non_field_errors": [
-                            "File size too large."
-                        ]
-                    }
-                    let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
-                    this.setState({
-                        addCalPopup: {
-                            ...this.state.addCalPopup,
-                            errors: formattedErrors
+                            })
                         }
-                    })
+                        this.setState({
+                            isLoading: false,
+                            addCalPopup: {
+                                ...this.state.addCalPopup,
+                                isSubmitEnabled: true,
+                            }
+                        });
+                    });
+            });
+        } else {
+            let error = {
+                "non_field_errors": [
+                    "File size too large."
+                ]
+            }
+            let formattedErrors = rawErrorsToDisplayed(error, ErrorFile["add_calibration"]);
+            this.setState({
+                isLoading: false,
+                addCalPopup: {
+                    ...this.state.addCalPopup,
+                    errors: formattedErrors,
                 }
-        });
-        
+            })
+        }
+
 
     }
 
@@ -696,18 +695,18 @@ class InstrumentDetailView extends Component {
             this.getCalHistory();
         })
     }
-    
-      async cancelKlufeEvent(){
-        let klufePK = window.sessionStorage.getItem("klufe");
-        await guidedCalServices.deleteKlufeCal(klufePK).then(result =>{
-          if(result.success){
-              console.log("deleted klufe event")
-              window.sessionStorage.removeItem("klufe");
-          }
-      })
-      }
 
-      async cancelLoadbankEvent(){
+    async cancelKlufeEvent() {
+        let klufePK = window.sessionStorage.getItem("klufe");
+        await guidedCalServices.deleteKlufeCal(klufePK).then(result => {
+            if (result.success) {
+                console.log("deleted klufe event")
+                window.sessionStorage.removeItem("klufe");
+            }
+        })
+    }
+
+    async cancelLoadbankEvent() {
         let loadbankPK = window.sessionStorage.getItem("loadbank");
         await wizardServices.cancelLoadbankCalEvent(loadbankPK).then(result => {
             if (result.success) {
@@ -715,7 +714,7 @@ class InstrumentDetailView extends Component {
                 window.sessionStorage.removeItem("loadbank");
             }
         })
-      }
+    }
 
 }
 

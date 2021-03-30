@@ -312,15 +312,24 @@ class InstrumentTablePage extends Component {
         instrumentSearchParams = JSON.parse(instrumentSearchParams);
         const sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
         const isSelectAll = this.state.barcodes.isSelectAll;
-
-        await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
-            if (result.success) {
-                nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
-                this.onBarcodeButtonCancelClick();
-            } else {
-
-            }
+        this.setState({
+            isLoading: true,
+        }, async() => {
+                await instrumentServices.getAssetBarcodes(this.state.barcodes.instrumentPks, filters, sortingIndicator, isSelectAll).then((result) => {
+                    if (result.success) {
+                        nameAndDownloadFile(result.url, `asset-barcodes`, result.type);
+                        this.setState({
+                            isLoading: false,
+                        }, () => this.onBarcodeButtonCancelClick);
+                    } else {
+                        console.log('failed to download barcodes');
+                        this.setState({
+                            isLoading: false,
+                        })
+                    }
+                })
         })
+        
     }
 
     onInstrumentSelect(row, isSelect) {

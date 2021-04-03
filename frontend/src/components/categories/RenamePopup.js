@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
-import "react-datepicker/dist/react-datepicker.css";
 //props
 //'title': a string to be displayed as the header
 //'isShown': boolean if popup is shown

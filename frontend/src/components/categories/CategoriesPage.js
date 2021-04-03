@@ -218,6 +218,7 @@ class CategoriesPage extends Component {
                 onClose={this.onDeleteCancel}
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
+                isPrimaryOnLeft={true}
             />
         )
     }

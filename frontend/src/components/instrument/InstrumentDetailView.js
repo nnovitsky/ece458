@@ -411,6 +411,7 @@ class InstrumentDetailView extends Component {
                 onClose={this.onDeleteClose}
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
+                isPrimaryOnLeft={true}
             />
         )
     }

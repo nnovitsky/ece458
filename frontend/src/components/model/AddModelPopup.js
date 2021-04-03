@@ -222,7 +222,6 @@ class AddModelPopup extends Component {
 
     onTextInput(e) {
         let val = e.target.value;
-        console.log(val);
         switch (e.target.name) {
             case modelName:
                 this.setState({

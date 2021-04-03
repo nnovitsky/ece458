@@ -132,6 +132,7 @@ class ModelDetailView extends React.Component {
                 onSubmit={this.onDeleteSubmit}
                 submitButtonVariant="danger"
                 errors={this.state.deletePopup.errors}
+                isPrimaryOnLeft={true}
             />
         )
     }

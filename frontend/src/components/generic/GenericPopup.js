@@ -21,6 +21,7 @@ import Alert from 'react-bootstrap/Alert'
 // 'isSubmitButtonShown' optional boolean for if the submit button should be shown
 //  'isSecondaryButtonShown': optional boolean for if the secondary button should be shown
 // 'isPrimaryButtonEnabled': optional boolean for if the primary button is enabled
+// 'isPrimaryOnLeft': optional boolean to put the primary button on the left, defaults to false
 
 const genericPopup = (props) => {
     return (
@@ -37,19 +38,25 @@ const genericPopup = (props) => {
                 <Alert className={"popup-alert"} variant={'danger'} show={props.errors.length > 0}>
                     {makeErrorsParagraphs(props.errors)}
                 </Alert>
-                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant, props.isSubmitButtonShown, props.isSecondaryButtonShown, props.isPrimaryButtonEnabled)}
+                {buttonArray(props.closeButtonText, props.submitButtonText, props.onClose, props.onSubmit, props.submitButtonVariant, props.isSubmitButtonShown, props.isSecondaryButtonShown, props.isPrimaryButtonEnabled, props.isPrimaryOnLeft)}
 
             </Modal.Footer>
         </Modal>
     )
 }
 
-const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant, isSubmitButtonShown, isSecondaryButtonShown, isPrimaryButtonEnabled) => {
+const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVariant, isSubmitButtonShown, isSecondaryButtonShown, isPrimaryButtonEnabled, isPrimaryOnLeft) => {
     let buttons = [];
+    const primary = (<Button variant={submitButtonVariant} onClick={onSubmit} hidden={!isSubmitButtonShown} disabled={!isPrimaryButtonEnabled}>{submitText}</Button>);
 
     buttons.push(<Button variant="secondary" onClick={onClose} hidden={!isSecondaryButtonShown}>{closeText}</Button>)
-    buttons.push(<Button variant={submitButtonVariant} onClick={onSubmit} hidden={!isSubmitButtonShown} disabled={!isPrimaryButtonEnabled}>{submitText}</Button>)
 
+    if(isPrimaryOnLeft) {
+        buttons.unshift(primary);
+    } else {
+        buttons.push(primary);
+    }
+    
     let buttonDiv = (
         <div className="popup-button-row">
             {buttons}
@@ -73,7 +80,8 @@ genericPopup.defaultProps = {
     isSecondaryButtonShown: true,
     isPrimaryButtonEnabled: true,
     onSubmit: () => { },
-    submitButtonText: ''
+    submitButtonText: '',
+    isPrimaryOnLeft: false,
 }
 
 export default genericPopup;

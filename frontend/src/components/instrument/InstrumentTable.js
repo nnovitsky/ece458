@@ -73,23 +73,37 @@ const getLatestCalText = (data) => {
     }
 }
 
+const getDayDifference = (currentData) => {
+    let expireDateString = currentData.calibration_expiration;
+    let expireDate = new Date(expireDateString);
+    let today = new Date();
+    let timeDifference = expireDate.getTime() - today.getTime();
+    let daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    return daysDifference;
+}
+
+const isUncalibratable = (rowData) => {
+    return rowData.calibration_expiration === "Uncalibratable.";
+}
+
+const hasEventHistory = (rowData) => {
+    return rowData.calibration_event.length > 0;
+}
 
     const getCalStatusIcon = (currentData) => {
         let result = {
             icon: '',
             text: '',
+            dayDifference: '',
         }
 
-        if (currentData.calibration_expiration === "Uncalibratable.") {
+        if (isUncalibratable(currentData)) {
             result.icon = NonCalibratableIcon;
             result.text = `Instrument is not calibratable`;
         } else {
-            if (currentData.calibration_event.length > 0) {
-                let expireDateString = currentData.calibration_expiration;
-                let expireDate = new Date(expireDateString);
-                let today = new Date();
-                let timeDifference = expireDate.getTime() - today.getTime();
-                let daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+            if (hasEventHistory(currentData)) {
+                const daysDifference = getDayDifference(currentData);
+                result.dayDifference = daysDifference;
                 if (daysDifference > 30) {
                     result.icon = GoodIcon;
                     result.text = `Good: expires in ${daysDifference} days`;
@@ -253,7 +267,11 @@ const getLatestCalText = (data) => {
                     dataField: 'calibration_expiration',
                     text: 'Cal. Expiration',
                     sort: true,
-                    title: (cell) => `Calibration Expiration: ${cell}`,
+                    title: (cell, row) => {
+                        const text = getCalStatusIcon(row).text;
+                        const displayCell = (cell.includes('Uncalibratable') ? 'None' : cell);
+                        return `Expiration: ${displayCell}\n${text}`;
+                    },
                     formatter: (cell, row) => {   //formats the data and the returned is displayed in the cell
                         let display = cell;
                         let result = getCalStatusIcon(row);

@@ -4,7 +4,6 @@ import Select from 'react-select';
 
 import ModelServices from '../../api/modelServices';
 import InstrumentCategoryPicklist from '../generic/picklist/InstrumentCategoriesPicklist';
-import "react-datepicker/dist/react-datepicker.css";
 import GenericPopup from "../generic/GenericPopup";
 import VendorPicklist from '../generic/picklist/VendorPicklist';
 

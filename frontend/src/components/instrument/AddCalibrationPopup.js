@@ -52,7 +52,7 @@ const makeBody = (calDate, setCalDate) => {
                     <Form.Label className="required-field">Calibration Date</Form.Label>
                     <div style={{ display: 'block' }}>
                         <DatePicker
-                            onSelect={(e) => onDateChange(e, setCalDate)}
+                            onChange={(e) => onDateChange(e, setCalDate)}
                             selected={calDate}
                             maxDate={new Date()}
                         />

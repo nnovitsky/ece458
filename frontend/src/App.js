@@ -3,7 +3,6 @@ import './App.css';
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
 import { Beforeunload } from 'react-beforeunload';
-
 import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
 import UserProfilePage from './components/user/UserProfilePage';
@@ -237,7 +236,6 @@ class App extends Component {
               <Route path="/categories/:type" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups} />)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
-
             </Switch>
             {this.state.logged_in ? null : form}
             {this.state.redirect ? (<Redirect to="/user-profile" />) : null}

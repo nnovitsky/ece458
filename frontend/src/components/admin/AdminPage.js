@@ -40,7 +40,10 @@ class AdminPage extends React.Component {
                 showAll: false
             },
             deletePopupIsShown: false,
-            userDeleted: '',
+            userDeleted: {
+                pk: null,
+                name: ''
+            }
         };
 
         this.onAddUserClosed = this.onAddUserClosed.bind(this);
@@ -49,7 +52,8 @@ class AdminPage extends React.Component {
         this.giveAdminPriviledges = this.giveAdminPriviledges.bind(this);
         this.revokeAdminPriviledges = this.revokeAdminPriviledges.bind(this);
         this.getUsername = this.getUsername.bind(this);
-        this.onUserDeleted = this.onUserDeleted.bind(this);
+        this.onUserDelete = this.onUserDelete.bind(this);
+        this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.changePrivileges = this.changePrivileges.bind(this);
     }
@@ -89,7 +93,7 @@ class AdminPage extends React.Component {
                                 giveAdminPriviledges={this.giveAdminPriviledges}
                                 revokeAdminPriviledges={this.revokeAdminPriviledges}
                                 currentUser={this.props.username}
-                                deleteUser={this.onUserDeleted}
+                                deleteUser={this.onDeleteClicked}
                                 onChangePrivileges={this.changePrivileges}
                             />
                         </div>
@@ -103,16 +107,18 @@ class AdminPage extends React.Component {
 
     makeDeletePopup() {
         let body = (
-            <p>User {this.state.deletedUser} was deleted</p>
+            <p>Are you sure you would like to delete <b>{this.state.userDeleted.name}</b>?</p>
         )
         return (
             <DeletePopup
                 show={this.state.deletePopupIsShown}
                 body={body}
-                headerText="Notice"
-                closeButtonText="Ok"
+                headerText="Warning!"
+                closeButtonText="Cancel"
+                submitButtonText="Delete"
+                submitButtonVariant="danger"
                 onClose={this.onDeleteClose}
-                isSubmitButtonShown={false}
+                onSubmit={this.onUserDelete}
             />
         )
     }
@@ -132,6 +138,21 @@ class AdminPage extends React.Component {
         this.setState({
             deletePopupIsShown: false
         })
+    }
+
+    onDeleteClicked(e) {
+        let pk = Number(e.target.value)
+        let name = e.target.name
+        this.setState({
+            deletePopupIsShown: true,
+            userDeleted: {
+                ...this.state.addUserPopup,
+                pk: pk,
+                name: name
+            }
+        })
+        console.log(pk)
+        console.log(name)
     }
 
     async onAddUserSubmit(newUser) {
@@ -172,18 +193,16 @@ class AdminPage extends React.Component {
     }
 
 
-    async onUserDeleted(e) {
-        let pk = Number(e.target.value)
-        let name = e.target.name
-        adminServices.deleteUser(pk).then(result => {
+    async onUserDelete() {
+        console.log(this.state.userDeleted.pk)
+         adminServices.deleteUser(this.state.userDeleted.pk).then(result => {
             if (result.success) {
                 this.setState({
-                    deletePopupIsShown: true,
-                    deletedUser: name
+                    deletePopupIsShown: false,
                 })
                 this.updateUserTable();
             }
-        })
+        }) 
     }
 
     // event handler for the User Table, it handles pagination

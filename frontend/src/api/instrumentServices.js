@@ -5,9 +5,8 @@ const API_URL = Configs
 export default class InstrumentServices {
 
     // handled modified/expired tokens
-    async getInstruments(filters, sort_by, show_all, pageNum) {
+    async getInstruments(filters, sort_by, show_all, pageNum, perPage) {
         const token = window.sessionStorage.getItem('token');
-
         let result = {
             success: true,
             data: [],
@@ -30,7 +29,7 @@ export default class InstrumentServices {
         if (show_all) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {

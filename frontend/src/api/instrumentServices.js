@@ -55,7 +55,7 @@ export default class InstrumentServices {
     }
 
     // used to get the serial numbers for the model detail view
-    async getInstrumentsByModelPk(model_pk, pageNum, showAll) {
+    async getInstrumentsByModelPk(model_pk, pageNum, showAll, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -68,7 +68,7 @@ export default class InstrumentServices {
         if (showAll) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {
@@ -281,7 +281,7 @@ export default class InstrumentServices {
             })
     }
 
-    async getCalFromInstrument(pk, pageNum, showAll) {
+    async getCalFromInstrument(pk, pageNum, showAll, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -294,7 +294,7 @@ export default class InstrumentServices {
         if (showAll) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {

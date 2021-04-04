@@ -52,7 +52,7 @@ class InstrumentDetailView extends Component {
             calibration_pagination: {
                 resultCount: 0,
                 numPages: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 25,
                 currentPageNum: 1,
                 isShowAll: false,
                 desiredPage: 1
@@ -221,7 +221,8 @@ class InstrumentDetailView extends Component {
     }
 
     async getCalHistory() {
-        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, this.state.calibration_pagination.desiredPage, this.state.calibration_pagination.isShowAll).then(
+        const calPagination = this.state.calibration_pagination;
+        await instrumentServices.getCalFromInstrument(this.state.instrument_info.pk, calPagination.desiredPage, calPagination.isShowAll, calPagination.resultsPerPage).then(
             (result) => {
                 if (result.success) {
                     this.setState({
@@ -435,6 +436,7 @@ class InstrumentDetailView extends Component {
                             ...this.state.calibration_pagination,
                             desiredPage: page,
                             isShowAll: false,
+                            resultsPerPage: sizePerPage,
                         }
                     }, () => {
                         this.getCalHistory();

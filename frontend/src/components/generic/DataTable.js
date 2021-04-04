@@ -81,12 +81,12 @@ const NewModelTable = (props) => {
                         totalAndShowAll = (
                             <div className="pagination-top-row">
                                 {props.inlineElements}
-                                {(props.pagination.totalSize <= 10) ? null : (
+                                
                                     <SizePerPageDropdownStandalone
                                         {...paginationProps}
 
                                     />
-                                )}
+                                
                                 {(props.pagination.totalSize === 0) ? null : (
                                     <>
 

@@ -34,7 +34,7 @@ class AdminPage extends React.Component {
             user_pagination: {
                 resultCount: 0,
                 numPages: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 25,
                 currentPageNum: 1,
                 desiredPage: 1,
                 showAll: false
@@ -225,6 +225,7 @@ class AdminPage extends React.Component {
                             ...this.state.user_pagination,
                             desiredPage: page,
                             showAll: false,
+                            resultsPerPage: sizePerPage,
                         }
                     }, () => {
                         this.updateUserTable();
@@ -237,7 +238,7 @@ class AdminPage extends React.Component {
     }
 
     async updateUserTable() {
-        userServices.getUsers(this.state.user_pagination.desiredPage, this.state.user_pagination.showAll).then((result) => {
+        userServices.getUsers(this.state.user_pagination.desiredPage, this.state.user_pagination.showAll, this.state.user_pagination.resultsPerPage).then((result) => {
             if (result.success) {
                 this.setState({
                     redirect: null,

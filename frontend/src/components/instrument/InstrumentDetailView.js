@@ -45,6 +45,7 @@ class InstrumentDetailView extends Component {
                 calibration_frequency: '',
                 calibration_expiration: '',
                 calibration_modes: [],
+                calibrator_categories: [],
                 calibration_history: [],
                 model_categories: [],
                 instrument_categories: []
@@ -210,8 +211,8 @@ class InstrumentDetailView extends Component {
                             calibration_expiration: data.calibration_expiration,
                             model_categories: data.categories.item_model_categories,
                             instrument_categories: data.categories.instrument_categories,
-                            asset_tag: data.asset_tag
-
+                            asset_tag: data.asset_tag,
+                            // calibrator_categories: data.item_model.calibrator_categories_set,
                         }
                     })
                 }
@@ -262,7 +263,7 @@ class InstrumentDetailView extends Component {
 
     makeDetailsTable() {
         let detailData = this.state.instrument_info;
-        let hasHistory = this.state.instrument_info.calibration_frequency !== 0;
+        let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
 
         return (
             <Table size="sm" bordered>
@@ -291,6 +292,16 @@ class InstrumentDetailView extends Component {
                             </div>
                         </td>
                     </tr>
+                    <tr hidden={!isCalibratable}>
+                        <td><strong>Calibrator Categories</strong></td>
+
+                        <td>
+                            <div className="detail-view-categories">
+                                <p>Coming Soon</p>
+                                {this.state.instrument_info.calibrator_categories.map(el => el.name).join(', ')}
+                            </div>
+                        </td>
+                    </tr>
                     <tr>
                         <td><strong>Asset Tag</strong></td>
                         <td>{this.state.instrument_info.asset_tag}</td>
@@ -308,15 +319,15 @@ class InstrumentDetailView extends Component {
                             </div>
                         </td>
                     </tr>
-                    <tr hidden={!hasHistory}>
+                    <tr hidden={!isCalibratable}>
                         <td><strong>Next Calibration</strong></td>
                         <td>{this.state.instrument_info.calibration_expiration}</td>
                     </tr>
-                    <tr hidden={!hasHistory}>
+                    <tr hidden={!isCalibratable}>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{`${this.state.instrument_info.calibration_frequency} Days`}</td>
                     </tr>
-                    <tr hidden={hasHistory}>
+                    <tr hidden={isCalibratable}>
                         <td><strong>Calibration</strong></td>
                         <td>This model isn't calibratable</td>
                     </tr>

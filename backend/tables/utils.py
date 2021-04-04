@@ -146,6 +146,7 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
 
     try:
         results_per_page = int(request.GET.get('results_per_page', 10))
+        if results_per_page <= 0: raise ValueError
     except ValueError:
         results_per_page = 10
     try:

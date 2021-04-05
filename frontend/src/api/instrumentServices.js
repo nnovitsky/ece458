@@ -236,11 +236,12 @@ export default class InstrumentServices {
 
     // Note: the date needs to be a string
     // Error handling in place for future dates
-    async addCalibrationEvent(instrument_pk, date, comment, file) {
+    async addCalibrationEvent(instrument_pk, date, comment, file, calibratorInstrumentArr) {
         const formData = new FormData();
         formData.append('instrument', instrument_pk);
         formData.append('date', date);
         formData.append('comment', comment);
+        //formData.append('calibrated_by_instruments', calibratorInstrumentArr);
 
         if (file !== '') {
             formData.append('file', file);

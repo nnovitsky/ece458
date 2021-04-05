@@ -472,7 +472,7 @@ class InstrumentDetailView extends Component {
                 isLoading: true,
                 isSubmitEnabled: false,
             }, async () => {
-                await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file)
+                    await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file, calibrationEvent.calibratorInstruments)
                     .then((result) => {
                         if (result.success) {
                             this.getInstrumentInfo();

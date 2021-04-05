@@ -16,6 +16,7 @@ let newCalibration = {
     date: dateToString(new Date()),
     comment: '',
     file: '',
+    calibratorInstruments: [],
 }
 
 const AddCalibrationPopup = (props) => {
@@ -75,7 +76,9 @@ const makeBody = (calDate, setCalDate) => {
                     <Form.File onChange={onFileChange} accept=".jpg,.jpeg,.png,.gif,.pdf,.xlsx" multiple="" />
                     <Form.Text muted>32MB max. Accepts .PNG, .GIF, .JPG, .JPEG, .PDF, or .XLSX</Form.Text>
                 </Form.Group>
-                <CalibratedWithInput />
+                <CalibratedWithInput 
+                    onInstrumentChange={onCalibratorInstrumentsChange}
+                />
             </Form>
         </div>
     )
@@ -106,6 +109,10 @@ const onDateChange = (date, setCalDate) => {
 const onFileChange = (e) => {
     newCalibration.file = e.target.files[0];
     
+}
+
+const onCalibratorInstrumentsChange = (instrumentsArr) => {
+    newCalibration.calibratorInstruments = instrumentsArr;
 }
 
 export default AddCalibrationPopup;

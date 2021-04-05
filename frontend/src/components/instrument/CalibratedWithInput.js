@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -7,11 +7,13 @@ import Badge from 'react-bootstrap/Badge';
 
 let count = 1;
 // onInstrumentChange: an event handler that will be called whenever an
-// instrument is added or removed. this will be passed an array of objects containing
-// the instrument_pk and the asset tag
+// instrument is added or removed. this will be passed an array of instrument pks
 const CalibratedWithInput = (props) => {
     const [calibratorState, dispatch] = useReducer(reducer, getEmptyState());
 
+    useEffect(() => {
+        props.onInstrumentChange(calibratorState.instrumentsAdded.map(x => x.instrument_pk));
+    }, [calibratorState.instrumentsAdded, props]);
     return (
         <div className="calibrator-instrument-div" onKeyUp={(e) => e.key==='Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
             <Form.Label>Calibrator Instruments</Form.Label>
@@ -22,7 +24,7 @@ const CalibratedWithInput = (props) => {
                         placeholder="Asset Tag"
                         className={getClassName(calibratorState)}
                         value={calibratorState.textInput}
-                    onChange={(e) => onTextInput(e.target.value, dispatch, calibratorState)}
+                    onChange={(e) => onTextInput(e.target.value, dispatch)}
                     />
                     <InputGroup.Append>
                         <Button onClick={() => onAddInstrument(calibratorState, dispatch)} disabled={!calibratorState.isValidText}>+</Button>
@@ -42,7 +44,7 @@ const CalibratedWithInput = (props) => {
 const getBadgeList = (calibratorState, dispatch) => {
     const result = [];
     calibratorState.instrumentsAdded.forEach((instrument) => {
-        const badge = badgeWithButton(instrument.asset_tag, instrument.instrument_pk, (pk) => dispatch({ type: 'remove_instrument', payload: pk }));
+        const badge = badgeWithButton(instrument.asset_tag, instrument.instrument_pk, (pk) => onRemoveInstrument(dispatch, pk));
         result.push(badge);
     });
     return result;
@@ -50,8 +52,8 @@ const getBadgeList = (calibratorState, dispatch) => {
 
 const badgeWithButton = (text, value, onRemove) => {
     return (
-        <div className="instrument-badge">
-            <Badge pill variant="primary" key={value}>
+        <div className="instrument-badge" key={value}>
+            <Badge pill variant="primary">
                 {text}
                 <Button onClick={() => onRemove(value)}>X</Button>
             </Badge>
@@ -91,7 +93,7 @@ const getClassName = (calibratorState) => {
     }
 }
 
-const onTextInput = (text, dispatch, calibratorState) => {
+const onTextInput = (text, dispatch) => {
     dispatch({ type: 'text_input', payload: text });
     if (text.length < 6) {
         dispatch({ type: 'set_valid', payload: null });
@@ -115,12 +117,15 @@ const onAddInstrument = (calibratorState, dispatch) => {
             instrument_pk: count,
             asset_tag: calibratorState.textInput,
         };
-        count++;
+        count += 1;
         dispatch({ type: 'add_instrument', payload: newInstrument });
         dispatch({ type: 'text_input', payload: '' });
         dispatch({ type: 'set_valid', payload: null });
     }
+}
 
+const onRemoveInstrument = (dispatch, pk) => {
+    dispatch({ type: 'remove_instrument', payload: pk });
 }
 
 const getEmptyState = () => {

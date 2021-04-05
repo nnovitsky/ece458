@@ -3,6 +3,7 @@ import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
+import CalibratedWithInput from './CalibratedWithInput';
 import "react-datepicker/dist/react-datepicker.css";
 //props
 //'isShown': boolean if popup is shown
@@ -74,6 +75,7 @@ const makeBody = (calDate, setCalDate) => {
                     <Form.File onChange={onFileChange} accept=".jpg,.jpeg,.png,.gif,.pdf,.xlsx" multiple="" />
                     <Form.Text muted>32MB max. Accepts .PNG, .GIF, .JPG, .JPEG, .PDF, or .XLSX</Form.Text>
                 </Form.Group>
+                <CalibratedWithInput />
             </Form>
         </div>
     )

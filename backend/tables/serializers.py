@@ -523,3 +523,27 @@ class KlufeCalReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = KlufeCalibration
         fields = ('pk', 'cal_event', 'voltage_tests')
+
+
+class CalibrationApprovalWriteSerializer(serializers.ModelSerializer):
+
+    def validate(self, data):
+        if 'date' in data and data['date'] > datetime.date.today():
+            raise serializers.ValidationError("Cannot set future date.")
+        return data
+
+    class Meta:
+        model = CalibrationApproval
+        fields = ('pk', 'cal_event', 'approver', 'date', 'comment')
+
+
+class CalibrationApprovalReadSerializer(serializers.ModelSerializer):
+    approver = UserSerializer()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.cal_event.approval_status
+
+    class Meta:
+        model = CalibrationApproval
+        fields = ('pk', 'status', 'approver', 'date', 'comment')

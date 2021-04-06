@@ -717,3 +717,35 @@ def category_list(request, type):
     data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
     data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+def cal_approval(request, cal_event_pk):
+    try:
+        cal_event = CalibrationEvent.objects.get(pk=cal_event_pk)
+    except CalibrationEvent.DoesNotExist:
+        return Response({"description": ["Invalid calibration event pk."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        approval = cal_event.calibrationapproval_set.all()[:1]
+        if len(approval) < 1:
+            return Response({"description": ["Calibration event does not have an approval."]}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CalibrationApprovalReadSerializer(approval[0])
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "calibration_approver"):
+            return Response({"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        if cal_event.approval_status != APPROVAL_STATUSES['pending']:
+            return Response({"description": ["Calibration event does not need approval."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        approved = request.data.pop('approved')
+        request.data['cal_event'] = cal_event_pk
+        request.data['approver'] = request.user.pk
+        serializer = CalibrationApprovalWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            cal_event.approval_status = APPROVAL_STATUSES['approved'] if approved else APPROVAL_STATUSES['rejected']
+            cal_event.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

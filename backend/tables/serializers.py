@@ -2,6 +2,7 @@ from rest_framework import serializers
 from backend.tables.models import *
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.forms.fields import FileField
 import datetime
 from backend.hpt.settings import FILE_UPLOAD_MAX_MEMORY_SIZE
@@ -193,7 +194,9 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
         return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
 
     def _get_most_recent_calibration(self, obj):
-        cal_event = obj.calibrationevent_set.order_by('-date', '-pk')[:1]
+        no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+        approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+        cal_event = obj.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1]
         serializer = CalibrationEventWriteSerializer(cal_event, many=True)
         return serializer.data
 
@@ -201,7 +204,9 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
         cal_frequency = obj.item_model.calibration_frequency
         if cal_frequency < 1:
             return "Uncalibratable."
-        last_cal = obj.calibrationevent_set.order_by('-date')[:1]
+        no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+        approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+        last_cal = obj.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date')[:1]
         if len(last_cal) < 1:
             return "Instrument not calibrated."
         else:
@@ -245,41 +250,6 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
         model = Instrument
         fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_event',
                   'calibration_expiration', 'categories')
-
-
-class DetailInstrumentReadSerializer(serializers.ModelSerializer):
-    # use when viewing detail page for instrument
-    item_model = ItemModelNoCategoriesSerializer()
-    calibration_events = serializers.SerializerMethodField('_get_all_calibrations')
-    calibration_expiration = serializers.SerializerMethodField('_get_calibration_expiration')
-    categories = serializers.SerializerMethodField()
-
-    def get_categories(self, obj):
-        instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
-        model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
-
-    def _get_all_calibrations(self, obj):
-        cal_events = obj.calibrationevent_set.order_by('-date')
-        serializer = SimpleCalibrationEventReadSerializer(cal_events, many=True)
-        return serializer.data
-
-    def _get_calibration_expiration(self, obj):
-        cal_frequency = obj.item_model.calibration_frequency
-        if cal_frequency < 1:
-            return "Uncalibratable."
-        last_cal = obj.calibrationevent_set.order_by('-date')[:1]
-        if len(last_cal) < 1:
-            return "Instrument not calibrated."
-        else:
-            last_cal = last_cal[0]
-            exp_date = last_cal.date + datetime.timedelta(cal_frequency)
-            return exp_date
-
-    class Meta:
-        model = Instrument
-        fields = ('pk', 'item_model', 'asset_tag', 'serial_number', 'comment', 'calibration_expiration',
-                  'calibration_events', 'categories')
 
 
 class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
@@ -344,7 +314,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
         fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status')
 
     def validate(self, data):
-        if data['date'] > datetime.date.today():
+        if 'date' in data and data['date'] > datetime.date.today():
             raise serializers.ValidationError("Cannot set future date.")
         item_model = data['instrument'].item_model
         if item_model.calibration_frequency <= 0:

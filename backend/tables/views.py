@@ -306,6 +306,8 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
+        if 'requires_approval' in request.data and not request.data['requires_approval']:
+            approve_cal_events(model)
         mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)

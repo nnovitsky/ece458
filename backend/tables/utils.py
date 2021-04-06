@@ -360,3 +360,10 @@ def get_upload_page_response(objects, request, serializerType, nextPage, previou
 
     return Response({'data': serializer.data, 'count': originalCount, 'numpages': paginator.num_pages,
                      'currentpage': page, 'nextpage': nextPage, 'previouspage': previousPage})
+
+
+def approve_cal_events(itemmodel):
+    for instrument in itemmodel.instrument_set.all():
+        for cal_event in instrument.calibrationevent_set.filter(approval_status=APPROVAL_STATUSES['pending']):
+            cal_event.approval_status = APPROVAL_STATUSES['no_approval']
+            cal_event.save()

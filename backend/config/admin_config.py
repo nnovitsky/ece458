@@ -5,6 +5,7 @@ USER_GROUPS = [
     "models",
     "instruments",
     "calibrations",
+    "calibration_approver",
     "oauth"
 ]
 
@@ -12,6 +13,7 @@ PERMISSION_GROUPS = [
     "admin",
     "models",
     "instruments",
+    "calibration_approver",
     "calibrations"
 ]
 

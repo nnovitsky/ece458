@@ -64,12 +64,17 @@ def edit_user_groups(groups, other_user):
     if UserType.contains_user(other_user, "oauth"):
         groups.add("oauth")
     # add related permissions
+    if 'models' in groups and 'instruments' not in groups:
+        groups.add('instruments')
+
+    if 'calibration_approver' in groups and 'calibrations' not in groups:
+        groups.add('calibrations')
+
     if 'admin' in groups:
         groups.add('models')
         groups.add('instruments')
+        groups.add('calibration_approver')
         groups.add('calibrations')
-    elif 'models' in groups:
-        groups.add('instruments')
 
     # ensure groups exist
     for groupname in groups:

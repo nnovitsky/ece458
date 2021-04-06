@@ -289,6 +289,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     lb_cal_pk = serializers.SerializerMethodField()
     klufe_cal_pk = serializers.SerializerMethodField()
+    has_approval = serializers.SerializerMethodField()
 
     def get_lb_cal_pk(self, obj):
         lb_cals = obj.loadbankcalibration_set.all()
@@ -300,9 +301,13 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
         if len(klufe_cals) == 0: return None
         else: return klufe_cals[0].pk
 
+    def get_has_approval(self, obj):
+        approvals = obj.calibrationapproval_set.all()
+        return len(approvals) > 0
+
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status', 'has_approval')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):

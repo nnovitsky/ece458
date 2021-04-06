@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from django.core.exceptions import FieldError
-from django.db.models import Max, F, DurationField, DateField, ExpressionWrapper, Case, When, Func
+from django.db.models import Max, F, DurationField, DateField, ExpressionWrapper, Case, When, Func, Q
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.test import Client
 from django.urls import reverse
@@ -11,7 +11,7 @@ from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
 from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
-from backend.config.admin_config import USER_GROUPS
+from backend.config.admin_config import USER_GROUPS, APPROVAL_STATUSES
 from backend.config.klufe_config import VOLTAGE_LEVELS
 
 
@@ -114,9 +114,11 @@ def annotate_instruments(queryset):
     duration_expression = F('item_model__calibration_frequency')  # * 86400000000
     duration_wrapped_expression = ExpressionWrapper(duration_expression, DurationField())
     expiration_expression = F('most_recent_calibration') + F('cal_freq')
+    no_approval_filter = Q(calibrationevent__approval_status=APPROVAL_STATUSES['no_approval'])
+    approved_filter = Q(calibrationevent__approval_status=APPROVAL_STATUSES['approved'])
     queryset = queryset.annotate(most_recent_calibration=Case(
         When(item_model__calibration_frequency__lte=0, then=min_date),
-        default=Max('calibrationevent__date'),
+        default=Max('calibrationevent__date', filter=approved_filter | no_approval_filter),
     )).annotate(
         cal_freq=duration_wrapped_expression).annotate(
         calibration_expiration_date=Case(When(item_model__calibration_frequency__lte=0, then=max_date),

@@ -18,7 +18,7 @@ from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
-from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS
+from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPROVAL_STATUSES
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
@@ -104,6 +104,15 @@ def calibration_event_list(request):
 
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
+        try:
+            ins = Instrument.objects.get(pk=request_data['instrument'])
+            model = ins.item_model
+        except Instrument.DoesNotExist or ItemModel.DoesNotExist:
+            return Response({"description": ["Instrument or model does not exist."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        if model.requires_approval:
+            request_data['approval_status'] = APPROVAL_STATUSES['pending']
+
         serializer = CalibrationEventWriteSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()

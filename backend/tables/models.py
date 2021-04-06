@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
 from ..config.character_limits import *
-from backend.config.admin_config import NO_APPROVAL
+from backend.config.admin_config import APPROVAL_STATUSES
 
 
 class UserType(models.Model):
@@ -88,7 +88,7 @@ class CalibrationEvent(models.Model):
     file_type = models.CharField(default=CalibrationEventFile.NONE, choices=CalibrationEventFile.choices,
                                  max_length=20)
     file = models.FileField(upload_to='cal_event_artifacts', null=True)
-    approval_status = models.CharField(max_length=20, default=NO_APPROVAL)
+    approval_status = models.CharField(max_length=20, default=APPROVAL_STATUSES['no_approval'])
 
     def __str__(self):
         return str(self.instrument) + " " + str(self.date)

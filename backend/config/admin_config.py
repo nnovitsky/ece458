@@ -15,11 +15,10 @@ PERMISSION_GROUPS = [
     "calibrations"
 ]
 
-APPROVAL_STATUSES = [
-    "approved",
-    "pending",
-    "rejected",
-    "NA"
-]
+APPROVAL_STATUSES = {
+    'approved': "Approved",
+    'pending': "Pending",
+    'rejected': "Rejected",
+    'no_approval': "NA"
+}
 
-NO_APPROVAL = "NA"

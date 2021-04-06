@@ -126,7 +126,7 @@ class ItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency',
-                  'itemmodelcategory_set', 'calibrationmode_set')
+                  'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval')
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
@@ -138,7 +138,7 @@ class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'calibration_modes')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'calibration_modes', 'requires_approval')
 
 
 class ItemModelSearchSerializer(serializers.ModelSerializer):
@@ -153,7 +153,7 @@ class ItemModelSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes', 'requires_approval')
 
 
 class ItemModelReadSerializer(serializers.ModelSerializer):
@@ -170,7 +170,7 @@ class ItemModelReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes', 'requires_approval')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
@@ -311,7 +311,7 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -332,7 +332,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
@@ -341,7 +341,7 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status')
 
     def validate(self, data):
         if data['date'] > datetime.date.today():

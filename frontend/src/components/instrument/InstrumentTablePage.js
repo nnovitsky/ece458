@@ -29,7 +29,7 @@ class InstrumentTablePage extends Component {
             pagination: {
                 resultCount: 0,
                 numPages: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 25,
                 currentPageNum: 1
             },
             addInstrumentPopup: {
@@ -80,6 +80,7 @@ class InstrumentTablePage extends Component {
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
+                perPage: 25,
                 showAll: false
             }
             window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentPageSearchParams));
@@ -220,7 +221,7 @@ class InstrumentTablePage extends Component {
         instrumentSearchParams = JSON.parse(instrumentSearchParams);
         const filters = this.getFilters();
 
-        await instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage).then((result) => {
+        await instrumentServices.getInstruments(filters, instrumentSearchParams.sortingIndicator, instrumentSearchParams.showAll, instrumentSearchParams.desiredPage, instrumentSearchParams.perPage).then((result) => {
             if (result.success) {
                 this.setState({
                     tableData: result.data.data,
@@ -264,6 +265,7 @@ class InstrumentTablePage extends Component {
         instrumentSearchParams.sortingIndicator = this.state.instrumentSearchParams.sortingIndicator;
         instrumentSearchParams.desiredPage = this.state.instrumentSearchParams.desiredPage;
         instrumentSearchParams.showAll = this.state.instrumentSearchParams.showAll;
+        instrumentSearchParams.perPage = this.state.pagination.resultsPerPage;
 
         window.sessionStorage.setItem("instrumentPageSearchParams", JSON.stringify(instrumentSearchParams));
     }
@@ -460,6 +462,9 @@ class InstrumentTablePage extends Component {
                             ...this.state.instrumentSearchParams,
                             desiredPage: page,
                             showAll: false,
+                        },
+                        pagination: {
+                            resultsPerPage: sizePerPage,
                         }
                     }, () => {
                         this.updateTable();

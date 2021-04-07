@@ -4,7 +4,7 @@ const API_URL = Configs
 
 export default class UserServices {
     // handles modified/expired token
-    getUsers(desiredPage, isShowAll) {
+    getUsers(desiredPage, isShowAll, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -16,7 +16,7 @@ export default class UserServices {
         if (isShowAll) {
             url += `&get_all`;
         } else {
-            url += `&page=${desiredPage}`
+            url += `&page=${desiredPage}&results_per_page=${perPage}`
         }
         return fetch(url, {
             method: 'GET',

@@ -49,7 +49,7 @@ class ModelDetailView extends React.Component {
             pagination: {
                 resultCount: 0,
                 numPages: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 25,
                 currentPageNum: 1,
                 desiredPage: 1,
                 showAll: false,
@@ -334,6 +334,7 @@ class ModelDetailView extends React.Component {
                             ...this.state.pagination,
                             desiredPage: page,
                             showAll: false,
+                            resultsPerPage: sizePerPage,
                         }
                     }, () => {
                         this.getInstruments();
@@ -364,7 +365,7 @@ class ModelDetailView extends React.Component {
     }
 
     async getInstruments() {
-        instrumentServices.getInstrumentsByModelPk(this.state.model_info.pk, this.state.pagination.desiredPage, this.state.pagination.showAll)
+        instrumentServices.getInstrumentsByModelPk(this.state.model_info.pk, this.state.pagination.desiredPage, this.state.pagination.showAll, this.state.pagination.resultsPerPage)
             .then(result => {
                 if (result.success) {
                     this.setState({

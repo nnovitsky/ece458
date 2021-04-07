@@ -5,7 +5,7 @@ const API_URL = Configs
 export default class ModelServices {
 
     // catches if the token is modified, good for error catching
-    async getModels(filters, sort_by, show_all, pageNum) {
+    async getModels(filters, sort_by, show_all, pageNum, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -30,7 +30,7 @@ export default class ModelServices {
         if (show_all) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {

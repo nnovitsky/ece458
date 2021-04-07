@@ -144,8 +144,17 @@ def get_page_response(objects, request, serializerType, nextPage, previousPage):
         serializer = serializerType(objects, context={'request': request}, many=True)
         return Response({'data': serializer.data, 'count': len(serializer.data)}, status=status.HTTP_200_OK)
 
-    page = int(request.GET.get('page', 1))
-    paginator = Paginator(objects, 10)
+    try:
+        results_per_page = int(request.GET.get('results_per_page', 10))
+        if results_per_page <= 0: raise ValueError
+    except ValueError:
+        results_per_page = 10
+    try:
+        page = int(request.GET.get('page', 1))
+    except ValueError:
+        page = 1
+
+    paginator = Paginator(objects, results_per_page)
     try:
         data = paginator.page(page)
     except PageNotAnInteger:

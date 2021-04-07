@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
 //'errors': an array of errors to display
 //'isSubmitEnabled': a boolean if the submit button is enabled
+//'calibratorCategories': an array of the calibrator category names
 
 let newCalibration = {
     date: dateToString(new Date()),

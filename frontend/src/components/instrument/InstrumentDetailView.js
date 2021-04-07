@@ -382,6 +382,7 @@ class InstrumentDetailView extends Component {
                 onSubmit={this.onAddCalibrationSubmit}
                 errors={this.state.addCalPopup.errors}
                 isSubmitEnabled={this.state.addCalPopup.isSubmitEnabled}
+                calibratorCategories={this.state.instrument_info.calibrator_categories.map(x => x.name)}
             />
         )
     }

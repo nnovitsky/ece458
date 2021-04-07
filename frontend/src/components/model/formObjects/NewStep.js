@@ -18,21 +18,25 @@ class NewStep extends React.Component {
         this.addNumeric = this.addNumeric.bind(this);
         this.addTextArea = this.addTextArea.bind(this);
         this.addPlainText = this.addPlainText.bind(this);
+        this.addTextInput = this.addTextInput.bind(this);
     }
 
     render() {
         let menu = <div className="row" style={{ width: "100%", height: "100%", margin: "auto"}}>
-            <div className="col lg-3 header" onClick={this.addHeader}>
+            <div className="col lg-2 header" onClick={this.addHeader}>
                 Header
         </div>
-            <div className="col lg-3 textArea" onClick={this.addTextArea}>
+            <div className="col lg-2 textArea" onClick={this.addTextArea}>
                 Text Area
         </div>
-            <div className="col lg-3 numeric" onClick={this.addNumeric}>
+            <div className="col lg-2 numeric" onClick={this.addNumeric}>
                 Numeric Input
         </div>
-            <div className="col lg-3 textLine" onClick={this.addPlainText}>
+            <div className="col lg-2 plainText" onClick={this.addPlainText}>
                 Plain Text
+        </div>
+        <div className="col lg-2 textInput" onClick={this.addTextInput}>
+                Text Input
         </div>
         </div>;
 
@@ -87,6 +91,14 @@ class NewStep extends React.Component {
     addPlainText()
     {
         this.props.addPlainText()
+        this.setState({
+            showMenu: false,
+        })
+    }
+
+    addTextInput()
+    {
+        this.props.addTextInput()
         this.setState({
             showMenu: false,
         })

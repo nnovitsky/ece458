@@ -44,12 +44,19 @@ class NumericInput extends React.Component {
     }
 
     makePreview() {
+        console.log("Min " + this.props.min)
+        let both = this.props.min === '' ? '' : `Value must be above ${this.props.min}`
+        let maxOrMin = this.props.max === '' ? both : `Value must be below ${this.props.max}`
+        let text = (this.props.min !== '' && this.props.max !== '') ? `Value must be between ${this.props.min} - ${this.props.max}` : maxOrMin; 
+
+        console.log("Max " + this.props.max)
+/*         let maxText = this.props.max === '' ?  */
         return <div style={{ paddingTop: "10px" }}>
             {this.props.label === '' ? "Your label instructions" : this.props.label}
             <br></br>
             <div style={{ paddingTop: "10px" }}>
-                <input type="number" placeholder="Enter value"></input>
-                <span className="subtext">Value must be between {this.props.min} - {this.props.max}</span>
+                <input type="number" placeholder="User input" style={{backgroundColor: "rgb(240, 240, 240)"}}></input>
+                <span className="subtext">{text}</span>
             </div>
         </div>
     }

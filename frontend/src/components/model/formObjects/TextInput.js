@@ -34,15 +34,15 @@ class TextInput extends React.Component {
     {
         return <div>
                 <h5>Text Line Input</h5>
-                <input type="text" value={this.props.instructions} onChange={this.onTextInput} placeholder="Enter your instructions"></input>
+                <input type="text" value={this.props.text} onChange={this.onTextInput} placeholder="Enter your label"></input>
         </div>
     }
 
     makePreview(){
         return <div style={{paddingTop: "10px"}}>
-                    {this.props.instructions === '' ? "Your Instructions" : this.props.instructions}
+                    {this.props.text === '' ? "Your Label" : this.props.text}
                 <div style={{paddingTop: "10px"}}>
-                    <input type="text"></input>
+                    <input type="text" style={{backgroundColor: "rgb(240, 240, 240)", width: "80%"}} placeholder="User input"></input>
                 </div>
             </div>
     }
@@ -57,7 +57,7 @@ class TextInput extends React.Component {
 
     onTextInput(e){
         let val = e.target.value;
-        this.props.setInstructions(this.props.id, val);
+        this.props.setText(this.props.id, val);
     }
 }
 

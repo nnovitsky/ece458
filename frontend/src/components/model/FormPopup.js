@@ -7,6 +7,7 @@ import Header from './formObjects/Header.js'
 import TextArea from './formObjects/TextArea.js'
 import PlainText from './formObjects/PlainText.js'
 import NumericInput from './formObjects/NumericInput.js'
+import TextInput from './formObjects/TextInput.js'
 import './FormPopup.css'
 import { useDrag, useDrop } from "react-dnd";
 
@@ -25,6 +26,7 @@ class FormPopup extends Component {
         this.addNumeric = this.addNumeric.bind(this);
         this.addTextArea = this.addTextArea.bind(this);
         this.addPlainText = this.addPlainText.bind(this);
+        this.addTextInput = this.addTextInput.bind(this);
         this.setText = this.setText.bind(this);
         this.setMax = this.setMax.bind(this);
         this.setMin = this.setMin.bind(this);
@@ -64,7 +66,7 @@ class FormPopup extends Component {
                     {this.state.form.length > 0 ? header : null}
                     {existingForm}
                     <NewStep addHeader={this.addHeader} addNumeric={this.addNumeric} addTextArea={this.addTextArea}
-                            addPlainText={this.addPlainText}/>
+                            addPlainText={this.addPlainText} addTextInput={this.addTextInput}/>
                 </div>
             </div>
         )
@@ -86,6 +88,9 @@ class FormPopup extends Component {
             else if(this.state.form[i].type === "plain-text"){
                 form.push(<PlainText id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}></PlainText>)
             }
+            else if(this.state.form[i].type === "text-input"){
+                form.push(<TextInput id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}></TextInput>)
+            }
         }
         return form;
     }
@@ -103,8 +108,8 @@ class FormPopup extends Component {
     addNumeric() {
         let item = {
             type: 'numeric',
-            max: null,
-            min: null,
+            max: '',
+            min: '',
             label: '',
 
         }
@@ -126,6 +131,16 @@ class FormPopup extends Component {
     addPlainText() {
         let item = {
             type: 'plain-text',
+            text: '',
+        }
+        this.setState({
+            form: this.state.form.concat([item])
+        })
+    }
+
+    addTextInput() {
+        let item = {
+            type: 'text-input',
             text: '',
         }
         this.setState({

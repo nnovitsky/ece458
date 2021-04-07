@@ -80,12 +80,20 @@
   color: rgb(74, 79, 163);
 }
 
-.new-step .textLine{
+.new-step .plainText{
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: rgb(235, 198, 149);
   color: rgb(138, 89, 25);
+}
+
+.new-step .textInput{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(211, 149, 235);
+  color: rgb(78, 25, 138);
 }
 
 

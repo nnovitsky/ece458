@@ -18,7 +18,7 @@ from backend.import_export import export_csv, export_pdf
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
-from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS
+from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPROVAL_STATUSES
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
@@ -104,6 +104,15 @@ def calibration_event_list(request):
 
         request_data['user'] = request.user.pk
         # add new calibration event using instrument and user
+        try:
+            ins = Instrument.objects.get(pk=request_data['instrument'])
+            model = ins.item_model
+        except Instrument.DoesNotExist or ItemModel.DoesNotExist:
+            return Response({"description": ["Instrument or model does not exist."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        if model.requires_approval:
+            request_data['approval_status'] = APPROVAL_STATUSES['pending']
+
         serializer = CalibrationEventWriteSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
@@ -297,6 +306,8 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
+        if 'requires_approval' in request.data and not request.data['requires_approval']:
+            approve_cal_events(model)
         mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
@@ -706,3 +717,35 @@ def category_list(request, type):
     data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
     data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+def cal_approval(request, cal_event_pk):
+    try:
+        cal_event = CalibrationEvent.objects.get(pk=cal_event_pk)
+    except CalibrationEvent.DoesNotExist:
+        return Response({"description": ["Invalid calibration event pk."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        approval = cal_event.calibrationapproval_set.all()[:1]
+        if len(approval) < 1:
+            return Response({"description": ["Calibration event does not have an approval."]}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CalibrationApprovalReadSerializer(approval[0])
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+        if not UserType.contains_user(request.user, "calibration_approver"):
+            return Response({"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        if cal_event.approval_status != APPROVAL_STATUSES['pending']:
+            return Response({"description": ["Calibration event does not need approval."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        approved = request.data.pop('approved')
+        request.data['cal_event'] = cal_event_pk
+        request.data['approver'] = request.user.pk
+        serializer = CalibrationApprovalWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            cal_event.approval_status = APPROVAL_STATUSES['approved'] if approved else APPROVAL_STATUSES['rejected']
+            cal_event.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

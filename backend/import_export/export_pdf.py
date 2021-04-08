@@ -14,6 +14,8 @@ from PyPDF2 import PdfFileMerger
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import FileResponse
+from django.db.models import Q
+from backend.config.admin_config import APPROVAL_STATUSES
 from backend.config.klufe_config import VOLTAGE_LEVELS
 from backend.tables.serializers import ListInstrumentReadSerializer
 from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent, KlufeCalibration, \
@@ -69,7 +71,9 @@ def get_fields(instrument):
     fields.append(str(instrument.serial_number))
     fields.append(str(instrument.asset_tag))
 
-    cal_event = instrument.calibrationevent_set.order_by('-date', '-pk')[:1][0]
+    no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+    approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+    cal_event = instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1][0]
     calibration_event_data = serializer.data['calibration_event'][0]
     fields.append(calibration_event_data.get('date'))
     fields.append(str(serializer.data['calibration_expiration']))

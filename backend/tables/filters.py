@@ -46,6 +46,7 @@ class CalibrationEventFilter(django_filters.rest_framework.FilterSet):
     min_date = django_filters.DateFilter(field_name='date', lookup_expr='gte')
     max_date = django_filters.DateFilter(field_name='date', lookup_expr='lte')
     instrument_pk = django_filters.NumberFilter(field_name='instrument__pk', lookup_expr='exact')
+    approval_status = django_filters.CharFilter(field_name='approval_status', lookup_expr='iexact')
 
     class Meta:
         model = CalibrationEvent

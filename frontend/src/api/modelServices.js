@@ -87,7 +87,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
     // appropriate error handling if the token gets bad
-    async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
+    async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode, calibratorCategories) {
         const token = window.sessionStorage.getItem('token');
 
         let data = {
@@ -97,7 +97,8 @@ export default class ModelServices {
             comment: comment,
             calibration_frequency: calFrequency,
             itemmodelcategory_set: categories.map(el => el.pk),
-            calibration_modes: calMode
+            calibration_modes: calMode,
+            //calibrator_categories_set: calibratorCategories.map(el => el.pk)
         }
 
         console.log(data);

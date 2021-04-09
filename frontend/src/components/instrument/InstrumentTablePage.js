@@ -11,7 +11,6 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed, hasInstrumentE
 
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
-import PropTypes from 'prop-types';
 import GenericLoader from '../generic/GenericLoader.js';
 
 const instrumentServices = new InstrumentServices();

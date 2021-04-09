@@ -112,7 +112,7 @@ not defined so it gets the leftover
 } */
 
 .cm-num-column {
-    width: 50px;
+    width: 30px;
 }
 .cm-count-column {
     width: 15%;
@@ -140,7 +140,7 @@ not defined so it gets the leftover
 }
 
 .mt-description-column {
-    width: 20%;
+    width: 18%;
 }
 
 .mt-cal-column {
@@ -148,7 +148,7 @@ not defined so it gets the leftover
 }
 
 .mt-cal-mode-column {
-    width: 150px;
+    width: 135px;
 }
 
 /* .mt-model-category-column {
@@ -170,11 +170,11 @@ takes up the rest of the space
 
 /* calibration table for the instrument detail view */
 .ct-num-column {
-    width: 50px;
+    width: 30px;
 }
 
 .ct-cal-column {
-    width: 15%;
+    width: 100px;
 }
 
 .ct-file-column {

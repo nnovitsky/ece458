@@ -34,7 +34,8 @@ class ModelDetailView extends React.Component {
                 comment: '',
                 calibration_frequency: '',
                 categories: [],
-                calibration_modes: []
+                calibration_modes: [],
+                calibrator_categories_set: [],
             },
             instruments: [],
             editPopup: {
@@ -106,13 +107,13 @@ class ModelDetailView extends React.Component {
     makeSerialTable() {
         return (
             <>
-            <h3>Model's Instruments</h3>
-            <SerialTable
-                data={this.state.instruments}
-                onTableChange={this.onSerialTableChange}
-                pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
-                onMoreClicked={this.onMoreClicked}
-            />
+                <h3>Model's Instruments</h3>
+                <SerialTable
+                    data={this.state.instruments}
+                    onTableChange={this.onSerialTableChange}
+                    pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.pagination.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
+                    onMoreClicked={this.onMoreClicked}
+                />
             </>
         )
     }
@@ -167,7 +168,16 @@ class ModelDetailView extends React.Component {
                         <td><strong>Description</strong></td>
                         <td>{modelInfo.description}</td>
                     </tr>
+                    <tr>
+                        <td className="table-view-bold-td"><strong>Model Categories</strong></td>
 
+                        <td>
+                            <div className="detail-view-categories">
+                                {modelInfo.categories.map(el => el.name).join(', ')}
+                            </div>
+                        </td>
+
+                    </tr>
                     <tr>
                         <td><strong>Calibration Frequency</strong></td>
                         <td>{this.getCalFrequencyString()} </td>
@@ -176,12 +186,13 @@ class ModelDetailView extends React.Component {
                         <td><strong>Calibration Mode</strong></td>
                         <td>{this.getCalModesString()}</td>
                     </tr>
-                    <tr>
-                        <td className="table-view-bold-td"><strong>Model Categories</strong></td>
+                    <tr hidden={!isCalibratable}>
+                        <td className="table-view-bold-td"><strong>Calibrator Categories</strong></td>
 
                         <td>
                             <div className="detail-view-categories">
-                                {modelInfo.categories.map(el => el.name).join(', ')}
+                                <p>Coming Soon</p>
+                                {modelInfo.calibrator_categories_set.map(el => el.name).join(', ')}
                             </div>
                         </td>
 
@@ -340,7 +351,10 @@ class ModelDetailView extends React.Component {
         await modelServices.getModel(this.state.model_info.pk).then((result) => {
             if (result.success) {
                 this.setState({
-                    model_info: result.data,
+                    model_info: {
+                    ...result.data,
+                    calibrator_categories_set: [],
+                },
                 })
 
 

@@ -6,6 +6,7 @@ import { dateToString } from '../generic/Util';
 import CalibratedWithInput from './CalibratedWithInput';
 import "react-datepicker/dist/react-datepicker.css";
 //props
+// calibrationEvent: calibration event from the cal event search
 //'isShown': boolean if popup is shown
 //'onClose': event handler for the popup being closed
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
@@ -14,27 +15,14 @@ import "react-datepicker/dist/react-datepicker.css";
 //'calibratorCategories': an array of the calibrator category names
 
 let newCalibration = {
-    date: dateToString(new Date()),
     comment: '',
-    file: '',
-    calibratorInstruments: [],
 }
 
-const AddCalibrationPopup = (props) => {
-    const [calDate, setCalDate] = useState(new Date());
-
-    useEffect(() => {
-        newCalibration = {
-            date: dateToString(new Date()),
-            comment: '',
-            file: '',
-        }
-    }, [])
-
+const CalibrationPopup = (props) => {
     return (
         <GenericPopup
             show={props.isShown}
-            body={makeBody(calDate, setCalDate)}
+            body={makeBody()}
             headerText="Add Calibration"
             closeButtonText="Cancel"
             submitButtonText="Submit Calibration"
@@ -43,7 +31,6 @@ const AddCalibrationPopup = (props) => {
             submitButtonVariant="primary"
             errors={props.errors}
             isPrimaryEnabled={props.isSubmitEnabled}
-            hasGreenBackground={false}
         />
     )
 }
@@ -56,15 +43,10 @@ const makeBody = (calDate, setCalDate) => {
                     <Form.Label className="required-field">Calibration Date</Form.Label>
                     <div style={{ display: 'block' }}>
                         <DatePicker
-                            onChange={(e) => onDateChange(e, setCalDate)}
-                            selected={calDate}
-                            maxDate={new Date()}
+                            selected={new Date()}
+                            disabled={true}
                         />
                     </div>
-
-                    <Form.Text muted>
-                        Cannot be in the future
-                    </Form.Text>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Comment</Form.Label>
@@ -73,14 +55,6 @@ const makeBody = (calDate, setCalDate) => {
                         Max 2000 characters
                     </Form.Text>
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>Supplement file</Form.Label>
-                    <Form.File onChange={onFileChange} accept=".jpg,.jpeg,.png,.gif,.pdf,.xlsx" multiple="" />
-                    <Form.Text muted>32MB max. Accepts .PNG, .GIF, .JPG, .JPEG, .PDF, or .XLSX</Form.Text>
-                </Form.Group>
-                <CalibratedWithInput 
-                    onInstrumentChange={onCalibratorInstrumentsChange}
-                />
             </Form>
         </div>
     )
@@ -110,11 +84,11 @@ const onDateChange = (date, setCalDate) => {
 
 const onFileChange = (e) => {
     newCalibration.file = e.target.files[0];
-    
+
 }
 
 const onCalibratorInstrumentsChange = (instrumentsArr) => {
     newCalibration.calibratorInstruments = instrumentsArr;
 }
 
-export default AddCalibrationPopup;
+export default CalibrationPopup;

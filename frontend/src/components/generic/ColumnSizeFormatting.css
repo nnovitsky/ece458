@@ -177,6 +177,10 @@ takes up the rest of the space
     width: 30px;
 }
 
+.ct-status-column {
+    width: 80px;
+}
+
 .ct-cal-column {
     width: 100px;
 }

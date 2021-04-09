@@ -17,7 +17,6 @@ import "./InstrumentDetailView.css";
 import DetailView from '../generic/DetailView';
 import GuidedCalServices from '../../api/guidedCalServices.js';
 import WizardServices from '../../api/wizardServices.js';
-import GenericLoader from '../generic/GenericLoader';
 
 const guidedCalServices = new GuidedCalServices();
 const wizardServices = new WizardServices();
@@ -38,6 +37,7 @@ class InstrumentDetailView extends Component {
                 model_pk: '',
                 model_description: '',
                 vendor: '',
+                requires_approval: false,
                 serial_number: '',
                 asset_tag: '',
                 comment: '',
@@ -186,6 +186,7 @@ class InstrumentDetailView extends Component {
                     onSupplementDownload={this.onSupplementDownloadClicked}
                     onLoadBankClick={this.onLoadBankClick}
                     onKlufeClick={this.onKlufeClick}
+                    requiresApproval={this.state.instrument_info.requires_approval}
                 />
             </div>
         )
@@ -203,6 +204,7 @@ class InstrumentDetailView extends Component {
                             model_number: data.item_model.model_number,
                             model_pk: data.item_model.pk,
                             vendor: data.item_model.vendor,
+                            requires_approval: data.item_model.requires_approval,
                             model_description: data.item_model.description,
                             calibration_modes: data.item_model.calibration_modes,
                             serial_number: data.serial_number,

@@ -20,11 +20,12 @@ import Button from 'react-bootstrap/Button';
 // onSupplementDownload: an event handler to call when wanting a download, event.target.value is the cal event pk
 // onLoadBankClick: an event handler to call when wanting to see the load bank cal data, event.target.value is the cal event pk
 // onKlufeClick: an event handler to call when wanting to see the guided hardware cal data, event.target.value is the cal event pk
+// requiresApproval: boolean if the table is going to be including requires approval
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.requiresApproval);
     return (
         <DataTable
             data={props.data}
@@ -40,7 +41,7 @@ const calHistoryTable = (props) => {
     )
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval) => {
     return (
         [
             // this is a column for a number for the table
@@ -58,6 +59,16 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
                 headerClasses: 'ct-num-column'
+            },
+            {
+                hidden: !requiresApproval,
+                dataField: 'approval_status', //json data key for this column
+                isKey: true,
+                text: 'Status',      //displayed column header text
+                title: (cell) => {   //formats the data and the returned is displayed in the cell
+                    return `Approval Status: ${cell}`
+                },
+                headerClasses: 'ct-status-column'
             },
             {
                 dataField: 'date',
@@ -83,7 +94,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         default:
                             return 'No supplement documents';
                     }
-                    
+
                 },
                 headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
@@ -95,7 +106,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Load Bank':
                             return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
                         case 'Klufe':
-                            return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button> 
+                            return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button>
                         default:
                             return <span>N/A</span>
                     }
@@ -105,7 +116,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 dataField: 'user',
                 text: 'Name',
                 sort: false,
-                title: (cell) => `Name: ${ cell.first_name } ${ cell.last_name }`,
+                title: (cell) => `Name: ${cell.first_name} ${cell.last_name}`,
                 headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>

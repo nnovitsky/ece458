@@ -139,7 +139,7 @@ class AddModelPopup extends Component {
                 <Form.Check
                     type="checkbox"
                     label="Calibration Requires Validation"
-                    onChange={(e) => this.onRequiresValidationInput(e)}
+                    onChange={this.onRequiresValidationInput}
                     checked={this.state.newModel.requires_approval}
                 />
             </>
@@ -232,9 +232,9 @@ class AddModelPopup extends Component {
         })
     }
 
-    onRequiresValidationInput(e) {
+    onRequiresValidationInput() {
         this.setState(prevState => {
-            const wasChecked = prevState.newModel.requiresApproval;
+            const wasChecked = prevState.newModel.requires_approval;
             return {
                 newModel: {
                     ...this.state.newModel,
@@ -337,7 +337,6 @@ class AddModelPopup extends Component {
 
     onSubmit() {
         if (this.isValid()) {
-            const isCalibratable = this.isCalibratable();
             let newModel = {
                 pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
@@ -346,8 +345,9 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
                 categories: this.state.newModel.categories,
-                calibration_modes: isCalibratable ? this.state.newModel.calibration_modes : [],
-                calibrator_categories_set: isCalibratable ? this.state.newModel.calibrator_categories_set : [],
+                calibration_modes: this.state.newModel.calibration_modes,
+                calibrator_categories_set: this.state.newModel.calibrator_categories_set,
+                requires_approval: this.state.newModel.requires_approval,
             }
 
             if (newModel.calibration_frequency === '') {

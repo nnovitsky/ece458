@@ -87,7 +87,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
     // appropriate error handling if the token gets bad
-    async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode, calibratorCategories) {
+    async addModel(vendor, modelNumber, description, comment, calFrequency, categories, calMode, calibratorCategories, requiresApproval) {
         const token = window.sessionStorage.getItem('token');
 
         let data = {
@@ -98,6 +98,7 @@ export default class ModelServices {
             calibration_frequency: calFrequency,
             itemmodelcategory_set: categories.map(el => el.pk),
             calibration_modes: calMode,
+            requires_approval: requiresApproval,
             //calibrator_categories_set: calibratorCategories.map(el => el.pk)
         }
 
@@ -133,7 +134,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
 
-    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode) {
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode, requiresApproval) {
         const token = window.sessionStorage.getItem('token');
 
         let data = {
@@ -144,6 +145,7 @@ export default class ModelServices {
             calibration_frequency: calFrequency,
             itemmodelcategory_set: categories.map(el => el.pk),
             calibration_modes: calMode,
+            requires_approval: requiresApproval,
         }
 
         console.log(data)

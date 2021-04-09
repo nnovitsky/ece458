@@ -147,6 +147,10 @@ not defined so it gets the leftover
     width: 8%;
 }
 
+.mt-validation-column {
+    width: 5%;
+}
+
 .mt-cal-mode-column {
     width: 135px;
 }

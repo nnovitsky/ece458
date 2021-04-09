@@ -116,8 +116,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                         return `Cal. Frequency: N/A, non-calibratable`
                     } else {
                         return `Cal. Frequency: ${cell} days`
-                    }
-                    
+                    } 
                 },
                 headerTitle: () => `Calibration Frequency (Days)`,
                 headerClasses: 'mt-cal-column',
@@ -126,6 +125,27 @@ let makeConfig = (countStart, onMoreClicked) => {
                         return <span>N/A</span>
                     } else {
                         return <span>{cell}</span>
+                    }
+                }
+            },
+            {
+                dataField: 'requires_approval',
+                text: 'Requires Approval',
+                sort: false,
+                title: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        return `Uncalibratable\nRequires Approval: N/A`
+                    } else {
+                        return `Requires Calibration Approval: ${cell ? 'Yes' : 'No'}`;
+                    }
+                },
+                headerTitle: () => `Calibration Validation Required`,
+                headerClasses: 'mt-validation-column',
+                formatter: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        return <span>N/A</span>
+                    } else {
+                        return <span>{cell ? 'Yes' : 'No'}</span>
                     }
                 }
             },

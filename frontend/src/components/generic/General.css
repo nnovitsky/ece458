@@ -122,6 +122,10 @@ form.popup label {
   margin: 10px 0px 2px 0px;
 }
 
+form .form-check-label {
+  line-height: 1px;
+}
+
 form.popup .input-group {
   margin: 0px;
 }

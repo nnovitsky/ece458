@@ -1,0 +1,28 @@
+{
+    "data" : [
+        {
+            "type" : "HEADER",
+            "text" : "This is Section 1"
+        },
+        {
+            "type" : "MESSAGE",
+            "text" : "A big paragraph that has a lot of plain text."
+        },
+        {
+            "type" : "CHECK",
+            "text" : "Label for check input"
+        },
+        {
+            "type" : "TEXT_INPUT",
+            "text" : "Please enter your comment"
+        },
+        {
+            "type" : "HEADER",
+            "text" : "This is Section 2"
+        },
+        {
+            "type" : "FLOAT_INPUT",
+            "text" : "Please enter the display voltage"
+        }
+    ]
+}

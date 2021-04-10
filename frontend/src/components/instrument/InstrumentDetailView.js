@@ -8,6 +8,7 @@ import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import GuidedCal from '../guidedCal/GuidedCal.js';
+import FormCal from '../formCal/FormCal.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess } from '../generic/Util';
 
@@ -74,6 +75,10 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 pk: null,
             },
+            formCalPopup: {
+                isShown: false,
+                pk: null,
+            },
             isDeleteShown: false,
             currentUser: this.props.user,
         }
@@ -89,10 +94,12 @@ class InstrumentDetailView extends Component {
         this.onWizardClicked = this.onWizardClicked.bind(this);
         this.onWizardClose = this.onWizardClose.bind(this);
         this.makeWizardPopup = this.makeWizardPopup.bind(this);
-
         this.onGuidedCalClicked = this.onGuidedCalClicked.bind(this);
         this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
+        this.onFormCalClicked = this.onFormCalClicked.bind(this);
+        this.onFormCalClose = this.onFormCalClose.bind(this);
+        this.makeFormCalPopup = this.makeFormCalPopup.bind(this);
 
 
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
@@ -129,6 +136,7 @@ class InstrumentDetailView extends Component {
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
         let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
+        let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -143,6 +151,7 @@ class InstrumentDetailView extends Component {
                 {deleteInstrumentPopup}
                 {wizardPopup}
                 {guidedCalPopup}
+                {formCalPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={headerButtons}
@@ -167,6 +176,7 @@ class InstrumentDetailView extends Component {
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
+                <Button onClick={this.onFormCalClicked}>Add Form Calibration</Button>
             </div>
         )
         return (
@@ -359,6 +369,16 @@ class InstrumentDetailView extends Component {
                 instrument_pk={this.state.instrument_info.pk}
                 asset_tag={this.state.instrument_info.asset_tag}
 
+            />
+        )
+    }
+
+    makeFormCalPopup() {
+        return (
+            <FormCal
+                isShown={this.state.formCalPopup.isShown}
+                onClose={this.onFormCalClose}
+                user={this.props.user}
             />
         )
     }
@@ -608,6 +628,26 @@ class InstrumentDetailView extends Component {
     onDeleteClose() {
         this.setState({
             isDeleteShown: false
+        })
+    }
+
+    onFormCalClicked() {
+        this.setState({
+            formCalPopup: {
+                ...this.state.formCalPopup,
+                isShown: true,
+                errors: []
+            }
+        })
+    }
+
+    onFormCalClose() {
+        this.setState({
+            formCalPopup: {
+                ...this.state.formCalPopup,
+                isShown: false,
+                errors: []
+            }
         })
     }
 

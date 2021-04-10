@@ -25,7 +25,8 @@ class Item extends React.Component {
             <div className={this.props.classes}>
                 <div className="row" style={{ margin: "auto" }}>
                 <div className="col-sm-1">
-                    <EditText type="number" style={{width: '50px'}} value={this.state.number} onSave={this.onSave} onChange={this.onTextInput}/>
+                    {/* <EditText type="number" style={{width: '50px'}} value={this.state.number} onSave={this.onSave} onChange={this.onTextInput}/> */}
+                    <input type="number" style={{width: '40px', paddingLeft: "10px", backgroundColor: "rgba(230, 230, 230)"}} value={this.state.number} onChange={this.onTextInput} step={-1}></input>
                     </div>
                     <div className="col-sm-5">
                         {this.props.itemBody}
@@ -49,9 +50,11 @@ class Item extends React.Component {
     }
 
     onTextInput(e){
+        console.log(e.target.value)
         this.setState({
-            number: e
+            number: e.target.value
         })
+        this.props.setStepNumber(this.props.id, e.target.value)
     }
 
     onSave(){

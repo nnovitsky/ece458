@@ -37,7 +37,10 @@ class Header extends React.Component {
     {
         return <div>
                 <h5>Header</h5>
-                <input type="text" value={this.props.headerInput} onChange={this.onTextInput} placeholder="Enter your header"></input>
+                <div style={{display: "flex", marginTop: "-5px"}}>
+                    <label className="required-field">Your Header</label>
+                    <input type="text" value={this.props.headerInput} onChange={this.onTextInput}></input>
+                </div>
         </div>
     }
 

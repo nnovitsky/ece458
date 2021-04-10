@@ -37,7 +37,10 @@ class NumericInput extends React.Component {
     makeBody() {
         return <div>
             <h5>Numeric Input</h5>
-            <input type="text" name={setLabel} value={this.props.label} onChange={this.onTextInput} placeholder="Enter label"></input>
+            <div style={{display: "flex"}}>
+                    <label className="required-field">Your Label </label>
+                    <input required type="text" value={this.props.label} onChange={this.onTextInput}></input>
+                </div>
             Min: <input type="number" name={setMin} value={this.props.min} onChange={this.onTextInput} placeholder="Enter min"></input>
             Max: <input type="number" name={setMax} value={this.props.max} onChange={this.onTextInput} placeholder="Enter max"></input>
         </div>

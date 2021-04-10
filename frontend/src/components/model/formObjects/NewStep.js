@@ -19,6 +19,7 @@ class NewStep extends React.Component {
         this.addTextArea = this.addTextArea.bind(this);
         this.addPlainText = this.addPlainText.bind(this);
         this.addTextInput = this.addTextInput.bind(this);
+        this.addCheckInput = this.addCheckInput.bind(this);
     }
 
     render() {
@@ -26,8 +27,8 @@ class NewStep extends React.Component {
             <div className="col lg-2 header" onClick={this.addHeader}>
                 Header
         </div>
-            <div className="col lg-2 textArea" onClick={this.addTextArea}>
-                Text Area
+            <div className="col lg-2 textArea" onClick={this.addCheckInput}>
+                Check Input
         </div>
             <div className="col lg-2 numeric" onClick={this.addNumeric}>
                 Numeric Input
@@ -99,6 +100,14 @@ class NewStep extends React.Component {
     addTextInput()
     {
         this.props.addTextInput()
+        this.setState({
+            showMenu: false,
+        })
+    }
+
+    addCheckInput()
+    {
+        this.props.addCheckInput()
         this.setState({
             showMenu: false,
         })

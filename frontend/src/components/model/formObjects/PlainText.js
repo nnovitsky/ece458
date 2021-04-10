@@ -26,6 +26,8 @@ class PlainText extends React.Component {
            preview={preview}
            id={this.props.id}
            setStepNumber={this.props.setStepNumber}
+           classes={this.props.classes}
+           previewClasses={this.props.classes}
             />
         </div>
         );
@@ -34,8 +36,9 @@ class PlainText extends React.Component {
     makeBody()
     {
         return <div>
-                <h5>Plain Text</h5>
-                <textarea value={this.props.text} onChange={this.onTextInput} placeholder="Enter your text"></textarea>
+                <h5 style={{marginBottom: "0px"}}>Plain Text</h5>
+                <label className="required-field">Your Text</label>
+                <textarea style={{marginTop: "-3px"}} value={this.props.text} onChange={this.onTextInput} placeholder="Enter your text"></textarea>
         </div>
     }
 
@@ -63,5 +66,5 @@ class PlainText extends React.Component {
 export default PlainText;
 
 PlainText.defaultProps = {
-
+    classes: "form-item-builder plain-text",
 }

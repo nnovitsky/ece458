@@ -8,6 +8,7 @@ import TextArea from './formObjects/TextArea.js'
 import PlainText from './formObjects/PlainText.js'
 import NumericInput from './formObjects/NumericInput.js'
 import TextInput from './formObjects/TextInput.js'
+import Check from './formObjects/Check.js'
 import './FormPopup.css'
 import { useDrag, useDrop } from "react-dnd";
 
@@ -27,6 +28,7 @@ class FormPopup extends Component {
         this.addTextArea = this.addTextArea.bind(this);
         this.addPlainText = this.addPlainText.bind(this);
         this.addTextInput = this.addTextInput.bind(this);
+        this.addCheckInput = this.addCheckInput.bind(this);
         this.setText = this.setText.bind(this);
         this.setMax = this.setMax.bind(this);
         this.setMin = this.setMin.bind(this);
@@ -66,7 +68,7 @@ class FormPopup extends Component {
                     {this.state.form.length > 0 ? header : null}
                     {existingForm}
                     <NewStep addHeader={this.addHeader} addNumeric={this.addNumeric} addTextArea={this.addTextArea}
-                            addPlainText={this.addPlainText} addTextInput={this.addTextInput}/>
+                            addPlainText={this.addPlainText} addTextInput={this.addTextInput} addCheckInput={this.addCheckInput}/>
                 </div>
             </div>
         )
@@ -90,6 +92,9 @@ class FormPopup extends Component {
             }
             else if(this.state.form[i].type === "text-input"){
                 form.push(<TextInput id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}></TextInput>)
+            }
+            else if(this.state.form[i].type === "check-input"){
+                form.push(<Check id={i} label={this.state.form[i].text} setLabel={this.setText} setStepNumber={this.setStepNumber}></Check>)
             }
         }
         return form;
@@ -141,6 +146,16 @@ class FormPopup extends Component {
     addTextInput() {
         let item = {
             type: 'text-input',
+            text: '',
+        }
+        this.setState({
+            form: this.state.form.concat([item])
+        })
+    }
+
+    addCheckInput() {
+        let item = {
+            type: 'check-input',
             text: '',
         }
         this.setState({

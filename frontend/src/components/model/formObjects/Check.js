@@ -5,13 +5,14 @@ import '../FormPopup.css'
 import Row from 'react-bootstrap/esm/Row';
 
 
-class TextInput extends React.Component {
+class Check extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             
         }
+
         this.onTextInput = this.onTextInput.bind(this);
     }
 
@@ -24,6 +25,8 @@ class TextInput extends React.Component {
            itemBody={body}
            preview={preview}
            id={this.props.id}
+           classes={this.props.classes}
+           previewClasses={this.props.classes}
            setStepNumber={this.props.setStepNumber}
             />
         </div>
@@ -33,20 +36,19 @@ class TextInput extends React.Component {
     makeBody()
     {
         return <div>
-                <h5>Text Line Input</h5>
+                <h5>Checkbox Input</h5>
                 <div style={{display: "flex"}}>
                     <label className="required-field">Your Label </label>
-                    <input required type="text" value={this.props.text} onChange={this.onTextInput}></input>
+                    <input required type="text" value={this.props.label} onChange={this.onTextInput}></input>
                 </div>
         </div>
     }
 
     makePreview(){
-        return <div style={{paddingTop: "10px"}}>
-                    {this.props.text === '' ? "Your Label" : this.props.text}
-                <div style={{paddingTop: "10px"}}>
-                    <input type="text" style={{backgroundColor: "rgb(240, 240, 240)", width: "80%"}} placeholder="User input"></input>
-                </div>
+        return <div style={{paddingTop: "10px", display: "flex"}}>
+                {this.props.label === '' ? "Your Label" : this.props.label}
+                <br></br>
+                <input style={{marginLeft: "10px", marginTop: "5px"}} type="checkbox"></input>
             </div>
     }
 
@@ -60,12 +62,12 @@ class TextInput extends React.Component {
 
     onTextInput(e){
         let val = e.target.value;
-        this.props.setText(this.props.id, val);
+        this.props.setLabel(this.props.id, val);
     }
 }
 
-export default TextInput;
+export default Check;
 
-TextInput.defaultProps = {
-    classes: "form-item-builder header",
+Check.defaultProps = {
+    classes: "form-item-builder check",
 }

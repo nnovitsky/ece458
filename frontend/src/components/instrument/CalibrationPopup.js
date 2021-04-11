@@ -34,7 +34,6 @@ const CalibrationPopup = (props) => {
         } else {
             async function fetchApprovalData() {
                 await instrumentServices.getCalEventApproval(props.calibrationEvent.pk).then((result) => {
-                    console.log(result);
                     if (result.success) {
                         const approvalObject = {
                             comment: result.data.comment,

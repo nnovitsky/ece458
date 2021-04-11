@@ -114,7 +114,6 @@ const handleKeyPress = (e, parentOnSubmit, filterState) => {
 }
 
 const onMouseEnterHandler = (isWarning, setWarningShown) => {
-    console.log('entered');
     if (isWarning) {
         setWarningShown(true);
     }

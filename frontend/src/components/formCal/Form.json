@@ -14,7 +14,8 @@
         },
         {
             "type" : "TEXT_INPUT",
-            "text" : "Please enter your comment"
+            "text" : "Please enter your comment",
+            "actual_text" : ""
         },
         {
             "type" : "HEADER",
@@ -22,7 +23,10 @@
         },
         {
             "type" : "FLOAT_INPUT",
-            "text" : "Please enter the display voltage"
+            "text" : "Please enter the display voltage",
+            "expected_min": 0,
+            "expected_max": 10,
+            "actual_float": 3
         }
     ]
 }

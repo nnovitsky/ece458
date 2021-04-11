@@ -2,7 +2,8 @@
 import React from 'react';
 import Item from './Item.js'
 import '../FormPopup.css'
-import Row from 'react-bootstrap/esm/Row';
+import Form from 'react-bootstrap/Form';
+import NumericFormGroup from '../../formCal/formGroups/NumericFormGroup.js'
 
 
 const setMax = "setMax"
@@ -39,29 +40,21 @@ class NumericInput extends React.Component {
             <h5>Numeric Input</h5>
             <div style={{display: "flex"}}>
                     <label className="required-field">Your Label </label>
-                    <input required type="text" value={this.props.label} onChange={this.onTextInput}></input>
+                    <input required name={setLabel} type="text" value={this.props.label} onChange={this.onTextInput}></input>
                 </div>
-            Min: <input type="number" name={setMin} value={this.props.min} onChange={this.onTextInput} placeholder="Enter min"></input>
-            Max: <input type="number" name={setMax} value={this.props.max} onChange={this.onTextInput} placeholder="Enter max"></input>
+            Min: <input style={{border: 0}} type="number" name={setMin} value={this.props.min} onChange={this.onTextInput} placeholder="Enter min"></input>
+            Max: <input style={{border: 0}} type="number" name={setMax} value={this.props.max} onChange={this.onTextInput} placeholder="Enter max"></input>
         </div>
     }
 
     makePreview() {
-        console.log("Min " + this.props.min)
-        let both = this.props.min === '' ? '' : `Value must be above ${this.props.min}`
-        let maxOrMin = this.props.max === '' ? both : `Value must be below ${this.props.max}`
-        let text = (this.props.min !== '' && this.props.max !== '') ? `Value must be between ${this.props.min} - ${this.props.max}` : maxOrMin; 
-
-        console.log("Max " + this.props.max)
-/*         let maxText = this.props.max === '' ?  */
-        return <div style={{ paddingTop: "10px" }}>
-            {this.props.label === '' ? "Your label instructions" : this.props.label}
-            <br></br>
-            <div style={{ paddingTop: "10px" }}>
-                <input type="number" placeholder="User input" style={{backgroundColor: "rgb(240, 240, 240)"}}></input>
-                <span className="subtext">{text}</span>
-            </div>
-        </div>
+        let label = this.props.label === '' ? "Your label instructions" : this.props.label
+        return <Form style={{ paddingTop: "20px" }}>
+                <NumericFormGroup 
+                    label={label}
+                    min={this.props.min}
+                    max={this.props.max}
+                    /></Form>
     }
 
     makeErrorsParagraphs(errorsArr) {

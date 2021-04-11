@@ -39,6 +39,8 @@ const calHistoryTable = (props) => {
             inlineElements={props.inlineElements}
             isHoverMessageDisplayed={false}
             onRowClick={(row) => props.onRowClick(row)}
+            rowClasses={rowClasses}
+            striped={false}
         />
     )
 }
@@ -141,6 +143,24 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
             },
         ]
     )
+};
+
+const rowClasses = (row) => {
+    let classes = 'can-click';
+
+   switch(row.approval_status) {
+       case 'Rejected':
+            classes += ' rejected-row';
+            break;
+        case 'Pending':
+            classes += ' pending-row';
+            break
+        default:
+           classes += ' approved-row';
+            break
+   }
+
+    return classes;
 };
 
 export default calHistoryTable;

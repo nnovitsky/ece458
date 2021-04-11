@@ -552,3 +552,11 @@ class CalibrationApprovalReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationApproval
         fields = ('pk', 'status', 'approver', 'date', 'comment')
+
+
+class FormFieldSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CalibrationFormField
+        fields = ('pk', 'itemmodel', 'cal_event', 'index', 'fieldtype', 'label', 'plaintext', 'expected_string',
+                  'expected_min', 'expected_max', 'actual_string', 'actual_float', 'actual_bool', 'value_okay')

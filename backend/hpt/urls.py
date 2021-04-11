@@ -19,6 +19,7 @@ from backend.tables import views
 from backend.tables import api_views
 from backend.tables import loadbank_views
 from backend.tables import klufe_views
+from backend.tables import form_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
@@ -77,5 +78,7 @@ urlpatterns = [
     path('api/cancel_klufe_cal/<int:klufe_pk>/', klufe_views.cancel_klufe_cal),
     path('api/update_klufe_cal/<int:klufe_pk>/', klufe_views.edit_klufe_cal),
     path('api/export_barcodes/', api_views.BarcodeExport.as_view()),
-    path('api/calibration_approval/<int:cal_event_pk>/', views.cal_approval)
+    path('api/calibration_approval/<int:cal_event_pk>/', views.cal_approval),
+    path('api/calibration_form/<int:model_pk>/', form_views.form_data),
+    path('api/submit_calibration_form/<int:cal_event_pk>/', form_views.submit_form),
 ]

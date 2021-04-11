@@ -112,13 +112,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 }
             },
             {
-                dataField: 'user.username',
-                text: 'Username',
-                sort: false,
-                title: (cell) => `Username: ${cell}`,
-                headerClasses: 'ct-username-column'
-            },
-            {
                 dataField: 'comment',
                 text: 'Comment',
                 sort: false,

@@ -34,7 +34,7 @@ def make_pdf(asset_tags):
 
     page_index = 0
     for page in split_tags(asset_tags):
-        c.setFont("Helvetica", size=10)
+        c.setFont("Helvetica", size=9)
         c.saveState()
         tag_index = 0
 
@@ -44,14 +44,14 @@ def make_pdf(asset_tags):
                     # DRAW BOX
                     box_x = SIDE_MARGIN + col * (BARCODE_WIDTH + HORIZONTAL_GAP)
                     box_y = (PAGE_HEIGHT - TOP_MARGIN - BARCODE_HEIGHT) - row * BARCODE_HEIGHT
-                    c.rect(x=box_x, y=box_y, width=BARCODE_WIDTH, height=BARCODE_HEIGHT)
+                    # c.rect(x=box_x, y=box_y, width=BARCODE_WIDTH, height=BARCODE_HEIGHT)
 
                     # DRAW BARCODE
                     barcode = code128.Code128(str(asset_tags[tag_index + page_index*TAGS_PER_PAGE]), barWidth=1.3)
                     barcode.drawOn(c, box_x + 3, box_y + 0.2 * inch)
 
                     # DRAW LABEL
-                    c.drawString(box_x + 3, box_y + 4, "HPT Asset")
+                    c.drawString(box_x + 6, box_y + 5, "HPT Asset")
                     c.drawString(box_x + 1.2 * inch, box_y + 4, str(asset_tags[tag_index + page_index*TAGS_PER_PAGE]))
                     tag_index += 1
 

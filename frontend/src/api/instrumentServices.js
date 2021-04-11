@@ -5,9 +5,8 @@ const API_URL = Configs
 export default class InstrumentServices {
 
     // handled modified/expired tokens
-    async getInstruments(filters, sort_by, show_all, pageNum) {
+    async getInstruments(filters, sort_by, show_all, pageNum, perPage) {
         const token = window.sessionStorage.getItem('token');
-
         let result = {
             success: true,
             data: [],
@@ -30,7 +29,7 @@ export default class InstrumentServices {
         if (show_all) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {
@@ -56,7 +55,7 @@ export default class InstrumentServices {
     }
 
     // used to get the serial numbers for the model detail view
-    async getInstrumentsByModelPk(model_pk, pageNum, showAll) {
+    async getInstrumentsByModelPk(model_pk, pageNum, showAll, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -69,7 +68,7 @@ export default class InstrumentServices {
         if (showAll) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {
@@ -236,11 +235,12 @@ export default class InstrumentServices {
 
     // Note: the date needs to be a string
     // Error handling in place for future dates
-    async addCalibrationEvent(instrument_pk, date, comment, file) {
+    async addCalibrationEvent(instrument_pk, date, comment, file, calibratorInstrumentArr) {
         const formData = new FormData();
         formData.append('instrument', instrument_pk);
         formData.append('date', date);
         formData.append('comment', comment);
+        //formData.append('calibrated_by_instruments', calibratorInstrumentArr);
 
         if (file !== '') {
             formData.append('file', file);
@@ -282,7 +282,7 @@ export default class InstrumentServices {
             })
     }
 
-    async getCalFromInstrument(pk, pageNum, showAll) {
+    async getCalFromInstrument(pk, pageNum, showAll, perPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -295,7 +295,7 @@ export default class InstrumentServices {
         if (showAll) {
             url = `${url}&get_all`
         } else {
-            url = `${url}&page=${pageNum}`
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
         }
 
         return fetch(url, {

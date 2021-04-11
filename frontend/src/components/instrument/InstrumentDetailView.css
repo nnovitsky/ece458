@@ -3,3 +3,34 @@
 hr {
   width: 100%;
 }
+
+.calibrator-instrument-div {
+  width: 100%;
+}
+
+.calibrator-instrument-div input[type="text"] {
+  width: 50% !important;
+  /* display: inline-block; */
+}
+
+.calibrator-instrument-div button{
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+.badge-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.instrument-badge .badge{
+  border-color: rgb(57, 127, 60) !important;
+  background-color: rgb(57, 127, 60) !important;
+  margin: 2px;
+}
+
+.instrument-badge .badge button {
+  padding: 0px 3px 0px 3px;
+  font-size: 75%;
+}

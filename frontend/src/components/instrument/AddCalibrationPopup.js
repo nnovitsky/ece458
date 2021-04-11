@@ -3,6 +3,7 @@ import GenericPopup from '../generic/GenericPopup';
 import Form from "react-bootstrap/Form";
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
+import CalibratedWithInput from './CalibratedWithInput';
 import "react-datepicker/dist/react-datepicker.css";
 //props
 //'isShown': boolean if popup is shown
@@ -10,11 +11,13 @@ import "react-datepicker/dist/react-datepicker.css";
 //'onSubmit': event handler for the calibration being submitted, will contain the fields below
 //'errors': an array of errors to display
 //'isSubmitEnabled': a boolean if the submit button is enabled
+//'calibratorCategories': an array of the calibrator category names
 
 let newCalibration = {
     date: dateToString(new Date()),
     comment: '',
     file: '',
+    calibratorInstruments: [],
 }
 
 const AddCalibrationPopup = (props) => {
@@ -74,6 +77,9 @@ const makeBody = (calDate, setCalDate) => {
                     <Form.File onChange={onFileChange} accept=".jpg,.jpeg,.png,.gif,.pdf,.xlsx" multiple="" />
                     <Form.Text muted>32MB max. Accepts .PNG, .GIF, .JPG, .JPEG, .PDF, or .XLSX</Form.Text>
                 </Form.Group>
+                <CalibratedWithInput 
+                    onInstrumentChange={onCalibratorInstrumentsChange}
+                />
             </Form>
         </div>
     )
@@ -104,6 +110,10 @@ const onDateChange = (date, setCalDate) => {
 const onFileChange = (e) => {
     newCalibration.file = e.target.files[0];
     
+}
+
+const onCalibratorInstrumentsChange = (instrumentsArr) => {
+    newCalibration.calibratorInstruments = instrumentsArr;
 }
 
 export default AddCalibrationPopup;

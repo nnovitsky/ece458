@@ -26,7 +26,7 @@ class ModelTablePage extends Component {
             pagination: {
                 resultCount: 0,
                 numPages: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 25,
                 currentPageNum: 1,
             },
             modelSearchParams: {
@@ -77,6 +77,7 @@ class ModelTablePage extends Component {
                 },
                 sortingIndicator: '',
                 desiredPage: 1,
+                perPage: 25,
                 showAll: false
             }
             window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelPageSearchParams));
@@ -186,6 +187,10 @@ class ModelTablePage extends Component {
                             ...this.state.modelSearchParams,
                             desiredPage: page,
                             showAll: false,
+                        },
+                        pagination: {
+                            ...this.state.pagination,
+                            resultsPerPage: sizePerPage,
                         }
                     }, () => {
                         this.updateModelTable();
@@ -240,8 +245,8 @@ class ModelTablePage extends Component {
     }
 
     async onAddModelSubmit(newModel) {
-
-        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories, newModel.calibration_modes)
+        console.log(newModel);
+        modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories, newModel.calibration_modes, newModel.calibrator_categories_set)
             .then((res) => {
                 if (res.success) {
                     this.updateModelTable();
@@ -324,7 +329,7 @@ class ModelTablePage extends Component {
         let filters = searchParams.filters;
         filters.model_categories = filters.model_categories.map(el => el.pk).join(',');
 
-        modelServices.getModels(filters, searchParams.sortingIndicator, searchParams.showAll, searchParams.desiredPage).then((result) => {
+        modelServices.getModels(filters, searchParams.sortingIndicator, searchParams.showAll, searchParams.desiredPage, searchParams.perPage).then((result) => {
             this.setState({
                 isLoading: false,
             })
@@ -346,6 +351,7 @@ class ModelTablePage extends Component {
         modelSearchParams.sortingIndicator = this.state.modelSearchParams.sortingIndicator;
         modelSearchParams.desiredPage = this.state.modelSearchParams.desiredPage;
         modelSearchParams.showAll = this.state.modelSearchParams.showAll;
+        modelSearchParams.perPage = this.state.pagination.resultsPerPage;
 
         window.sessionStorage.setItem("modelPageSearchParams", JSON.stringify(modelSearchParams));
     }

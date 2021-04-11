@@ -81,12 +81,12 @@ const NewModelTable = (props) => {
                         totalAndShowAll = (
                             <div className="pagination-top-row">
                                 {props.inlineElements}
-                                {(props.pagination.totalSize <= 10) ? null : (
+                                
                                     <SizePerPageDropdownStandalone
                                         {...paginationProps}
 
                                     />
-                                )}
+                                
                                 {(props.pagination.totalSize === 0) ? null : (
                                     <>
 
@@ -161,10 +161,17 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         paginationTotalRenderer: customTotal,
         showTotal: true,
         disablePageTitle: true,
-        sizePerPageRenderer,
+        // sizePerPageRenderer,
         sizePerPageList: [{
-            text: 'Show 10', value: 10
-        }, {
+            text: 'Show 25', value: 25
+        }, 
+        {
+            text: 'Show 50', value: 50
+        },
+        {
+            text: 'Show 100', value: 100
+        },
+        {
             text: 'Show All', value: totalResults
         }] // A numeric array is also available. the purpose of above example is custom the text
     })

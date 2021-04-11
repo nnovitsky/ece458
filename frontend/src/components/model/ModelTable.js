@@ -87,7 +87,26 @@ let makeConfig = (countStart, onMoreClicked) => {
                 title: (cell) => `Description: ${cell}`,
                 headerClasses: 'mt-description-column',
             },
-
+            {
+                dataField: 'categories.item_model_categories',
+                text: 'Model Categories',
+                sort: false,
+                title: (cell) => {
+                    let contents;
+                    if (cell[0] === null) {
+                        contents = 'None'
+                    } else {
+                        contents = cell.join(', ');
+                    }
+                    return `Model Categories: ${contents}`
+                },
+                headerClasses: 'mt-model-category-column',
+                formatter: (cell) => {
+                    return (
+                        <span>{cell.join(', ')}</span>
+                    )
+                }
+            },
             {
                 dataField: 'calibration_frequency',
                 text: 'Cal. Freq. (Days)',
@@ -110,6 +129,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                     }
                 }
             },
+            
             {
                 dataField: 'calibration_modes',
                 text: 'Cal. Mode',
@@ -149,25 +169,27 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'mt-cal-mode-column',
             },
             {
-                dataField: 'categories.item_model_categories',
-                text: 'Model Categories',
+                dataField: 'categories.calibrator_categories_set',
+                text: 'Calibrator Categories',
                 sort: false,
                 title: (cell) => {
-                    let contents;
-                    if (cell[0] === null) {
-                        contents = 'None'
-                    } else {
-                        contents = cell.join(', ');
-                    }
-                    return `Model Categories: ${contents}`
+                    // let contents;
+                    // if (cell[0] === null) {
+                    //     contents = 'None'
+                    // } else {
+                    //     contents = cell.join(', ');
+                    // }
+                    // return `Calibrator Categories: ${contents}`
                 },
                 headerClasses: 'mt-model-category-column',
                 formatter: (cell) => {
                     return (
-                        <span>{cell.join(', ')}</span>
+                        <span>Coming soon</span>
+                        // <span>{cell.join(', ')}</span>
                     )
                 }
             },
+            
         ]
     )
 };

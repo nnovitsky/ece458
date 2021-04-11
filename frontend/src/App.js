@@ -48,11 +48,17 @@ class App extends Component {
       await this.turnOffSource();
     }
     if (this.state.logged_in) {
+      console.log(this.state.user.permissions_groups)
       await this.setCurrentUser();
     }
     else {
       console.log("Not Logged in")
     }
+  }
+
+  async componentDidUpdate(){
+    console.log("Compenent Update")
+    console.log(this.state.user.permissions_groups)
   }
 
   async turnOffSource(){

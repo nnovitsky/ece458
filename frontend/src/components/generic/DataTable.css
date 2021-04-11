@@ -110,3 +110,8 @@
 .selection-cell-header {
     width: 25px !important;
 }
+
+/*  */
+.can-click {
+    cursor: pointer !important;
+}

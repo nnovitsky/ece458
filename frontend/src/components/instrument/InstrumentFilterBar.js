@@ -86,8 +86,6 @@ function reducer(state, action) {
             return { ...state, model_categories: action.payload };
         case 'instrument_categories':
             return { ...state, instrument_categories: action.payload };
-        case 'asset_tag':
-            return { ...state, asset_tag: action.payload };
         case 'clear':
             return {
                 model_number: '',

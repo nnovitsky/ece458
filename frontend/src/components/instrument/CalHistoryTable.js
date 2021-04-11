@@ -21,11 +21,13 @@ import Button from 'react-bootstrap/Button';
 // onLoadBankClick: an event handler to call when wanting to see the load bank cal data, event.target.value is the cal event pk
 // onKlufeClick: an event handler to call when wanting to see the guided hardware cal data, event.target.value is the cal event pk
 // requiresApproval: boolean if the table is going to be including requires approval
+// onRowClick: an event handler that will be called with the calibration event
+// hasApprovalPermissions: boolean if the pending should show a link
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.requiresApproval);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
     return (
         <DataTable
             data={props.data}
@@ -35,13 +37,13 @@ const calHistoryTable = (props) => {
             config={config}
             noResults='No Calibration History'
             inlineElements={props.inlineElements}
+            isHoverMessageDisplayed={false}
+            onRowClick={(row) => props.onRowClick(row)}
         />
-
-
     )
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
     return (
         [
             // this is a column for a number for the table
@@ -68,6 +70,14 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 title: (cell) => {   //formats the data and the returned is displayed in the cell
                     return `Approval Status: ${cell}`
                 },
+                formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
+                    if(hasApprovalPermissions && cell === 'Pending') {
+                        return <Button className="data-table-button" onClick={(row) => onRowClick(row)}>{cell}</Button>
+                    } else {
+                        return cell;
+                    }
+                },
+                formatExtraData: hasApprovalPermissions,
                 headerClasses: 'ct-status-column'
             },
             {

@@ -35,6 +35,8 @@ class App extends Component {
         username: '',
         permissions_groups: [],
         userPK: null,
+        first_name: '',
+        last_name: '',
       },
       error_message: '',
       redirect: null,
@@ -74,12 +76,15 @@ class App extends Component {
   async setCurrentUser() {
     await authServices.getCurrentUser().then((result) => {
       if (result.success) {
+        console.log(result);
         this.setState({
           user: {
             ...this.state.user,
             username: result.data.username,
             permissions_groups: result.data.groups,
             userPK: result.data.pk,
+            first_name: result.data.first_name,
+            last_name: result.data.last_name
           }
         })
       } else {
@@ -116,6 +121,8 @@ class App extends Component {
             username: result.data.user.username,
             permissions_groups: result.data.user.groups,
             userPK: result.data.user.pk,
+            irst_name: result.data.first_name,
+            last_name: result.data.last_name
           }
 
         });
@@ -151,6 +158,8 @@ class App extends Component {
               username: json.user.username,
               permissions_groups: json.user.groups,
               userPK: json.user.pk,
+              irst_name: json.user.first_name,
+              last_name: json.user.last_name
             }
           });
           this.setState({ error_message: '' });

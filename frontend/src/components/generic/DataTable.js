@@ -45,6 +45,7 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 //     selected    //an array of keys (the field that is set to be the key for the table) of selected rows
 //      isSelectAllChecked  //boolean if the select all checkbox should be checked
 // }
+// onRowClick: an optional event handler (defaults to null) that will be passed row information to the handler on a row being clicked
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     const selectProps = props.selectRow;
@@ -66,6 +67,16 @@ const NewModelTable = (props) => {
         };
 
     const hoverMessage = props.isHoverMessageDisplayed ? (<span>(Hover over a cell for more information)</span>) : null;
+    let rowEvents = {};
+    let rowClasses = props.rowClasses;
+    if (props.onRowClick) {
+        rowEvents = {
+            onClick: (e, row) => {
+                props.onRowClick(row);
+            }
+        }
+        rowClasses += 'can-click';
+    }
     return (
         <div className="data-table">
             {hoverMessage}
@@ -81,12 +92,12 @@ const NewModelTable = (props) => {
                         totalAndShowAll = (
                             <div className="pagination-top-row">
                                 {props.inlineElements}
-                                
-                                    <SizePerPageDropdownStandalone
-                                        {...paginationProps}
 
-                                    />
-                                
+                                <SizePerPageDropdownStandalone
+                                    {...paginationProps}
+
+                                />
+
                                 {(props.pagination.totalSize === 0) ? null : (
                                     <>
 
@@ -119,8 +130,9 @@ const NewModelTable = (props) => {
                                 bodyClasses='data-table'
                                 {...paginationTableProps}
                                 noDataIndication={noResults(props.noResults)}
-                                rowClasses={props.rowClasses}
+                                rowClasses={rowClasses}
                                 selectRow={selectRowProps}
+                                rowEvents={rowEvents}
                             />
                             {paginationPages}
                         </div>
@@ -164,7 +176,7 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         // sizePerPageRenderer,
         sizePerPageList: [{
             text: 'Show 25', value: 25
-        }, 
+        },
         {
             text: 'Show 50', value: 50
         },
@@ -218,4 +230,5 @@ NewModelTable.defaultProps = {
     selectRow: false,
     extraTableParams: {},
     isHoverMessageDisplayed: true,
+    onRowClick: null,
 }

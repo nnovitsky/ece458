@@ -171,7 +171,8 @@ class ItemModelReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes', 'requires_approval')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories',
+                  'calibration_modes', 'requires_approval', 'calibrator_categories_set')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
@@ -191,7 +192,10 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
         model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
+        cal_with_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
+        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats,
+                'calibrator_categories': cal_with_cats}
+
 
     def _get_most_recent_calibration(self, obj):
         no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])

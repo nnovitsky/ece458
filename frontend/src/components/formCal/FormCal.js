@@ -19,7 +19,6 @@ class FormCal extends React.Component {
         this.state = {
             errors: [],
             data: [],
-            onFormStep: false,
             date_string: dateToString(new Date()),
             date_object: new Date(),
             comment: '',
@@ -51,9 +50,9 @@ class FormCal extends React.Component {
                 body={body}
                 headerText="Form Calibration"
                 closeButtonText="Cancel"
-                submitButtonText={this.state.onFormStep ? "Submit Calibration" : "Next"}
+                submitButtonText={"Submit Calibration"}
                 onClose={this.props.onClose}
-                onSubmit={this.state.onFormStep ? this.props.onSubmit : this.makeCalEvent}
+                onSubmit={this.makeCalEvent}
                 submitButtonVariant="primary"
                 errors={this.state.errors}
                 isPrimaryEnabled={true}
@@ -69,7 +68,8 @@ class FormCal extends React.Component {
         console.log(this.state.data)
         return <div>
             <Form>
-                {this.state.onFormStep ? formItems : introItems}
+                {introItems}
+                {formItems}
             </Form>
         </div>
     }
@@ -78,7 +78,7 @@ class FormCal extends React.Component {
         return <div>
             <Form.Group>
                 <Form.Label className="required-field">Calibration Date</Form.Label>
-                <div style={{ display: 'block' }}>
+                <div style={{ display: 'block', marginLeft: "-10px" }}>
                     <DatePicker
                         onChange={this.onDateChange}
                         selected={this.state.date_object}
@@ -152,8 +152,8 @@ class FormCal extends React.Component {
             .then((result) => {
                 console.log(result.data.pk)
                 if (result.success) {
+                    this.props.onClose();
                     this.setState({
-                        onFormStep: true,
                         cal_event_pk: result.data.pk
                     })
                 } else {

@@ -77,5 +77,6 @@ urlpatterns = [
     path('api/cancel_klufe_cal/<int:klufe_pk>/', klufe_views.cancel_klufe_cal),
     path('api/update_klufe_cal/<int:klufe_pk>/', klufe_views.edit_klufe_cal),
     path('api/export_barcodes/', api_views.BarcodeExport.as_view()),
-    path('api/calibration_approval/<int:cal_event_pk>/', views.cal_approval)
+    path('api/calibration_approval/<int:cal_event_pk>/', views.cal_approval),
+    path('api/validate_calibrators/', views.validate_calibrator_instruments)
 ]

@@ -2,7 +2,8 @@
 import React from 'react';
 import Item from './Item.js'
 import '../FormPopup.css'
-import Row from 'react-bootstrap/esm/Row';
+import Form from 'react-bootstrap/Form';
+import PlainTextGroup from '../../formCal/formGroups/PlainTextGroup.js'
 
 
 class PlainText extends React.Component {
@@ -10,7 +11,7 @@ class PlainText extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            
+
         }
 
         this.onTextInput = this.onTextInput.bind(this);
@@ -20,32 +21,34 @@ class PlainText extends React.Component {
         let body = this.makeBody();
         let preview = this.makePreview();
         return (
-        <div >
-           <Item
-           itemBody={body}
-           preview={preview}
-           id={this.props.id}
-           setStepNumber={this.props.setStepNumber}
-           classes={this.props.classes}
-           previewClasses={this.props.classes}
-            />
-        </div>
+            <div >
+                <Item
+                    itemBody={body}
+                    preview={preview}
+                    id={this.props.id}
+                    setStepNumber={this.props.setStepNumber}
+                    classes={this.props.classes}
+                    previewClasses={this.props.classes}
+                    delete={this.props.onDelete}
+                />
+            </div>
         );
     }
 
-    makeBody()
-    {
+    makeBody() {
         return <div>
-                <h5 style={{marginBottom: "0px"}}>Plain Text</h5>
-                <label className="required-field">Your Text</label>
-                <textarea style={{marginTop: "-3px"}} value={this.props.text} onChange={this.onTextInput} placeholder="Enter your text"></textarea>
+            <h5 style={{ marginBottom: "0px" }}>Plain Text</h5>
+            <label className="required-field">Your Text</label>
+            <textarea style={{ marginTop: "-3px" }} value={this.props.text} onChange={this.onTextInput} placeholder="Enter your text"></textarea>
         </div>
     }
 
-    makePreview(){
-        return <div style={{paddingTop: "10px"}}>
-                {this.props.text === '' ? "Your instructions as plain text." : this.props.text}
-            </div>
+    makePreview() {
+        let text = this.props.text === '' ? "Your instructions as plain text." : this.props.text
+        return <Form style={{ paddingTop: "10px" }}>
+                    <PlainTextGroup
+                    text={text} />
+                </Form>
     }
 
     makeErrorsParagraphs(errorsArr) {
@@ -56,7 +59,7 @@ class PlainText extends React.Component {
         return result;
     }
 
-    onTextInput(e){
+    onTextInput(e) {
         let val = e.target.value;
         console.log(val)
         this.props.setText(this.props.id, val);

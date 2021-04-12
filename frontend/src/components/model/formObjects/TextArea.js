@@ -25,6 +25,7 @@ class TextArea extends React.Component {
            preview={preview}
            id={this.props.id}
            setStepNumber={this.props.setStepNumber}
+           delete={this.props.onDelete}
             />
         </div>
         );

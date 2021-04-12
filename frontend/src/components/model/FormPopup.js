@@ -10,7 +10,9 @@ import NumericInput from './formObjects/NumericInput.js'
 import TextInput from './formObjects/TextInput.js'
 import Check from './formObjects/Check.js'
 import './FormPopup.css'
-import { useDrag, useDrop } from "react-dnd";
+import FormCalServices from "../../api/formCalServices";
+
+const formCalServices = new FormCalServices();
 
 class FormPopup extends Component {
 
@@ -21,6 +23,7 @@ class FormPopup extends Component {
             allSteps: [0, 0, 0],
             form: [],
             errors: [],
+            model_pk: this.props.model_pk
         }
 
         this.addHeader = this.addHeader.bind(this);
@@ -34,6 +37,11 @@ class FormPopup extends Component {
         this.setMin = this.setMin.bind(this);
         this.setLabel = this.setLabel.bind(this);
         this.setStepNumber = this.setStepNumber.bind(this);
+        this.deleteStep = this.deleteStep.bind(this);
+        this.getExistingForm = this.getExistingForm.bind(this);
+    }
+    async onComponentDidMount(){
+        await this.getExistingForm();
     }
     render() {
         let body = this.makeBody();
@@ -78,26 +86,52 @@ class FormPopup extends Component {
         var form = [];
         for (var i = 0; i < this.state.form.length; i++) {
             if (this.state.form[i].type === 'header') {
-                form.push(<Header id={i} headerInput={this.state.form[i].text} setHeader={this.setText} setStepNumber={this.setStepNumber}></Header>);
+                form.push(<Header id={i} headerInput={this.state.form[i].text} setHeader={this.setText} setStepNumber={this.setStepNumber}
+                                        onDelete={this.deleteStep}></Header>);
             }
             else if(this.state.form[i].type === "numeric"){
                 form.push(<NumericInput id={i} max={this.state.form[i].max} min={this.state.form[i].min} label={this.state.form[i].label} 
-                                        setMax={this.setMax} setMin={this.setMin} setLabel={this.setLabel} setStepNumber={this.setStepNumber}></NumericInput>)
-            }
-            else if(this.state.form[i].type === "text-area"){
-                form.push(<TextArea id={i} instructions={this.state.form[i].text} setInstructions={this.setText} setStepNumber={this.setStepNumber}></TextArea>)
+                                        setMax={this.setMax} setMin={this.setMin} setLabel={this.setLabel} setStepNumber={this.setStepNumber}
+                                        onDelete={this.deleteStep}></NumericInput>)
             }
             else if(this.state.form[i].type === "plain-text"){
-                form.push(<PlainText id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}></PlainText>)
+                form.push(<PlainText id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}
+                                        onDelete={this.deleteStep}></PlainText>)
             }
             else if(this.state.form[i].type === "text-input"){
-                form.push(<TextInput id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}></TextInput>)
+                form.push(<TextInput id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}
+                                        onDelete={this.deleteStep}></TextInput>)
             }
             else if(this.state.form[i].type === "check-input"){
-                form.push(<Check id={i} label={this.state.form[i].text} setLabel={this.setText} setStepNumber={this.setStepNumber}></Check>)
+                form.push(<Check id={i} label={this.state.form[i].text} setLabel={this.setText} setStepNumber={this.setStepNumber}
+                                        onDelete={this.deleteStep}></Check>)
             }
         }
         return form;
+    }
+
+    getExistingForm(){
+        formCalServices.getExistingForm(this.state.model_pk).then(result => {
+            if(result.success){
+                this.setState({
+                    form: result.data.fields
+                })
+            }
+            else {
+                console.log("error")
+            }
+        })
+    }
+
+    submitForm(){
+        formCalServices.submitFormData(this.state.form, this.state.model_pk).then(result => {
+            if(result.success){
+                // close
+            }
+            else {
+                console.log("error")
+            }
+        })
     }
 
     addHeader() {
@@ -234,6 +268,15 @@ class FormPopup extends Component {
             form: form
         }) 
         return true;
+    }
+
+    deleteStep(i)
+    {
+        let form = this.state.form;
+        form.splice(i, 1)
+        this.setState({
+            form: form
+        })
     }
 }
 

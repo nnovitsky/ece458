@@ -169,6 +169,7 @@ class ModelDetailView extends React.Component {
                 onClose={this.onFormClose}
                 currentModel={this.state.model_info}
                 errors={this.state.formPopup.errors}
+                model_pk={this.state.model_info.pk}
             />
         )
     }

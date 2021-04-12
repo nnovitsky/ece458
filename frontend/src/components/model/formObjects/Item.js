@@ -24,21 +24,23 @@ class Item extends React.Component {
         return (
             <div className={this.props.classes}>
                 <div className="row" style={{ margin: "auto" }}>
-                <div className="col-sm-1">
-                    {/* <EditText type="number" style={{width: '50px'}} value={this.state.number} onSave={this.onSave} onChange={this.onTextInput}/> */}
-                    <input type="number" style={{border: 0, width: '40px', paddingLeft: "10px", backgroundColor: "rgba(230, 230, 230)"}} value={this.state.number} onChange={this.onTextInput} step={-1}></input>
+                    <div className="col-sm-1">
+                        <input type="number" style={{ border: 0, width: '40px', paddingLeft: "10px", backgroundColor: "rgba(230, 230, 230)" }} value={this.state.number} onChange={this.onTextInput}></input>
+                    </div>
+                    <div className="col-xs-1">
+                        <button className="delete" onClick={() => this.props.delete(this.props.id)}>X</button>
                     </div>
                     <div className="col-sm-5">
                         {this.props.itemBody}
                     </div>
-                    <div className={"col-sm-6 " + this.props.previewClasses}>
+                    <div className={"col-sm-5 " + this.props.previewClasses}>
                         {this.props.preview}
                     </div>
                 </div>
             </div>
         );
 
-        
+
     }
 
     makeErrorsParagraphs(errorsArr) {
@@ -49,7 +51,7 @@ class Item extends React.Component {
         return result;
     }
 
-    onTextInput(e){
+    onTextInput(e) {
         console.log(e.target.value)
         this.setState({
             number: e.target.value
@@ -57,7 +59,7 @@ class Item extends React.Component {
         this.props.setStepNumber(this.props.id, e.target.value)
     }
 
-    onSave(){
+    onSave() {
         this.props.setStepNumber(this.props.id, this.state.number)
         this.setState({
             number: this.props.id + 1

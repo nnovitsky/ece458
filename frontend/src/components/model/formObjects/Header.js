@@ -2,7 +2,8 @@
 import React from 'react';
 import Item from './Item.js'
 import '../FormPopup.css'
-import Row from 'react-bootstrap/esm/Row';
+import Form from 'react-bootstrap/Form';
+import HeaderGroup from '../../formCal/formGroups/HeaderGroup.js'
 
 
 class Header extends React.Component {
@@ -10,7 +11,7 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            
+
         }
 
         this.onTextInput = this.onTextInput.bind(this);
@@ -20,36 +21,36 @@ class Header extends React.Component {
         let body = this.makeBody();
         let preview = this.makePreview();
         return (
-        <div >
-           <Item
-           itemBody={body}
-           preview={preview}
-           id={this.props.id}
-           classes={this.props.classes}
-           previewClasses={this.props.classes}
-           setStepNumber={this.props.setStepNumber}
-            />
-        </div>
+            <div >
+                <Item
+                    itemBody={body}
+                    preview={preview}
+                    id={this.props.id}
+                    classes={this.props.classes}
+                    previewClasses={this.props.classes}
+                    setStepNumber={this.props.setStepNumber}
+                    delete={this.props.onDelete}
+                />
+            </div>
         );
     }
 
-    makeBody()
-    {
+    makeBody() {
         return <div>
-                <h5>Header</h5>
-                <div style={{display: "flex", marginTop: "-5px"}}>
-                    <label className="required-field">Your Header</label>
-                    <input type="text" value={this.props.headerInput} onChange={this.onTextInput}></input>
-                </div>
+            <h5>Header</h5>
+            <div style={{ display: "flex", marginTop: "-5px" }}>
+                <label className="required-field">Your Header</label>
+                <input type="text" value={this.props.headerInput} onChange={this.onTextInput}></input>
+            </div>
         </div>
     }
 
-    makePreview(){
-        return <div style={{paddingTop: "10px"}}>
-            <h5>
-                {this.props.headerInput === '' ? "Your Header" : this.props.headerInput}
-                </h5>
-            </div>
+    makePreview() {
+        let header = this.props.headerInput === '' ? "Your Header" : this.props.headerInput;
+        return <Form style={{ paddingTop: "10px" }}>
+            <HeaderGroup
+                text={header}/>
+            </Form>
     }
 
     makeErrorsParagraphs(errorsArr) {
@@ -60,7 +61,7 @@ class Header extends React.Component {
         return result;
     }
 
-    onTextInput(e){
+    onTextInput(e) {
         let val = e.target.value;
         this.props.setHeader(this.props.id, val);
     }

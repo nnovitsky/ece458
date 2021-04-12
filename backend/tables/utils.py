@@ -96,6 +96,7 @@ def annotate_models(queryset):
         model_number_lower=Func(F('model_number'), function='LOWER')).annotate(
         description_lower=Func(F('description'), function='LOWER'))
     queryset = queryset.annotate(model_cats=ArrayAgg("itemmodelcategory__name", distinct=True))
+    queryset = queryset.annotate(cal_cats=ArrayAgg("calibrator_categories_set__name", distinct=True))
     queryset = queryset.annotate(calibration_modes=ArrayAgg("calibrationmode__name", distinct=True))
     return queryset
 

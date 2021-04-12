@@ -110,6 +110,7 @@ class ItemModelCategory(models.Model):
     """
     name = models.CharField(max_length=CATEGORY_NAME_MAX_LENGTH, unique=True)
     item_models = models.ManyToManyField(ItemModel, blank=True)
+    calibrated_with = models.ManyToManyField(ItemModel, blank=True, related_name='calibrator_categories_set')
 
     def __str__(self):
         return self.name

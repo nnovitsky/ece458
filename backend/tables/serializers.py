@@ -127,7 +127,7 @@ class ItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency',
-                  'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval')
+                  'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval', 'calibrator_categories_set')
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):

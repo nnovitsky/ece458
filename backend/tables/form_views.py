@@ -58,15 +58,15 @@ def submit_form(request, cal_event_pk):
         itemmodel = cal_event.instrument.item_model
         if "custom_form" not in itemmodel.calibrationmode_set.values_list("name", flat=True):
             return Response({"form_error": ["Item model does not allow custom forms."]}, status=status.HTTP_400_BAD_REQUEST)
-        if len(itemmodel.calibrationformfield_set.all() == 0):
-            return Response({"form_error": ["Item model does not have a custom form."]}, status=status.HTTP_400_BAD_REQUEST)
-
-        if len(cal_event.calibrationformfield_set.all()) > 0:
-            return Response({"form_error": ["Calibration event already has form associated."]}, status=status.HTTP_400_BAD_REQUEST)
 
         errors = validate_form_submit(request.data['fields'], cal_event_pk)
         if len(errors) > 0:
             return Response({"form_error": errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(cal_event.calibrationformfield_set.all()) > 0:
+            cal_event.calibrationformfield_set.all().delete()
+            # return Response({"form_error": ["Calibration event already has form associated."]}, status=status.HTTP_400_BAD_REQUEST)
+
         fields = sorted(request.data['fields'], key=lambda i: i['index'])
         serializer = FormFieldSerializer(data=fields, many=True)
         if serializer.is_valid():
@@ -97,19 +97,28 @@ def validate_new_form(fields, model_pk):
             continue
 
         expected_fields = EXPECTED_FIELDS[field['fieldtype']]
-        unexpected_fields = ALL_FIELDS - expected_fields
         missing = []
         for name in expected_fields:
             if name not in field or field[name] is None or field[name] == "":
                 missing.append(name)
-        for name in unexpected_fields:
-            if name in field: field[name] = None
         if len(missing) > 0:
             errors.append({'index': field['index'], 'error': "Missing required fields for this fieldtype.", 'missing': missing})
             continue
 
-        if field['fieldtype'] == FORM_FIELDS['float_input'] and field['expected_min'] > field['expected_max']:
-            errors.append({'index': field['index'], 'error': "Min cannot be greater than max."})
+        if field['fieldtype'] == FORM_FIELDS['float_input']:
+            unexpected_fields = ALL_FIELDS - ALL_FLOAT_FIELDS
+            min = field['expected_min'] if 'expected_min' in field else None
+            max = field['expected_max'] if 'expected_max' in field else None
+            if min and max and min > max:
+                errors.append({'index': field['index'], 'error': "Min cannot be greater than max."})
+            elif not min and not max:
+                errors.append({'index': field['index'], 'error': "Float field requires min and/or max."})
+        else:
+            unexpected_fields = ALL_FIELDS - expected_fields
+
+        for name in unexpected_fields:
+            if name in field: field[name] = None
+
     return errors
 
 

@@ -43,45 +43,61 @@ def form_data(request, model_pk):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'POST'])
-def submit_form(request, cal_event_pk):
+@api_view(['POST'])
+def submit_form(request):
+    if not UserType.contains_user(request.user, "calibrations"):
+        return Response(
+            {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+
+    cal_event_data = request.data['cal_event']
+    cal_event_data['user'] = request.user.pk
+    # add new calibration event using instrument and user
+    try:
+        ins = Instrument.objects.get(pk=cal_event_data['instrument'])
+        itemmodel = ins.item_model
+    except Instrument.DoesNotExist or ItemModel.DoesNotExist:
+        return Response({"description": ["Instrument or model does not exist."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    if itemmodel.requires_approval:
+        cal_event_data['approval_status'] = APPROVAL_STATUSES['pending']
+
+    cal_serializer = CalibrationEventWriteSerializer(data=cal_event_data)
+    if not cal_serializer.is_valid():
+        return Response(cal_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if "custom_form" not in itemmodel.calibrationmode_set.values_list("name", flat=True):
+        return Response({"form_error": ["Item model does not allow custom forms."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    errors = validate_form_submit(request.data['fields'])
+    if len(errors) > 0:
+        return Response({"form_error": errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    fields = sorted(request.data['fields'], key=lambda i: i['index'])
+    cal_event = cal_serializer.save()
+    for field in fields:
+        field['cal_event'] = cal_event.pk
+
+    form_serializer = FormFieldSerializer(data=fields, many=True)
+    if form_serializer.is_valid():
+        form_serializer.save()
+        return Response({"cal_event": cal_serializer.data, "form": form_serializer.data}, status=status.HTTP_201_CREATED)
+    else:
+        cal_event.delete()
+        return Response(form_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def view_submitted_form(request, cal_event_pk):
     try:
         cal_event = CalibrationEvent.objects.get(pk=cal_event_pk)
     except CalibrationEvent.DoesNotExist:
         return Response({"form_error": ["Calibration event not found."]}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'POST':
-        if not UserType.contains_user(request.user, "calibrations"):
-            return Response(
-                {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-
-        itemmodel = cal_event.instrument.item_model
-        if "custom_form" not in itemmodel.calibrationmode_set.values_list("name", flat=True):
-            return Response({"form_error": ["Item model does not allow custom forms."]}, status=status.HTTP_400_BAD_REQUEST)
-
-        errors = validate_form_submit(request.data['fields'], cal_event_pk)
-        if len(errors) > 0:
-            return Response({"form_error": errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        if len(cal_event.calibrationformfield_set.all()) > 0:
-            cal_event.calibrationformfield_set.all().delete()
-            # return Response({"form_error": ["Calibration event already has form associated."]}, status=status.HTTP_400_BAD_REQUEST)
-
-        fields = sorted(request.data['fields'], key=lambda i: i['index'])
-        serializer = FormFieldSerializer(data=fields, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'GET':
-        cal_form = cal_event.calibrationformfield_set.order_by('index')
-        if len(cal_form) == 0:
-            return Response({"form_error": ["Calibration event has no associated form."]}, status=status.HTTP_400_BAD_REQUEST)
-        cal_event_serializer = CalibrationEventReadSerializer(cal_event)
-        form_serializer = FormFieldSerializer(cal_form, many=True)
-        return Response({'cal_event': cal_event_serializer.data, 'fields': form_serializer.data}, status=status.HTTP_200_OK)
+    cal_form = cal_event.calibrationformfield_set.order_by('index')
+    if len(cal_form) == 0:
+        return Response({"form_error": ["Calibration event has no associated form."]}, status=status.HTTP_400_BAD_REQUEST)
+    cal_event_serializer = CalibrationEventReadSerializer(cal_event)
+    form_serializer = FormFieldSerializer(cal_form, many=True)
+    return Response({'cal_event': cal_event_serializer.data, 'fields': form_serializer.data}, status=status.HTTP_200_OK)
 
 
 def validate_new_form(fields, model_pk):
@@ -122,10 +138,9 @@ def validate_new_form(fields, model_pk):
     return errors
 
 
-def validate_form_submit(fields, cal_event_pk):
+def validate_form_submit(fields):
     errors = []
     for field in fields:
-        field['cal_event'] = cal_event_pk
         field['itemmodel'] = None
         if 'index' not in field or 'fieldtype' not in field:
             errors.append({'error': "Index and fieldtype are required for all fields."})

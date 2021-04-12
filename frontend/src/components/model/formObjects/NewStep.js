@@ -24,19 +24,19 @@ class NewStep extends React.Component {
 
     render() {
         let menu = <div className="row" style={{ width: "100%", height: "100%", margin: "auto"}}>
-            <div className="col lg-2 header" onClick={this.addHeader}>
+            <div className="col lg-2 button" onClick={this.addHeader}>
                 Header
         </div>
-            <div className="col lg-2 textArea" onClick={this.addCheckInput}>
+            <div className="col lg-2 button" onClick={this.addCheckInput}>
                 Check Input
         </div>
-            <div className="col lg-2 numeric" onClick={this.addNumeric}>
+            <div className="col lg-2 button" onClick={this.addNumeric}>
                 Numeric Input
         </div>
-            <div className="col lg-2 plainText" onClick={this.addPlainText}>
+            <div className="col lg-2 button" onClick={this.addPlainText}>
                 Plain Text
         </div>
-        <div className="col lg-2 textInput" onClick={this.addTextInput}>
+        <div className="col lg-2 button" onClick={this.addTextInput}>
                 Text Input
         </div>
         </div>;

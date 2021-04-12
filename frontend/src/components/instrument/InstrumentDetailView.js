@@ -391,6 +391,8 @@ class InstrumentDetailView extends Component {
                 isShown={this.state.formCalPopup.isShown}
                 onClose={this.onFormCalClose}
                 user={this.props.user}
+                instrument_pk={this.state.instrument_info.pk}
+                model_pk={this.state.instrument_info.model_pk}
             />
         )
     }
@@ -663,6 +665,7 @@ class InstrumentDetailView extends Component {
                 errors: []
             }
         })
+        this.getCalHistory();
     }
 
     async onDeleteSubmit() {

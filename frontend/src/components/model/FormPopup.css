@@ -53,47 +53,20 @@
 
 
 
-.new-step .header{
+.new-step .button{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgb(194, 228, 185);
-  color: rgb(77, 122, 64);
+  background-color: rgb(220, 220, 220);
+  border-style: ridge;
+  border-width: 5px;
   height: 100% !important;
 }
 
-
-.new-step .textArea{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(228, 167, 167);
-  color: rgb(133, 71, 71);
-}
-
-
-.new-step .numeric{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(177, 180, 245);
-  color: rgb(74, 79, 163);
-}
-
-.new-step .plainText{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(235, 198, 149);
-  color: rgb(138, 89, 25);
-}
-
-.new-step .textInput{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(211, 149, 235);
-  color: rgb(78, 25, 138);
+.new-step .button:hover{
+  /* background-color: rgb(200, 200, 200); */
+  background-color: rgb(200, 250, 200, 0.5);
+  cursor: pointer;
 }
 
 
@@ -113,7 +86,8 @@
 
 
 .form-item-builder{
-  height: min(18vh, 110px) !important;
+  margin-top: 2px;
+  height: min(17vh, 100px) !important;
   width: 95%;
   display: inline-block;
   text-align: left;
@@ -121,6 +95,11 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(184, 184, 184, 0.411);
+  font-size: min(3vw, 12px);
+}
+
+.main{
+  border-top: 5px black !important;
 }
 
 .delete{
@@ -157,7 +136,7 @@ input[type=number]::-webkit-inner-spin-button {
 .form-item-builder input[type=text] {
   padding: -7px, -7px, -7px, -7px;
   margin-left: 7px;
-  margin-top: 5px;
+  margin-top: 0px;
   height: 15px;
   width: min(16vw, 300px);
   border: 0px;
@@ -173,9 +152,9 @@ input[type=number]::-webkit-inner-spin-button {
   outline: none;
 }
 
-.form-item-builder input[type=number] {
+.special input[type=number] {
   margin-right: 10px;
-  height: 25px;
+  height: 20px;
   width: min(30vw, 100px);
 }
 
@@ -191,14 +170,15 @@ input[type=number]::-webkit-inner-spin-button {
   outline: none;
 }
 
-.form-item-builder  .preview{
+.form-item-builder .preview{
   margin-top: -10px !important;
   margin-bottom: -4px !important;
   background-color: white;
   overflow-wrap: break-word;
   word-wrap: break-word;
   hyphens: auto;
-  height: min(18vh, 110px) !important;
+  height: min(17vh, 100px) !important;
+  font-size: min(5vw, 15px);
 }
 
 
@@ -218,13 +198,16 @@ input[type=number]::-webkit-inner-spin-button {
   margin-bottom: -4px !important;
   background-color: white;
   height: min(15vh, 80px) !important;
+  font-size: min(5vw, 15px);
 }
 
 .form-item-builder  .plain-text{
   margin-top: -10px !important;
   margin-bottom: -4px !important;
   background-color: white;
-  height: min(20vh, 200px) !important;
+  font-size: min(15vw, 18px) !important;
+  overflow: auto;
+  height: min(20vh, 150px) !important;
 }
 
 

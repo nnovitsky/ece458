@@ -9,6 +9,8 @@ import CheckInputGroup from './formGroups/CheckInputGroup.js';
 import HeaderGroup from './formGroups/HeaderGroup.js';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
+import InstrumentServices from "../../api/instrumentServices";
+const instrumentServices = new InstrumentServices();
 
 class FormCal extends React.Component {
 
@@ -21,6 +23,9 @@ class FormCal extends React.Component {
             date_string: dateToString(new Date()),
             date_object: new Date(),
             comment: '',
+            instrument_pk: this.props.instrument_pk,
+            model_pk: this.props.model_pk,
+            cal_event_pk: '',
         }
 
         this.onNumericInput = this.onNumericInput.bind(this);
@@ -76,7 +81,7 @@ class FormCal extends React.Component {
                 <div style={{ display: 'block' }}>
                     <DatePicker
                         onChange={this.onDateChange}
-                        selected={this.state.date_object} 
+                        selected={this.state.date_object}
                         maxDate={new Date()}
                     />
                 </div>
@@ -138,17 +143,30 @@ class FormCal extends React.Component {
         })
     }
 
-    makeCalEvent(){
+    async deleteCalEvent(){
         
-        this.setState({
-            onFormStep: true
-        })
+    }
+
+    async makeCalEvent() {
+        instrumentServices.addCalibrationEvent(this.state.instrument_pk, this.state.date_string, this.state.comment, '', '')
+            .then((result) => {
+                console.log(result.data.pk)
+                if (result.success) {
+                    this.setState({
+                        onFormStep: true,
+                        cal_event_pk: result.data.pk
+                    })
+                } else {
+                    console.log("Failed")
+                }
+            })
     }
 
 
     getHeaderForm(formField) {
         return <HeaderGroup
-            text={formField.label} />
+            text={formField.label
+            } />
 
     }
 

@@ -43,13 +43,15 @@ class NumericInput extends React.Component {
                     <label className="required-field">Your Label </label>
                     <input required name={setLabel} type="text" value={this.props.label} onChange={this.onTextInput}></input>
                 </div>
+                <div className="special">
             Min: <input style={{border: 0}} type="number" name={setMin} value={this.props.min} onChange={this.onTextInput} placeholder="Enter min"></input>
             Max: <input style={{border: 0}} type="number" name={setMax} value={this.props.max} onChange={this.onTextInput} placeholder="Enter max"></input>
+            </div>
         </div>
     }
 
     makePreview() {
-        let label = this.props.label === '' ? "Your label instructions" : this.props.label
+        let label = this.props.label === '' ? "Your Label" : this.props.label
         return <Form style={{ paddingTop: "20px" }}>
                 <NumericFormGroup 
                     label={label}

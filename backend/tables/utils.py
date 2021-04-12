@@ -114,6 +114,7 @@ def annotate_instruments(queryset):
     )
     queryset = queryset.annotate(instrument_cats=ArrayAgg("instrumentcategory__name", distinct=True))
     queryset = queryset.annotate(model_cats=ArrayAgg("item_model__itemmodelcategory__name", distinct=True))
+    queryset = queryset.annotate(cal_cats=ArrayAgg("item_model__calibrator_categories_set__name", distinct=True))
 
     # uncomment the multiplication if using sqlite bc sqlite DurationField defaults to milliseconds
     duration_expression = F('item_model__calibration_frequency')  # * 86400000000

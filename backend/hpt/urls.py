@@ -79,6 +79,7 @@ urlpatterns = [
     path('api/update_klufe_cal/<int:klufe_pk>/', klufe_views.edit_klufe_cal),
     path('api/export_barcodes/', api_views.BarcodeExport.as_view()),
     path('api/calibration_approval/<int:cal_event_pk>/', views.cal_approval),
+    path('api/validate_calibrators/', views.validate_calibrator_instruments),
     path('api/calibration_form/<int:model_pk>/', form_views.form_data),
     path('api/submit_calibration_form/<int:cal_event_pk>/', form_views.submit_form),
 ]

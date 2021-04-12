@@ -147,7 +147,8 @@ class ItemModelSearchSerializer(serializers.ModelSerializer):
     calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
-        return {'item_model_categories': obj.model_cats}
+        return [{'item_model_categories': obj.model_cats},
+                {'calibrator_categories': obj.cal_cats}]
 
     def get_calibration_modes(self, obj):
         return obj.calibration_modes
@@ -192,9 +193,10 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
         model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        cal_with_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats,
-                'calibrator_categories': cal_with_cats}
+        cal_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
+        return {'item_model_categories': model_cats,
+                'instrument_categories': instrument_cats,
+                'calibrator_categories': cal_cats}
 
 
     def _get_most_recent_calibration(self, obj):
@@ -231,7 +233,9 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
-        return {'item_model_categories': obj.model_cats, 'instrument_categories': obj.instrument_cats}
+        return {'item_model_categories': obj.model_cats,
+                'instrument_categories': obj.instrument_cats,
+                'calibrator_categories': obj.cal_cats}
 
     def get_item_model(self, obj):
         return {
@@ -264,7 +268,10 @@ class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
         model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
+        cal_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
+        return {'item_model_categories': model_cats,
+                'instrument_categories': instrument_cats,
+                'calibrator_categoies': cal_cats}
 
     class Meta:
         model = Instrument

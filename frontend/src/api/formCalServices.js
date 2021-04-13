@@ -12,7 +12,7 @@ export default class FormCalServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/calibration_form/${model_pk}`;
+        let url = `${API_URL}/api/calibration_form/${model_pk}/`;
 
         return fetch(url, {
             method: 'GET',
@@ -47,11 +47,19 @@ export default class FormCalServices {
             success: false,
             data: [],
         }
+        for (var i = 0; i < form.length; i++) {
+            form[i]['index'] = i+1;
+            delete form[i]['value_okay'];
+        }
+
+        console.log(form);
+
         let data = {
             fields: form
         }
 
-        let url = `${API_URL}/api/calibration_form/${model_pk}`;
+
+        let url = `${API_URL}/api/calibration_form/${model_pk}/`;
 
         return fetch(url, {
             method: 'POST',
@@ -73,7 +81,7 @@ export default class FormCalServices {
             }
             else {
                 return res.json().then(async (json) => {
-                    console.log(json);
+                    result.success = false;
                     return await checkBadResponse(json, result);
                 });
             }
@@ -90,11 +98,13 @@ export default class FormCalServices {
             success: false,
             data: [],
         }
+
         let data = {
             fields: form
         }
 
-        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}`;
+
+        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}/`;
 
         return fetch(url, {
             method: 'POST',
@@ -132,7 +142,7 @@ export default class FormCalServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}`;
+        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}/`;
 
         return fetch(url, {
             method: 'GET',

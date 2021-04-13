@@ -42,6 +42,7 @@ class FormPopup extends Component {
         this.getExistingForm = this.getExistingForm.bind(this);
         this.makeExistingForm = this.makeExistingForm.bind(this);
         this.makeBody = this.makeBody.bind(this);
+        this.createForm = this.createForm.bind(this);
     }
     async componentDidMount(){
         console.log("here")
@@ -62,7 +63,7 @@ class FormPopup extends Component {
                 closeButtonText="Cancel"
                 submitButtonText={submitText}
                 onClose={this.props.onClose}
-                onSubmit={this.props.onSubmit}
+                onSubmit={this.createForm}
                 submitButtonVariant="primary"
                 errors={this.state.errors}
                 size={"xl"}
@@ -130,14 +131,14 @@ class FormPopup extends Component {
         }) 
     }
 
-    submitForm(){
-        formCalServices.submitFormData(this.state.form, this.state.model_pk).then(result => {
+    createForm(){
+        formCalServices.createForm(this.state.form, this.state.model_pk).then(result => {
             if(result.success){
-                // close
+                this.props.close()
             }
             else {
-                console.log("error")
-            }
+                console.log(result)
+            } 
         })
     }
 

@@ -44,7 +44,7 @@ const CalibratedWithInput = (props) => {
 const getBadgeList = (calibratorState, dispatch) => {
     const result = [];
     calibratorState.instrumentsAdded.forEach((instrument) => {
-        const badge = badgeWithButton(instrument.asset_tag, instrument.instrument_pk, (pk) => onRemoveInstrument(dispatch, pk));
+        const badge = badgeWithButton(`${instrument.name} ${instrument.asset_tag}`, instrument.instrument_pk, (pk) => onRemoveInstrument(dispatch, pk));
         result.push(badge);
     });
     return result;
@@ -67,7 +67,9 @@ function reducer(state, action) {
             return { ...state, textInput: action.payload };
         case 'add_instrument':
             const newArray = [...state.instrumentsAdded];
-            newArray.push(action.payload);
+            const pay = action.payload;
+            pay.name = 'Fluke-XY200'
+            newArray.push(pay);
             return { ...state, instrumentsAdded: newArray };
         case 'remove_instrument':
             const finalArray = [...state.instrumentsAdded].filter(x => x.instrument_pk !== action.payload);

@@ -258,7 +258,6 @@ class InstrumentDetailView extends Component {
                                 ...this.state.calibration_pagination,
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
-                                resultsPerPage: 10,
                                 currentPageNum: result.data.currentpage,
                             }
                         });

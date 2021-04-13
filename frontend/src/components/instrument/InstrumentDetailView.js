@@ -9,6 +9,7 @@ import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import GuidedCal from '../guidedCal/GuidedCal.js';
 import FormCal from '../formCal/FormCal.js';
+import DisplayFormCal from '../formCal/FormDisplay.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess } from '../generic/Util';
 
@@ -80,6 +81,10 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 pk: null,
             },
+            displayFormCalPopup: {
+                isShown: false,
+                pk: null,
+            },
             isDeleteShown: false,
             currentUser: this.props.user,
         }
@@ -101,6 +106,10 @@ class InstrumentDetailView extends Component {
         this.onFormCalClicked = this.onFormCalClicked.bind(this);
         this.onFormCalClose = this.onFormCalClose.bind(this);
         this.makeFormCalPopup = this.makeFormCalPopup.bind(this);
+
+        this.onDisplayFormCalClicked = this.onDisplayFormCalClicked.bind(this);
+        this.onDisplayFormCalClose = this.onDisplayFormCalClose.bind(this);
+        this.makeDisplayFormCalPopup = this.makeDisplayFormCalPopup.bind(this);
 
 
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
@@ -129,6 +138,7 @@ class InstrumentDetailView extends Component {
         const headerButtons = (<div className="detail-header-buttons-div">
             <Button onClick={this.onEditInstrumentClicked} hidden={!isInstrumentAdmin}>Edit</Button>
             <Button onClick={this.onDeleteClicked} hidden={!isInstrumentAdmin} variant="danger">Delete</Button>
+            <Button onClick={this.onDisplayFormCalClicked}>Display</Button>
         </div>)
 
 
@@ -138,6 +148,7 @@ class InstrumentDetailView extends Component {
         let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
         let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
         let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
+        let displayFormCalPopup = (this.state.displayFormCalPopup.isShown) ? this.makeDisplayFormCalPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -153,6 +164,7 @@ class InstrumentDetailView extends Component {
                 {wizardPopup}
                 {guidedCalPopup}
                 {formCalPopup}
+                {displayFormCalPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={headerButtons}
@@ -393,6 +405,18 @@ class InstrumentDetailView extends Component {
                 user={this.props.user}
                 instrument_pk={this.state.instrument_info.pk}
                 model_pk={this.state.instrument_info.model_pk}
+            />
+        )
+    }
+
+    makeDisplayFormCalPopup(){
+        return (
+            <DisplayFormCal
+                isShown={this.state.displayFormCalPopup.isShown}
+                onClose={this.onDisplayFormCalClose}
+                instrument_pk={this.state.instrument_info.pk}
+                model_pk={this.state.instrument_info.model_pk}
+                cal_pk={this.state.displayFormCalPopup.pk}
             />
         )
     }
@@ -666,6 +690,25 @@ class InstrumentDetailView extends Component {
             }
         })
         this.getCalHistory();
+    }
+
+
+    onDisplayFormCalClicked() {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                isShown: true,
+            }
+        })
+    }
+
+    onDisplayFormCalClose() {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                isShown: false,
+            }
+        })
     }
 
     async onDeleteSubmit() {

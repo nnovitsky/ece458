@@ -165,7 +165,7 @@ def validate_form_submit(fields):
                 max = field['expected_max'] if 'expected_max' in field else None
                 if not val:
                     errors.append({'index': field['index'], 'error': "Value cannot be empty."})
-                if (min and val < min) or (max and val > max):
+                elif (min and val < min) or (max and val > max):
                     errors.append({'index': field['index'], 'error': "Value is outside acceptable range."})
                 else:
                     field['value_okay'] = True

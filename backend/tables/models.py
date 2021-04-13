@@ -75,6 +75,7 @@ class CalibrationEventFile(models.TextChoices):
     ARTIFACT = 'Artifact'
     LOAD_BANK = 'Load Bank'
     KLUFE = 'Klufe'
+    FORM = 'Form'
 
 
 class CalibrationEvent(models.Model):
@@ -217,7 +218,7 @@ class CalibrationFormField(models.Model):
     fieldtype = models.CharField(max_length=20)
     label = models.CharField(max_length=LABEL_MAX_LENGTH, null=True)
     plaintext = models.CharField(max_length=PLAINTEXT_MAX_LENGTH, null=True)
-    expected_string = models.CharField(max_length=TEXT_INPUT_MAX_LENGTH, null=True)
+    expected_string = models.CharField(max_length=TEXT_INPUT_MAX_LENGTH, null=True, blank=True)
     expected_min = models.FloatField(null=True)
     expected_max = models.FloatField(null=True)
     actual_string = models.CharField(max_length=TEXT_INPUT_MAX_LENGTH, null=True, blank=True)

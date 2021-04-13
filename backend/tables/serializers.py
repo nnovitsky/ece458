@@ -127,7 +127,7 @@ class ItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency',
-                  'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval')
+                  'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval', 'calibrator_categories_set')
 
 
 class ItemModelNoCategoriesSerializer(serializers.ModelSerializer):
@@ -147,7 +147,8 @@ class ItemModelSearchSerializer(serializers.ModelSerializer):
     calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
-        return {'item_model_categories': obj.model_cats}
+        return [{'item_model_categories': obj.model_cats},
+                {'calibrator_categories': obj.cal_cats}]
 
     def get_calibration_modes(self, obj):
         return obj.calibration_modes
@@ -171,7 +172,8 @@ class ItemModelReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories', 'calibration_modes', 'requires_approval')
+        fields = ('pk', 'vendor', 'model_number', 'description', 'comment', 'calibration_frequency', 'categories',
+                  'calibration_modes', 'requires_approval', 'calibrator_categories_set')
 
 
 class ItemModelByVendorSerializer(serializers.ModelSerializer):
@@ -191,7 +193,11 @@ class ListInstrumentReadSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
         model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
+        cal_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
+        return {'item_model_categories': model_cats,
+                'instrument_categories': instrument_cats,
+                'calibrator_categories': cal_cats}
+
 
     def _get_most_recent_calibration(self, obj):
         no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
@@ -227,7 +233,9 @@ class InstrumentSearchSerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
-        return {'item_model_categories': obj.model_cats, 'instrument_categories': obj.instrument_cats}
+        return {'item_model_categories': obj.model_cats,
+                'instrument_categories': obj.instrument_cats,
+                'calibrator_categories': obj.cal_cats}
 
     def get_item_model(self, obj):
         return {
@@ -260,7 +268,10 @@ class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         instrument_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.instrumentcategory_set.all()]
         model_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.itemmodelcategory_set.all()]
-        return {'item_model_categories': model_cats, 'instrument_categories': instrument_cats}
+        cal_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
+        return {'item_model_categories': model_cats,
+                'instrument_categories': instrument_cats,
+                'calibrator_categoies': cal_cats}
 
     class Meta:
         model = Instrument
@@ -290,6 +301,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     lb_cal_pk = serializers.SerializerMethodField()
     klufe_cal_pk = serializers.SerializerMethodField()
     has_approval = serializers.SerializerMethodField()
+    has_form = serializers.SerializerMethodField()
 
     def get_lb_cal_pk(self, obj):
         lb_cals = obj.loadbankcalibration_set.all()
@@ -305,9 +317,13 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
         approvals = obj.calibrationapproval_set.all()
         return len(approvals) > 0
 
+    def get_has_form(self, obj):
+        form_fields = obj.calibrationformfield_set.all()
+        return len(form_fields) > 0
+
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status', 'has_approval')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status', 'has_approval', 'has_form')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
@@ -552,3 +568,11 @@ class CalibrationApprovalReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationApproval
         fields = ('pk', 'status', 'approver', 'date', 'comment')
+
+
+class FormFieldSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CalibrationFormField
+        fields = ('pk', 'itemmodel', 'cal_event', 'index', 'fieldtype', 'label', 'plaintext', 'expected_string',
+                  'expected_min', 'expected_max', 'actual_string', 'actual_float', 'actual_bool', 'value_okay')

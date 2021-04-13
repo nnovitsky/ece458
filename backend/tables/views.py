@@ -189,6 +189,53 @@ def calibration_event_file(request, pk):
         return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
+@api_view(['GET'])
+def validate_calibrator_instruments(request):
+    calibrator_instruments = []
+    calibration_errors = []
+
+    try:
+        instrument_pk = request.data['instrument_pk']
+        item_model_pk = Instrument.objects.get(pk=instrument_pk).item_model.pk
+    except Instrument.DoesNotExist:
+        calibration_errors.append(f"No instrument associated with primary key provided ({request.data['instrument_pk']}) "
+                                  f"for instrument under calibration.")
+
+    for asset_tag in request.data['calibrator_asset_tags']:
+        try:
+            calibrator_instruments.append(Instrument.objects.get(asset_tag=asset_tag).pk)
+        except Instrument.DoesNotExist:
+            calibration_errors.append(f"Instrument corresponding to provided asset tag {asset_tag} does not exist.")
+
+    if len(calibration_errors) != 0:
+        return Response({"is_valid": False, "calibration_errors": calibration_errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    valid_cal_cats = ItemModelCategory.objects.all().filter(calibrated_with=item_model_pk)
+
+    for calibrator_pk in calibrator_instruments:
+        # check for 1) category 2) if it's in calibration 3) circular dependency
+        cal_item_model_pk = Instrument.objects.get(pk=calibrator_pk).item_model.pk
+        cal_item_model_cats = ItemModelCategory.objects.all().filter(item_models=cal_item_model_pk)
+        valid_calibrator = False
+        for valid_cal_cat in valid_cal_cats:
+            if valid_cal_cat in cal_item_model_cats: valid_calibrator = True
+
+        if not valid_calibrator:
+            calibration_errors.append(f"Calibration instrument {Instrument.object.get(pk=calibrator_pk)} is not a valid"
+                                      f" calibrator for the instrument under calibration.")
+
+    if len(calibration_errors) != 0:
+        return Response({"is_valid": False, "calibration_errors": calibration_errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({"is_valid": True,
+                     "instrument_pk": instrument_pk,
+                     "instrument_name": str(ItemModel.objects.get(pk=item_model_pk))
+                     },
+                     status=status.HTTP_200_OK)
+
+
 # INSTRUMENTS
 @api_view(['GET', 'POST'])
 def instruments_list(request):
@@ -275,10 +322,15 @@ def models_list(request):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks
 
+        # TODO: this certainly isn't the right way to address this bug, talk to jack
+        if 'calibrator_categories_set' not in request.data:
+            request.data['calibrator_categories_set'] = {}
+
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -306,6 +358,7 @@ def models_detail(request, pk):
         if 'model_number' not in request.data: request.data['model_number'] = model.model_number
         if 'description' not in request.data: request.data['description'] = model.description
         if 'itemmodelcategory_set' not in request.data: request.data['itemmodelcategory_set'] = [cat.pk for cat in model.itemmodelcategory_set.all()]
+        if 'calibrator_categories_set' not in request.data: request.data['calibrator_categories_set'] = [cat.pk for cat in model.calibrator_categories_set.all()]
         if 'requires_approval' in request.data and not request.data['requires_approval']:
             approve_cal_events(model)
         mode_pks, error = get_calibration_mode_pks(request)

@@ -110,6 +110,7 @@ class ItemModelCategory(models.Model):
     """
     name = models.CharField(max_length=CATEGORY_NAME_MAX_LENGTH, unique=True)
     item_models = models.ManyToManyField(ItemModel, blank=True)
+    calibrated_with = models.ManyToManyField(ItemModel, blank=True, related_name='calibrator_categories_set')
 
     def __str__(self):
         return self.name
@@ -207,3 +208,22 @@ class KlufeVoltageReading(models.Model):
 
     def __str__(self):
         return str(self.klufe_cal) + f' Test {self.index}'
+
+
+class CalibrationFormField(models.Model):
+    itemmodel = models.ForeignKey(ItemModel, on_delete=models.CASCADE, null=True)
+    cal_event = models.ForeignKey(CalibrationEvent, on_delete=models.CASCADE, null=True)
+    index = models.IntegerField()
+    fieldtype = models.CharField(max_length=20)
+    label = models.CharField(max_length=LABEL_MAX_LENGTH, null=True)
+    plaintext = models.CharField(max_length=PLAINTEXT_MAX_LENGTH, null=True)
+    expected_string = models.CharField(max_length=TEXT_INPUT_MAX_LENGTH, null=True)
+    expected_min = models.FloatField(null=True)
+    expected_max = models.FloatField(null=True)
+    actual_string = models.CharField(max_length=TEXT_INPUT_MAX_LENGTH, null=True, blank=True)
+    actual_float = models.FloatField(null=True)
+    actual_bool = models.BooleanField(null=True)
+    value_okay = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (("itemmodel", "index"),)

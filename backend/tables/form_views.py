@@ -51,6 +51,7 @@ def submit_form(request):
 
     cal_event_data = request.data['cal_event']
     cal_event_data['user'] = request.user.pk
+    cal_event_data['file_type'] = CalibrationEventFile.FORM
     # add new calibration event using instrument and user
     try:
         ins = Instrument.objects.get(pk=cal_event_data['instrument'])
@@ -133,7 +134,7 @@ def validate_new_form(fields, model_pk):
             unexpected_fields = ALL_FIELDS - expected_fields
 
         for name in unexpected_fields:
-            if name in field: field[name] = None
+            if name in field: field.pop(name)
 
     return errors
 

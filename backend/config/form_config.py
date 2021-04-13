@@ -21,11 +21,12 @@ ALL_FIELDS = {
 EXPECTED_FIELDS = {
     'HEADER': {'label'},
     'PLAINTEXT': {'plaintext'},
-    'TEXT_INPUT': {'label', 'expected_string'},
+    'TEXT_INPUT': {'label'},
     'FLOAT_INPUT': {'label'},
     'BOOL_INPUT': {'label'}
 }
 
 ALL_FLOAT_FIELDS = {'label', 'expected_min', 'expected_max'}
+ALL_TEXT_FIELDS = {'label', 'expected_string'}
 
 

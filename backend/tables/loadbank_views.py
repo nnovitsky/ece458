@@ -26,6 +26,14 @@ def start_loadbank_cal(request):
         serializer = CalibrationEventWriteSerializer(prev_cal_event, data=request.data)
     else:
         prev_cal_event = None
+        try:
+            ins = Instrument.objects.get(pk=request.data['instrument'])
+            model = ins.item_model
+        except Instrument.DoesNotExist or ItemModel.DoesNotExist:
+            return Response({"description": ["Instrument or model does not exist."]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if model.requires_approval:
+            request.data['approval_status'] = APPROVAL_STATUSES['pending']
         serializer = CalibrationEventWriteSerializer(data=request.data)
 
     if serializer.is_valid():

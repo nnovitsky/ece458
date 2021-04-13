@@ -178,7 +178,7 @@ form.popup .form-group {
 }
 
 /* Calibration status icons on the instrument table oage are formatted using this tag */
-.calibration-status-icon {
+.status-icon {
   display: block;
   overflow: hidden;
   margin-top: auto !important;

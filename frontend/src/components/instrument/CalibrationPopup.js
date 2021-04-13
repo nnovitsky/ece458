@@ -172,7 +172,7 @@ const makeApprovalSection = (calEvent, approvalState, dispatch) => {
                 </div>
                 <Form.Group>
                     <Form.Label>Comment:</Form.Label>
-                    <Form.Control as="textarea" readOnly={isApprovalForm ? '' : 'readonly'} rows={3} onChange={(e) => dispatch({ type: 'comment', payload: e.target.value })} />
+                    <Form.Control as="textarea" readOnly={isApprovalForm ? '' : 'readonly'} rows={3} onChange={(e) => dispatch({ type: 'comment', payload: e.target.value })} value={approvalState.comment}/>
                     <Form.Text muted hidden={!isApprovalForm}>
                         Max 2000 characters
                     </Form.Text>

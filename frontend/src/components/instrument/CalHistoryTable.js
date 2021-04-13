@@ -3,6 +3,11 @@ import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
 
+import RejectedIcon from "../../assets/CalibrationIcons/Expired.png";
+import PendingIcon from "../../assets/CalibrationIcons/PendingIcon.png";
+import ApprovedIcon from "../../assets/CalibrationIcons/Good.png";
+import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
+
 // props
 // data: json data object to be displayed
 
@@ -45,6 +50,19 @@ const calHistoryTable = (props) => {
     )
 }
 
+const getApprovalStatusIcon = (approvalStatus) => {
+    switch(approvalStatus) {
+        case 'Approved':
+            return ApprovedIcon;
+        case 'Rejected':
+            return RejectedIcon;
+        case 'Pending':
+            return PendingIcon;
+        default:
+            return NonapplicableIcon;
+    }
+}
+
 let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
     return (
         [
@@ -73,14 +91,22 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     return `Approval Status: ${cell}`
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
+                    const icon = getApprovalStatusIcon(cell);
+                    let display;
                     if(hasApprovalPermissions && cell === 'Pending') {
-                        return <Button className="data-table-button" onClick={(row) => onRowClick(row)}>{cell}</Button>
+                        display = <Button className="data-table-button" onClick={(row) => onRowClick(row)}>{cell}</Button>
                     } else {
-                        return cell;
+                        display = cell;
                     }
+                    return <div style={{ display: "flex" }}>
+                        {display}
+                        <img src={icon} alt={cell} className='status-icon' />
+                    </div>;
                 },
                 formatExtraData: hasApprovalPermissions,
-                headerClasses: 'ct-status-column'
+                headerClasses: 'ct-status-column',
+                classes: 'ct-status-column'
+
             },
             {
                 dataField: 'date',

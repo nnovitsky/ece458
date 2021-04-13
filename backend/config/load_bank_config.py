@@ -1,6 +1,7 @@
 CALIBRATION_MODES = [
     "load_bank",
-    "klufe_k5700"
+    "klufe_k5700",
+    "custom_form"
 ]
 
 CR_THRESHOLD = 0.03

@@ -322,10 +322,15 @@ def models_list(request):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks
 
+        # TODO: this certainly isn't the right way to address this bug, talk to jack
+        if 'calibrator_categories_set' not in request.data:
+            request.data['calibrator_categories_set'] = {}
+
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

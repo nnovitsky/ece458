@@ -75,6 +75,7 @@ class CalibrationEventFile(models.TextChoices):
     ARTIFACT = 'Artifact'
     LOAD_BANK = 'Load Bank'
     KLUFE = 'Klufe'
+    FORM = 'Form'
 
 
 class CalibrationEvent(models.Model):

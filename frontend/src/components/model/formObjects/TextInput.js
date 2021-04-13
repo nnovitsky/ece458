@@ -14,6 +14,7 @@ class TextInput extends React.Component {
 
         }
         this.onLabelInput = this.onLabelInput.bind(this);
+        this.onTextInput = this.onTextInput.bind(this);
     }
 
     render() {
@@ -65,6 +66,11 @@ class TextInput extends React.Component {
     onLabelInput(e) {
         let val = e.target.value;
         this.props.setLabel(this.props.id, val);
+    }
+
+    onTextInput(e) {
+        let val = e.target.value;
+        this.props.setText(this.props.id, val);
     }
 }
 

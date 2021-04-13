@@ -4,9 +4,9 @@ import Form from 'react-bootstrap/Form';
 
 const numericFormGroup = (props) => {
 
-    let both = props.min === '' ? '' : `Value must be above ${props.min}`
-    let maxOrMin = props.max === '' ? both : `Value must be below ${props.max}`
-    let text = (props.min !== '' && props.max !== '') ? `Value must be between ${props.min} - ${props.max}` : maxOrMin; 
+    let both = props.min === '' || props.min === null ? '' : `Value must be above ${props.min}`
+    let maxOrMin = props.max === ''|| props.max === null ? both : `Value must be below ${props.max}`
+    let text = ((props.min !== '' && props.min !== null) && (props.max !== '' && props.max !== null)) ? `Value must be between ${props.min} - ${props.max}` : maxOrMin; 
 
     return (
         <Form.Group className="form-inline">

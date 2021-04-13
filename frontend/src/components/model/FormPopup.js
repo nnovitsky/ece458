@@ -50,7 +50,6 @@ class FormPopup extends Component {
     }
 
     render() {
-        console.log(this.state.form)
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Form" : "Create Form";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Form";
@@ -91,7 +90,6 @@ class FormPopup extends Component {
 
     makeExistingForm() {
         var form = [];
-        console.log(this.state.form)
         for (var i = 0; i < this.state.form.length; i++) {
             if (this.state.form[i].fieldtype === 'HEADER') {
                 form.push(<Header id={i} headerInput={this.state.form[i].label} setHeader={this.setLabel} setStepNumber={this.setStepNumber}
@@ -134,9 +132,15 @@ class FormPopup extends Component {
     createForm(){
         formCalServices.createForm(this.state.form, this.state.model_pk).then(result => {
             if(result.success){
-                this.props.close()
+                this.props.onClose()
             }
             else {
+                if(result.errors.form_error){
+                    let err = result.errors.form_error[0]
+                    this.setState({
+                        errors: [`Step ${err.index}: ` + err.error]
+                    })
+                }
                 console.log(result)
             } 
         })
@@ -189,6 +193,7 @@ class FormPopup extends Component {
         let item = {
             fieldtype: 'TEXT_INPUT',
             label: '',
+            expected_string: '',
         }
         this.setState({
             form: this.state.form.concat([item])
@@ -207,7 +212,7 @@ class FormPopup extends Component {
 
     setText(i, value) {
         let form = this.state.form;
-        form[i]['expected_text'] = value;
+        form[i]['expected_string'] = value;
         this.setState({
             form: form
         })
@@ -222,7 +227,8 @@ class FormPopup extends Component {
 
     setMax(i, value) {
         let form = this.state.form;
-        form[i]['expected_max'] = value;
+        if(value === '') { delete form[i]['expected_max'] }
+        else { form[i]['expected_max'] = Number(value) }
         this.setState({
             form: form
         })
@@ -230,7 +236,8 @@ class FormPopup extends Component {
 
     setMin(i, value) {
         let form = this.state.form;
-        form[i]['expected_min'] = value;
+        if(value === '') { delete form[i]['expected_min'] }
+        else { form[i]['expected_min'] = Number(value) }
         this.setState({
             form: form
         })

@@ -37,6 +37,7 @@ class ModelDetailView extends React.Component {
                 categories: [],
                 calibration_modes: [],
                 calibrator_categories_set: [],
+                requires_approval: false,
             },
             instruments: [],
             editPopup: {
@@ -207,6 +208,10 @@ class ModelDetailView extends React.Component {
                         <td>{this.getCalFrequencyString()} </td>
                     </tr>
                     <tr hidden={!isCalibratable}>
+                        <td><strong>Calibration Requires Validation</strong></td>
+                        <td>{modelInfo.requires_approval ? 'Yes' : 'No'} </td>
+                    </tr>
+                    <tr hidden={!isCalibratable}>
                         <td><strong>Calibration Mode</strong></td>
                         <td>{this.getCalModesString()}</td>
                     </tr>
@@ -263,7 +268,7 @@ class ModelDetailView extends React.Component {
     }
 
     async onEditSubmit(editedModel) {
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes).then(result => {
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes, editedModel.requires_approval).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {

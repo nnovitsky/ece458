@@ -43,8 +43,20 @@ import paginationFactory, { PaginationProvider, SizePerPageDropdownStandalone, P
 //     onSelect    // handler that will be called on a row being selected
 //     onSelectAll //handler that will be called on select all being clicked
 //     selected    //an array of keys (the field that is set to be the key for the table) of selected rows
-//      isSelectAllChecked  //boolean if the select all checkbox should be checked
+//     isSelectAllChecked  //boolean if the select all checkbox should be checked
 // }
+// onRowClick: an optional event handler (defaults to null) that will be passed row information to the handler on a row being clicked
+// rowClasses: optional, can either be a string of classes OR something like:
+        // const rowClasses = (row, rowIndex) => {
+        //     let classes = null;
+
+        //     if (rowIndex > 2) {
+        //         classes = 'index-bigger-than-two';
+        //     }
+
+        //     return classes;
+        // };
+// striped:optional boolean for if the table should have stripes, defaults to true
 const NewModelTable = (props) => {
     let options = makeOptions(props.pagination.page, props.pagination.sizePerPage, props.pagination.totalSize, props.pagination.totalSize);
     const selectProps = props.selectRow;
@@ -66,6 +78,14 @@ const NewModelTable = (props) => {
         };
 
     const hoverMessage = props.isHoverMessageDisplayed ? (<span>(Hover over a cell for more information)</span>) : null;
+    let rowEvents = {};
+    if (props.onRowClick) {
+        rowEvents = {
+            onClick: (e, row) => {
+                props.onRowClick(row);
+            }
+        }
+    }
     return (
         <div className="data-table">
             {hoverMessage}
@@ -81,12 +101,15 @@ const NewModelTable = (props) => {
                         totalAndShowAll = (
                             <div className="pagination-top-row">
                                 {props.inlineElements}
-                                
+
+                                {(props.pagination.totalSize < 25) ? null :
                                     <SizePerPageDropdownStandalone
                                         {...paginationProps}
 
                                     />
+                                }
                                 
+
                                 {(props.pagination.totalSize === 0) ? null : (
                                     <>
 
@@ -109,7 +132,7 @@ const NewModelTable = (props) => {
                             <BootstrapTable
                                 remote
                                 bootstrap4
-                                striped
+                                striped={props.striped}
                                 condensed={true}
                                 data={props.data}
                                 columns={props.config}
@@ -121,6 +144,7 @@ const NewModelTable = (props) => {
                                 noDataIndication={noResults(props.noResults)}
                                 rowClasses={props.rowClasses}
                                 selectRow={selectRowProps}
+                                rowEvents={rowEvents}
                             />
                             {paginationPages}
                         </div>
@@ -164,7 +188,7 @@ const makeOptions = (page, sizePerPage, totalSize, totalResults) => {
         // sizePerPageRenderer,
         sizePerPageList: [{
             text: 'Show 25', value: 25
-        }, 
+        },
         {
             text: 'Show 50', value: 50
         },
@@ -218,4 +242,6 @@ NewModelTable.defaultProps = {
     selectRow: false,
     extraTableParams: {},
     isHoverMessageDisplayed: true,
+    onRowClick: null,
+    striped: true,
 }

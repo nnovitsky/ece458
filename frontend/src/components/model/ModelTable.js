@@ -25,6 +25,7 @@ const keyField = 'pk';
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
+    console.log(props.data);
     return (
         <DataTable
             data={props.data}
@@ -116,8 +117,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                         return `Cal. Frequency: N/A, non-calibratable`
                     } else {
                         return `Cal. Frequency: ${cell} days`
-                    }
-                    
+                    } 
                 },
                 headerTitle: () => `Calibration Frequency (Days)`,
                 headerClasses: 'mt-cal-column',
@@ -126,6 +126,27 @@ let makeConfig = (countStart, onMoreClicked) => {
                         return <span>N/A</span>
                     } else {
                         return <span>{cell}</span>
+                    }
+                }
+            },
+            {
+                dataField: 'requires_approval',
+                text: 'Requires Approval',
+                sort: false,
+                title: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        return `Uncalibratable\nRequires Approval: N/A`
+                    } else {
+                        return `Requires Calibration Approval: ${cell ? 'Yes' : 'No'}`;
+                    }
+                },
+                headerTitle: () => `Calibration Validation Required`,
+                headerClasses: 'mt-validation-column',
+                formatter: (cell, row) => {
+                    if (row.calibration_frequency === 0) {
+                        return <span>N/A</span>
+                    } else {
+                        return <span>{cell ? 'Yes' : 'No'}</span>
                     }
                 }
             },
@@ -169,7 +190,7 @@ let makeConfig = (countStart, onMoreClicked) => {
                 headerClasses: 'mt-cal-mode-column',
             },
             {
-                dataField: 'categories.calibrator_categories_set',
+                dataField: 'categories.calibrator_categories',
                 text: 'Calibrator Categories',
                 sort: false,
                 title: (cell) => {

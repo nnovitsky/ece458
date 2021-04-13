@@ -43,6 +43,7 @@ const AddCalibrationPopup = (props) => {
             submitButtonVariant="primary"
             errors={props.errors}
             isPrimaryEnabled={props.isSubmitEnabled}
+            hasGreenBackground={false}
         />
     )
 }

@@ -12,6 +12,7 @@ import { dateToString, nameAndDownloadFile, rawErrorsToDisplayed, hasInstrumentE
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import GenericLoader from '../generic/GenericLoader.js';
+import CalibrationPopup from './CalibrationPopup';
 
 const instrumentServices = new InstrumentServices();
 

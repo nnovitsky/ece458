@@ -13,7 +13,7 @@ class TextInput extends React.Component {
         this.state = {
 
         }
-        this.onTextInput = this.onTextInput.bind(this);
+        this.onLabelInput = this.onLabelInput.bind(this);
     }
 
     render() {
@@ -37,13 +37,17 @@ class TextInput extends React.Component {
             <h5>Text Line Input</h5>
             <div style={{ display: "flex" }}>
                 <label className="required-field">Your Label </label>
-                <input required type="text" value={this.props.text} onChange={this.onTextInput}></input>
+                <input required type="text" value={this.props.label} onChange={this.onLabelInput}></input>
+            </div>
+            <div style={{ display: "flex" }}>
+                <label className="required-field">Expected Input</label>
+                <input required type="text" value={this.props.expected_text} onChange={this.onTextInput}></input>
             </div>
         </div>
     }
 
     makePreview() {
-        let label = this.props.text === '' ? "Your Label" : this.props.text;
+        let label = this.props.label === '' ? "Your Label" : this.props.label;
         return <Form style={{ paddingTop: "10px" }}>
                     <TextInputGroup
                     label={label} />
@@ -58,9 +62,9 @@ class TextInput extends React.Component {
         return result;
     }
 
-    onTextInput(e) {
+    onLabelInput(e) {
         let val = e.target.value;
-        this.props.setText(this.props.id, val);
+        this.props.setLabel(this.props.id, val);
     }
 }
 

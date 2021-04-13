@@ -21,7 +21,7 @@ class FormPopup extends Component {
         this.state = {
             isEdit: true,
             allSteps: [0, 0, 0],
-            form: [],
+            form: [''],
             errors: [],
             model_pk: this.props.model_pk
         }
@@ -36,14 +36,20 @@ class FormPopup extends Component {
         this.setMax = this.setMax.bind(this);
         this.setMin = this.setMin.bind(this);
         this.setLabel = this.setLabel.bind(this);
+        this.setPlaintext = this.setPlaintext.bind(this);
         this.setStepNumber = this.setStepNumber.bind(this);
         this.deleteStep = this.deleteStep.bind(this);
         this.getExistingForm = this.getExistingForm.bind(this);
+        this.makeExistingForm = this.makeExistingForm.bind(this);
+        this.makeBody = this.makeBody.bind(this);
     }
-    async onComponentDidMount(){
+    async componentDidMount(){
+        console.log("here")
         await this.getExistingForm();
     }
+
     render() {
+        console.log(this.state.form)
         let body = this.makeBody();
         let bodyText = (this.state.isEdit) ? "Edit Form" : "Create Form";
         let submitText = (this.state.isEdit) ? "Submit Changes" : "Create Form";
@@ -84,26 +90,27 @@ class FormPopup extends Component {
 
     makeExistingForm() {
         var form = [];
+        console.log(this.state.form)
         for (var i = 0; i < this.state.form.length; i++) {
-            if (this.state.form[i].type === 'header') {
-                form.push(<Header id={i} headerInput={this.state.form[i].text} setHeader={this.setText} setStepNumber={this.setStepNumber}
+            if (this.state.form[i].fieldtype === 'HEADER') {
+                form.push(<Header id={i} headerInput={this.state.form[i].label} setHeader={this.setLabel} setStepNumber={this.setStepNumber}
                                         onDelete={this.deleteStep}></Header>);
             }
-            else if(this.state.form[i].type === "numeric"){
-                form.push(<NumericInput id={i} max={this.state.form[i].max} min={this.state.form[i].min} label={this.state.form[i].label} 
+            else if(this.state.form[i].fieldtype === "FLOAT_INPUT"){
+                form.push(<NumericInput id={i} max={this.state.form[i].expected_max} min={this.state.form[i].expected_min} label={this.state.form[i].label} 
                                         setMax={this.setMax} setMin={this.setMin} setLabel={this.setLabel} setStepNumber={this.setStepNumber}
                                         onDelete={this.deleteStep}></NumericInput>)
             }
-            else if(this.state.form[i].type === "plain-text"){
-                form.push(<PlainText id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}
+            else if(this.state.form[i].fieldtype === "PLAINTEXT"){
+                form.push(<PlainText id={i} text={this.state.form[i].plaintext} setText={this.setPlaintext} setStepNumber={this.setStepNumber}
                                         onDelete={this.deleteStep}></PlainText>)
             }
-            else if(this.state.form[i].type === "text-input"){
-                form.push(<TextInput id={i} text={this.state.form[i].text} setText={this.setText} setStepNumber={this.setStepNumber}
-                                        onDelete={this.deleteStep}></TextInput>)
+            else if(this.state.form[i].fieldtype === "TEXT_INPUT"){
+                form.push(<TextInput id={i} label={this.state.form[i].label} expected_text={this.state.form[i].expected_string} setText={this.setText} setLabel={this.setLabel} 
+                                        setStepNumber={this.setStepNumber} onDelete={this.deleteStep}></TextInput>)
             }
-            else if(this.state.form[i].type === "check-input"){
-                form.push(<Check id={i} label={this.state.form[i].text} setLabel={this.setText} setStepNumber={this.setStepNumber}
+            else if(this.state.form[i].fieldtype === "BOOL_INPUT"){
+                form.push(<Check id={i} label={this.state.form[i].label} setLabel={this.setLabel} setStepNumber={this.setStepNumber}
                                         onDelete={this.deleteStep}></Check>)
             }
         }
@@ -114,13 +121,13 @@ class FormPopup extends Component {
         formCalServices.getExistingForm(this.state.model_pk).then(result => {
             if(result.success){
                 this.setState({
-                    form: result.data.fields
+                    form: result.data
                 })
             }
             else {
                 console.log("error")
             }
-        })
+        }) 
     }
 
     submitForm(){
@@ -136,8 +143,8 @@ class FormPopup extends Component {
 
     addHeader() {
         let item = {
-            type: 'header',
-            text: '',
+            fieldtype: 'HEADER',
+            label: '',
         }
         this.setState({
             form: this.state.form.concat([item])
@@ -146,9 +153,9 @@ class FormPopup extends Component {
 
     addNumeric() {
         let item = {
-            type: 'numeric',
-            max: '',
-            min: '',
+            fieldtype: 'FLOAT_INPUT',
+            expected_max: '',
+            expected_min: '',
             label: '',
 
         }
@@ -159,7 +166,7 @@ class FormPopup extends Component {
 
     addTextArea() {
         let item = {
-            type: 'text-area',
+            fieldtype: 'text-area',
             text: '',
         }
         this.setState({
@@ -169,8 +176,8 @@ class FormPopup extends Component {
 
     addPlainText() {
         let item = {
-            type: 'plain-text',
-            text: '',
+            fieldtype: 'PLAINTEXT',
+            plaintext: '',
         }
         this.setState({
             form: this.state.form.concat([item])
@@ -179,8 +186,8 @@ class FormPopup extends Component {
 
     addTextInput() {
         let item = {
-            type: 'text-input',
-            text: '',
+            fieldtype: 'TEXT_INPUT',
+            label: '',
         }
         this.setState({
             form: this.state.form.concat([item])
@@ -189,8 +196,8 @@ class FormPopup extends Component {
 
     addCheckInput() {
         let item = {
-            type: 'check-input',
-            text: '',
+            fieldtype: 'BOOL_INPUT',
+            label: '',
         }
         this.setState({
             form: this.state.form.concat([item])
@@ -199,7 +206,14 @@ class FormPopup extends Component {
 
     setText(i, value) {
         let form = this.state.form;
-        form[i]['text'] = value;
+        form[i]['expected_text'] = value;
+        this.setState({
+            form: form
+        })
+    }
+    setPlaintext(i, value) {
+        let form = this.state.form;
+        form[i]['plaintext'] = value;
         this.setState({
             form: form
         })
@@ -207,7 +221,7 @@ class FormPopup extends Component {
 
     setMax(i, value) {
         let form = this.state.form;
-        form[i]['max'] = value;
+        form[i]['expected_max'] = value;
         this.setState({
             form: form
         })
@@ -215,15 +229,7 @@ class FormPopup extends Component {
 
     setMin(i, value) {
         let form = this.state.form;
-        form[i]['min'] = value;
-        this.setState({
-            form: form
-        })
-    }
-
-    setMin(i, value) {
-        let form = this.state.form;
-        form[i]['min'] = value;
+        form[i]['expected_min'] = value;
         this.setState({
             form: form
         })

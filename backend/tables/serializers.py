@@ -147,8 +147,8 @@ class ItemModelSearchSerializer(serializers.ModelSerializer):
     calibration_modes = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
-        return [{'item_model_categories': obj.model_cats},
-                {'calibrator_categories': obj.cal_cats}]
+        return {'item_model_categories': obj.model_cats,
+                'calibrator_categories': obj.cal_cats}
 
     def get_calibration_modes(self, obj):
         return obj.calibration_modes
@@ -271,7 +271,7 @@ class SimpleInstrumentReadSerializer(serializers.ModelSerializer):
         cal_cats = [{'name': cat.name, 'pk': cat.pk} for cat in obj.item_model.calibrator_categories_set.all()]
         return {'item_model_categories': model_cats,
                 'instrument_categories': instrument_cats,
-                'calibrator_categoies': cal_cats}
+                'calibrator_categories': cal_cats}
 
     class Meta:
         model = Instrument

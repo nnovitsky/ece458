@@ -134,7 +134,7 @@ def validate_new_form(fields, model_pk):
             unexpected_fields = ALL_FIELDS - expected_fields
 
         for name in unexpected_fields:
-            if name in field: field[name] = None
+            if name in field: field.pop(name)
 
     return errors
 

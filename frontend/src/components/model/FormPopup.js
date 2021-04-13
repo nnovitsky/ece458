@@ -21,7 +21,7 @@ class FormPopup extends Component {
         this.state = {
             isEdit: true,
             allSteps: [0, 0, 0],
-            form: [''],
+            form: [],
             errors: [],
             model_pk: this.props.model_pk
         }

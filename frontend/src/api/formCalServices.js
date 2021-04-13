@@ -41,6 +41,7 @@ export default class FormCalServices {
 
     async createForm(form, model_pk)
     {
+        console.log(form)
         const token = window.sessionStorage.getItem('token');
 
         let result = {

@@ -83,9 +83,10 @@ class ModelDetailView extends React.Component {
     }
 
     render() {
+        const isFormCalibrated = this.state.model_info.calibration_modes.includes("custom_form")
         const isModelAdmin = hasModelEditAccess(this.props.permissions);
         const headerButtons = <div>
-            <Button onClick={this.onFormClicked} hidden={!isModelAdmin}>Edit Cal. Form</Button>
+            <Button onClick={this.onFormClicked} hidden={!isModelAdmin || !isFormCalibrated}>Edit Cal. Form</Button>
             <Button onClick={this.onEditClicked} hidden={!isModelAdmin}>Edit Model</Button>
             <Button onClick={this.onDeleteClicked} hidden={!isModelAdmin} variant="danger">Delete Model</Button>
         </div>

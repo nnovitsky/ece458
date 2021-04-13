@@ -194,13 +194,14 @@ class InstrumentDetailView extends Component {
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
         const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
+        const isForm = this.state.instrument_info.calibration_modes.includes("custom_form");
         let calButtonRow = (
             <div className="table-button-row">
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
-                <Button onClick={this.onFormCalClicked}>Add Form Calibration</Button>
+                <Button onClick={this.onFormCalClicked} hidden={!isForm || !isCalibrationAdmin}>Add Form Calibration</Button>
             </div>
         )
         return (

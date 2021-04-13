@@ -263,7 +263,7 @@ export default class InstrumentServices {
             .then(res => {
                 if (res.ok) {
                     console.log(res);
-                    
+
                     return result;
                 } else {
                     if (res.status === 413) {
@@ -280,6 +280,68 @@ export default class InstrumentServices {
                     });
                 }
             })
+    }
+
+    async setCalEventApproval(calPk, comment, isApproved) {
+        let result = {
+            success: true,
+            errors: {}
+        }
+        const data = {
+            comment: comment,
+            approved: isApproved,
+        };
+        console.log(data);
+        const token = window.sessionStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/calibration_approval/${calPk}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            });
+    }
+
+    async getCalEventApproval(calPk) {
+        let result = {
+            success: true,
+            errors: {}
+        }
+        const token = window.sessionStorage.getItem('token');
+
+        return fetch(`${API_URL}/api/calibration_approval/${calPk}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            });
     }
 
     async getCalFromInstrument(pk, pageNum, showAll, perPage) {
@@ -459,7 +521,7 @@ export default class InstrumentServices {
         let result = {
             success: true,
             errors: [],
-            data:[]
+            data: []
         }
 
         console.log("Import instrument /api/import_models_csv/?get_all")

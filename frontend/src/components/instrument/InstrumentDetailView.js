@@ -9,7 +9,7 @@ import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import GuidedCal from '../guidedCal/GuidedCal.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
-import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess } from '../generic/Util';
+import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess, hasApprovalAccess } from '../generic/Util';
 
 import InstrumentServices from "../../api/instrumentServices";
 import CalHistoryTable from './CalHistoryTable';
@@ -17,7 +17,7 @@ import "./InstrumentDetailView.css";
 import DetailView from '../generic/DetailView';
 import GuidedCalServices from '../../api/guidedCalServices.js';
 import WizardServices from '../../api/wizardServices.js';
-import GenericLoader from '../generic/GenericLoader';
+import CalibrationPopup from './CalibrationPopup';
 
 const guidedCalServices = new GuidedCalServices();
 const wizardServices = new WizardServices();
@@ -38,6 +38,7 @@ class InstrumentDetailView extends Component {
                 model_pk: '',
                 model_description: '',
                 vendor: '',
+                requires_approval: false,
                 serial_number: '',
                 asset_tag: '',
                 comment: '',
@@ -75,6 +76,12 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 pk: null,
             },
+            calibrationPopup: {
+                isShown: false,
+                calEvent: null,
+                isApprovalForm: true,
+                errors: [],
+            },
             isDeleteShown: false,
             currentUser: this.props.user,
         }
@@ -95,6 +102,9 @@ class InstrumentDetailView extends Component {
         this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
 
+        this.onCalibrationPopupClose = this.onCalibrationPopupClose.bind(this);
+        this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
+        this.onShowCalibrationPopup = this.onShowCalibrationPopup.bind(this);
 
         this.onCertificateRequested = this.onCertificateRequested.bind(this);
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
@@ -130,6 +140,7 @@ class InstrumentDetailView extends Component {
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
         let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
+        let calibrationPopup = (this.state.calibrationPopup.isShown) ? this.makeCalibrationPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -138,12 +149,12 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
-
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
                 {wizardPopup}
                 {guidedCalPopup}
+                {calibrationPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
                     headerButtons={headerButtons}
@@ -173,6 +184,7 @@ class InstrumentDetailView extends Component {
         return (
             <div hidden={!isCalibratable}>
                 <h3>Calibration History</h3>
+                <span>(Click on a row for more information)</span>
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}
@@ -186,6 +198,9 @@ class InstrumentDetailView extends Component {
                     onSupplementDownload={this.onSupplementDownloadClicked}
                     onLoadBankClick={this.onLoadBankClick}
                     onKlufeClick={this.onKlufeClick}
+                    requiresApproval={this.state.instrument_info.requires_approval}
+                    onRowClick={this.onShowCalibrationPopup}
+                    hasApprovalPermissions={true}
                 />
             </div>
         )
@@ -203,6 +218,7 @@ class InstrumentDetailView extends Component {
                             model_number: data.item_model.model_number,
                             model_pk: data.item_model.pk,
                             vendor: data.item_model.vendor,
+                            requires_approval: data.item_model.requires_approval,
                             model_description: data.item_model.description,
                             calibration_modes: data.item_model.calibration_modes,
                             serial_number: data.serial_number,
@@ -242,7 +258,6 @@ class InstrumentDetailView extends Component {
                                 ...this.state.calibration_pagination,
                                 resultCount: result.data.count,
                                 numPages: result.data.numpages,
-                                resultsPerPage: 10,
                                 currentPageNum: result.data.currentpage,
                             }
                         });
@@ -375,6 +390,24 @@ class InstrumentDetailView extends Component {
         )
     }
 
+    makeCalibrationPopup() {
+        return(
+            <CalibrationPopup
+                calibrationEvent={this.state.calibrationPopup.calEvent}
+                currentUser={this.props.user}
+                isApprovalForm={this.state.calibrationPopup.isApprovalForm}
+                isShown={this.state.calibrationPopup.isShown}
+                onClose={this.onCalibrationPopupClose}
+                onSubmit={this.onCalibrationPopupApprovalSubmit}
+                errors={this.state.calibrationPopup.errors}
+                onSupplementDownload={this.onSupplementDownloadClicked}
+                onLoadBankClick={this.onLoadBankClick}
+                onKlufeClick={this.onKlufeClick}
+
+            />
+        )
+    }
+
     makeAddCalibrationPopup() {
         return (
             <AddCalibrationPopup
@@ -458,6 +491,45 @@ class InstrumentDetailView extends Component {
             default:
                 return;
         }
+    }
+
+    onShowCalibrationPopup(calEvent) {
+        const isApprover = hasApprovalAccess(this.props.user.permissions_groups);
+        this.setState({
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: true,
+                calEvent: calEvent,
+                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
+            }
+        })
+    }
+
+    onCalibrationPopupClose() {
+        this.setState({
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
+                calEvent: null,
+            }
+        })
+    }
+
+    async onCalibrationPopupApprovalSubmit(comment, isApproved) {
+        await instrumentServices.setCalEventApproval(this.state.calibrationPopup.calEvent.pk, comment, isApproved).then((result) => {
+            if(result.success) {
+                this.getCalHistory();
+                this.onCalibrationPopupClose();
+            } else {
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                this.setState({
+                    calibrationPopup: {
+                        ...this.state.calibrationPopup,
+                        errors: formattedErrors
+                    }
+                })
+            }
+        })
     }
 
     onAddCalibrationClicked() {

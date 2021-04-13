@@ -283,7 +283,7 @@ const hasEventHistory = (rowData) => {
 
                         return <div style={{display: "flex"}}>
                             {display}
-                            <img src={result.icon} alt={result.text} className='calibration-status-icon' />
+                            <img src={result.icon} alt={result.text} className='status-icon' />
                         </div>;
                     },
                     headerClasses: 'it-calibration-expiration-column',

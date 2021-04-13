@@ -48,6 +48,7 @@ class AddModelPopup extends Component {
                     categories: props.currentModel.categories,
                     calibration_modes: props.currentModel.calibration_modes,
                     calibrator_categories_set: [],
+                    requires_approval: props.currentModel.requires_approval,
                 },
                 allCalModes: [],
             }
@@ -64,6 +65,7 @@ class AddModelPopup extends Component {
                     categories: [],
                     calibration_modes: [],
                     calibrator_categories_set: [],
+                    requires_approval: false,
                 },
                 allCalModes: [],
             }
@@ -75,6 +77,7 @@ class AddModelPopup extends Component {
         this.onVendorInput = this.onVendorInput.bind(this);
         this.onCalModeInput = this.onCalModeInput.bind(this);
         this.onCalibratedWithInput = this.onCalibratedWithInput.bind(this);
+        this.onRequiresValidationInput = this.onRequiresValidationInput.bind(this);
         this.onClose = this.onClose.bind(this);
     }
 
@@ -127,11 +130,18 @@ class AddModelPopup extends Component {
 
         const calibratableSection = (
             <>
+                <Form.Label>Calibrator Categories</Form.Label>
+                { calibratedWithPicklist}
                 <Form.Label>Specialty Calibration Mode</Form.Label>
                 { this.makeCheckboxes()}
                 <Form.Text muted>Must have a calibration frequency and only one mode may be selected</Form.Text>
-                <Form.Label>Calibrator Categories</Form.Label>
-                { calibratedWithPicklist}
+                <Form.Label>Validation</Form.Label>
+                <Form.Check
+                    type="checkbox"
+                    label="Calibration Requires Validation"
+                    onChange={this.onRequiresValidationInput}
+                    checked={this.state.newModel.requires_approval}
+                />
             </>
         );
         return (
@@ -222,6 +232,18 @@ class AddModelPopup extends Component {
         })
     }
 
+    onRequiresValidationInput() {
+        this.setState(prevState => {
+            const wasChecked = prevState.newModel.requires_approval;
+            return {
+                newModel: {
+                    ...this.state.newModel,
+                    requires_approval: !wasChecked,
+                }
+            }
+        })
+    }
+
 
     onVendorInput(e) {
         this.setState({
@@ -289,15 +311,22 @@ class AddModelPopup extends Component {
                 })
                 return
             case callibrationName:
-                let calMode = [...this.state.newModel.calibration_modes];
-                if (val < "1") {
-                    calMode = [];
-                }
                 this.setState({
                     newModel: {
                         ...this.state.newModel,
                         calibration_frequency: val,
-                        calibration_modes: calMode
+                    }
+                }, () => {
+                    // resets all the calibration fields if its no longer calibratable
+                    if(!this.isCalibratable()) {
+                        this.setState({
+                            newModel: {
+                                ...this.state.newModel,
+                                calibration_modes: [],
+                                requires_approval: false,
+                                calibrator_categories_set: [],
+                            }
+                        })
                     }
                 })
                 return;
@@ -308,7 +337,6 @@ class AddModelPopup extends Component {
 
     onSubmit() {
         if (this.isValid()) {
-            const isCalibratable = this.isCalibratable();
             let newModel = {
                 pk: this.state.newModel.model_pk,
                 model_number: this.state.newModel.model_number,
@@ -317,8 +345,9 @@ class AddModelPopup extends Component {
                 comment: this.state.newModel.comment,
                 description: this.state.newModel.description,
                 categories: this.state.newModel.categories,
-                calibration_modes: isCalibratable ? this.state.newModel.calibration_modes : [],
-                calibrator_categories_set: isCalibratable ? this.state.newModel.calibrator_categories_set : [],
+                calibration_modes: this.state.newModel.calibration_modes,
+                calibrator_categories_set: this.state.newModel.calibrator_categories_set,
+                requires_approval: this.state.newModel.requires_approval,
             }
 
             if (newModel.calibration_frequency === '') {

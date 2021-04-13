@@ -3,6 +3,11 @@ import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
 
+import RejectedIcon from "../../assets/CalibrationIcons/Expired.png";
+import PendingIcon from "../../assets/CalibrationIcons/PendingIcon.png";
+import ApprovedIcon from "../../assets/CalibrationIcons/Good.png";
+import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
+
 // props
 // data: json data object to be displayed
 
@@ -20,11 +25,14 @@ import Button from 'react-bootstrap/Button';
 // onSupplementDownload: an event handler to call when wanting a download, event.target.value is the cal event pk
 // onLoadBankClick: an event handler to call when wanting to see the load bank cal data, event.target.value is the cal event pk
 // onKlufeClick: an event handler to call when wanting to see the guided hardware cal data, event.target.value is the cal event pk
+// requiresApproval: boolean if the table is going to be including requires approval
+// onRowClick: an event handler that will be called with the calibration event
+// hasApprovalPermissions: boolean if the pending should show a link
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
     return (
         <DataTable
             data={props.data}
@@ -34,13 +42,28 @@ const calHistoryTable = (props) => {
             config={config}
             noResults='No Calibration History'
             inlineElements={props.inlineElements}
+            isHoverMessageDisplayed={false}
+            onRowClick={(row) => props.onRowClick(row)}
+            rowClasses={rowClasses}
+            striped={false}
         />
-
-
     )
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick) => {
+const getApprovalStatusIcon = (approvalStatus) => {
+    switch(approvalStatus) {
+        case 'Approved':
+            return ApprovedIcon;
+        case 'Rejected':
+            return RejectedIcon;
+        case 'Pending':
+            return PendingIcon;
+        default:
+            return NonapplicableIcon;
+    }
+}
+
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
     return (
         [
             // this is a column for a number for the table
@@ -58,6 +81,32 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
                 headerClasses: 'ct-num-column'
+            },
+            {
+                hidden: !requiresApproval,
+                dataField: 'approval_status', //json data key for this column
+                isKey: true,
+                text: 'Status',      //displayed column header text
+                title: (cell) => {   //formats the data and the returned is displayed in the cell
+                    return `Approval Status: ${cell}`
+                },
+                formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
+                    const icon = getApprovalStatusIcon(cell);
+                    let display;
+                    if(hasApprovalPermissions && cell === 'Pending') {
+                        display = <Button className="data-table-button" onClick={(row) => onRowClick(row)}>{cell}</Button>
+                    } else {
+                        display = cell;
+                    }
+                    return <div style={{ display: "flex" }}>
+                        {display}
+                        <img src={icon} alt={cell} className='status-icon' />
+                    </div>;
+                },
+                formatExtraData: hasApprovalPermissions,
+                headerClasses: 'ct-status-column',
+                classes: 'ct-status-column'
+
             },
             {
                 dataField: 'date',
@@ -83,7 +132,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         default:
                             return 'No supplement documents';
                     }
-                    
+
                 },
                 headerClasses: 'ct-file-column',
                 formatter: ((cell, row) => {
@@ -95,7 +144,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Load Bank':
                             return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
                         case 'Klufe':
-                            return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button> 
+                            return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button>
                         default:
                             return <span>N/A</span>
                     }
@@ -105,7 +154,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 dataField: 'user',
                 text: 'Name',
                 sort: false,
-                title: (cell) => `Name: ${ cell.first_name } ${ cell.last_name }`,
+                title: (cell) => `Name: ${cell.first_name} ${cell.last_name}`,
                 headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>
@@ -120,6 +169,24 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
             },
         ]
     )
+};
+
+const rowClasses = (row) => {
+    let classes = 'can-click';
+
+   switch(row.approval_status) {
+       case 'Rejected':
+            classes += ' rejected-row';
+            break;
+        case 'Pending':
+            classes += ' pending-row';
+            break
+        default:
+           classes += ' approved-row';
+            break
+   }
+
+    return classes;
 };
 
 export default calHistoryTable;

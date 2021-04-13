@@ -61,7 +61,7 @@ const nameAndDownloadFile = (blobURL, name, mimeType) => {
 
 // returns true if the user's permission covers performing calibrations
 const hasCalibrationAccess = (permissionGroups) => {
-    return (permissionGroups.includes('admin') || permissionGroups.includes('calibrations'));
+    return (permissionGroups.includes('admin') || permissionGroups.includes('calibration_approver') || permissionGroups.includes('calibrations'));
 }
 
 // returns true if the user's permissions cover modifying models + model categories
@@ -79,6 +79,10 @@ const hasAdminAccess = (permissionGroups) => {
     return permissionGroups.includes('admin');
 }
 
+const hasApprovalAccess = (permissionGroups) => {
+    return permissionGroups.includes('admin') || permissionGroups.includes('calibration_approver');
+}
+
 // maps the calibration modes to a frontend display name
 export const CalibrationModeDisplayMap = {
     "load_bank": "Load Bank",
@@ -93,4 +97,4 @@ export const PrivilegesDisplayMap = {
 };
 
 
-export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess, mimeToExtension };
+export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess, mimeToExtension, hasApprovalAccess };

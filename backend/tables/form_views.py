@@ -128,8 +128,8 @@ def validate_new_form(fields, model_pk):
             max = field['expected_max'] if 'expected_max' in field else None
             if min and max and min > max:
                 errors.append({'index': field['index'], 'error': "Min cannot be greater than max."})
-            elif not min and not max:
-                errors.append({'index': field['index'], 'error': "Float field requires min and/or max."})
+        elif field['fieldtype'] == FORM_FIELDS['text_input']:
+            unexpected_fields = ALL_FIELDS - ALL_TEXT_FIELDS
         else:
             unexpected_fields = ALL_FIELDS - expected_fields
 
@@ -161,7 +161,9 @@ def validate_form_submit(fields):
         elif field['fieldtype'] == FORM_FIELDS['float_input']:
             try:
                 val = field['actual_float']
-                if (field['expected_min'] and val < field['expected_min']) or (field['expected_max'] and val > field['expected_max']):
+                min = field['expected_min'] if 'expected_min' in field else None
+                max = field['expected_max'] if 'expected_max' in field else None
+                if (min and val < min) or (max and val > max):
                     errors.append({'index': field['index'], 'error': "Value is outside acceptable range."})
                 else:
                     field['value_okay'] = True

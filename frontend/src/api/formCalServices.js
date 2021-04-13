@@ -91,7 +91,7 @@ export default class FormCalServices {
     }
 
 
-    async submitFormData(form, cal_pk)
+    async submitFormData(instrument_pk, date, comment, form)
     {
         const token = window.sessionStorage.getItem('token');
 
@@ -100,12 +100,20 @@ export default class FormCalServices {
             data: [],
         }
 
+        let cal_event = {
+            instrument: Number(instrument_pk),
+            date: date,
+            comment: comment
+        }
+
         let data = {
+            cal_event: cal_event,
             fields: form
         }
 
+        console.log(data)
 
-        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}/`;
+        let url = `${API_URL}/api/submit_calibration_form/`;
 
         return fetch(url, {
             method: 'POST',
@@ -119,7 +127,6 @@ export default class FormCalServices {
             console.log(res);
             if (res.ok) {
                 return res.json().then(json => {
-                    console.log(json);
                     result.success = true;
                     result.data = json;
                     return result;
@@ -131,7 +138,7 @@ export default class FormCalServices {
                     return await checkBadResponse(json, result);
                 });
             }
-        })
+        }) 
 
     }
 
@@ -143,7 +150,7 @@ export default class FormCalServices {
             data: [],
         }
 
-        let url = `${API_URL}/api/submit_calibration_form/${cal_pk}/`;
+        let url = `${API_URL}/api/view_submitted_form/${cal_pk}/`;
 
         return fetch(url, {
             method: 'GET',

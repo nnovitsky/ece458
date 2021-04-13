@@ -207,13 +207,14 @@ input[type=number]::-webkit-inner-spin-button {
   background-color: white;
   font-size: min(15vw, 18px) !important;
   overflow: auto;
-  height: min(20vh, 150px) !important;
+  height: min(20vh, 200px) !important;
 }
 
 
 .subtext{
   color: rgb(100, 100, 100) !important;
   font-size: 10px;
+  margin-left: 5px;
   font-style: italic !important;
 }
 

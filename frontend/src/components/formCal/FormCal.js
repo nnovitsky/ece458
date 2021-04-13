@@ -10,7 +10,10 @@ import HeaderGroup from './formGroups/HeaderGroup.js';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
 import InstrumentServices from "../../api/instrumentServices";
+import FormCalServices from "../../api/formCalServices";
+
 const instrumentServices = new InstrumentServices();
+const formCalServices = new FormCalServices();
 
 class FormCal extends React.Component {
 
@@ -32,14 +35,12 @@ class FormCal extends React.Component {
         this.onBoolInput = this.onBoolInput.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
         this.onCommentInput = this.onCommentInput.bind(this);
-        this.makeCalEvent = this.makeCalEvent.bind(this);
+        this.submitForm = this.submitForm.bind(this);
+        this.getForm = this.getForm.bind(this);
     }
 
     async componentDidMount() {
-        //await this.getForm();
-        this.setState({
-            data: FormData.data
-        })
+        await this.getForm();
     }
 
     render() {
@@ -52,7 +53,7 @@ class FormCal extends React.Component {
                 closeButtonText="Cancel"
                 submitButtonText={"Submit Calibration"}
                 onClose={this.props.onClose}
-                onSubmit={this.makeCalEvent}
+                onSubmit={this.submitForm}
                 submitButtonVariant="primary"
                 errors={this.state.errors}
                 isPrimaryEnabled={true}
@@ -67,7 +68,7 @@ class FormCal extends React.Component {
         let introItems = this.makeIntro();
         console.log(this.state.data)
         return <div>
-            <Form>
+            <Form style={{ height: "60vh", overflowY: "auto" }}>
                 {introItems}
                 {formItems}
             </Form>
@@ -101,21 +102,20 @@ class FormCal extends React.Component {
 
     makeForm() {
         let form = []
-
         for (let i = 0; i < this.state.data.length; i++) {
             let group;
             let formField = this.state.data[i];
-            switch (formField.type) {
+            switch (formField.fieldtype) {
                 case "HEADER":
                     group = this.getHeaderForm(formField);
                     break;
-                case "MESSAGE":
+                case "PLAINTEXT":
                     group = this.getPlainTextForm(formField);
                     break;
                 case "TEXT_INPUT":
                     group = this.getTextInput(formField, i);
                     break;
-                case "CHECK":
+                case "BOOL_INPUT":
                     group = this.getCheckInput(formField, i);
                     break
                 case "FLOAT_INPUT":
@@ -143,36 +143,49 @@ class FormCal extends React.Component {
         })
     }
 
-    async deleteCalEvent(){
-        
+    async getForm() {
+        formCalServices.getExistingForm(this.state.model_pk)
+            .then(result => {
+                if (result.success) {
+                    this.setState({
+                        data: result.data,
+                        errors: []
+                    })
+                }
+
+            })
     }
 
-    async makeCalEvent() {
-        instrumentServices.addCalibrationEvent(this.state.instrument_pk, this.state.date_string, this.state.comment, '', '')
-            .then((result) => {
-                console.log(result.data.pk)
+    async submitForm() {
+        formCalServices.submitFormData(this.state.instrument_pk, this.state.date_string, this.state.comment, this.state.data)
+            .then(result => {
                 if (result.success) {
-                    this.props.onClose();
                     this.setState({
-                        cal_event_pk: result.data.pk
+                        errors: []
                     })
+                    
                 } else {
-                    console.log("Failed")
+                    if(result.errors.form_error){
+                        let err = result.errors.form_error[0]
+                        this.setState({
+                            errors: [`Step ${err.index}: ` + err.error]
+                        })
+                    }
                 }
+                console.log(result)
             })
     }
 
 
     getHeaderForm(formField) {
         return <HeaderGroup
-            text={formField.label
-            } />
+            text={formField.label} />
 
     }
 
     getPlainTextForm(formField) {
         return <PlainTextGroup
-            text={formField.plain_text} />
+            text={formField.plaintext} />
     }
 
     getTextInput(formField, id) {
@@ -206,9 +219,8 @@ class FormCal extends React.Component {
         const newVal = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        let field = this.state.data[id]
-        field.actual_float = newVal
-        data[id].actual_float = newVal
+        if(newVal !== '') data[id].actual_float = Number(newVal)
+        else data[id].actual_float = newVal
 
         this.setState({
             data: data
@@ -234,13 +246,21 @@ class FormCal extends React.Component {
         const newText = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        let field = this.state.data[id]
-        field.actual_text = newText
         data[id].actual_text = newText
 
         this.setState({
             data: data
         })
+
+        if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string !== newText) {
+            this.setState({
+                errors: [`Invalid input for Step ${Number(id) + 1}: input does not match expected "${data[id].expected_string}"`]
+            })
+        } else {
+            this.setState({
+                errors: []
+            })
+        }
     }
 
     onBoolInput(e) {

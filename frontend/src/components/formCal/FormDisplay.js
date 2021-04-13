@@ -7,6 +7,7 @@ import Accordion from 'react-bootstrap/Accordion'
 import Card from 'react-bootstrap/Card'
 import SimpleTable from './SimpleTable.js'
 import Table from 'react-bootstrap/Table';
+import Base from '../generic/Base.js';
 
 const formCalServices = new FormCalServices();
 
@@ -21,37 +22,36 @@ class FormDisplay extends React.Component {
             cal_event_pk: '',
             text_inputs: [],
             numeric_inputs: [],
+            bool_inputs: [],
             engineer: '',
             date: '',
+            approval_status: '',
         }
 
-        this.getCalEvent = this.getCalEvent.bind(this);
+        this.getSubmittedForm = this.getSubmittedForm.bind(this);
         this.fillTables = this.fillTables.bind(this);
     }
 
     async componentDidMount() {
-        //await this.getCalEvent();
-        this.setState({
-            data: FormData.data
-        })
-        this.fillTables(FormData.data);
+        await this.getSubmittedForm();
     }
 
     render() {
         let body = this.makeBody();
         return (
-            <GenericPopup
-                show={this.props.isShown}
-                body={body}
-                headerText="Form Calibration"
-                closeButtonText="Exit"
-                onClose={this.props.onClose}
-                submitButtonVariant="primary"
+            <Base
+                title="Form Calibration"
+                isShown={this.props.isShown}
                 errors={this.state.errors}
-                isSubmitButtonShown={false}
-                keyboard={false}
-                backdrop="static"
-            />
+                onClose={this.props.onClose}
+                body={body}
+                incrementStep={this.props.onClose}
+                isBackHidden={true}
+                decrementStep={() => { }}
+                isCancelHidden={true}
+                continueButtonText="Exit"
+                progressBarHidden={true} />
+
         );
     }
 
@@ -83,6 +83,10 @@ class FormDisplay extends React.Component {
                         <td><strong>Comment</strong></td>
                         <td>{this.state.comment}</td>
                     </tr>
+                    <tr>
+                        <td><strong>Approval Status</strong></td>
+                        <td>{this.state.approval_status}</td>
+                    </tr>
                 </tbody>
             </Table>
         </div>
@@ -91,10 +95,11 @@ class FormDisplay extends React.Component {
     fillTables(fields) {
         let numeric_input = [];
         let text_input = [];
+        let bool_input = [];
         for (let i = 0; i < fields.length; i++) {
             let group;
             let formField = fields[i];
-            switch (formField.type) {
+            switch (formField.fieldtype) {
                 case "TEXT_INPUT":
                     group = {
                         label: formField.label,
@@ -109,6 +114,13 @@ class FormDisplay extends React.Component {
                     };
                     numeric_input.push(group);
                     break;
+                case "BOOL_INPUT":
+                    group = {
+                        label: formField.label,
+                        value: formField.actual_bool
+                    };
+                    bool_input.push(group);
+                    break;
                 default:
                     break;
             }
@@ -116,6 +128,7 @@ class FormDisplay extends React.Component {
         this.setState({
             numeric_inputs: numeric_input,
             text_inputs: text_input,
+            bool_inputs: bool_input,
         })
     }
 
@@ -141,18 +154,33 @@ class FormDisplay extends React.Component {
                     </Card.Body>
                 </Accordion.Collapse>
             </Card>
+            <Card>
+                <Accordion.Toggle as={Card.Header} eventKey={3}>
+                    Check Box Inputs
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey={3}>
+                    <Card.Body>
+                        <SimpleTable data={this.state.bool_inputs}> </SimpleTable>
+                    </Card.Body>
+                </Accordion.Collapse>
+            </Card>
         </Accordion>
     }
 
 
-    async getCalEvent() {
-        formCalServices.getExistingForm(this.state.cal_event_pk)
+    async getSubmittedForm() {
+        formCalServices.viewFormSubmission(56430)
             .then((result) => {
                 console.log(result.data)
                 if (result.success) {
                     this.setState({
-                        data: []
+                        data: result.data.fields,
+                        engineer: result.data.cal_event.user.username,
+                        date: result.data.cal_event.date,
+                        comment: result.data.cal_event.comment,
+                        approval_status: result.data.cal_event.approval_status,
                     })
+                    this.fillTables(result.data.fields);
                 } else {
                     console.log("Failed")
                 }

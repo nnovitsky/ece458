@@ -52,7 +52,7 @@ export default class FormCalServices {
             // delete form[i]['value_okay'];
         }
 
-        console.log(form);
+        console.log(JSON.stringify(form))
 
         let data = {
             fields: form
@@ -82,6 +82,7 @@ export default class FormCalServices {
             else {
                 return res.json().then(async (json) => {
                     result.success = false;
+                    console.log(json)
                     return await checkBadResponse(json, result);
                 });
             }

@@ -141,7 +141,6 @@ class FormPopup extends Component {
                         errors: [`Step ${err.index}: ` + err.error]
                     })
                 }
-                console.log(result)
             } 
         })
     }

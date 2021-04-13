@@ -4,7 +4,7 @@ import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
 
 import RejectedIcon from "../../assets/CalibrationIcons/Expired.png";
-import PendingIcon from "../../assets/CalibrationIcons/PendingIcon.png";
+import PendingIcon from "../../assets/CalibrationIcons/Warning.png";
 import ApprovedIcon from "../../assets/CalibrationIcons/Good.png";
 import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.png";
 

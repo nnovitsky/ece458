@@ -9,10 +9,8 @@ import CheckInputGroup from './formGroups/CheckInputGroup.js';
 import HeaderGroup from './formGroups/HeaderGroup.js';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
-import InstrumentServices from "../../api/instrumentServices";
 import FormCalServices from "../../api/formCalServices";
 
-const instrumentServices = new InstrumentServices();
 const formCalServices = new FormCalServices();
 
 class FormCal extends React.Component {

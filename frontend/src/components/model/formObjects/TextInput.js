@@ -42,7 +42,7 @@ class TextInput extends React.Component {
             </div>
             <div style={{ display: "flex" }}>
                 <label className="required-field">Expected Input</label>
-                <input required type="text" value={this.props.expected_text} onChange={this.onTextInput}></input>
+                <input type="text" value={this.props.expected_text} onChange={this.onTextInput}></input>
             </div>
         </div>
     }

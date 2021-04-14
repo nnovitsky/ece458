@@ -38,10 +38,10 @@ class TextInput extends React.Component {
             <h5>Text Line Input</h5>
             <div style={{ display: "flex" }}>
                 <label className="required-field">Your Label </label>
-                <input required type="text" value={this.props.label} onChange={this.onLabelInput}></input>
+                <input type="text" value={this.props.label} onChange={this.onLabelInput}></input>
             </div>
             <div style={{ display: "flex" }}>
-                <label className="required-field">Expected Input</label>
+                <label>Expected Input</label>
                 <input type="text" value={this.props.expected_text} onChange={this.onTextInput}></input>
             </div>
         </div>

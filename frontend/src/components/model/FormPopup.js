@@ -140,6 +140,8 @@ class FormPopup extends Component {
                     let err = result.errors.form_error[0]
                     console.log(err)
                     if(err.error && err.error.label) message = err.error.label
+                    if(err.error && err.error.expected_max) message = err.error.expected_max
+                    if(err.error && err.error.expected_min) message = err.error.expected_min
                     else {
                         message = err.error
                     }

@@ -50,10 +50,7 @@ export default class FormCalServices {
         }
         for (var i = 0; i < form.length; i++) {
             form[i]['index'] = i+1;
-            // delete form[i]['value_okay'];
         }
-
-        console.log(JSON.stringify(form))
 
         let data = {
             fields: form

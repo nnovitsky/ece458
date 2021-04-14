@@ -316,6 +316,41 @@ export default class InstrumentServices {
             });
     }
 
+    async validateCalibratorInstrument(instrumentPk, calibratorAssetTag) {
+        let result = {
+            success: true,
+            errors: {}
+        }
+        const token = window.sessionStorage.getItem('token');
+        const body = {
+            "instrument_pk": instrumentPk,
+            "calibrator_asset_tags": [
+                calibratorAssetTag
+            ]
+        }
+
+        return fetch(`${API_URL}/api/validate_calibrators/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: JSON.stringify(body),
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            });
+    }
+
     async getCalEventApproval(calPk) {
         let result = {
             success: true,

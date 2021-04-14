@@ -12,7 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 //'errors': an array of errors to display
 //'isSubmitEnabled': a boolean if the submit button is enabled
 //'calibratorCategories': an array of the calibrator category names
-
+//'instrumentPk': the instrument pk of the instrument BEING calibrated
 let newCalibration = {
     date: dateToString(new Date()),
     comment: '',
@@ -34,7 +34,7 @@ const AddCalibrationPopup = (props) => {
     return (
         <GenericPopup
             show={props.isShown}
-            body={makeBody(calDate, setCalDate)}
+            body={makeBody(calDate, setCalDate, props.calibratorCategories)}
             headerText="Add Calibration"
             closeButtonText="Cancel"
             submitButtonText="Submit Calibration"
@@ -48,7 +48,7 @@ const AddCalibrationPopup = (props) => {
     )
 }
 
-const makeBody = (calDate, setCalDate) => {
+const makeBody = (calDate, setCalDate, calibratorCategories) => {
     return (
         <div>
             <Form className="popup">
@@ -80,7 +80,8 @@ const makeBody = (calDate, setCalDate) => {
                 </Form.Group>
                 <CalibratedWithInput 
                     onInstrumentChange={onCalibratorInstrumentsChange}
-                />
+                    calibratorCategories={calibratorCategories}
+                /> 
             </Form>
         </div>
     )

@@ -11,6 +11,7 @@ import TextInput from './formObjects/TextInput.js'
 import Check from './formObjects/Check.js'
 import './FormPopup.css'
 import FormCalServices from "../../api/formCalServices";
+import myFormInstructions from './formObjects/FormInstructions.js';
 
 const formCalServices = new FormCalServices();
 
@@ -71,6 +72,7 @@ class FormPopup extends Component {
     }
 
     makeBody() {
+        const instructions = myFormInstructions;
         let existingForm = this.makeExistingForm();
         let header = <div>
             <span style={{float: "left", marginLeft: "4%"}}>Step</span>
@@ -79,6 +81,7 @@ class FormPopup extends Component {
         return (
             <div>
                 <div className="form-builder-workspace">
+                    {instructions}
                     {this.state.form.length > 0 ? header : null}
                     {existingForm}
                     <NewStep addHeader={this.addHeader} addNumeric={this.addNumeric} addTextArea={this.addTextArea}
@@ -140,8 +143,8 @@ class FormPopup extends Component {
                     let err = result.errors.form_error[0]
                     console.log(err)
                     if(err.error && err.error.label) message = err.error.label
-                    if(err.error && err.error.expected_max) message = err.error.expected_max
-                    if(err.error && err.error.expected_min) message = err.error.expected_min
+                    else if(err.error && err.error.expected_max) message = err.error.expected_max
+                    else if(err.error && err.error.expected_min) message = err.error.expected_min
                     else {
                         message = err.error
                     }
@@ -166,8 +169,6 @@ class FormPopup extends Component {
     addNumeric() {
         let item = {
             fieldtype: 'FLOAT_INPUT',
-            expected_max: '',
-            expected_min: '',
             label: '',
 
         }

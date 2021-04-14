@@ -161,6 +161,7 @@ class FormCal extends React.Component {
                     this.setState({
                         errors: []
                     })
+                    this.props.onClose();
                     
                 } else {
                     if(result.errors.form_error){

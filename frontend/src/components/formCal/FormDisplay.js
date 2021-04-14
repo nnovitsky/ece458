@@ -156,7 +156,7 @@ class FormDisplay extends React.Component {
 
         let boolInputCard = <Card>
             <Accordion.Toggle as={Card.Header} eventKey={3}>
-                Check Box Inputs
+                Checkbox Inputs
         </Accordion.Toggle>
             <Accordion.Collapse eventKey={3}>
                 <Card.Body>

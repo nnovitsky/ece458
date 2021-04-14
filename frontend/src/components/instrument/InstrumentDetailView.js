@@ -148,7 +148,6 @@ class InstrumentDetailView extends Component {
         const headerButtons = (<div className="detail-header-buttons-div">
             <Button onClick={this.onEditInstrumentClicked} hidden={!isInstrumentAdmin}>Edit</Button>
             <Button onClick={this.onDeleteClicked} hidden={!isInstrumentAdmin} variant="danger">Delete</Button>
-            <Button onClick={this.onDisplayFormCalClicked}>Display</Button>
         </div>)
 
 
@@ -221,6 +220,7 @@ class InstrumentDetailView extends Component {
                     onSupplementDownload={this.onSupplementDownloadClicked}
                     onLoadBankClick={this.onLoadBankClick}
                     onKlufeClick={this.onKlufeClick}
+                    onFormClick={this.onDisplayFormCalClicked}
                     requiresApproval={this.state.instrument_info.requires_approval}
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
@@ -430,8 +430,6 @@ class InstrumentDetailView extends Component {
             <DisplayFormCal
                 isShown={this.state.displayFormCalPopup.isShown}
                 onClose={this.onDisplayFormCalClose}
-                instrument_pk={this.state.instrument_info.pk}
-                model_pk={this.state.instrument_info.model_pk}
                 cal_pk={this.state.displayFormCalPopup.pk}/>
                 )
     }
@@ -748,7 +746,7 @@ class InstrumentDetailView extends Component {
             formCalPopup: {
                 ...this.state.formCalPopup,
                 isShown: true,
-                errors: []
+                pk: null,
             }
         })
     }
@@ -758,17 +756,18 @@ class InstrumentDetailView extends Component {
             formCalPopup: {
                 ...this.state.formCalPopup,
                 isShown: false,
-                errors: []
+                pk: null,
             }
         })
         this.getCalHistory();
     }
 
 
-    onDisplayFormCalClicked() {
+    onDisplayFormCalClicked(e) {
         this.setState({
             displayFormCalPopup: {
                 ...this.state.displayFormCalPopup,
+                pk: e.target.value,
                 isShown: true,
             }
         })
@@ -778,6 +777,7 @@ class InstrumentDetailView extends Component {
         this.setState({
             displayFormCalPopup: {
                 ...this.state.displayFormCalPopup,
+                pk: null,
                 isShown: false,
             }
         })

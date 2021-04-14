@@ -36,6 +36,11 @@ let makeConfig = () => {
             {
                 dataField: 'value',
                 text: 'Reported Value',
+                formatter: (cell) => {
+                    console.log(cell)
+                    if(cell === '' || cell === null || typeof(cell) === 'undefined') return <span>No input</span>;
+                    else return cell
+                }
             }
         ]
     )

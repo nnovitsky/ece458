@@ -19,7 +19,7 @@ class FormDisplay extends React.Component {
             errors: [],
             data: [],
             comment: '',
-            cal_event_pk: '',
+            cal_event_pk: props.cal_pk,
             text_inputs: [],
             numeric_inputs: [],
             bool_inputs: [],
@@ -133,43 +133,48 @@ class FormDisplay extends React.Component {
     }
 
     makeForm() {
+        let textInputCard = <Card>
+            <Accordion.Toggle as={Card.Header} eventKey={1}>
+                Text Inputs
+                            </Accordion.Toggle>
+            <Accordion.Collapse eventKey={1}>
+                <Card.Body>
+                    <SimpleTable data={this.state.text_inputs}> </SimpleTable>
+                </Card.Body>
+            </Accordion.Collapse>
+        </Card>
+        let numericInputCard = <Card>
+            <Accordion.Toggle as={Card.Header} eventKey={2}>
+                Numeric Inputs
+                                </Accordion.Toggle>
+            <Accordion.Collapse eventKey={2}>
+                <Card.Body>
+                    <SimpleTable data={this.state.numeric_inputs}> </SimpleTable>
+                </Card.Body>
+            </Accordion.Collapse>
+        </Card>
+
+        let boolInputCard = <Card>
+            <Accordion.Toggle as={Card.Header} eventKey={3}>
+                Check Box Inputs
+        </Accordion.Toggle>
+            <Accordion.Collapse eventKey={3}>
+                <Card.Body>
+                    <SimpleTable data={this.state.bool_inputs}> </SimpleTable>
+                </Card.Body>
+            </Accordion.Collapse>
+        </Card>
+
         return <Accordion>
-            <Card>
-                <Accordion.Toggle as={Card.Header} eventKey={1}>
-                    Text Inputs
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey={1}>
-                    <Card.Body>
-                        <SimpleTable data={this.state.text_inputs}> </SimpleTable>
-                    </Card.Body>
-                </Accordion.Collapse>
-            </Card>
-            <Card>
-                <Accordion.Toggle as={Card.Header} eventKey={2}>
-                    Numeric Inputs
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey={2}>
-                    <Card.Body>
-                        <SimpleTable data={this.state.numeric_inputs}> </SimpleTable>
-                    </Card.Body>
-                </Accordion.Collapse>
-            </Card>
-            <Card>
-                <Accordion.Toggle as={Card.Header} eventKey={3}>
-                    Check Box Inputs
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey={3}>
-                    <Card.Body>
-                        <SimpleTable data={this.state.bool_inputs}> </SimpleTable>
-                    </Card.Body>
-                </Accordion.Collapse>
-            </Card>
+            {this.state.numeric_inputs.length > 0 ? numericInputCard : null}
+            {this.state.text_inputs.length > 0 ? textInputCard : null}
+            {this.state.bool_inputs.length > 0 ? boolInputCard : null}
         </Accordion>
     }
 
 
     async getSubmittedForm() {
-        formCalServices.viewFormSubmission(56430)
+        formCalServices.viewFormSubmission(this.state.cal_event_pk)
             .then((result) => {
                 console.log(result.data)
                 if (result.success) {

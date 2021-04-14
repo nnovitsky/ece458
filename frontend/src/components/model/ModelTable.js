@@ -194,19 +194,18 @@ let makeConfig = (countStart, onMoreClicked) => {
                 text: 'Calibrator Categories',
                 sort: false,
                 title: (cell) => {
-                    // let contents;
-                    // if (cell[0] === null) {
-                    //     contents = 'None'
-                    // } else {
-                    //     contents = cell.join(', ');
-                    // }
-                    // return `Calibrator Categories: ${contents}`
+                    let contents;
+                    if (cell[0] === null) {
+                        contents = 'None'
+                    } else {
+                        contents = cell.join(', ');
+                    }
+                    return `Calibrator Categories: ${contents}`
                 },
                 headerClasses: 'mt-model-category-column',
                 formatter: (cell) => {
                     return (
-                        <span>Coming soon</span>
-                        // <span>{cell.join(', ')}</span>
+                        <span>{cell.join(', ')}</span>
                     )
                 }
             },

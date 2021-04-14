@@ -135,10 +135,16 @@ class FormPopup extends Component {
                 this.props.onClose()
             }
             else {
+                let message;
                 if(result.errors.form_error){
                     let err = result.errors.form_error[0]
+                    console.log(err)
+                    if(err.error && err.error.label) message = err.error.label
+                    else {
+                        message = err.error
+                    }
                     this.setState({
-                        errors: [`Step ${err.index}: ` + err.error]
+                        errors: [`Step ${err.index}: ` + message]
                     })
                 }
             } 

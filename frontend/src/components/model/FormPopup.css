@@ -1,0 +1,230 @@
+.app {
+  display: flex;
+  margin: 20px;
+}
+
+.box {
+  width: 300px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(0, 0, 0, 0.24);
+  margin-right: 20px;
+  border-radius: 10px;
+}
+
+.card-header{
+  width: 100%;
+  height: 100%;
+  display: block;
+  justify-content: center;
+  align-items: left;
+  background-color: rgba(200, 255, 187, 0.411);
+  border-radius: 10px;
+  padding: 20px;
+  padding-top: 20px;
+}
+
+
+.card-header input[type=text] {
+  padding: -5px, -5px, -5px, -5px;
+  margin-left: -7px;
+  margin-top: -5px;
+  height: 15px;
+}
+
+
+
+.new-step{
+  height: min(13vh, 80px) !important;
+  width: 95%;
+  /* background-color: rgba(200, 255, 187, 0.411); */
+  background-color: rgba(184, 184, 184, 0.411);
+  color: rgb(90, 90, 90);
+  display: inline-block;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  margin-top: 10px;
+}
+
+
+
+.new-step .button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(220, 220, 220);
+  border-style: ridge;
+  border-width: 5px;
+  height: 100% !important;
+}
+
+.new-step .button:hover{
+  /* background-color: rgb(200, 200, 200); */
+  background-color: rgb(200, 250, 200, 0.5);
+  cursor: pointer;
+}
+
+
+
+.form-builder-workspace{
+  padding-top: 3%;
+  height: 60vh;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  justify-content: center;
+  align-items: top;
+  /* background-color: rgba(200, 255, 187, 0.411); */
+  background-color: rgba(184, 184, 184, 0.411);
+  overflow: scroll;
+}
+
+
+.form-item-builder{
+  margin-top: 2px;
+  height: min(17vh, 100px) !important;
+  width: 95%;
+  display: inline-block;
+  text-align: left;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(184, 184, 184, 0.411);
+  font-size: min(3vw, 12px);
+}
+
+.main{
+  border-top: 5px black !important;
+}
+
+.delete{
+  border: 0px;
+  margin-left: -10px;
+  height: 25px;
+  width: 25px;
+  background-color: transparent; 
+}
+.delete:hover{
+  color: red; 
+}
+
+.header{
+  height: min(12vh, 70px) !important;
+}
+
+.check{
+  height: min(15vh, 80px) !important;
+}
+
+.plain-text{
+  height: min(20vh, 200px) !important;
+}
+
+
+
+input[type=number]::-webkit-inner-spin-button {
+  opacity: 1;
+  color: blue !important;
+}
+
+
+.form-item-builder input[type=text] {
+  padding: -7px, -7px, -7px, -7px;
+  margin-left: 7px;
+  margin-top: 0px;
+  height: 15px;
+  width: min(16vw, 300px);
+  border: 0px;
+}
+
+
+
+.form-item-builder input[type=text]:focus {
+  outline: none;
+}
+
+.form-item-builder input[type=number]:focus {
+  outline: none;
+}
+
+.special input[type=number] {
+  margin-right: 10px;
+  height: 20px;
+  width: min(30vw, 100px);
+}
+
+.form-item-builder textarea{
+  margin-right: 10px;
+  width: 100%;
+  height: 10vh;
+  font-size: min(15px, 1vw);
+  border: 0px;
+}
+
+.form-item-builder textarea:focus{
+  outline: none;
+}
+
+.form-item-builder .preview{
+  margin-top: -10px !important;
+  margin-bottom: -4px !important;
+  background-color: white;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  height: min(17vh, 100px) !important;
+  font-size: min(5vw, 15px);
+}
+
+
+.form-item-builder .preview textarea{
+  border: 10px !important;
+}
+
+.form-item-builder  .header{
+  margin-top: -10px !important;
+  margin-bottom: -4px !important;
+  background-color: white;
+  height: min(12vh, 70px) !important;
+}
+
+.form-item-builder  .check{
+  margin-top: -10px !important;
+  margin-bottom: -4px !important;
+  background-color: white;
+  height: min(15vh, 80px) !important;
+  font-size: min(5vw, 15px);
+}
+
+.form-item-builder  .plain-text{
+  margin-top: -10px !important;
+  margin-bottom: -4px !important;
+  background-color: white;
+  font-size: min(15vw, 18px) !important;
+  overflow: auto;
+  height: min(20vh, 200px) !important;
+}
+
+
+.subtext{
+  color: rgb(100, 100, 100) !important;
+  font-size: 10px;
+  margin-left: 5px;
+  font-style: italic !important;
+}
+
+.required-field:after {
+  content: " *";
+  color: rgb(238, 68, 68);
+}
+
+:required:after {
+  content: " *";
+  color: rgb(238, 68, 68);
+}
+

@@ -8,6 +8,8 @@ import EditInstrumentPopop from './AddInstrumentPopup';
 import DeletePopup from '../generic/GenericPopup';
 import Wizard from '../wizard/Wizard.js';
 import GuidedCal from '../guidedCal/GuidedCal.js';
+import FormCal from '../formCal/FormCal.js';
+import DisplayFormCal from '../formCal/FormDisplay.js';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import { rawErrorsToDisplayed, nameAndDownloadFile, dateToString, hasInstrumentEditAccess, hasCalibrationAccess, hasApprovalAccess } from '../generic/Util';
 
@@ -76,6 +78,14 @@ class InstrumentDetailView extends Component {
                 isShown: false,
                 pk: null,
             },
+            formCalPopup: {
+                isShown: false,
+                pk: null,
+            },
+            displayFormCalPopup: {
+                isShown: false,
+                pk: null,
+            },
             calibrationPopup: {
                 isShown: false,
                 calEvent: null,
@@ -97,10 +107,16 @@ class InstrumentDetailView extends Component {
         this.onWizardClicked = this.onWizardClicked.bind(this);
         this.onWizardClose = this.onWizardClose.bind(this);
         this.makeWizardPopup = this.makeWizardPopup.bind(this);
-
         this.onGuidedCalClicked = this.onGuidedCalClicked.bind(this);
         this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
+        this.onFormCalClicked = this.onFormCalClicked.bind(this);
+        this.onFormCalClose = this.onFormCalClose.bind(this);
+        this.makeFormCalPopup = this.makeFormCalPopup.bind(this);
+
+        this.onDisplayFormCalClicked = this.onDisplayFormCalClicked.bind(this);
+        this.onDisplayFormCalClose = this.onDisplayFormCalClose.bind(this);
+        this.makeDisplayFormCalPopup = this.makeDisplayFormCalPopup.bind(this);
 
         this.onCalibrationPopupClose = this.onCalibrationPopupClose.bind(this);
         this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
@@ -140,6 +156,8 @@ class InstrumentDetailView extends Component {
         let deleteInstrumentPopup = (this.state.isDeleteShown) ? this.makeDeletePopup() : null;
         let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
         let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
+        let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
+        let displayFormCalPopup = (this.state.displayFormCalPopup.isShown) ? this.makeDisplayFormCalPopup() : null;
         let calibrationPopup = (this.state.calibrationPopup.isShown) ? this.makeCalibrationPopup() : null;
 
         if (this.state.redirect != null) {
@@ -154,6 +172,8 @@ class InstrumentDetailView extends Component {
                 {deleteInstrumentPopup}
                 {wizardPopup}
                 {guidedCalPopup}
+                {formCalPopup}
+                {displayFormCalPopup}
                 {calibrationPopup}
                 <DetailView
                     title={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number} (${this.state.instrument_info.asset_tag})`}
@@ -173,12 +193,14 @@ class InstrumentDetailView extends Component {
         let isCalibratable = this.state.instrument_info.calibration_frequency !== 0;
         const isLoadBank = this.state.instrument_info.calibration_modes.includes("load_bank");
         const isKlufe = this.state.instrument_info.calibration_modes.includes("klufe_k5700");
+        const isForm = this.state.instrument_info.calibration_modes.includes("custom_form");
         let calButtonRow = (
             <div className="table-button-row">
                 <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
+                <Button onClick={this.onFormCalClicked} hidden={!isForm || !isCalibrationAdmin}>Add Form Calibration</Button>
             </div>
         )
         return (
@@ -198,6 +220,7 @@ class InstrumentDetailView extends Component {
                     onSupplementDownload={this.onSupplementDownloadClicked}
                     onLoadBankClick={this.onLoadBankClick}
                     onKlufeClick={this.onKlufeClick}
+                    onFormClick={this.onDisplayFormCalClicked}
                     requiresApproval={this.state.instrument_info.requires_approval}
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
@@ -390,6 +413,27 @@ class InstrumentDetailView extends Component {
         )
     }
 
+    makeFormCalPopup() {
+        return (
+            <FormCal
+                isShown={this.state.formCalPopup.isShown}
+                onClose={this.onFormCalClose}
+                user={this.props.user}
+                instrument_pk={this.state.instrument_info.pk}
+                model_pk={this.state.instrument_info.model_pk}
+            />
+        )
+    }
+
+    makeDisplayFormCalPopup(){
+        return (
+            <DisplayFormCal
+                isShown={this.state.displayFormCalPopup.isShown}
+                onClose={this.onDisplayFormCalClose}
+                cal_pk={this.state.displayFormCalPopup.pk}/>
+                )
+    }
+    
     makeCalibrationPopup() {
         return(
             <CalibrationPopup
@@ -694,6 +738,48 @@ class InstrumentDetailView extends Component {
     onDeleteClose() {
         this.setState({
             isDeleteShown: false
+        })
+    }
+
+    onFormCalClicked() {
+        this.setState({
+            formCalPopup: {
+                ...this.state.formCalPopup,
+                isShown: true,
+                pk: null,
+            }
+        })
+    }
+
+    onFormCalClose() {
+        this.setState({
+            formCalPopup: {
+                ...this.state.formCalPopup,
+                isShown: false,
+                pk: null,
+            }
+        })
+        this.getCalHistory();
+    }
+
+
+    onDisplayFormCalClicked(e) {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: e.target.value,
+                isShown: true,
+            }
+        })
+    }
+
+    onDisplayFormCalClose() {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: null,
+                isShown: false,
+            }
         })
     }
 

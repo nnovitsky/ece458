@@ -25,7 +25,7 @@ import Alert from 'react-bootstrap/Alert'
 
 const genericPopup = (props) => {
     return (
-        <Modal className="popup" show={props.show} onHide={props.onClose} size={props.size}>
+        <Modal className="popup" show={props.show} onHide={props.onClose} size={props.size} backdrop={props.backdrop} keyboard={props.keyboard}>
             <Modal.Header>
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
@@ -82,6 +82,8 @@ genericPopup.defaultProps = {
     onSubmit: () => { },
     submitButtonText: '',
     isPrimaryOnLeft: false,
+    backdrop: '#fff',
+    keyboard: true,
 }
 
 export default genericPopup;

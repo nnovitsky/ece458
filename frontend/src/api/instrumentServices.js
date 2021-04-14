@@ -248,7 +248,8 @@ export default class InstrumentServices {
 
         let result = {
             success: true,
-            errors: []
+            errors: [],
+            data: [],
         }
 
         const token = window.sessionStorage.getItem('token');
@@ -263,7 +264,6 @@ export default class InstrumentServices {
             .then(res => {
                 if (res.ok) {
                     console.log(res);
-
                     return result;
                 } else {
                     if (res.status === 413) {

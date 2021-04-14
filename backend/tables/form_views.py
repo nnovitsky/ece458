@@ -32,15 +32,25 @@ def form_data(request, model_pk):
             return Response({"form_error": errors}, status=status.HTTP_400_BAD_REQUEST)
 
         fields = sorted(request.data['fields'], key=lambda i: i['index'])
-        # delete previous form if exists
-        if len(itemmodel.calibrationformfield_set.all()):
-            itemmodel.calibrationformfield_set.all().delete()
+        # hang onto pks of previous form if exists
+        old_pks = []
+        for f in itemmodel.calibrationformfield_set.all():
+            old_pks.append(f.pk)
+            f.itemmodel = None
+            f.save()
         serializer = FormFieldSerializer(data=fields, many=True)
         if serializer.is_valid():
             serializer.save()
+            # delete old form if this one is valid
+            CalibrationFormField.objects.filter(pk__in=old_pks).delete()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # re-add form to model if this one is NOT valid
+            for f in CalibrationFormField.objects.filter(pk__in=old_pks):
+                f.itemmodel = itemmodel
+                f.save()
+            errors = parse_errors(serializer)
+            return Response({'form_error': errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -84,7 +94,8 @@ def submit_form(request):
         return Response({"cal_event": cal_serializer.data, "form": form_serializer.data}, status=status.HTTP_201_CREATED)
     else:
         cal_event.delete()
-        return Response(form_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        errors = parse_errors(form_serializer)
+        return Response({'form_error': errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -173,4 +184,16 @@ def validate_form_submit(fields):
                 errors.append({'index': field['index'], 'error': "Actual float not provided."})
         else:
             errors.append({'index': field['index'], 'error': "Invalid field type."})
+    return errors
+
+
+def parse_errors(serializer):
+    errors = []
+    initial_data = serializer.initial_data
+    ser_errors = serializer.errors
+    for i in range(len(ser_errors)):
+        if len(ser_errors[i]) == 0: continue
+        index = initial_data[i]['index']
+        e = ser_errors[i]
+        errors.append({'index': index, 'error': e})
     return errors

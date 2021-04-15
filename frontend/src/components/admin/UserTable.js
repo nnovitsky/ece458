@@ -53,7 +53,7 @@ const userTable = (props) => {
                 noResults='No Users'
                 inlineElements={props.inlineElements}
                 isHoverMessageDisplayed={false}
-                rowClasses='cell-padding'
+                rowClasses='cell-padding at-height'
             />
             </div>
 

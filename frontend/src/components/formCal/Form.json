@@ -1,0 +1,34 @@
+{
+    "data" : [
+        {
+            "type" : "HEADER",
+            "label" : "This is Section 1"
+        },
+        {
+            "type" : "MESSAGE",
+            "label" : null,
+            "plain_text" : "A big paragraph that has a lot of plain text."
+        },
+        {
+            "type" : "CHECK",
+            "label" : "Label for check input",
+            "actual_bool": false
+        },
+        {
+            "type" : "TEXT_INPUT",
+            "label" : "Please enter your comment",
+            "actual_text" : ""
+        },
+        {
+            "type" : "HEADER",
+            "label" : "This is Section 2"
+        },
+        {
+            "type" : "FLOAT_INPUT",
+            "label" : "Please enter the display voltage",
+            "expected_min": 0,
+            "expected_max": 10,
+            "actual_float": 3
+        }
+    ]
+}

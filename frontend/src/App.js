@@ -3,7 +3,6 @@ import './App.css';
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
 import { Beforeunload } from 'react-beforeunload';
-
 import LoginPage from './components/login/LoginPage';
 import AdminPage from './components/admin/AdminPage';
 import UserProfilePage from './components/user/UserProfilePage';
@@ -18,7 +17,7 @@ import OauthRoute from './components/OauthRoute';
 import GenericLoader from './components/generic/GenericLoader.js';
 import AuthServices from './api/authServices';
 import Configs from './api/config.js';
-import { hasModelEditAccess, hasInstrumentEditAccess, hasAdminAccess } from './components/generic/Util';
+import { hasModelEditAccess, hasInstrumentEditAccess, hasAdminAccess, getHighestPriv} from './components/generic/Util';
 import GuidedCalServices from './api/guidedCalServices.js';
 
 const guidedCalServices = new GuidedCalServices();
@@ -59,11 +58,6 @@ class App extends Component {
     }
   }
 
-  async componentDidUpdate(){
-    console.log("Compenent Update")
-    console.log(this.state.user.permissions_groups)
-  }
-
   async turnOffSource(){
     await guidedCalServices.turnOffSource().then(result => {
         if(result.success)
@@ -87,6 +81,9 @@ class App extends Component {
             last_name: result.data.last_name
           }
         })
+        const highest_priv = getHighestPriv(result.data.groups);
+        window.sessionStorage.setItem('highest_priv', highest_priv);
+        window.sessionStorage.removeItem('no_permission');
       } else {
         this.emptySessionStorage();
         this.setState({
@@ -124,8 +121,10 @@ class App extends Component {
             irst_name: result.data.first_name,
             last_name: result.data.last_name
           }
-
         });
+        const highest_priv = getHighestPriv(result.data.user.groups);
+        window.sessionStorage.setItem('highest_priv', highest_priv);
+        window.sessionStorage.removeItem('no_permission');
       }
       else {
         this.setState({
@@ -162,6 +161,9 @@ class App extends Component {
               last_name: json.user.last_name
             }
           });
+          const highest_priv = getHighestPriv(json.user.groups);
+          window.sessionStorage.setItem('highest_priv', highest_priv);
+          window.sessionStorage.removeItem('no_permission');
           this.setState({ error_message: '' });
         }
       });
@@ -183,6 +185,8 @@ class App extends Component {
 
   clearOauthStorage = () => {
     window.sessionStorage.removeItem('oauth');
+    const highest_priv = getHighestPriv(this.state.user.permissions_groups);
+    window.sessionStorage.setItem('highest_priv', highest_priv);
   }
 
   emptySessionStorage = () => {
@@ -206,7 +210,12 @@ class App extends Component {
   // called with a page component that should only be displayed if the user is an admin
   // if not, they will be redirected to the user profile page
   adminPath = (adminComponent) => {
-    const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
+
+    let higest = [window.sessionStorage.getItem('highest_priv')];
+    let permission = window.sessionStorage.getItem('no_permission')
+
+    const isAdmin = hasAdminAccess(higest) && permission !== 'true';
+    /* const isAdmin = hasAdminAccess(this.state.user.permissions_groups); */
     return isAdmin ? adminComponent : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
@@ -214,17 +223,29 @@ class App extends Component {
   // called with a page component that should only be displayed if the user can inport things
   // if not, they will be redirected to the user profile page
   importPath = (importComponent) => {
-    const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
-    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
-    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);
+    let higest = [window.sessionStorage.getItem('highest_priv')];
+    let permission = window.sessionStorage.getItem('no_permission')
+
+/*  const isAdmin = hasAdminAccess(this.state.user.permissions_groups);
+    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups); 
+    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);*/
+    const isAdmin = hasAdminAccess(higest) && permission !== 'true';
+    const isModelAdmin = hasModelEditAccess(higest) && permission !== 'true';
+    const isInstrumentAdmin = hasInstrumentEditAccess(higest) && permission !== 'true';
     return (isAdmin || isModelAdmin || isInstrumentAdmin) ? importComponent : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
   // only allows a user to this page if they have model and/or instrument permissions
   // the page itself will only display content that they should be able to see (ie hide stuff they shouldnt)
   categoryPagePath = (component) => {
-    const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
-    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups);
+    let higest = [window.sessionStorage.getItem('highest_priv')];
+    let permission = window.sessionStorage.getItem('no_permission')
+
+/*     const isModelAdmin = hasModelEditAccess(this.state.user.permissions_groups);
+    const isInstrumentAdmin = hasInstrumentEditAccess(this.state.user.permissions_groups); */
+
+    const isModelAdmin = hasModelEditAccess(higest) && permission !== 'true';
+    const isInstrumentAdmin = hasInstrumentEditAccess(higest) && permission !== 'true';
     return (isModelAdmin || isInstrumentAdmin) ? component : <Redirect to={{ pathname: '/user-profile' }} />;
   }
 
@@ -252,7 +273,6 @@ class App extends Component {
               <Route path="/categories/:type" render={() => this.categoryPagePath(<CategoriesPage is_admin={isAdmin} permissions={this.state.user.permissions_groups} />)} exact />
               {/* routes below are oauth */}
               <OauthRoute path="/oauth/consume" handle_oauth_login={this.handle_oath_login} exact />
-
             </Switch>
             {this.state.logged_in ? null : form}
             {this.state.redirect ? (<Redirect to="/user-profile" />) : null}

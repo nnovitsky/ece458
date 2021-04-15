@@ -83,6 +83,15 @@ const hasApprovalAccess = (permissionGroups) => {
     return permissionGroups.includes('admin') || permissionGroups.includes('calibration_approver');
 }
 
+const getHighestPriv = (permissionGroups) =>{
+    if (hasAdminAccess(permissionGroups)) return 'admin'
+    else if (hasModelEditAccess(permissionGroups)) return 'models'
+    else if (hasInstrumentEditAccess(permissionGroups)) return 'instruments'
+    else if (hasApprovalAccess(permissionGroups)) return 'calibration_approver'
+    else if (hasCalibrationAccess(permissionGroups)) return 'calibrations'
+    else return ''
+}
+
 // maps the calibration modes to a frontend display name
 export const CalibrationModeDisplayMap = {
     "load_bank": "Load Bank",
@@ -98,4 +107,4 @@ export const PrivilegesDisplayMap = {
 };
 
 
-export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess, mimeToExtension, hasApprovalAccess };
+export { dateToString, rawErrorsToDisplayed, nameAndDownloadFile, hasInstrumentEditAccess, hasModelEditAccess, hasCalibrationAccess, hasAdminAccess, mimeToExtension, hasApprovalAccess, getHighestPriv };

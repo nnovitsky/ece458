@@ -1,6 +1,7 @@
 import React from 'react';
 import EditModelPopup from './AddModelPopup';
 import DeletePopup from '../generic/GenericPopup';
+import FormPopup from './FormPopup.js';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
@@ -47,6 +48,10 @@ class ModelDetailView extends React.Component {
                 isShown: false,
                 errors: []
             },
+            formPopup: {
+                isShown: false,
+                errors: []
+            },
             pagination: {
                 resultCount: 0,
                 numPages: 1,
@@ -65,6 +70,10 @@ class ModelDetailView extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteSubmit = this.onDeleteSubmit.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
+        this.onFormClicked = this.onFormClicked.bind(this);
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onFormClose = this.onFormClose.bind(this);
+
         this.onSerialTableChange = this.onSerialTableChange.bind(this);
     }
 
@@ -74,14 +83,17 @@ class ModelDetailView extends React.Component {
     }
 
     render() {
+        const isFormCalibrated = this.state.model_info.calibration_modes.includes("custom_form")
         const isModelAdmin = hasModelEditAccess(this.props.permissions);
         const headerButtons = <div>
+            <Button onClick={this.onFormClicked} hidden={!isModelAdmin || !isFormCalibrated}>Edit Cal. Form</Button>
             <Button onClick={this.onEditClicked} hidden={!isModelAdmin}>Edit Model</Button>
             <Button onClick={this.onDeleteClicked} hidden={!isModelAdmin} variant="danger">Delete Model</Button>
         </div>
 
         let deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
         let editPopup = (this.state.editPopup.isShown) ? this.makeEditPopup() : null;
+        let formPopup = (this.state.formPopup.isShown) ? this.makeFormPopup() : null;
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -92,7 +104,7 @@ class ModelDetailView extends React.Component {
             <div>
                 {deletePopup}
                 {editPopup}
-
+                {formPopup}
                 <DetailView
                     title={`${this.state.model_info.vendor} ${this.state.model_info.model_number}`}
                     headerButtons={headerButtons}
@@ -147,6 +159,19 @@ class ModelDetailView extends React.Component {
                 onClose={this.onEditClose}
                 currentModel={this.state.model_info}
                 errors={this.state.editPopup.errors}
+            />
+        )
+    }
+
+    makeFormPopup() {
+        return (
+            <FormPopup
+                isShown={this.state.formPopup.isShown}
+                onSubmit={this.onFormSubmit}
+                onClose={this.onFormClose}
+                currentModel={this.state.model_info}
+                errors={this.state.formPopup.errors}
+                model_pk={this.state.model_info.pk}
             />
         )
     }
@@ -271,6 +296,35 @@ class ModelDetailView extends React.Component {
         this.setState({
             editPopup: {
                 ...this.state.editPopup,
+                isShown: false,
+                errors: []
+            }
+        })
+    }
+
+    onFormClicked() {
+        this.setState({
+            formPopup: {
+                ...this.state.formPopup,
+                isShown: true,
+            }
+        })
+    }
+
+    onFormClose() {
+        this.setState({
+            formPopup: {
+                ...this.state.formPopup,
+                isShown: false,
+                errors: []
+            }
+        })
+    }
+
+    onFormSubmit(){
+        this.setState({
+            formPopup: {
+                ...this.state.formPopup,
                 isShown: false,
                 errors: []
             }

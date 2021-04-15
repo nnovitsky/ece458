@@ -32,7 +32,7 @@ const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.onFormClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
     return (
         <DataTable
             data={props.data}
@@ -63,7 +63,7 @@ const getApprovalStatusIcon = (approvalStatus) => {
     }
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, onFormClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
     return (
         [
             // this is a column for a number for the table
@@ -120,6 +120,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 text: 'Additional Files',
                 sort: false,
                 title: (cell) => {
+                    console.log(cell)
                     switch (cell) {
                         case 'None':
                             return 'No supplement documents';
@@ -128,6 +129,8 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Load Bank':
                             return 'Load Bank Data: click to view';
                         case 'Klufe':
+                            return 'Guided Hardware Data: click to view';
+                        case 'Form':
                             return 'Guided Hardware Data: click to view';
                         default:
                             return 'No supplement documents';
@@ -145,6 +148,9 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                             return <Button onClick={onLoadBankClick} value={row.lb_cal_pk} className="data-table-button">Load Bank Data</Button>
                         case 'Klufe':
                             return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button>
+                        case 'Form':
+                            console.log(row)
+                            return <Button onClick={onFormClick} value={row.pk} className="data-table-button">Form Cal. Data</Button>
                         default:
                             return <span>N/A</span>
                     }

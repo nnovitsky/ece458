@@ -4,9 +4,9 @@ import Form from 'react-bootstrap/Form';
 
 const plainTextGroup = (props) => {
     return (
-        <Form.Group>
-            <Form.Text>{props.text}</Form.Text>
-        </Form.Group>
+            <Form.Group>
+                <Form.Text style={{ whiteSpace: "pre-wrap" }}>{props.text}</Form.Text>
+            </Form.Group>
     )
 
 }

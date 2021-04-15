@@ -99,10 +99,8 @@ export default class ModelServices {
             itemmodelcategory_set: categories.map(el => el.pk),
             calibration_modes: calMode,
             requires_approval: requiresApproval,
-            //calibrator_categories_set: calibratorCategories.map(el => el.pk)
+            calibrator_categories_set: calibratorCategories.map(el => el.pk)
         }
-
-        console.log(data);
 
         let result = {
             success: true,
@@ -134,7 +132,7 @@ export default class ModelServices {
 
     // Catches errors from the backend and has 
 
-    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode, requiresApproval) {
+    async editModel(pk, vendor, modelNumber, description, comment, calFrequency, categories, calMode, calCategories, requiresApproval) {
         const token = window.sessionStorage.getItem('token');
 
         let data = {
@@ -146,6 +144,7 @@ export default class ModelServices {
             itemmodelcategory_set: categories.map(el => el.pk),
             calibration_modes: calMode,
             requires_approval: requiresApproval,
+            calibrator_categories_set: calCategories.map(el => el.pk)
         }
 
         console.log(data)

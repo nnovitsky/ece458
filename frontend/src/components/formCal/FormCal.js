@@ -168,7 +168,7 @@ class FormCal extends React.Component {
                     if(result.errors.form_error){
                         let err = result.errors.form_error[0]
                         this.setState({
-                            errors: [`Step ${err.index}: ` + err.error]
+                            errors: [`Invalid input for [${this.getLabel(err.index)}]: ` + err.error]
                         })
                     }
                 }
@@ -225,12 +225,12 @@ class FormCal extends React.Component {
         this.setState({
             data: data
         })
-        if (newVal > this.state.data[id].expected_max) {
+        if (data[id].expected_max !== '' && data[id].expected_max !== null && newVal > this.state.data[id].expected_max) {
             this.setState({
                 errors: [`Invalid input for [${this.getLabel(id)}]: input greater than ${this.state.data[id].expected_max}`]
             })
         }
-        else if (newVal < this.state.data[id].expected_min) {
+        else if (data[id].expected_min !== '' && data[id].expected_min !== null && newVal < this.state.data[id].expected_min) {
             this.setState({
                 errors: [`Invalid input for [${this.getLabel(id)}]: input less than ${this.state.data[id].expected_min}`]
             })

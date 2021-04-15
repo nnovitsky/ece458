@@ -91,16 +91,10 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     return `Approval Status: ${cell}`
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
-                    const icon = getApprovalStatusIcon(cell);
-                    let display;
-                    if(hasApprovalPermissions && cell === 'Pending') {
-                        display = <Button className="data-table-button" onClick={(row) => onRowClick(row)}>{cell}</Button>
-                    } else {
-                        display = cell;
-                    }
-                    return <div style={{ display: "flex" }}>
-                        {display}
-                        <img src={icon} alt={cell} className='status-icon' />
+                    const style = (cell === 'Pending') ? {backgroundColor: 'yellow'} : {};
+                    console.log(style);
+                    return <div style={{ display: "flex", ...style }}>
+                        {cell}
                     </div>;
                 },
                 formatExtraData: hasApprovalPermissions,
@@ -117,7 +111,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
             },
             {
                 dataField: 'file_type',
-                text: 'Additional Files',
+                text: 'Supplement Data',
                 sort: false,
                 title: (cell) => {
                     console.log(cell)
@@ -141,7 +135,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 formatter: ((cell, row) => {
                     switch (cell) {
                         case 'None':
-                            return <span>N/A</span>;
+                            return <span style={{padding: "1px 3px 1px 3px"}}>-</span>;
                         case 'Artifact':
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
                         case 'Load Bank':

@@ -222,7 +222,6 @@ takes the leftover
     width: 60px;
 }
 
-
 /* guided cal columns widths */
 
 .gc-num-column{
@@ -240,4 +239,12 @@ takes the leftover
 .gc-vo-column{
     width: 16%;
 }
+
+.fc-num-column{
+    width: 10%;
+}
+.fc-even-column{
+    width: 30%;
+}
+
 

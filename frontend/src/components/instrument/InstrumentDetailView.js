@@ -233,6 +233,7 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
                 if (result.success) {
+                    console.log(result.data);
                     let data = result.data;
                     this.setState({
                         ...this.state,
@@ -251,7 +252,7 @@ class InstrumentDetailView extends Component {
                             model_categories: data.categories.item_model_categories,
                             instrument_categories: data.categories.instrument_categories,
                             asset_tag: data.asset_tag,
-                            // calibrator_categories: data.item_model.calibrator_categories_set,
+                            calibrator_categories: data.categories.calibrator_categories,
                         }
                     })
                 }
@@ -336,7 +337,6 @@ class InstrumentDetailView extends Component {
 
                         <td>
                             <div className="detail-view-categories">
-                                <p>Coming Soon</p>
                                 {this.state.instrument_info.calibrator_categories.map(el => el.name).join(', ')}
                             </div>
                         </td>
@@ -461,6 +461,7 @@ class InstrumentDetailView extends Component {
                 errors={this.state.addCalPopup.errors}
                 isSubmitEnabled={this.state.addCalPopup.isSubmitEnabled}
                 calibratorCategories={this.state.instrument_info.calibrator_categories.map(x => x.name)}
+                instrumentPk={this.state.instrument_info.pk}
             />
         )
     }

@@ -4,39 +4,47 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Badge from 'react-bootstrap/Badge';
+import InstrumentDetailView from './InstrumentDetailView';
+import InstrumentServices from '../../api/instrumentServices';
 
+const instrumentServices = new InstrumentServices();
+let instrumentPk;
 let count = 1;
 // onInstrumentChange: an event handler that will be called whenever an
 // instrument is added or removed. this will be passed an array of instrument pks
+// calibratorCategories: an array of acceptable calibrator category names to be displayed (if an empty array, this component will be hidden)
+// instrumentPk: the instrument pk of the instrument BEING calibrated
 const CalibratedWithInput = (props) => {
     const [calibratorState, dispatch] = useReducer(reducer, getEmptyState());
 
     useEffect(() => {
         props.onInstrumentChange(calibratorState.instrumentsAdded.map(x => x.instrument_pk));
+        instrumentPk = props.instrumentPk;
     }, [calibratorState.instrumentsAdded, props]);
     return (
-        <div className="calibrator-instrument-div" onKeyUp={(e) => e.key==='Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
+        <div hidden={props.calibratorCategories.length === 0} className="calibrator-instrument-div" onKeyUp={(e) => e.key === 'Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
             <Form.Label>Calibrator Instruments</Form.Label>
-                <InputGroup noValidate validated={false}>
-                    <FormControl
-                        required
-                        type="text"
-                        placeholder="Asset Tag"
-                        className={getClassName(calibratorState)}
-                        value={calibratorState.textInput}
+            <Form.Text muted>Calibrator Categories: {props.calibratorCategories.join(', ')}</Form.Text>
+            <InputGroup noValidate style={{padding: '0px'}}>
+                <FormControl
+                    required
+                    type="text"
+                    placeholder="Asset Tag"
+                    className={getClassName(calibratorState)}
+                    value={calibratorState.textInput}
                     onChange={(e) => onTextInput(e.target.value, dispatch)}
-                    />
-                    <InputGroup.Append>
-                        <Button onClick={() => onAddInstrument(calibratorState, dispatch)} disabled={!calibratorState.isValidText}>+</Button>
-                    </InputGroup.Append>
-                    <Form.Control.Feedback type="invalid">
-                        {calibratorState.errors}
+                />
+                <InputGroup.Append>
+                    <Button onClick={() => onAddInstrument(calibratorState, dispatch)} disabled={!calibratorState.isValidText}>+</Button>
+                </InputGroup.Append>
+                <Form.Control.Feedback type="invalid">
+                    {calibratorState.errors}
 
-                    </Form.Control.Feedback>
-                </InputGroup>
-                <div className="badge-container">
-                {getBadgeList(calibratorState, dispatch)}
-                </div>
+                </Form.Control.Feedback>
+            </InputGroup>
+            <div className="badge-container">
+                {calibratorState.instrumentsAdded.length > 0 ? getBadgeList(calibratorState, dispatch) : <span style={{width: "100%", textAlign: "center"}}>(No Instruments Added)</span>}
+            </div>
         </div>
     );
 }
@@ -102,8 +110,13 @@ const onTextInput = (text, dispatch) => {
         dispatch({ type: 'set_errors', payload: [] });
     }
     if (text.length === 6) {
-        dispatch({ type: 'set_valid', payload: true });
-        dispatch({ type: 'set_errors', payload: [] });
+        // instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
+        //     if(result.success) {
+        //         console.log(result);
+        //     }
+        // })
+        // dispatch({ type: 'set_valid', payload: true });
+        // dispatch({ type: 'set_errors', payload: [] });
 
     }
     if (text.length > 6) {
@@ -114,7 +127,7 @@ const onTextInput = (text, dispatch) => {
 }
 
 const onAddInstrument = (calibratorState, dispatch) => {
-    if(calibratorState.isValidText) {
+    if (calibratorState.isValidText) {
         const newInstrument = {
             instrument_pk: count,
             asset_tag: calibratorState.textInput,

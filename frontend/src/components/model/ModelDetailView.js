@@ -221,7 +221,6 @@ class ModelDetailView extends React.Component {
 
                         <td>
                             <div className="detail-view-categories">
-                                <p>Coming Soon</p>
                                 {modelInfo.calibrator_categories_set.map(el => el.name).join(', ')}
                             </div>
                         </td>
@@ -269,7 +268,7 @@ class ModelDetailView extends React.Component {
     }
 
     async onEditSubmit(editedModel) {
-        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes, editedModel.requires_approval).then(result => {
+        await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes, editedModel.calibrator_categories_set, editedModel.requires_approval).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopup: {
@@ -412,7 +411,6 @@ class ModelDetailView extends React.Component {
                 this.setState({
                     model_info: {
                     ...result.data,
-                    calibrator_categories_set: [],
                 },
                 })
 

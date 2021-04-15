@@ -110,11 +110,11 @@ const onTextInput = (text, dispatch) => {
         dispatch({ type: 'set_errors', payload: [] });
     }
     if (text.length === 6) {
-        // instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
-        //     if(result.success) {
-        //         console.log(result);
-        //     }
-        // })
+        instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
+            if(result.success) {
+                console.log(result);
+            }
+        })
         // dispatch({ type: 'set_valid', payload: true });
         // dispatch({ type: 'set_errors', payload: [] });
 

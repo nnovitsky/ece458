@@ -92,7 +92,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
                     const style = (cell === 'Pending') ? {backgroundColor: 'yellow'} : {};
-                    console.log(style);
                     return <div style={{ display: "flex", ...style }}>
                         {cell}
                     </div>;
@@ -114,7 +113,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 text: 'Supplement Data',
                 sort: false,
                 title: (cell) => {
-                    console.log(cell)
                     switch (cell) {
                         case 'None':
                             return 'No supplement documents';

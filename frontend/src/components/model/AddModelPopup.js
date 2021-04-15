@@ -47,7 +47,7 @@ class AddModelPopup extends Component {
                     calibration_frequency: props.currentModel.calibration_frequency,
                     categories: props.currentModel.categories,
                     calibration_modes: props.currentModel.calibration_modes,
-                    calibrator_categories_set: [],
+                    calibrator_categories_set: props.currentModel.calibrator_categories_set,
                     requires_approval: props.currentModel.requires_approval,
                 },
                 allCalModes: [],

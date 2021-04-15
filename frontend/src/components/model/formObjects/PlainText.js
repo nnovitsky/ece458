@@ -30,6 +30,7 @@ class PlainText extends React.Component {
                     classes={this.props.classes}
                     previewClasses={this.props.classes}
                     delete={this.props.onDelete}
+                    totalLength={this.props.totalLength}
                 />
             </div>
         );

@@ -28,6 +28,7 @@ class TextInput extends React.Component {
                     id={this.props.id}
                     setStepNumber={this.props.setStepNumber}
                     delete={this.props.onDelete}
+                    totalLength={this.props.totalLength}
                 />
             </div>
         );

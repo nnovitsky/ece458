@@ -96,24 +96,24 @@ class FormPopup extends Component {
         for (var i = 0; i < this.state.form.length; i++) {
             if (this.state.form[i].fieldtype === 'HEADER') {
                 form.push(<Header id={i} headerInput={this.state.form[i].label} setHeader={this.setLabel} setStepNumber={this.setStepNumber}
-                                        onDelete={this.deleteStep}></Header>);
+                                        onDelete={this.deleteStep} totalLength={this.state.form.length}></Header>);
             }
             else if(this.state.form[i].fieldtype === "FLOAT_INPUT"){
                 form.push(<NumericInput id={i} max={this.state.form[i].expected_max} min={this.state.form[i].expected_min} label={this.state.form[i].label} 
                                         setMax={this.setMax} setMin={this.setMin} setLabel={this.setLabel} setStepNumber={this.setStepNumber}
-                                        onDelete={this.deleteStep}></NumericInput>)
+                                        onDelete={this.deleteStep} totalLength={this.state.form.length}></NumericInput>)
             }
             else if(this.state.form[i].fieldtype === "PLAINTEXT"){
                 form.push(<PlainText id={i} text={this.state.form[i].plaintext} setText={this.setPlaintext} setStepNumber={this.setStepNumber}
-                                        onDelete={this.deleteStep}></PlainText>)
+                                        onDelete={this.deleteStep} totalLength={this.state.form.length}></PlainText>)
             }
             else if(this.state.form[i].fieldtype === "TEXT_INPUT"){
                 form.push(<TextInput id={i} label={this.state.form[i].label} expected_text={this.state.form[i].expected_string} setText={this.setText} setLabel={this.setLabel} 
-                                        setStepNumber={this.setStepNumber} onDelete={this.deleteStep}></TextInput>)
+                                        setStepNumber={this.setStepNumber} onDelete={this.deleteStep} totalLength={this.state.form.length}></TextInput>)
             }
             else if(this.state.form[i].fieldtype === "BOOL_INPUT"){
                 form.push(<Check id={i} label={this.state.form[i].label} setLabel={this.setLabel} setStepNumber={this.setStepNumber}
-                                        onDelete={this.deleteStep}></Check>)
+                                        onDelete={this.deleteStep} totalLength={this.state.form.length}></Check>)
             }
         }
         return form;

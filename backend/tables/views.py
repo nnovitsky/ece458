@@ -189,7 +189,7 @@ def calibration_event_file(request, pk):
         return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def validate_calibrator_instruments(request):
     calibrator_instruments = []
     calibration_errors = []

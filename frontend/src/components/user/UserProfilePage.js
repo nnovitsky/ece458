@@ -205,6 +205,7 @@ class UserPage extends React.Component {
             if(this.state.groups.includes("admin")) groupString = "Admin, ";
             if(this.state.groups.includes("models")) groupString = groupString + "Model, ";
             if(this.state.groups.includes("instruments")) groupString = groupString + "Instrument, ";
+            if(this.state.groups.includes("calibration_approver")) groupString = groupString + "Cal, Approval";
             if(this.state.groups.includes("calibrations")) groupString = groupString + "Calibration";
         }
         return groupString;

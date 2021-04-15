@@ -88,13 +88,24 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 isKey: true,
                 text: 'Status',      //displayed column header text
                 title: (cell) => {   //formats the data and the returned is displayed in the cell
-                    return `Approval Status: ${cell}`
+                    switch(cell) {
+                        case 'NA':
+                            return 'Approval Status: Approved\nThis instrument was implicitly approved when the model was changed to requiring approval';
+                        default:
+                            return `Approval Status: ${cell}`
+                    }
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
-                    const style = (cell === 'Pending') ? {backgroundColor: 'yellow'} : {};
-                    return <div style={{ display: "flex", ...style }}>
-                        {cell}
-                    </div>;
+                    switch(cell) {
+                        case 'NA':
+                            return <span>Approved</span>
+                        default:
+                            const style = (cell === 'Pending') ? { backgroundColor: 'yellow' } : {};
+                            return <div style={{ display: "flex", ...style }}>
+                                {cell}
+                            </div>;
+                    }
+                    
                 },
                 formatExtraData: hasApprovalPermissions,
                 headerClasses: 'ct-status-column',

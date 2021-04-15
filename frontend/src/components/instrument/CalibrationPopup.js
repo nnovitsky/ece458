@@ -54,6 +54,7 @@ const CalibrationPopup = (props) => {
         <>
             {makeSummary(props.calibrationEvent, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick)}
             {approvalState.hasApprovalSection ? makeApprovalSection(props.calibrationEvent, approvalState, dispatch) : null}
+            {props.calibrationEvent.approval_status === 'NA' ? makeApprovalNoInfoSection(props.calibrationEvent) : null}
         </>
     );
     const isApprovalForm = approvalState.isApprovalForm;
@@ -61,7 +62,7 @@ const CalibrationPopup = (props) => {
         <GenericPopup
             show={props.isShown}
             body={body}
-            headerText={`Calibration Event - ${props.calibrationEvent.approval_status}`}
+            headerText={`Calibration Event - ${props.calibrationEvent.approval_status === 'NA' ? 'Approved' : props.calibrationEvent.approval_status}`}
             closeButtonText={isApprovalForm ? 'Cancel' : 'Close'}
             submitButtonText="Submit"
             onClose={() => onClose(dispatch, props.onClose)}
@@ -140,6 +141,19 @@ const getSupplementButton = (calEvent, onSupplementDownload, onLoadBankClick, on
         default:
             return <span>N/A</span>
     }
+}
+
+const makeApprovalNoInfoSection = (calEvent) => {
+    const statusSpan = getSpanStatusColored('Approved');
+    return (
+        <>
+            <hr />
+            <Form className="popup">
+                <h4 >Approval Event: {statusSpan}</h4>
+            <span>This calibration was implicitly approved when the model was changed to require approval</span>
+            </Form>
+        </>
+    );
 }
 
 const makeApprovalSection = (calEvent, approvalState, dispatch) => {

@@ -61,7 +61,6 @@ class PlainText extends React.Component {
 
     onTextInput(e) {
         let val = e.target.value;
-        console.log(val)
         this.props.setText(this.props.id, val);
     }
 }

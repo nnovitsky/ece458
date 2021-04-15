@@ -35,6 +35,7 @@ class FormCal extends React.Component {
         this.onCommentInput = this.onCommentInput.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.getForm = this.getForm.bind(this);
+        this.getLabel = this.getLabel.bind(this);
     }
 
     async componentDidMount() {
@@ -226,12 +227,12 @@ class FormCal extends React.Component {
         })
         if (newVal > this.state.data[id].expected_max) {
             this.setState({
-                errors: [`Invalid input for Step ${Number(id) + 1}: input greater than ${this.state.data[id].expected_max}`]
+                errors: [`Invalid input for [${this.getLabel(id)}]: input greater than ${this.state.data[id].expected_max}`]
             })
         }
         else if (newVal < this.state.data[id].expected_min) {
             this.setState({
-                errors: [`Invalid input for Step ${Number(id) + 1}: input less than ${this.state.data[id].expected_min}`]
+                errors: [`Invalid input for [${this.getLabel(id)}]: input less than ${this.state.data[id].expected_min}`]
             })
         }
         else {
@@ -253,7 +254,7 @@ class FormCal extends React.Component {
 
         if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string !== newText) {
             this.setState({
-                errors: [`Invalid input for Step ${Number(id) + 1}: input does not match expected "${data[id].expected_string}"`]
+                errors: [`Invalid input for [${this.getLabel(id)}]: input does not match expected "${data[id].expected_string}"`]
             })
         } else {
             this.setState({
@@ -273,6 +274,10 @@ class FormCal extends React.Component {
         this.setState({
             data: data
         })
+    }
+
+    getLabel(index){
+        return this.state.data[index].label
     }
 }
 

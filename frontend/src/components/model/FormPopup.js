@@ -226,6 +226,8 @@ class FormPopup extends Component {
         })
     }
     setPlaintext(i, value) {
+        console.log(value);
+
         let form = this.state.form;
         form[i]['plaintext'] = value;
         this.setState({

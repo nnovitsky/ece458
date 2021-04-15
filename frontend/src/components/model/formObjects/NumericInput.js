@@ -23,6 +23,7 @@ class NumericInput extends React.Component {
     render() {
         let body = this.makeBody();
         let preview = this.makePreview();
+        console.log(this.props.totalLength)
         return (
             <div >
                 <Item
@@ -31,6 +32,7 @@ class NumericInput extends React.Component {
                     id={this.props.id}
                     setStepNumber={this.props.setStepNumber}
                     delete={this.props.onDelete}
+                    totalLength={this.props.totalLength}
                 />
             </div>
         );

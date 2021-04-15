@@ -31,6 +31,7 @@ class Check extends React.Component {
                     previewClasses={this.props.classes}
                     setStepNumber={this.props.setStepNumber}
                     delete={this.props.onDelete}
+                    totalLength={this.props.totalLength}
                 />
             </div>
         );

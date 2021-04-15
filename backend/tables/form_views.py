@@ -158,8 +158,24 @@ def validate_form_submit(fields):
             errors.append({'error': "Index and fieldtype are required for all fields."})
             continue
 
-        if field['fieldtype'] == FORM_FIELDS['header'] or field['fieldtype'] == FORM_FIELDS['plaintext'] or field['fieldtype'] == FORM_FIELDS['text_input']:
+        if field['fieldtype'] == FORM_FIELDS['header'] or field['fieldtype'] == FORM_FIELDS['plaintext']:
             field['value_okay'] = True
+        elif field['fieldtype'] == FORM_FIELDS['text_input']:
+            try:
+                actual_string = field['actual_string']
+                expected_string = field['expected_string'] if 'expected_string' in field else None
+                if not expected_string:
+                    field['value_okay'] = True
+                elif not actual_string:
+                    errors.append({'index': field['index'], 'error': "Actual string not provided."})
+                elif not isinstance(actual_string, str) or not isinstance(expected_string, str):
+                    errors.append({'index': field['index'], 'error': "Actual and expected values must be strings."})
+                elif expected_string.lower() == actual_string.lower():
+                    field['value_okay'] = True
+                else:
+                    errors.append({'index': field['index'], 'error': "Value does not match expected string."})
+            except KeyError:
+                errors.append({'index': field['index'], 'error': "Actual string not provided."})
         elif field['fieldtype'] == FORM_FIELDS['bool_input']:
             try:
                 actual_bool = field['actual_bool']

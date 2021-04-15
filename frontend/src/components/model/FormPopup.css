@@ -48,6 +48,10 @@
   cursor: pointer;
 }
 
+.new-step:hover{
+  cursor: pointer;
+}
+
 
 
 .form-builder-workspace{

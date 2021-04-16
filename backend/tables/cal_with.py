@@ -50,7 +50,7 @@ def handler(errors, valid_cats, instruments, pks):
 
     if len(errors) != 0:
         return Response({"is_valid": False, "calibration_errors": errors},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_200_OK)
 
     return Response({"is_valid": True,
                      "instrument_pk": instrument_pk,

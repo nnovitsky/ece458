@@ -210,7 +210,7 @@ def validate_calibrator_instruments(request):
 
     if len(calibration_errors) != 0:
         return Response({"is_valid": False, "calibration_errors": calibration_errors},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_200_OK)
 
     valid_cal_cats = ItemModelCategory.objects.all().filter(calibrated_with=item_model_pk)
 

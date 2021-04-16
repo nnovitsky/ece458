@@ -34,6 +34,24 @@ def check_categories(calibrator_pk, valid_cats):
     return valid_calibrator
 
 
+def validate_helper(calibrator_model_pk, instruments):
+    valid_cats = ItemModelCategory.objects.all().filter(calibrated_with=calibrator_model_pk)
+
+    for instrument in instruments:
+        instrument_name = str(Instrument.objects.get(pk=instrument))
+
+        yes_valid_categories = check_categories(instrument, valid_cats)
+        if not yes_valid_categories:
+            return False, f"Calibrator instrument {instrument_name} does not belong to a valid category for " \
+                          f"calibration use."
+
+        yes_valid_instruments = check_instrument_cal_status(instrument)
+        if not yes_valid_instruments:
+            return False, f"Calibrator instrument {instrument_name} is out of calibration."
+
+    return True, ""
+
+
 def handler(errors, valid_cats, instruments, pks):
     item_model_pk = pks[0]
     instrument_pk = pks[1]

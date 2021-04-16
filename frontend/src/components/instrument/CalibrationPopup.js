@@ -7,6 +7,7 @@ import Table from 'react-bootstrap/esm/Table';
 import Row from 'react-bootstrap/esm/Row';
 import Col from 'react-bootstrap/esm/Col';
 import InstrumentServices from '../../api/instrumentServices';
+import { Link } from 'react-router-dom';
 //props
 // 'calibrationEvent': calibration event from the cal event search
 // 'currentUser': current user object
@@ -102,7 +103,10 @@ const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeCli
                             <td>
                                 <div className="detail-view-categories">
                                     <p>Coming Soon</p>
-                                    {/* {this.state.calEvent.calibrator_categories.map(el => el.name).join(', ')} */}
+                                    {/* {calEvent.calibrator_categories.map(el => {
+                                        return 
+                                        (<Link to={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</Link>)
+                                    })} */}
                                 </div>
                             </td>
                         </tr>

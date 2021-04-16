@@ -134,7 +134,7 @@ const onTextInput = async (text, dispatch, calibratorState) => {
     }
     if (text.length > 6) {
         dispatch({ type: 'set_valid', payload: false });
-        dispatch({ type: 'set_errors', payload: ['Too long'] });
+        dispatch({ type: 'set_errors', payload: ['Value entered is too long, not a valid asset tag'] });
     }
 
 }

@@ -3,10 +3,23 @@ from rest_framework import status
 
 from backend.tables.models import ItemModel, Instrument, ItemModelCategory
 
-def check_instrument(calibrator_pk):
 
+def check_instrument_cal_status(calibrator_pk):
 
-    return True
+    instrument = Instrument.objects.get(pk=calibrator_pk)
+    cal_frequency = instrument.item_model.calibration_frequency
+
+    if cal_frequency < 1:
+        return True
+    cal_set = instrument.calibrationevent_set.order_by('-date')
+    if len(cal_set) > 0:
+        for cal in cal_set:
+            approved = (cal.approval_status == 'NA') or (cal.approval_status == 'Approved')
+            exp_date = cal.date + datetime.timedelta(cal_frequency)
+            if exp_date >= datetime.date.today() and approved:
+                return True
+
+    return False
 
 
 def check_categories(calibrator_pk, valid_cats):
@@ -29,8 +42,8 @@ def handler(errors, valid_cats, instruments, pks):
             errors.append(f"Calibration instrument {Instrument.objects.get(pk=calibrator_pk)} is not a valid"
                           f" calibrator for the instrument under calibration.")
 
-        valid_instrument = check_instrument(calibrator_pk)
-        if not valid_instrument:
+        instrument_in_cal = check_instrument_cal_status(calibrator_pk)
+        if not instrument_in_cal:
             errors.append(f"Calibration instrument {Instrument.objects.get(pk=calibrator_pk)} is out of calibration.")
 
     if len(errors) != 0:

@@ -308,9 +308,19 @@ def models_list(request):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks
 
+        default_cal_with = get_calibration_categories_from_mode(request)
+        if len(default_cal_with) != 0:
+            if 'calibrator_categories_set' not in request.data:
+                request.data['calibrator_categories_set'] = default_cal_with
+            else:
+                request.data['calibrator_categories_set'] = request.data['calibrator_categories_set'] + default_cal_with
+
         # TODO: this certainly isn't the right way to address this bug, talk to jack
-        if 'calibrator_categories_set' not in request.data:
+        if ('calibrator_categories_set' not in request.data):
             request.data['calibrator_categories_set'] = {}
+
+
+
 
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():
@@ -644,6 +654,7 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
+        default_categories()
         categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
@@ -651,6 +662,7 @@ def model_category_list(request):
         if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        default_categories()
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -700,6 +712,7 @@ def model_category_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        default_categories()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -708,6 +721,7 @@ def model_category_detail(request, pk):
                 {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
+            default_categories()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

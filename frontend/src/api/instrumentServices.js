@@ -321,16 +321,19 @@ export default class InstrumentServices {
             success: true,
             errors: {}
         }
+
         const token = window.sessionStorage.getItem('token');
         const body = {
-            "instrument_pk": instrumentPk,
-            "calibrator_asset_tags": [
+            instrument_pk: instrumentPk,
+            calibrator_asset_tags: [
                 calibratorAssetTag
             ]
         }
 
+        console.log(body);
+
         return fetch(`${API_URL}/api/validate_calibrators/`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
@@ -341,6 +344,7 @@ export default class InstrumentServices {
                 if (res.ok) {
                     return res.json().then(json => {
                         result.data = json;
+                        console.log(result);
                         return result;
                     });
                 } else {

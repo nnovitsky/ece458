@@ -31,7 +31,7 @@ let makeConfig = () => {
             {
                 isKey: true,
                 dataField: pk,
-                text: 'Order of Inputs',
+                text: 'Order Inputted',
                 headerClasses: 'fc-num-column',
                 formatter: (cell) => {
                     return <span>{cell}</span>
@@ -58,9 +58,10 @@ let makeConfig = () => {
                 dataField: 'value',
                 text: 'Reported Value',
                 formatter: (cell) => {
-                    console.log(cell)
                     if(cell === '' || cell === null || typeof(cell) === 'undefined') return <span>No input</span>;
-                    else return cell
+                    else if(cell === true) return <span>True</span>
+                    else if(cell === false) return <span>False</span>
+                    else return <span>{cell}</span>
                 },
                 headerClasses: 'fc-even-column',
             }

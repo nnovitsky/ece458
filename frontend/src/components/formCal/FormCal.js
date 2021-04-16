@@ -192,6 +192,7 @@ class FormCal extends React.Component {
             value={formField.actual_string}
             label={formField.label}
             id={id}
+            expected_string={formField.expected_string}
             onChange={this.onTextInput} />
     }
 
@@ -253,7 +254,7 @@ class FormCal extends React.Component {
 
         if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string !== newText) {
             this.setState({
-                errors: [`Invalid input for [${this.getLabel(id)}]: Value does not match expected string "${data[id].expected_string}"`]
+                errors: [`Invalid input for [${this.getLabel(id)}]: Value does not match expected string.`]
             })
         } else {
             this.setState({

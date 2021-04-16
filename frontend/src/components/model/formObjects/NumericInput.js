@@ -40,7 +40,7 @@ class NumericInput extends React.Component {
 
     makeBody() {
         return <div>
-            <h5>Numeric Input</h5>
+            <h5>Float Input</h5>
             <div style={{display: "flex"}}>
                     <label className="required-field">Your Label </label>
                     <input required name={setLabel} type="text" value={this.props.label} onChange={this.onTextInput}></input>

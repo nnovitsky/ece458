@@ -316,11 +316,8 @@ def models_list(request):
                 request.data['calibrator_categories_set'] = request.data['calibrator_categories_set'] + default_cal_with
 
         # TODO: this certainly isn't the right way to address this bug, talk to jack
-        if ('calibrator_categories_set' not in request.data):
+        if 'calibrator_categories_set' not in request.data:
             request.data['calibrator_categories_set'] = {}
-
-
-
 
         serializer = ItemModelSerializer(data=request.data)
         if serializer.is_valid():

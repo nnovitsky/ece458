@@ -222,7 +222,7 @@ def validate_calibrator_instruments(request):
             if valid_cal_cat in cal_item_model_cats: valid_calibrator = True
 
         if not valid_calibrator:
-            calibration_errors.append(f"Calibration instrument {Instrument.object.get(pk=calibrator_pk)} is not a valid"
+            calibration_errors.append(f"Calibration instrument {Instrument.objects.get(pk=calibrator_pk)} is not a valid"
                                       f" calibrator for the instrument under calibration.")
 
     if len(calibration_errors) != 0:

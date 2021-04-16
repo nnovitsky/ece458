@@ -342,18 +342,6 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
     # use when writing calibration event with serializer or reading most recent calibration event for instrument
     file = FileField(allow_empty_file=True)
-    # calibrated_by_instruments = serializers.SerializerMethodField()
-    #
-    # def get_calibrated_by_instruments(self, obj):
-    #     calibrated_with = []
-    #     for instrument in obj.calibrated_by_instruments.all():
-    #         print("\ta PK??: ", instrument)
-    #         calibrated_with.append({
-    #             "instrument_pk": instrument.pk,
-    #             "asset_tag": instrument.asset_tag
-    #         })
-    #
-    #     return calibrated_with
 
     class Meta:
         model = CalibrationEvent

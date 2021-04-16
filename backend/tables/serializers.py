@@ -297,7 +297,8 @@ class CalibrationEventReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status',
+                  'calibrated_by_instruments')
 
 
 class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
@@ -306,6 +307,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     lb_cal_pk = serializers.SerializerMethodField()
     klufe_cal_pk = serializers.SerializerMethodField()
     has_approval = serializers.SerializerMethodField()
+    calibrated_by_instruments = serializers.SerializerMethodField()
 
     def get_lb_cal_pk(self, obj):
         lb_cals = obj.loadbankcalibration_set.all()
@@ -321,9 +323,20 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
         approvals = obj.calibrationapproval_set.all()
         return len(approvals) > 0
 
+    def get_calibrated_by_instruments(self, obj):
+        calibrated_with = []
+        for instrument in obj.calibrated_by_instruments.all():
+            calibrated_with.append({
+                "instrument_pk": instrument.pk,
+                "asset_tag": instrument.asset_tag
+            })
+
+        return calibrated_with
+
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status', 'has_approval')
+        fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status',
+                  'has_approval', 'calibrated_by_instruments')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):
@@ -332,7 +345,8 @@ class CalibrationEventWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalibrationEvent
-        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status')
+        fields = ('pk', 'date', 'user', 'instrument', 'comment', 'file_type', 'file', 'approval_status',
+                  'calibrated_by_instruments')
 
     def validate(self, data):
         if 'date' in data and data['date'] > datetime.date.today():

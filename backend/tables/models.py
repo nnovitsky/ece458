@@ -90,7 +90,7 @@ class CalibrationEvent(models.Model):
                                  max_length=20)
     file = models.FileField(upload_to='cal_event_artifacts', null=True)
     approval_status = models.CharField(max_length=20, default=APPROVAL_STATUSES['no_approval'])
-    calibrated_with = models.ManyToManyField(Instrument, blank=True, related_name='instruments_used_set')
+    calibrated_by_instruments = models.ManyToManyField(Instrument, blank=True, related_name='instruments_used_set')
 
     def __str__(self):
         return str(self.instrument) + " " + str(self.date)

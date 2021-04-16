@@ -27,14 +27,14 @@ class NewStep extends React.Component {
             <div className="col lg-2 button" onClick={this.addHeader}>
                 Header
         </div>
+        <div className="col lg-2 button" onClick={this.addPlainText}>
+                Plain Text
+        </div>
             <div className="col lg-2 button" onClick={this.addCheckInput}>
                 Check Input
         </div>
             <div className="col lg-2 button" onClick={this.addNumeric}>
-                Numeric Input
-        </div>
-            <div className="col lg-2 button" onClick={this.addPlainText}>
-                Plain Text
+                Float Input
         </div>
         <div className="col lg-2 button" onClick={this.addTextInput}>
                 Text Input

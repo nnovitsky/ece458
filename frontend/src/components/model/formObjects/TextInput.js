@@ -52,7 +52,8 @@ class TextInput extends React.Component {
         let label = this.props.label === '' ? "Your Label" : this.props.label;
         return <Form style={{ paddingTop: "10px" }}>
                     <TextInputGroup
-                    label={label} />
+                    label={label} 
+                    expected_string={this.props.expected_text}/>
                 </Form>
     }
 

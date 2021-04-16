@@ -137,7 +137,7 @@ input[type=number]::-webkit-inner-spin-button {
 
 .special input[type=number] {
   margin-right: 10px;
-  height: 20px;
+  height: 20px !important;
   width: min(30vw, 100px);
 }
 
@@ -162,6 +162,7 @@ input[type=number]::-webkit-inner-spin-button {
   hyphens: auto;
   height: min(17vh, 100px) !important;
   font-size: min(5vw, 15px);
+  overflow: auto;
 }
 
 
@@ -174,6 +175,7 @@ input[type=number]::-webkit-inner-spin-button {
   margin-bottom: -4px !important;
   background-color: white;
   height: min(12vh, 70px) !important;
+  overflow: auto;
 }
 
 .form-item-builder  .check{

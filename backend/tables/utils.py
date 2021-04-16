@@ -10,7 +10,7 @@ from django.urls import reverse
 from backend.tables.models import *
 from backend.config.character_limits import *
 from backend.tables.serializers import UserSerializerWithToken
-from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS
+from backend.config.load_bank_config import CALIBRATION_MODES, LOAD_LEVELS, DEFAULT_CATEGORIES
 from backend.config.admin_config import USER_GROUPS, APPROVAL_STATUSES
 from backend.config.klufe_config import VOLTAGE_LEVELS
 
@@ -252,6 +252,35 @@ def get_calibration_mode_pks(request):
                 mode.save()
             mode_pks.append(mode.pk)
     return mode_pks, None
+
+
+def get_calibration_categories_from_mode(request):
+    cal_cats = []
+    default_categories()
+    if 'calibration_modes' in request.data:
+        for mode_name in request.data['calibration_modes']:
+            if mode_name == 'load_bank':
+                cal_cats.append(ItemModelCategory.objects.get(name="voltmeter").pk)
+                cal_cats.append(ItemModelCategory.objects.get(name="current_shunt_meter").pk)
+
+            if mode_name == 'klufe_k5700':
+                cal_cats.append(ItemModelCategory.objects.get(name="Klufe_K5700-compatible").pk)
+
+    return cal_cats
+
+
+
+    return cal_cats
+
+
+def default_categories():
+    for def_cat in DEFAULT_CATEGORIES:
+        try:
+            cat = ItemModelCategory.objects.get(name=def_cat)
+        except ItemModelCategory.DoesNotExist:
+            cat = ItemModelCategory(name=def_cat)
+            cat.save()
+
 
 
 def validate_lb_cal(lb_cal):

@@ -20,9 +20,7 @@ class FormDisplay extends React.Component {
             data: [],
             comment: '',
             cal_event_pk: props.cal_pk,
-            text_inputs: [],
-            numeric_inputs: [],
-            bool_inputs: [],
+            inputs: [],
             engineer: '',
             date: '',
             approval_status: '',
@@ -93,82 +91,67 @@ class FormDisplay extends React.Component {
     }
 
     fillTables(fields) {
-        let numeric_input = [];
-        let text_input = [];
-        let bool_input = [];
+        let inputs = [];
+        let counter = 1;
         for (let i = 0; i < fields.length; i++) {
             let group;
             let formField = fields[i];
             switch (formField.fieldtype) {
                 case "TEXT_INPUT":
                     group = {
+                        pk: counter,
+                        type: 'Text',
                         label: formField.label,
                         value: formField.actual_text
                     };
-                    text_input.push(group);
+                    inputs.push(group);
+                    counter++;
                     break;
                 case "FLOAT_INPUT":
                     group = {
+                        pk: counter,
+                        type: 'Float',
                         label: formField.label,
                         value: formField.actual_float
                     };
-                    numeric_input.push(group);
+                    inputs.push(group);
+                    counter++;
                     break;
                 case "BOOL_INPUT":
                     group = {
+                        pk: counter,
+                        type: 'Checkbox',
                         label: formField.label,
                         value: formField.actual_bool
                     };
-                    bool_input.push(group);
+                    inputs.push(group);
+                    counter++;
                     break;
                 default:
                     break;
             }
         }
+
         this.setState({
-            numeric_inputs: numeric_input,
-            text_inputs: text_input,
-            bool_inputs: bool_input,
+            inputs: inputs,
         })
     }
 
     makeForm() {
-        let textInputCard = <Card>
+        let inputCard = <Card>
             <Accordion.Toggle as={Card.Header} eventKey={1}>
                 Text Inputs
                             </Accordion.Toggle>
             <Accordion.Collapse eventKey={1}>
                 <Card.Body>
-                    <SimpleTable data={this.state.text_inputs}> </SimpleTable>
-                </Card.Body>
-            </Accordion.Collapse>
-        </Card>
-        let numericInputCard = <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={2}>
-                Numeric Inputs
-                                </Accordion.Toggle>
-            <Accordion.Collapse eventKey={2}>
-                <Card.Body>
-                    <SimpleTable data={this.state.numeric_inputs}> </SimpleTable>
+                    <SimpleTable data={this.state.inputs}> </SimpleTable>
                 </Card.Body>
             </Accordion.Collapse>
         </Card>
 
-        let boolInputCard = <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={3}>
-                Checkbox Inputs
-        </Accordion.Toggle>
-            <Accordion.Collapse eventKey={3}>
-                <Card.Body>
-                    <SimpleTable data={this.state.bool_inputs}> </SimpleTable>
-                </Card.Body>
-            </Accordion.Collapse>
-        </Card>
 
         return <Accordion>
-            {this.state.numeric_inputs.length > 0 ? numericInputCard : null}
-            {this.state.text_inputs.length > 0 ? textInputCard : null}
-            {this.state.bool_inputs.length > 0 ? boolInputCard : null}
+            {this.state.inputs.length > 0 ? inputCard : null}
         </Accordion>
     }
 

@@ -168,11 +168,10 @@ class FormCal extends React.Component {
                     if(result.errors.form_error){
                         let err = result.errors.form_error[0]
                         this.setState({
-                            errors: [`Invalid input for [${this.getLabel(err.index)}]: ` + err.error]
+                            errors: [`Invalid input for [${this.getLabel(err.index - 1)}]: ` + err.error]
                         })
                     }
                 }
-                console.log(result)
             })
     }
 
@@ -190,7 +189,7 @@ class FormCal extends React.Component {
 
     getTextInput(formField, id) {
         return <TextInputGroup
-            value={formField.actual_text}
+            value={formField.actual_string}
             label={formField.label}
             id={id}
             onChange={this.onTextInput} />
@@ -246,7 +245,7 @@ class FormCal extends React.Component {
         const newText = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        data[id].actual_text = newText
+        data[id].actual_string = newText
 
         this.setState({
             data: data
@@ -254,7 +253,7 @@ class FormCal extends React.Component {
 
         if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string !== newText) {
             this.setState({
-                errors: [`Invalid input for [${this.getLabel(id)}]: input does not match expected "${data[id].expected_string}"`]
+                errors: [`Invalid input for [${this.getLabel(id)}]: Value does not match expected string "${data[id].expected_string}"`]
             })
         } else {
             this.setState({

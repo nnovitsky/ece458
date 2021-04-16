@@ -22,6 +22,7 @@ from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPRO
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
+from backend.tables import cal_with
 MAX_NUMBER_OF_RESULTS = 100
 
 
@@ -213,27 +214,12 @@ def validate_calibrator_instruments(request):
 
     valid_cal_cats = ItemModelCategory.objects.all().filter(calibrated_with=item_model_pk)
 
-    for calibrator_pk in calibrator_instruments:
-        # check for 1) category 2) if it's in calibration 3) circular dependency
-        cal_item_model_pk = Instrument.objects.get(pk=calibrator_pk).item_model.pk
-        cal_item_model_cats = ItemModelCategory.objects.all().filter(item_models=cal_item_model_pk)
-        valid_calibrator = False
-        for valid_cal_cat in valid_cal_cats:
-            if valid_cal_cat in cal_item_model_cats: valid_calibrator = True
-
-        if not valid_calibrator:
-            calibration_errors.append(f"Calibration instrument {Instrument.object.get(pk=calibrator_pk)} is not a valid"
-                                      f" calibrator for the instrument under calibration.")
-
-    if len(calibration_errors) != 0:
-        return Response({"is_valid": False, "calibration_errors": calibration_errors},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    return Response({"is_valid": True,
-                     "instrument_pk": instrument_pk,
-                     "instrument_name": str(ItemModel.objects.get(pk=item_model_pk))
-                     },
-                     status=status.HTTP_200_OK)
+    return cal_with.handler(
+        errors=calibration_errors,
+        valid_cats=valid_cal_cats,
+        instruments=calibrator_instruments,
+        pks=[item_model_pk, instrument_pk]
+    )
 
 
 # INSTRUMENTS
@@ -321,6 +307,13 @@ def models_list(request):
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         request.data['calibrationmode_set'] = mode_pks
+
+        default_cal_with = get_calibration_categories_from_mode(request)
+        if len(default_cal_with) != 0:
+            if 'calibrator_categories_set' not in request.data:
+                request.data['calibrator_categories_set'] = default_cal_with
+            else:
+                request.data['calibrator_categories_set'] = request.data['calibrator_categories_set'] + default_cal_with
 
         # TODO: this certainly isn't the right way to address this bug, talk to jack
         if 'calibrator_categories_set' not in request.data:
@@ -658,6 +651,7 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
+        default_categories()
         categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
@@ -665,6 +659,7 @@ def model_category_list(request):
         if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
+        default_categories()
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -714,6 +709,7 @@ def model_category_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        default_categories()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -722,6 +718,7 @@ def model_category_detail(request, pk):
                 {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
+            default_categories()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

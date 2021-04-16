@@ -172,7 +172,6 @@ class FormCal extends React.Component {
                         })
                     }
                 }
-                console.log(result)
             })
     }
 
@@ -190,7 +189,7 @@ class FormCal extends React.Component {
 
     getTextInput(formField, id) {
         return <TextInputGroup
-            value={formField.actual_text}
+            value={formField.actual_string}
             label={formField.label}
             id={id}
             onChange={this.onTextInput} />
@@ -246,7 +245,7 @@ class FormCal extends React.Component {
         const newText = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        data[id].actual_text = newText
+        data[id].actual_string = newText
 
         this.setState({
             data: data

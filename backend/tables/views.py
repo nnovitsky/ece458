@@ -22,6 +22,7 @@ from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPRO
 from backend.config.load_bank_config import CALIBRATION_MODES
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
+from backend.tables import cal_with
 MAX_NUMBER_OF_RESULTS = 100
 
 
@@ -213,27 +214,12 @@ def validate_calibrator_instruments(request):
 
     valid_cal_cats = ItemModelCategory.objects.all().filter(calibrated_with=item_model_pk)
 
-    for calibrator_pk in calibrator_instruments:
-        # check for 1) category 2) if it's in calibration 3) circular dependency
-        cal_item_model_pk = Instrument.objects.get(pk=calibrator_pk).item_model.pk
-        cal_item_model_cats = ItemModelCategory.objects.all().filter(item_models=cal_item_model_pk)
-        valid_calibrator = False
-        for valid_cal_cat in valid_cal_cats:
-            if valid_cal_cat in cal_item_model_cats: valid_calibrator = True
-
-        if not valid_calibrator:
-            calibration_errors.append(f"Calibration instrument {Instrument.objects.get(pk=calibrator_pk)} is not a valid"
-                                      f" calibrator for the instrument under calibration.")
-
-    if len(calibration_errors) != 0:
-        return Response({"is_valid": False, "calibration_errors": calibration_errors},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    return Response({"is_valid": True,
-                     "instrument_pk": instrument_pk,
-                     "instrument_name": str(ItemModel.objects.get(pk=item_model_pk))
-                     },
-                     status=status.HTTP_200_OK)
+    return cal_with.handler(
+        errors=calibration_errors,
+        valid_cats=valid_cal_cats,
+        instruments=calibrator_instruments,
+        pks=[item_model_pk, instrument_pk]
+    )
 
 
 # INSTRUMENTS

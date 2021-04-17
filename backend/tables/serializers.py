@@ -328,6 +328,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
         for instrument in obj.calibrated_by_instruments.all():
             calibrated_with.append({
                 "instrument_pk": instrument.pk,
+                "instrument_name": str(instrument.item_model),
                 "asset_tag": instrument.asset_tag
             })
 

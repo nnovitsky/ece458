@@ -17,6 +17,7 @@ import CalHistoryTable from '../instrument/CalHistoryTable';
 import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import CalibrationPopup from '../instrument/CalibrationPopup';
 import GuidedCal from '../guidedCal/GuidedCal';
+import Wizard from '../wizard/Wizard';
 
 
 const authServices = new AuthServices();
@@ -80,7 +81,11 @@ class UserPage extends React.Component {
         this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
         this.onCalibrationPopupClose = this.onCalibrationPopupClose.bind(this);
 
+        this.onWizardClose = this.onWizardClose.bind(this);
+        this.makeWizardPopup = this.makeWizardPopup.bind(this);
+
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
+        this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
     }
 
 
@@ -326,13 +331,29 @@ class UserPage extends React.Component {
                 isShown={this.state.guidedCalPopup.isShown}
                 onClose={this.onGuidedCalClose}
                 klufePK={this.state.guidedCalPopup.pk}
-                user={this.props.user}
-                model_number={this.state.instrument_info.model_number}
-                vendor={this.state.instrument_info.vendor}
-                serial_number={this.state.instrument_info.serial_number}
-                instrument_pk={this.state.instrument_info.pk}
-                asset_tag={this.state.instrument_info.asset_tag}
+                user={this.state.userData}
+                model_number={null}
+                vendor={null}
+                serial_number={null}
+                instrument_pk={null}
+                asset_tag={null}
 
+            />
+        )
+    }
+
+    makeWizardPopup() {
+        return (
+            <Wizard
+                isShown={this.state.wizardPopup.isShown}
+                onClose={this.onWizardClose}
+                model_number={null}
+                vendor={null}
+                serial_number={null}
+                instrument_pk={null}
+                asset_tag={null}
+                lb_pk={this.state.wizardPopup.lbPK}
+                user={this.state.userData}
             />
         )
     }
@@ -462,6 +483,26 @@ class UserPage extends React.Component {
                         errors: formattedErrors
                     }
                 })
+            }
+        })
+    }
+
+    onGuidedCalClose() {
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: false,
+                pk: null,
+            }
+        })
+    }
+
+    onWizardClose() {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: false,
+                lbPK: null,
             }
         })
     }

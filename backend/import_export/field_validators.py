@@ -8,6 +8,7 @@ CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
 CALIBRATION_DATE_MAX_LENGTH = 20
+CALIBRATION_APPROVAL_MAX_LENGTH = 1
 
 MODEL_CATEGORIES_MAX_LENGTH = 100
 INSTRUMENT_CATEGORIES_MAX_LENGTH = 100
@@ -196,3 +197,8 @@ def is_valid_instrument_categories(instrument_categories):
                       f"Max: {INSTRUMENT_CATEGORIES_MAX_LENGTH} chars long"
 
     return True, "Valid set of instrument categories."
+
+
+def is_valid_approval_column(approval_field):
+    if len(approval_field) > CALIBRATION_APPROVAL_MAX_LENGTH:
+        return False, "Field must be 1 or 0 character(s) long."

@@ -17,9 +17,10 @@ from django.http import FileResponse
 from django.db.models import Q
 from backend.config.admin_config import APPROVAL_STATUSES
 from backend.config.klufe_config import VOLTAGE_LEVELS
+from backend.config.form_config import FORM_FIELDS
 from backend.tables.serializers import ListInstrumentReadSerializer
 from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent, KlufeCalibration, \
-                                  KlufeVoltageReading
+                                  KlufeVoltageReading, CalibrationFormField
 
 EXPECTED_FIELDS = [
     'Vendor',
@@ -50,6 +51,13 @@ klufe_cal_headers = [
     'Target Range',
     'Reported Voltage',
     'Voltage OK?'
+]
+
+custom_form_headers = [
+    'Order Inputted',
+    'Type of Input',
+    'Prompt',
+    'Reported Value'
 ]
 
 FILE_TYPE_INDEX = 0
@@ -306,6 +314,52 @@ def get_klufe_table(cal_pk):
     elements.append(klufe_table)
 
 
+def get_custom_form_data(cal_pk):
+    cleaned_data = [custom_form_headers]
+    form_tests = CalibrationFormField.objects.filter(cal_event=cal_pk)
+
+    for index in range(form_tests.count()):
+        form_test = form_tests.filter(index=index+1)[0]
+        field_type = str(form_test.fieldtype)
+
+        if field_type == FORM_FIELDS['plaintext']:
+            reported_value = form_test.plaintext
+        elif field_type == FORM_FIELDS['text_input']:
+            reported_value = form_test.actual_string
+        elif field_type == FORM_FIELDS['float_input']:
+            reported_value = form_test.actual_float
+        elif field_type == FORM_FIELDS['bool_input']:
+            reported_value = form_test.actual_bool
+
+        cleaned_data.append([
+            str(index+1),
+            field_type,
+            str(form_test.label),
+            str(reported_value)
+        ])
+
+    return cleaned_data
+
+
+def get_custom_table(cal_pk):
+    global elements
+
+    form_header = '<font size="14">%s</font>' % "Custom Form Calibration Results:"
+    elements.append(Paragraph(form_header, styles["Heading2"]))
+
+    form_data = get_custom_form_data(cal_pk)
+    form_table = Table(form_data)
+    form_table.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('BACKGROUND', (0,0), (3,0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (3,0), colors.white),
+        ('BACKGROUND', (3, 1), (3, len(form_data)-1), colors.lightgreen),
+        ('FONTSIZE', (0, 0), (-1, -1), 10)
+    ]))
+
+    elements.append(form_table)
+
+
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements
     elements.clear()
@@ -352,6 +406,9 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Klufe':
         get_klufe_table(cal_pk)
+
+    if cal_file_data[FILE_TYPE_INDEX] == 'Form':
+        get_custom_table(cal_pk)
 
     doc.build(elements)
     return buffer, pdf_merge

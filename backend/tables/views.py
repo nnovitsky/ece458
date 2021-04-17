@@ -155,7 +155,17 @@ def calibration_event_detail(request, pk):
 
     if request.method == 'GET':
         serializer = CalibrationEventReadSerializer(calibration_event, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_dict = dict(serializer.data)
+        calibrated_with = []
+        for ins_pk in serializer.data['calibrated_by_instruments']:
+            calibrated_with.append({
+                "instrument_pk": ins_pk,
+                "asset_tag": Instrument.objects.get(pk=ins_pk).asset_tag
+            })
+
+        response_dict['calibrated_by_instruments'] = calibrated_with
+
+        return Response(response_dict, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "admin"):

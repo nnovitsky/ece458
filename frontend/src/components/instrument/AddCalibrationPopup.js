@@ -28,6 +28,7 @@ const AddCalibrationPopup = (props) => {
             date: dateToString(new Date()),
             comment: '',
             file: '',
+            calibratorInstruments: [],
         }
     }, [])
 
@@ -92,12 +93,14 @@ const preClose = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
-        file: ''
+        file: '',
+        calibratorInstruments: [],
     }
     parentHandler();
 }
 
 const preSubmit = (parentHandler) => {
+    console.log(newCalibration);
     parentHandler(newCalibration);
 }
 

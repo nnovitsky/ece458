@@ -240,10 +240,13 @@ export default class InstrumentServices {
         formData.append('instrument', instrument_pk);
         formData.append('date', date);
         formData.append('comment', comment);
-        //formData.append('calibrated_by_instruments', calibratorInstrumentArr);
-
+        console.log(calibratorInstrumentArr);
+        console.log(instrument_pk);
         if (file !== '') {
             formData.append('file', file);
+        }
+        if(calibratorInstrumentArr.length > 0) {
+            formData.append('calibrated_by_instruments', JSON.stringify(calibratorInstrumentArr));
         }
 
         let result = {
@@ -421,7 +424,7 @@ export default class InstrumentServices {
     }
 
     // safely handled modified/expired tokens
-    async getCalibrationPDF(pk) {
+    async getCalibrationPDF(pk, hasChainOfTruth) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {

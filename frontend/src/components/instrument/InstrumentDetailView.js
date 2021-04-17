@@ -20,6 +20,7 @@ import DetailView from '../generic/DetailView';
 import GuidedCalServices from '../../api/guidedCalServices.js';
 import WizardServices from '../../api/wizardServices.js';
 import CalibrationPopup from './CalibrationPopup';
+import DownloadCertificatePopup from './DownloadCertPopup';
 
 const guidedCalServices = new GuidedCalServices();
 const wizardServices = new WizardServices();
@@ -69,6 +70,9 @@ class InstrumentDetailView extends Component {
             editInstrumentPopup: {
                 isShown: false,
                 errors: []
+            },
+            downloadCertPopup: {
+                isShown: false,
             },
             wizardPopup: {
                 isShown: false,
@@ -122,7 +126,10 @@ class InstrumentDetailView extends Component {
         this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
         this.onShowCalibrationPopup = this.onShowCalibrationPopup.bind(this);
 
-        this.onCertificateRequested = this.onCertificateRequested.bind(this);
+        this.onDownloadCertificateSubmit = this.onDownloadCertificateSubmit.bind(this);
+        this.onDownloadCertificateClick = this.onDownloadCertificateClick.bind(this);
+        this.onDownloadCertificateClose = this.onDownloadCertificateClose.bind(this);
+
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
@@ -159,6 +166,7 @@ class InstrumentDetailView extends Component {
         let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
         let displayFormCalPopup = (this.state.displayFormCalPopup.isShown) ? this.makeDisplayFormCalPopup() : null;
         let calibrationPopup = (this.state.calibrationPopup.isShown) ? this.makeCalibrationPopup() : null;
+        let downloadCertificatePopup = (this.state.downloadCertPopup.isShown ? this.makeDownloadCertPopup() : null);
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -167,6 +175,7 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
+                {downloadCertificatePopup}
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
@@ -196,7 +205,7 @@ class InstrumentDetailView extends Component {
         const isForm = this.state.instrument_info.calibration_modes.includes("custom_form");
         let calButtonRow = (
             <div className="table-button-row">
-                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
+                <Button onClick={this.onDownloadCertificateClick} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
@@ -377,6 +386,16 @@ class InstrumentDetailView extends Component {
 
                 </tbody>
             </Table>
+        )
+    }
+
+    makeDownloadCertPopup() {
+        return(
+            <DownloadCertificatePopup
+                isShown={this.state.downloadCertPopup.isShown}
+                onClose={this.onDownloadCertificateClose}
+                onSubmit={this.onDownloadCertificateSubmit}
+            />
         )
     }
 
@@ -587,12 +606,13 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
+        console.log(calibrationEvent.calibratorInstruments);
         if (this.isFileSizeGood(calibrationEvent.file)) {
             this.setState({
                 isLoading: true,
                 isSubmitEnabled: false,
             }, async () => {
-                    await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file, calibrationEvent.calibratorInstruments)
+                await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file, calibrationEvent.calibratorInstruments)
                     .then((result) => {
                         if (result.success) {
                             this.getInstrumentInfo();
@@ -836,14 +856,32 @@ class InstrumentDetailView extends Component {
         this.getCalHistory();
     }
 
-    async onCertificateRequested(e) {
-        instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
+    onDownloadCertificateClick() {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: true,
+            }
+        })
+    }
+    onDownloadCertificateClose() {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: false,
+            }
+        })
+    }
+
+    async onDownloadCertificateSubmit(hasChainOfTruth) {
+        await instrumentServices.getCalibrationPDF(this.state.instrument_info.pk, hasChainOfTruth)
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
                     nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`, result.type);
                 }
-            })
+            });
+        this.onDownloadCertificateClose();
     }
 
     async onPaginationClick(num) {

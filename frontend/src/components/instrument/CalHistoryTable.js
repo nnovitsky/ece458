@@ -100,12 +100,18 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'NA':
                             return <span>Approved</span>
                         default:
-                            const style = (cell === 'Pending') ? { backgroundColor: 'yellow' } : {};
-                            return <div style={{ display: "flex", ...style }}>
+                            return <div style={{ display: "flex" }}>
                                 {cell}
                             </div>;
                     }
                     
+                },
+                style: (cell) => {
+                    if (cell === 'Pending') {
+                        return {
+                            backgroundColor: '#FFFF00'
+                        };
+                    }
                 },
                 formatExtraData: hasApprovalPermissions,
                 headerClasses: 'ct-status-column',

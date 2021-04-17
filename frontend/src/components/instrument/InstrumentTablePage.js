@@ -13,6 +13,7 @@ import Button from 'react-bootstrap/Button';
 import { Redirect } from "react-router-dom";
 import GenericLoader from '../generic/GenericLoader.js';
 import CalibrationPopup from './CalibrationPopup';
+import DownloadCertificatePopup from './DownloadCertPopup';
 
 const instrumentServices = new InstrumentServices();
 
@@ -44,6 +45,10 @@ class InstrumentTablePage extends Component {
                 instrumentPks: [],
                 isSelectAll: false,
             },
+            downloadCertPopup: {
+                isShown: false,
+                instrumentPk: null,
+            },
             isLoading: false,
         }
 
@@ -53,7 +58,9 @@ class InstrumentTablePage extends Component {
         //need to bind any event callbacks
         this.updateTable = this.updateTable.bind(this);
         this.onCategoriesClicked = this.onCategoriesClicked.bind(this);
-        this.onCertificateRequested = this.onCertificateRequested.bind(this);
+        this.onDownloadCertificateSubmit = this.onDownloadCertificateSubmit.bind(this);
+        this.onDownloadCertificateClick = this.onDownloadCertificateClick.bind(this);
+        this.onDownloadCertificateClose = this.onDownloadCertificateClose.bind(this);
         this.onAddInstrumentClosed = this.onAddInstrumentClosed.bind(this);
         this.onAddInstrumentSubmit = this.onAddInstrumentSubmit.bind(this);
         this.onExportAll = this.onExportAll.bind(this);
@@ -142,12 +149,14 @@ class InstrumentTablePage extends Component {
 
         const displayedButtonRow = this.state.barcodes.isSelecting ? assetTagButtonRow : defaultButtonRow;
         let addInstrumentPopup = (this.state.addInstrumentPopup.isShown) ? this.makeAddInsrumentPopup() : null;
+        let downloadCertificatePopup = (this.state.downloadCertPopup.isShown ? this.makeDownloadCertPopup() : null);
         const barcodeState = this.state.barcodes;
         const isSelectAllChecked = barcodeState.isSelectAll && (barcodeState.instrumentPks.length===0);
         return (
             <div>
                 <GenericLoader isShown={this.state.isLoading}></GenericLoader>
                 {addInstrumentPopup}
+                {downloadCertificatePopup}
                 <div className="background">
                     <div className="row mainContent">
 
@@ -165,7 +174,7 @@ class InstrumentTablePage extends Component {
                                 data={this.state.tableData}
                                 onTableChange={this.onTableChange}
                                 pagination={{ page: this.state.pagination.currentPageNum, sizePerPage: (this.state.instrumentSearchParams.showAll ? this.state.pagination.resultCount : this.state.pagination.resultsPerPage), totalSize: this.state.pagination.resultCount }}
-                                onCertificateRequested={this.onCertificateRequested}
+                                onCertificateRequested={this.onDownloadCertificateClick}
                                 inlineElements={displayedButtonRow}
                                 isSelecting={barcodeState.isSelecting}
                                 handleSelect={this.onInstrumentSelect}
@@ -191,6 +200,16 @@ class InstrumentTablePage extends Component {
                 onClose={this.onAddInstrumentClosed}
                 currentInstrument={null}
                 errors={this.state.addInstrumentPopup.errors}
+            />
+        )
+    }
+
+    makeDownloadCertPopup() {
+        return (
+            <DownloadCertificatePopup
+                isShown={this.state.downloadCertPopup.isShown}
+                onClose={this.onDownloadCertificateClose}
+                onSubmit={this.onDownloadCertificateSubmit}
             />
         )
     }
@@ -478,16 +497,39 @@ class InstrumentTablePage extends Component {
         }
     }
 
-    onCertificateRequested(e) {
-        instrumentServices.getCalibrationPDF(e.target.value)
+    onDownloadCertificateClick(e) {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: true,
+                instrumentPk: e.target.value,
+                assetTag: e.target.id,
+            }
+        })
+    }
+    onDownloadCertificateClose() {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: false,
+                instrumentPk: null,
+                assetTag: null,
+            }
+        })
+    }
+
+    async onDownloadCertificateSubmit(hasChainOfTruth) {
+        await instrumentServices.getCalibrationPDF(this.state.downloadCertPopup.instrumentPk, hasChainOfTruth)
             .then((result) => {
-                console.log(result);
                 if (result.success) {
                     let date = dateToString(new Date());
-                    nameAndDownloadFile(result.url, `${date}-${e.target.id}-calibration-certificate`, result.type);
+                    nameAndDownloadFile(result.url, `${date}-${this.state.downloadCertPopup.assetTag}-calibration-certificate`, result.type);
                 }
-            })
+            });
+        this.onDownloadCertificateClose();
     }
+
+
 
     onAddInstrumentClicked = (e) => {
         this.setState({

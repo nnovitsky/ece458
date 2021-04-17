@@ -31,7 +31,7 @@ const genericPopup = (props) => {
             </Modal.Header>
 
             <Modal.Body style={{
-                height: '60vh',
+                maxHeight: '60vh',
                 overflow: 'scroll'
             }}>
                 {props.body}

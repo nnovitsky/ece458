@@ -12,6 +12,8 @@ column_types = [
     'Model-Categories',
     'Special-Calibration-Support',
     'Calibration-Frequency',
+    'Calibration-Requires-Approval',
+    'Calibrator-Categories'
 ]
 
 VENDOR_INDEX = 0
@@ -23,8 +25,8 @@ sheet_categories = []
 
 def validate_row(current_row):
 
-    if len(current_row) != len(column_types):
-        return False, f"Row length mismatch. Expected {len(column_types)} " \
+    if len(current_row) < len(column_types):
+        return False, f"Missing values: Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
 
     if field_validators.is_blank_row(current_row):

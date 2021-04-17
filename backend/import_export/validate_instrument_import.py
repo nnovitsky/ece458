@@ -28,12 +28,12 @@ vend_model_serial = []
 
 def validate_row(current_row):
 
+    if field_validators.is_blank_row(current_row):
+        return True, "Blank row."
+
     if len(current_row) < len(column_types):
         return False, f"Missing values: Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
-
-    if field_validators.is_blank_row(current_row):
-        return True, "Blank row."
 
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
     sheet_instruments.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX] +

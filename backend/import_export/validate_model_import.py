@@ -25,12 +25,12 @@ sheet_categories = []
 
 def validate_row(current_row):
 
+    if field_validators.is_blank_row(current_row):
+        return True, "Blank row."
+
     if len(current_row) < len(column_types):
         return False, f"Missing values: Expected {len(column_types)} " \
                       f"but received {len(current_row)} items."
-
-    if field_validators.is_blank_row(current_row):
-        return True, "Blank row."
 
     sheet_models.append(current_row[VENDOR_INDEX] + " " + current_row[MODEL_NUM_INDEX])
 
@@ -55,6 +55,10 @@ def validate_row(current_row):
             valid_cell, info = field_validators.is_valid_cal_type(item)
         elif column_type == 'Calibration-Frequency':
             valid_cell, info = field_validators.is_valid_calibration_freq(item)
+        elif column_type == 'Calibration-Requires-Approval':
+            valid_cell, info = field_validators.is_valid_approval_column(item)
+        elif column_type == 'Calibrator-Categories':
+            valid_cell, info = field_validators.is_valid_model_categories(item)
 
         if not valid_cell:
             return False, info

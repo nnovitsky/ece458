@@ -200,5 +200,7 @@ def is_valid_instrument_categories(instrument_categories):
 
 
 def is_valid_approval_column(approval_field):
-    if len(approval_field) > CALIBRATION_APPROVAL_MAX_LENGTH:
-        return False, "Field must be 1 or 0 character(s) long."
+    if len(approval_field.strip()) == 0 or approval_field.strip() == 'Y':
+        return True, ""
+
+    return False, f"Invalid value ({approval_field}). Must be \'Y\' or blank."

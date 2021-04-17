@@ -129,6 +129,7 @@ class Summary extends React.Component {
     onClose()
     {
         window.sessionStorage.removeItem("klufe");
+        window.sessionStorage.removeItem("klufepk");
         this.props.onClose();
     }
 

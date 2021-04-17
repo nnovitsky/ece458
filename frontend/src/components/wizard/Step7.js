@@ -172,6 +172,7 @@ class Step3 extends React.Component {
     onClose()
     {
         window.sessionStorage.removeItem("loadbank");
+        window.sessionStorage.removeItem("loadbankpk");
         this.props.onClose();
     }
 

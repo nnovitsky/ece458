@@ -158,7 +158,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Klufe':
                             return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button>
                         case 'Form':
-                            console.log(row)
                             return <Button onClick={onFormClick} value={row.pk} className="data-table-button">Form Cal. Data</Button>
                         default:
                             return <span>N/A</span>

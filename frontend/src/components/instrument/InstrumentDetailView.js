@@ -140,10 +140,11 @@ class InstrumentDetailView extends Component {
     }
 
     async componentDidMount() {
-        if (window.sessionStorage.getItem("klufe")) {
+        if (window.sessionStorage.getItem("klufe") === this.state.instrument_info.pk) {
             await this.cancelKlufeEvent();
         }
-        if (window.sessionStorage.getItem("loadbank")) {
+
+        if (window.sessionStorage.getItem("loadbank") === this.state.instrument_info.pk) {
             await this.cancelLoadbankEvent();
         }
         await this.getInstrumentInfo();
@@ -242,7 +243,6 @@ class InstrumentDetailView extends Component {
         await instrumentServices.getInstrument(this.state.instrument_info.pk).then(
             (result) => {
                 if (result.success) {
-                    console.log(result.data);
                     let data = result.data;
                     this.setState({
                         ...this.state,
@@ -926,21 +926,23 @@ class InstrumentDetailView extends Component {
     }
 
     async cancelKlufeEvent() {
-        let klufePK = window.sessionStorage.getItem("klufe");
+        let klufePK = window.sessionStorage.getItem("klufepk");
         await guidedCalServices.deleteKlufeCal(klufePK).then(result => {
             if (result.success) {
                 console.log("deleted klufe event")
                 window.sessionStorage.removeItem("klufe");
+                window.sessionStorage.removeItem("klufepk");
             }
         })
     }
 
     async cancelLoadbankEvent() {
-        let loadbankPK = window.sessionStorage.getItem("loadbank");
+        let loadbankPK = window.sessionStorage.getItem("loadbankpk");
         await wizardServices.cancelLoadbankCalEvent(loadbankPK).then(result => {
             if (result.success) {
                 console.log("deleted loadbank event")
                 window.sessionStorage.removeItem("loadbank");
+                window.sessionStorage.removeItem("loadbankpk");
             }
         })
     }

@@ -117,7 +117,8 @@ def calibration_event_list(request):
         if 'calibrated_by_instruments' not in request_data:
             request_data['calibrated_by_instruments'] = []
         else:
-            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, request_data['calibrated_by_instruments'])
+            calibrated_by_instruments = [int(pk) for pk in request_data['calibrated_by_instruments'].split(',')]
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
 
             if not valid_cal:
                 return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)

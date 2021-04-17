@@ -18,7 +18,7 @@ import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
 import CalibrationPopup from '../instrument/CalibrationPopup';
 import GuidedCal from '../guidedCal/GuidedCal';
 import Wizard from '../wizard/Wizard';
-
+import DisplayFormCal from '../formCal/FormDisplay.js';
 
 const authServices = new AuthServices();
 const userServices = new UserServices();
@@ -83,6 +83,9 @@ class UserPage extends React.Component {
 
         this.onWizardClose = this.onWizardClose.bind(this);
         this.makeWizardPopup = this.makeWizardPopup.bind(this);
+
+        this.onDisplayFormCalClicked = this.onDisplayFormCalClicked.bind(this);
+        this.onDisplayFormCalClose = this.onDisplayFormCalClose.bind(this);
 
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
         this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
@@ -361,6 +364,15 @@ class UserPage extends React.Component {
         )
     }
 
+    makeDisplayFormCalPopup() {
+        return (
+            <DisplayFormCal
+                isShown={this.state.displayFormCalPopup.isShown}
+                onClose={this.onDisplayFormCalClose}
+                cal_pk={this.state.displayFormCalPopup.pk} />
+        )
+    }
+
     makeCalHistoryTable() {
         return(
             <div>
@@ -487,6 +499,30 @@ class UserPage extends React.Component {
                     }
                 })
             }
+        })
+    }
+
+    onDisplayFormCalClicked(e) {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: e.target.value,
+                isShown: true,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
+            }
+        })
+    }
+
+    onDisplayFormCalClose() {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: null,
+                isShown: false,
+            },
         })
     }
 

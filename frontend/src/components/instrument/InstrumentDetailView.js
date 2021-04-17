@@ -559,13 +559,14 @@ class InstrumentDetailView extends Component {
 
     onShowCalibrationPopup(calEvent) {
         const isApprover = hasApprovalAccess(this.props.user.permissions_groups);
+        
         this.setState({
             calibrationPopup: {
                 ...this.state.calibrationPopup,
                 isShown: true,
                 calEvent: calEvent,
                 isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
-            }
+            },
         })
     }
 
@@ -768,6 +769,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.formCalPopup,
                 isShown: true,
                 pk: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -790,6 +795,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.displayFormCalPopup,
                 pk: e.target.value,
                 isShown: true,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -800,7 +809,7 @@ class InstrumentDetailView extends Component {
                 ...this.state.displayFormCalPopup,
                 pk: null,
                 isShown: false,
-            }
+            },
         })
     }
 
@@ -819,6 +828,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.wizardPopup,
                 isShown: true,
                 lbPK: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -840,6 +853,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.guidedCalPopup,
                 isShown: true,
                 pk: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }

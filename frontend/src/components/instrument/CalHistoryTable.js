@@ -208,14 +208,23 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 title: (cell) => `Comment: ${cell}`,
                 headerClasses: 'ct-comment-column',
                 formatter: (cell) => {
+                    if(cell.length === 0) {
+                        return <span style={{ padding: "1px 3px 1px 3px" }}>-</span>;
+                    }
                         return cell.map((el, index) => {
                             return (<>
                             <a href={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</a>
                             {index !== cell.length - 1 ? ', ' : null}
                             </>)
                         });
-
-                }
+                },
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        if (row.calibrated_by_instruments.length === 0) {
+                            onRowClick(row);
+                        }
+                    },
+                },
             },
             {
                 dataField: 'comment',

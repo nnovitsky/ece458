@@ -86,6 +86,7 @@ class UserPage extends React.Component {
 
         this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
         this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
+        this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
     }
 
 
@@ -213,7 +214,8 @@ class UserPage extends React.Component {
     }
 
     async updatePendingTable() {
-        await instrumentServices.getAllPendingCalEvents().then((result) => {
+        const pagination = this.state.calibration_pagination;
+        await instrumentServices.getAllPendingCalEvents(pagination.desiredPage, pagination.isShowAll, pagination.resultsPerPage).then((result) => {
             console.log(result);
             if(result.success) {
                 this.setState({
@@ -361,7 +363,7 @@ class UserPage extends React.Component {
     makeCalHistoryTable() {
         return(
             <div>
-                <h3>Calibration Events Pending Approval</h3>
+                <h3>Calibration Events Pending Approval {`(${this.state.calibration_pagination.resultCount})`}</h3>
                 <CalHistoryTable
                     data={this.state.calibrationData}
                     onTableChange={this.onCalHistoryTableChange}

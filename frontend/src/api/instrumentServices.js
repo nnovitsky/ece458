@@ -248,6 +248,7 @@ export default class InstrumentServices {
         if(calibratorInstrumentArr.length > 0) {
             formData.append('calibrated_by_instruments', JSON.stringify(calibratorInstrumentArr));
         }
+        console.log(JSON.stringify(calibratorInstrumentArr));
 
         let result = {
             success: true,
@@ -672,6 +673,42 @@ export default class InstrumentServices {
             }
         }
         )
+    }
+
+    async getAllPendingCalEvents(pageNum, showAll, perPage) {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: true,
+            url: [],
+        }
+
+        let url = `${API_URL}/api/calibration_event_search/?approval_status=Pending`;
+
+        if (showAll) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
+        }
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            })
     }
 }
 

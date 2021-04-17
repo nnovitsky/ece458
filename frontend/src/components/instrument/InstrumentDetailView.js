@@ -440,6 +440,7 @@ class InstrumentDetailView extends Component {
                 user={this.props.user}
                 instrument_pk={this.state.instrument_info.pk}
                 model_pk={this.state.instrument_info.model_pk}
+                calibratorCategories={this.state.instrument_info.calibrator_categories.map(x => x.name)}
             />
         )
     }

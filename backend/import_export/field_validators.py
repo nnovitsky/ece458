@@ -27,8 +27,10 @@ VALID_CAL_TYPES = [
 
 def validate_column_headers(headers, expected_headers):
 
-    if len(headers) != len(expected_headers):
-        return False, "Headers and expected headers quantity mismatch."
+    if len(headers) < len(expected_headers):
+        return False, "Missing headers in file."
+    elif len(headers) > len(expected_headers):
+        headers = headers[0:len(expected_headers)-1]
 
     for header, expected_header in zip(headers, expected_headers):
         if header != expected_header:

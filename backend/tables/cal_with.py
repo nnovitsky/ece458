@@ -71,7 +71,7 @@ def handler(errors, valid_cats, instruments, pks):
                         status=status.HTTP_200_OK)
 
     return Response({"is_valid": True,
-                     "instrument_pk": instrument_pk,
+                     "calibrated_by_instruments": instruments,
                      "instrument_name": str(ItemModel.objects.get(pk=item_model_pk))
                      },
                      status=status.HTTP_200_OK)

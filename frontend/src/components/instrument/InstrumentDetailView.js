@@ -559,15 +559,25 @@ class InstrumentDetailView extends Component {
 
     onShowCalibrationPopup(calEvent) {
         const isApprover = hasApprovalAccess(this.props.user.permissions_groups);
-        
-        this.setState({
-            calibrationPopup: {
-                ...this.state.calibrationPopup,
-                isShown: true,
-                calEvent: calEvent,
-                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
-            },
-        })
+        console.log(this.isOtherModalShowing());
+        if(!this.isOtherModalShowing()) {
+            this.setState({
+                calibrationPopup: {
+                    ...this.state.calibrationPopup,
+                    isShown: true,
+                    calEvent: calEvent,
+                    isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
+                },
+            })
+        }
+    }
+
+    isOtherModalShowing() {
+        const isLoadBankShowing = this.state.wizardPopup.isShown;
+        const isGuidedCalShowing = this.state.guidedCalPopup.isShown;
+        const isFormCalShown = this.state.formCalPopup.isShown;
+        const isDisplayFormCalShown = this.state.displayFormCalPopup.isShown;
+        return isLoadBankShowing || isGuidedCalShowing || isFormCalShown || isDisplayFormCalShown;
     }
 
     onCalibrationPopupClose() {

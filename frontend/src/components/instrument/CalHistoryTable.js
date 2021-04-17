@@ -43,7 +43,6 @@ const calHistoryTable = (props) => {
             noResults='No Calibration History'
             inlineElements={props.inlineElements}
             isHoverMessageDisplayed={false}
-            onRowClick={(row) => props.onRowClick(row)}
             rowClasses={rowClasses}
             striped={false}
         />
@@ -80,7 +79,12 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     return `#${rowNumber + 1}`;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'ct-num-column'
+                headerClasses: 'ct-num-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
             {
                 hidden: !requiresApproval,
@@ -115,15 +119,24 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 formatExtraData: hasApprovalPermissions,
                 headerClasses: 'ct-status-column',
-                classes: 'ct-status-column'
-
+                classes: 'ct-status-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
             {
                 dataField: 'date',
                 text: 'Date',
                 sort: false,
                 title: (cell) => `Calibration Date: ${cell}`,
-                headerClasses: 'ct-cal-column'
+                headerClasses: 'ct-cal-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
             {
                 dataField: 'file_type',
@@ -162,7 +175,14 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         default:
                             return <span>N/A</span>
                     }
-                })
+                }),
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        if(row.file_type === 'None') {
+                            onRowClick(row)
+                        }
+                    },
+                },
             },
             {
                 dataField: 'user',
@@ -172,14 +192,25 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>
-                }
+                },
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
+                
             },
             {
                 dataField: 'comment',
                 text: 'Comment',
                 sort: false,
                 title: (cell) => `Comment: ${cell}`,
-                headerClasses: 'ct-comment-column'
+                headerClasses: 'ct-comment-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
         ]
     )

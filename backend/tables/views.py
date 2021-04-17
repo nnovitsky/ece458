@@ -114,10 +114,30 @@ def calibration_event_list(request):
         if model.requires_approval:
             request_data['approval_status'] = APPROVAL_STATUSES['pending']
 
+        if 'calibrated_by_instruments' not in request_data:
+            request_data['calibrated_by_instruments'] = []
+        else:
+            calibrated_by_instruments = [int(pk) for pk in request_data['calibrated_by_instruments'].split(',')]
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
+
+            if not valid_cal:
+                return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = CalibrationEventWriteSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            response_dict = dict(serializer.data)
+            calibrated_with = []
+            for ins_pk in serializer.data['calibrated_by_instruments']:
+                calibrated_with.append({
+                    "instrument_pk": ins_pk,
+                    "asset_tag": Instrument.objects.get(pk=ins_pk).asset_tag
+                })
+
+            response_dict['calibrated_by_instruments'] = calibrated_with
+
+            return Response(response_dict, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

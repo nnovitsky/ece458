@@ -56,13 +56,14 @@ class AdminPage extends React.Component {
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onDeleteClose = this.onDeleteClose.bind(this);
         this.changePrivileges = this.changePrivileges.bind(this);
+        this.makeUserTable = this.makeUserTable.bind(this);
     }
 
 
 
     async componentDidMount() {
-        this.getUsername();
-        this.updateUserTable();
+        await this.getUsername();
+        await this.updateUserTable();
     }
 
     render() {
@@ -73,6 +74,7 @@ class AdminPage extends React.Component {
 
         let deletePopup = (this.state.deletePopupIsShown) ? this.makeDeletePopup() : null;
         let addUserPopup = (this.state.addUserPopup.isShown) ? this.makeAddUserPopup() : null;
+        let userTable =  this.makeUserTable(buttonRow);
         return (
             <div>
                 {deletePopup}
@@ -84,25 +86,28 @@ class AdminPage extends React.Component {
                             title='Hello, Administrator'
                             headerButtons={null}
                         />
-                        <div className="user-table-div">
-                            <UserTable
-                                data={this.state.tableData}
-                                onTableChange={this.onUserTableChange}
-                                pagination={{ page: this.state.user_pagination.currentPageNum, sizePerPage: (this.state.user_pagination.showAll ? this.state.user_pagination.resultCount : this.state.user_pagination.resultsPerPage), totalSize: this.state.user_pagination.resultCount }}
-                                inlineElements={buttonRow}
-                                giveAdminPriviledges={this.giveAdminPriviledges}
-                                revokeAdminPriviledges={this.revokeAdminPriviledges}
-                                currentUser={this.props.username}
-                                deleteUser={this.onDeleteClicked}
-                                onChangePrivileges={this.changePrivileges}
-                            />
-                        </div>
-                            
+                        {userTable}
                     </div>
                 </div>
             </div>
 
         );
+    }
+
+    makeUserTable(buttonRow) {
+        return <div className="user-table-div">
+            <UserTable
+                data={this.state.tableData}
+                onTableChange={this.onUserTableChange}
+                pagination={{ page: this.state.user_pagination.currentPageNum, sizePerPage: (this.state.user_pagination.showAll ? this.state.user_pagination.resultCount : this.state.user_pagination.resultsPerPage), totalSize: this.state.user_pagination.resultCount }}
+                inlineElements={buttonRow}
+                giveAdminPriviledges={this.giveAdminPriviledges}
+                revokeAdminPriviledges={this.revokeAdminPriviledges}
+                currentUser={this.state.username}
+                deleteUser={this.onDeleteClicked}
+                onChangePrivileges={this.changePrivileges}
+            />
+        </div>
     }
 
     makeDeletePopup() {
@@ -195,14 +200,14 @@ class AdminPage extends React.Component {
 
     async onUserDelete() {
         console.log(this.state.userDeleted.pk)
-         adminServices.deleteUser(this.state.userDeleted.pk).then(result => {
+        adminServices.deleteUser(this.state.userDeleted.pk).then(result => {
             if (result.success) {
                 this.setState({
                     deletePopupIsShown: false,
                 })
                 this.updateUserTable();
             }
-        }) 
+        })
     }
 
     // event handler for the User Table, it handles pagination
@@ -304,6 +309,7 @@ class AdminPage extends React.Component {
                 this.setState({
                     username: result.data.username,
                 })
+                this.updateUserTable();
             } else {
                 window.sessionStorage.clear();
                 this.setState({
@@ -316,14 +322,11 @@ class AdminPage extends React.Component {
     }
 
 
-    async changePrivileges(e)
-    {
-        console.log(e)
-        adminServices.togglePriviledges(e.pk, e.groups).then(result =>{
-            console.log(result)
+    async changePrivileges(e) {
+        adminServices.togglePriviledges(e.pk, e.groups).then(result => {
             this.updateUserTable()
         })
-    }  
+    }
 }
 
 export default AdminPage;

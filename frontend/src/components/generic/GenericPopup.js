@@ -30,7 +30,10 @@ const genericPopup = (props) => {
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
 
-            <Modal.Body>
+            <Modal.Body style={{
+                maxHeight: '60vh',
+                overflow: 'scroll'
+            }}>
                 {props.body}
             </Modal.Body>
 
@@ -51,12 +54,12 @@ const buttonArray = (closeText, submitText, onClose, onSubmit, submitButtonVaria
 
     buttons.push(<Button variant="secondary" onClick={onClose} hidden={!isSecondaryButtonShown}>{closeText}</Button>)
 
-    if(isPrimaryOnLeft) {
+    if (isPrimaryOnLeft) {
         buttons.unshift(primary);
     } else {
         buttons.push(primary);
     }
-    
+
     let buttonDiv = (
         <div className="popup-button-row">
             {buttons}

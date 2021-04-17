@@ -4,12 +4,10 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Badge from 'react-bootstrap/Badge';
-import InstrumentDetailView from './InstrumentDetailView';
 import InstrumentServices from '../../api/instrumentServices';
 
 const instrumentServices = new InstrumentServices();
 let instrumentPk;
-let count = 1;
 // onInstrumentChange: an event handler that will be called whenever an
 // instrument is added or removed. this will be passed an array of instrument pks
 // calibratorCategories: an array of acceptable calibrator category names to be displayed (if an empty array, this component will be hidden)
@@ -32,13 +30,13 @@ const CalibratedWithInput = (props) => {
                     placeholder="Asset Tag"
                     className={getClassName(calibratorState)}
                     value={calibratorState.textInput}
-                    onChange={(e) => onTextInput(e.target.value, dispatch)}
+                    onChange={(e) => onTextInput(e.target.value, dispatch, calibratorState)}
                 />
                 <InputGroup.Append>
                     <Button onClick={() => onAddInstrument(calibratorState, dispatch)} disabled={!calibratorState.isValidText}>+</Button>
                 </InputGroup.Append>
                 <Form.Control.Feedback type="invalid">
-                    {calibratorState.errors}
+                    {(calibratorState.errors && calibratorState.errors.length > 0) ? calibratorState.errors[0] : null}
 
                 </Form.Control.Feedback>
             </InputGroup>
@@ -52,7 +50,7 @@ const CalibratedWithInput = (props) => {
 const getBadgeList = (calibratorState, dispatch) => {
     const result = [];
     calibratorState.instrumentsAdded.forEach((instrument) => {
-        const badge = badgeWithButton(`${instrument.name} ${instrument.asset_tag}`, instrument.instrument_pk, (pk) => onRemoveInstrument(dispatch, pk));
+        const badge = badgeWithButton(`${instrument.instrument_name} ${instrument.asset_tag}`, instrument.instrument_pk, (pk) => onRemoveInstrument(dispatch, pk));
         result.push(badge);
     });
     return result;
@@ -73,6 +71,8 @@ function reducer(state, action) {
     switch (action.type) {
         case 'text_input':
             return { ...state, textInput: action.payload };
+        case 'set_current_instrument':
+            return {...state, currentInstrument: action.payload};
         case 'add_instrument':
             const newArray = [...state.instrumentsAdded];
             const pay = action.payload;
@@ -103,37 +103,51 @@ const getClassName = (calibratorState) => {
     }
 }
 
-const onTextInput = (text, dispatch) => {
+const onTextInput = async (text, dispatch, calibratorState) => {
     dispatch({ type: 'text_input', payload: text });
     if (text.length < 6) {
         dispatch({ type: 'set_valid', payload: null });
         dispatch({ type: 'set_errors', payload: [] });
     }
     if (text.length === 6) {
-        // instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
-        //     if(result.success) {
-        //         console.log(result);
-        //     }
-        // })
-        // dispatch({ type: 'set_valid', payload: true });
-        // dispatch({ type: 'set_errors', payload: [] });
-
+        if (hasInstrumentAlready(calibratorState.instrumentsAdded, text)) {
+            dispatch({ type: 'set_valid', payload: false });
+            dispatch({ type: 'set_errors', payload: ['This instrument has already been added'] });
+        } else {
+            await instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
+                if (result.success) {
+                    if (result.data.is_valid) {
+                        console.log(result.data);
+                        const currentInstrument = {
+                            instrument_pk: result.data.calibrated_by_instruments[0],
+                            asset_tag: text,
+                            instrument_name: result.data.instrument_name
+                        }
+                        dispatch({ type: 'set_current_instrument', payload: currentInstrument});
+                        dispatch({ type: 'set_valid', payload: true });
+                    } else {
+                        dispatch({ type: 'set_valid', payload: false });
+                        dispatch({ type: 'set_errors', payload: result.data.calibration_errors });
+                    }
+                }
+            })
+        }
     }
     if (text.length > 6) {
         dispatch({ type: 'set_valid', payload: false });
-        dispatch({ type: 'set_errors', payload: ['Too long'] });
+        dispatch({ type: 'set_errors', payload: ['Value entered is too long, not a valid asset tag'] });
     }
 
 }
 
+const hasInstrumentAlready = (currentInstruments, newAssetTag) => {
+    const currentAssetTags = currentInstruments.map(x => x.asset_tag);
+    return currentAssetTags.includes(newAssetTag);
+}
+
 const onAddInstrument = (calibratorState, dispatch) => {
     if (calibratorState.isValidText) {
-        const newInstrument = {
-            instrument_pk: count,
-            asset_tag: calibratorState.textInput,
-        };
-        count += 1;
-        dispatch({ type: 'add_instrument', payload: newInstrument });
+        dispatch({ type: 'add_instrument', payload: calibratorState.currentInstrument });
         dispatch({ type: 'text_input', payload: '' });
         dispatch({ type: 'set_valid', payload: null });
     }
@@ -149,6 +163,11 @@ const getEmptyState = () => {
         instrumentsAdded: [],
         errors: [],
         isValidText: null,
+        currentInstrument: {
+            instrument_pk: null,
+            asset_tag: null,
+            instrument_name: null
+        }
     };
 }
 

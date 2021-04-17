@@ -24,7 +24,7 @@ class FormCal extends React.Component {
             date_string: dateToString(new Date()),
             date_object: new Date(),
             comment: '',
-            instrument_pk: this.props.instrument_pk,
+            instrument_pk: props.instrument_pk,
             model_pk: this.props.model_pk,
             cal_event_pk: '',
             calibrator_instruments: [],
@@ -69,9 +69,8 @@ class FormCal extends React.Component {
     makeBody() {
         let formItems = this.makeForm();
         let introItems = this.makeIntro();
-        console.log(this.state.data)
-        return <div>
-            <Form style={{ height: "60vh", overflowY: "auto" }}>
+        return (<div>
+            <Form>
                 {introItems}
                 {formItems}
                 <CalibratedWithInput 
@@ -80,7 +79,7 @@ class FormCal extends React.Component {
                     instrumentPk={this.state.instrument_pk}
                 /> 
             </Form>
-        </div>
+        </div>)
     }
 
     onCalibratorInstrumentsChange(instrumentsArr){

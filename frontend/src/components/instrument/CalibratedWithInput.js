@@ -16,11 +16,15 @@ const CalibratedWithInput = (props) => {
     const [calibratorState, dispatch] = useReducer(reducer, getEmptyState());
 
     useEffect(() => {
-        props.onInstrumentChange(calibratorState.instrumentsAdded.map(x => x.instrument_pk));
         instrumentPk = props.instrumentPk;
-    }, [calibratorState.instrumentsAdded, props]);
+        if(calibratorState.callParent) {
+            props.onInstrumentChange(calibratorState.instrumentsAdded.map(x => x.instrument_pk));
+            instrumentPk = props.instrumentPk;
+            dispatch({ type: 'set_call_parent', payload: false });
+        }
+    }, [calibratorState.callParent, calibratorState.instrumentsAdded, props]);
     return (
-        <div hidden={props.calibratorCategories.length === 0} className="calibrator-instrument-div" onKeyUp={(e) => e.key === 'Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
+        <div className="calibrator-instrument-div" onKeyUp={(e) => e.key === 'Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
             <Form.Label>Calibrator Instruments</Form.Label>
             <Form.Text muted>Calibrator Categories: {props.calibratorCategories.join(', ')}</Form.Text>
             <InputGroup noValidate style={{padding: '0px'}}>
@@ -86,9 +90,13 @@ function reducer(state, action) {
             return { ...state, isValidText: action.payload };
         case 'set_errors':
             return { ...state, errors: action.payload };
+        case 'set_call_parent':
+            return {...state, callParent: action.payload};
         case 'clear':
             return getEmptyState();
         default:
+            console.log(action.type);
+            console.log(action.payload);
             throw new Error();
     }
 }
@@ -117,7 +125,6 @@ const onTextInput = async (text, dispatch, calibratorState) => {
             await instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
                 if (result.success) {
                     if (result.data.is_valid) {
-                        console.log(result.data);
                         const currentInstrument = {
                             instrument_pk: result.data.calibrated_by_instruments[0],
                             asset_tag: text,
@@ -148,6 +155,7 @@ const hasInstrumentAlready = (currentInstruments, newAssetTag) => {
 const onAddInstrument = (calibratorState, dispatch) => {
     if (calibratorState.isValidText) {
         dispatch({ type: 'add_instrument', payload: calibratorState.currentInstrument });
+        dispatch({ type: 'set_call_parent', payload: true });
         dispatch({ type: 'text_input', payload: '' });
         dispatch({ type: 'set_valid', payload: null });
     }
@@ -167,7 +175,8 @@ const getEmptyState = () => {
             instrument_pk: null,
             asset_tag: null,
             instrument_name: null
-        }
+        },
+        callParent: false,
     };
 }
 

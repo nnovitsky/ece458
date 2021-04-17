@@ -92,7 +92,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
                     const style = (cell === 'Pending') ? {backgroundColor: 'yellow'} : {};
-                    console.log(style);
                     return <div style={{ display: "flex", ...style }}>
                         {cell}
                     </div>;
@@ -114,7 +113,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 text: 'Supplement Data',
                 sort: false,
                 title: (cell) => {
-                    console.log(cell)
                     switch (cell) {
                         case 'None':
                             return 'No supplement documents';
@@ -143,7 +141,6 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         case 'Klufe':
                             return <Button onClick={onKlufeClick} value={row.klufe_cal_pk} className="data-table-button">Guided Hardware Data</Button>
                         case 'Form':
-                            console.log(row)
                             return <Button onClick={onFormClick} value={row.pk} className="data-table-button">Form Cal. Data</Button>
                         default:
                             return <span>N/A</span>

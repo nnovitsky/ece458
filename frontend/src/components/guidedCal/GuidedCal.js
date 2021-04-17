@@ -148,6 +148,7 @@ class GuidedCal extends React.Component {
                     })
                     await this.turnOffSource();
                     window.sessionStorage.removeItem("klufe");
+                    window.sessionStorage.removeItem("klufepk");
                     this.props.onClose()
                 }
                 else{
@@ -169,7 +170,8 @@ class GuidedCal extends React.Component {
     }
 
     async setEventPKs(klufePK, calEventPK){
-        window.sessionStorage.setItem("klufe", JSON.stringify(klufePK));
+        window.sessionStorage.setItem("klufe", this.state.instrument_pk);
+        window.sessionStorage.setItem("klufepk", klufePK);
         this.setState({
             klufePK: klufePK,
             calEventPK: calEventPK

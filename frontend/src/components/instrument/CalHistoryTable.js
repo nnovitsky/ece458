@@ -2,6 +2,7 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
 
 import RejectedIcon from "../../assets/CalibrationIcons/Expired.png";
 import PendingIcon from "../../assets/CalibrationIcons/Warning.png";
@@ -50,7 +51,7 @@ const calHistoryTable = (props) => {
 }
 
 const getApprovalStatusIcon = (approvalStatus) => {
-    switch(approvalStatus) {
+    switch (approvalStatus) {
         case 'Approved':
             return ApprovedIcon;
         case 'Rejected':
@@ -92,7 +93,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 isKey: true,
                 text: 'Status',      //displayed column header text
                 title: (cell) => {   //formats the data and the returned is displayed in the cell
-                    switch(cell) {
+                    switch (cell) {
                         case 'NA':
                             return 'Approval Status: Approved\nThis instrument was implicitly approved when the model was changed to requiring approval';
                         default:
@@ -100,7 +101,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     }
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
-                    switch(cell) {
+                    switch (cell) {
                         case 'NA':
                             return <span>Approved</span>
                         default:
@@ -108,7 +109,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                                 {cell}
                             </div>;
                     }
-                    
+
                 },
                 style: (cell) => {
                     if (cell === 'Pending') {
@@ -163,7 +164,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 formatter: ((cell, row) => {
                     switch (cell) {
                         case 'None':
-                            return <span style={{padding: "1px 3px 1px 3px"}}>-</span>;
+                            return <span style={{ padding: "1px 3px 1px 3px" }}>-</span>;
                         case 'Artifact':
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
                         case 'Load Bank':
@@ -178,7 +179,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 }),
                 events: {
                     onClick: (e, column, columnIndex, row, rowIndex) => {
-                        if(row.file_type === 'None') {
+                        if (row.file_type === 'None') {
                             onRowClick(row)
                         }
                     },
@@ -198,7 +199,23 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         onRowClick(row)
                     },
                 },
-                
+
+            },
+            {
+                dataField: 'calibrated_by_instruments',
+                text: 'Calibrator Instruments',
+                sort: false,
+                title: (cell) => `Comment: ${cell}`,
+                headerClasses: 'ct-comment-column',
+                formatter: (cell) => {
+                        return cell.map((el, index) => {
+                            return (<>
+                            <a href={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</a>
+                            {index !== cell.length - 1 ? ', ' : null}
+                            </>)
+                        });
+
+                }
             },
             {
                 dataField: 'comment',
@@ -219,17 +236,17 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
 const rowClasses = (row) => {
     let classes = 'can-click';
 
-   switch(row.approval_status) {
-       case 'Rejected':
+    switch (row.approval_status) {
+        case 'Rejected':
             classes += ' rejected-row';
             break;
         case 'Pending':
             classes += ' pending-row';
             break
         default:
-           classes += ' approved-row';
+            classes += ' approved-row';
             break
-   }
+    }
 
     return classes;
 };

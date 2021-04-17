@@ -102,11 +102,12 @@ const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeCli
 
                             <td>
                                 <div className="detail-view-categories">
-                                    <p>Coming Soon</p>
-                                    {/* {calEvent.calibrator_categories.map(el => {
-                                        return 
-                                        (<Link to={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</Link>)
-                                    })} */}
+                                    {calEvent.calibrated_by_instruments.map((el, index) => {
+                                        return ((<>
+                                            <a href={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</a>
+                                            {index !== calEvent.calibrated_by_instruments.length - 1 ? ', ' : null}
+                                        </>))
+                                    })}
                                 </div>
                             </td>
                         </tr>

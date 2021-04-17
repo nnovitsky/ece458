@@ -117,10 +117,13 @@ def calibration_event_list(request):
         if 'calibrated_by_instruments' not in request_data:
             request_data['calibrated_by_instruments'] = []
         else:
-            calibrated_by_instruments = [int(pk) for pk in request_data['calibrated_by_instruments'].split(',')]
+            raw_string = request_data['calibrated_by_instruments'].lstrip('[').rstrip(']')
+            calibrated_by_instruments = [int(pk) for pk in raw_string.split(',')]
             valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
 
-            if not valid_cal:
+            if valid_cal:
+                request_data['calibrated_by_instruments'] = calibrated_by_instruments
+            else:
                 return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = CalibrationEventWriteSerializer(data=request_data)
@@ -155,7 +158,17 @@ def calibration_event_detail(request, pk):
 
     if request.method == 'GET':
         serializer = CalibrationEventReadSerializer(calibration_event, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_dict = dict(serializer.data)
+        calibrated_with = []
+        for ins_pk in serializer.data['calibrated_by_instruments']:
+            calibrated_with.append({
+                "instrument_pk": ins_pk,
+                "asset_tag": Instrument.objects.get(pk=ins_pk).asset_tag
+            })
+
+        response_dict['calibrated_by_instruments'] = calibrated_with
+
+        return Response(response_dict, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         if not UserType.contains_user(request.user, "admin"):

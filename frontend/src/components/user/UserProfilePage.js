@@ -89,8 +89,6 @@ class UserPage extends React.Component {
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
     }
 
-
-
     async componentDidMount() {
         await this.updateUserInfo();
         await this.updatePendingTable();
@@ -131,7 +129,10 @@ class UserPage extends React.Component {
                                 </Col>
                             </Row>
                         </div>
-                        {pendingTable}
+                        <div className="bottom-element">
+                            {pendingTable}
+                        </div>
+                        
                     </div>
                 </div>
             </div>

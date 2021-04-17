@@ -169,6 +169,7 @@ const makeApprovalSection = (calEvent, approvalState, dispatch) => {
             <hr />
             <Form className="popup">
                 <h4 hidden={isApprovalForm}>Approval Event: {statusSpan}</h4>
+                <h4 hidden={!isApprovalForm}>Approval Section:</h4>
                 <Form.Group>
                     <Row>
 

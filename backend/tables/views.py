@@ -117,10 +117,13 @@ def calibration_event_list(request):
         if 'calibrated_by_instruments' not in request_data:
             request_data['calibrated_by_instruments'] = []
         else:
-            calibrated_by_instruments = [int(pk) for pk in request_data['calibrated_by_instruments'].split(',')]
+            raw_string = request_data['calibrated_by_instruments'].lstrip('[').rstrip(']')
+            calibrated_by_instruments = [int(pk) for pk in raw_string.split(',')]
             valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
 
-            if not valid_cal:
+            if valid_cal:
+                request_data['calibrated_by_instruments'] = calibrated_by_instruments
+            else:
                 return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = CalibrationEventWriteSerializer(data=request_data)

@@ -376,6 +376,7 @@ class UserPage extends React.Component {
     makeCalHistoryTable() {
         return(
             <div>
+                <hr />
                 <h3>Calibration Events Pending Approval {`(${this.state.calibration_pagination.resultCount})`}</h3>
                 <CalHistoryTable
                     data={this.state.calibrationData}

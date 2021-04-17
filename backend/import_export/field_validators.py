@@ -165,9 +165,9 @@ def is_valid_cal_type(cal_type_field):
     stripped_field = cal_type_field.strip()
 
     if stripped_field in VALID_CAL_TYPES:
-        return True, "Valid load-bank-support entry"
+        return True, ""
 
-    return False, f"\'{cal_type_field}\' is not a valid load-bank-support entry. " \
+    return False, f"\'{cal_type_field}\' is not a valid special calibration type entry. " \
                   f"Must be one of the following {len(VALID_CAL_TYPES)} possibilities: {VALID_CAL_TYPES}."
 
 

@@ -8,7 +8,7 @@ from backend.tables.models import ItemModelCategory, CalibrationMode
 from backend.import_export.field_validators import is_blank_row
 
 model_keys = ['vendor', 'model_number', 'description', 'comment', 'calibration_frequency',
-              'itemmodelcategory_set', 'calibrationmode_set']
+              'itemmodelcategory_set', 'calibrationmode_set', 'requires_approval', 'calibrator_categories_set']
 
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
@@ -17,6 +17,8 @@ COMMENT_INDEX = 3
 MODEL_CATEGORIES_INDEX = 4
 CALIBRATION_SUPPORT_INDEX = 5
 CAL_FREQUENCY_INDEX = 6
+REQUIRES_APPROVAL_INDEX = 7
+CAL_CATEGORIES_INDEX = 8
 
 
 def get_klufe_pk():
@@ -48,7 +50,7 @@ def get_cal_fields(row, load_bank_pk, klufe_pk):
     else:
         cal_freq = int(row[CAL_FREQUENCY_INDEX])
 
-    if len(row[CALIBRATION_SUPPORT_INDEX]) == 0:
+    if len(row[CALIBRATION_SUPPORT_INDEX].strip()) == 0:
         cal_mode = []
     elif row[CALIBRATION_SUPPORT_INDEX].strip() == 'Load-Bank':
         cal_mode = [load_bank_pk]
@@ -89,9 +91,10 @@ def get_model_list(file, load_bank_pk, klufe_pk, db_categories):
 
         cal_freq, cal_mode = get_cal_fields(row, load_bank_pk, klufe_pk)
         model_category_set = get_model_category_set(row, db_categories)
+        requires_approval = row[REQUIRES_APPROVAL_INDEX] == 'Y'
 
-        model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX],
-                      row[COMMENT_INDEX], cal_freq, list(model_category_set), cal_mode]
+        model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX], row[COMMENT_INDEX], cal_freq,
+                      list(model_category_set), cal_mode, requires_approval]
         model_records.append(dict(zip(model_keys, model_info)))
 
     return model_records

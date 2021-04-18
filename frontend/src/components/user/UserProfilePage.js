@@ -394,7 +394,8 @@ class UserPage extends React.Component {
                     requiresApproval={true}
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
-                    inlineElements="(Click on a row for more information)"
+                    inlineElements="(Click on a row for more information and approval)"
+                    displayInstrumentInfo={true}
                 />
             </div>
         )

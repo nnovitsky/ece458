@@ -50,7 +50,7 @@ class CategoriesPage extends Component {
                 pagination: {
                     resultCount: 2,
                     numPages: 1,
-                    resultsPerPage: 10,
+                    resultsPerPage: 25,
                     currentPageNum: 1,
                     desiredPage: 1,
                     showAll: false,
@@ -61,7 +61,7 @@ class CategoriesPage extends Component {
                 pagination: {
                     resultCount: 2,
                     numPages: 1,
-                    resultsPerPage: 10,
+                    resultsPerPage: 25,
                     currentPageNum: 1,
                     desiredPage: 1,
                     showAll: false,
@@ -242,7 +242,7 @@ class CategoriesPage extends Component {
             isLoading: true
         })
         let pagination = this.state.modelCategories.pagination;
-        await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage).then(
+        await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage, pagination.resultsPerPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.modelCategories.pagination.showAll;
@@ -269,7 +269,7 @@ class CategoriesPage extends Component {
             isLoading: true
         })
         let pagination = this.state.instrumentCategories.pagination;
-        await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage).then(
+        await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage, pagination.resultsPerPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.instrumentCategories.pagination.showAll;
@@ -309,7 +309,8 @@ class CategoriesPage extends Component {
                         pagination: {
                             ...this.state.modelCategories.pagination,
                             desiredPage: (showAll ? 1 : page),
-                            showAll: showAll
+                            showAll: showAll,
+                            resultsPerPage: sizePerPage
                         }
                     }
                 }, () => this.updateModelCategories());
@@ -329,7 +330,8 @@ class CategoriesPage extends Component {
                         pagination: {
                             ...this.state.instrumentCategories.pagination,
                             desiredPage: (showAll ? 1 : page),
-                            showAll: showAll
+                            showAll: showAll,
+                            resultsPerPage: sizePerPage
                         }
                     }
                 }, () => this.updateInstrumentCategories());
@@ -440,7 +442,9 @@ class CategoriesPage extends Component {
                     this.updateTabCategory();
                     this.onDeleteCancel();
                 } else {
-                    if (result.errors.delete_error !== undefined) {
+                    console.log(result.errors);
+                    if (result.errors.delete_error !== undefined && result.errors.delete_error.includes('Category is not empty.')) {
+                        console.log('includes non empty error');
                         this.setState({
                             deletePopup: {
                                 ...this.state.deletePopup,

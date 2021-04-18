@@ -89,10 +89,12 @@ The database for this project is set up with 13 related models:
 - Instrument: data inherent to a single instrument
 - InstrumentCategory: grouping for Instruments in a user-defined category
 - CalibrationEvent: data inherent to a calibration event, regardless of type/calibration mode
+- CalibrationApproval: data about approval/rejection of a calibration event
 - LoadBankCalibration: detailed data for a load bank calibration (voltmeter, shunt meter, etc.)
 - LoadCurrent: details about a single current reading at a test current for a load bank calibration
 - LoadVoltage: details about a single voltage reading at test voltage for a load bank calibration
 - KlufeCalibration: detailed data for a Klufe hardware calibration
 - KlufeVoltageReading: details about a single voltage reading for a Klufe calibration
+- CalibrationFormField: one section of a custom calibration form, linked to either an ItemModel (if template) or CalibrationEvent (if form used to submit calibration)
 
-![DB Diagram](db_diagram3.PNG)
+![DB Diagram](db_diagram4.png)

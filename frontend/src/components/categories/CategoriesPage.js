@@ -44,7 +44,9 @@ class CategoriesPage extends Component {
                 errors: [],
                 name: '',
             },
-
+            infoPopup: {
+                isShown: false,
+            },
             modelCategories: {
                 data: [],
                 pagination: {
@@ -82,6 +84,7 @@ class CategoriesPage extends Component {
         this.onCreateCancel = this.onCreateCancel.bind(this);
         this.onInstrumentTableChange = this.onInstrumentTableChange.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
+        this.onInfoPopupClose = this.onInfoPopupClose.bind(this);
     }
 
     async componentDidMount() {
@@ -93,6 +96,7 @@ class CategoriesPage extends Component {
         const createPopup = (this.state.createPopup.isShown) ? this.makeCreatePopup() : null;
         const renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
         const deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
+        const infoPopup = (this.state.infoPopup.isShown) ? this.makeInfoPopup() : null;
         const buttonRow = (<div className="table-button-row">
             <Button onClick={this.onCreateClicked}>Create</Button>
             </div>);
@@ -105,6 +109,7 @@ class CategoriesPage extends Component {
                 {createPopup}
                 {renamePopup}
                 {deletePopup}
+                {infoPopup}
                 <GenericLoader
                     isShown={this.state.isLoading}
                 />
@@ -200,6 +205,31 @@ class CategoriesPage extends Component {
                     submitText='Rename'
                 />
             )
+    }
+
+    makeInfoPopup() {
+        const body = (
+            <span>This category is needed for specialty calibration modes and cannot be deleted</span>
+        )
+        return(
+            <GenericPopup
+                show={this.state.infoPopup.isShown}
+                body={body}
+                headerText="Permanent Category"
+                closeButtonText="Close"
+                onClose={this.onInfoPopupClose}
+                isSubmitButtonShown={false}
+            />
+        )
+    }
+
+    onInfoPopupClose() {
+        this.setState({
+            infoPopup: {
+                ...this.state.infoPopup,
+                isShown: false,
+            }
+        })
     }
 
 
@@ -443,7 +473,15 @@ class CategoriesPage extends Component {
                     this.onDeleteCancel();
                 } else {
                     console.log(result.errors);
-                    if (result.errors.delete_error !== undefined && result.errors.delete_error.includes('Category is not empty.')) {
+                    if(result.errors.implicit_delete_error !== undefined) {
+                        this.setState({
+                            infoPopup: {
+                                ...this.state.infoPopup,
+                                isShown: true,
+                            }
+                        })
+                    }
+                    else if (result.errors.delete_error !== undefined && result.errors.delete_error.includes('Category is not empty.')) {
                         console.log('includes non empty error');
                         this.setState({
                             deletePopup: {

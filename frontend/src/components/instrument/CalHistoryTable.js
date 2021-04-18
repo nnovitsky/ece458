@@ -137,7 +137,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 headerClasses: 'ct-instrument-column',
                 formatter: (cell, row) => {
                     return(
-                        <a className="green-link" href={`/instrument-detail/${row.instrument_pk}`}>{`${cell} (${row.asset_tag})`}</a>
+                        <Link className="green-link" to={`/instruments-detail/${row.instrument_pk}`}>{`${cell} (${row.asset_tag})`}</Link>
                     )
 
                 },

@@ -77,11 +77,8 @@ class AddModelPopup extends Component {
                 },
                 calibratorCategories: {
                     klufe_k5700: [
-                        { name: 'Klufe_K5700-compatible', pk: 125 },
                     ],
                     load_bank: [
-                        { name: 'current_shunt_meter', pk: 129 },
-                        { name: 'voltmeter', pk: 126 },
                     ],
                 },
                 allCalModes: [],
@@ -111,8 +108,9 @@ class AddModelPopup extends Component {
         });
         await categoryServices.getSpecialCategories().then((result) => {
             if(result.success) {
+                console.log(result);
                 this.setState({
-                    calibration_modes: {
+                    calibratorCategories: {
                         ...this.state.calibratorCategories,
                         klufe_k5700: [
                             {

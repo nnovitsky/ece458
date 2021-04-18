@@ -41,6 +41,8 @@ class Step3 extends React.Component {
     }
 
     async componentDidMount() {
+        window.sessionStorage.removeItem("loadbank");
+        window.sessionStorage.removeItem("loadbankpk");
         this.getDeatils();
         this.getData().then(res => {
         })
@@ -171,8 +173,6 @@ class Step3 extends React.Component {
 
     onClose()
     {
-        window.sessionStorage.removeItem("loadbank");
-        window.sessionStorage.removeItem("loadbankpk");
         this.props.onClose();
     }
 

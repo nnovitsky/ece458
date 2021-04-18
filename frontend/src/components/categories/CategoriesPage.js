@@ -44,13 +44,15 @@ class CategoriesPage extends Component {
                 errors: [],
                 name: '',
             },
-
+            infoPopup: {
+                isShown: false,
+            },
             modelCategories: {
                 data: [],
                 pagination: {
                     resultCount: 2,
                     numPages: 1,
-                    resultsPerPage: 10,
+                    resultsPerPage: 25,
                     currentPageNum: 1,
                     desiredPage: 1,
                     showAll: false,
@@ -61,7 +63,7 @@ class CategoriesPage extends Component {
                 pagination: {
                     resultCount: 2,
                     numPages: 1,
-                    resultsPerPage: 10,
+                    resultsPerPage: 25,
                     currentPageNum: 1,
                     desiredPage: 1,
                     showAll: false,
@@ -82,6 +84,7 @@ class CategoriesPage extends Component {
         this.onCreateCancel = this.onCreateCancel.bind(this);
         this.onInstrumentTableChange = this.onInstrumentTableChange.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
+        this.onInfoPopupClose = this.onInfoPopupClose.bind(this);
     }
 
     async componentDidMount() {
@@ -93,6 +96,7 @@ class CategoriesPage extends Component {
         const createPopup = (this.state.createPopup.isShown) ? this.makeCreatePopup() : null;
         const renamePopup = (this.state.renamePopup.isShown) ? this.makeRenamePopup() : null;
         const deletePopup = (this.state.deletePopup.isShown) ? this.makeDeletePopup() : null;
+        const infoPopup = (this.state.infoPopup.isShown) ? this.makeInfoPopup() : null;
         const buttonRow = (<div className="table-button-row">
             <Button onClick={this.onCreateClicked}>Create</Button>
             </div>);
@@ -105,6 +109,7 @@ class CategoriesPage extends Component {
                 {createPopup}
                 {renamePopup}
                 {deletePopup}
+                {infoPopup}
                 <GenericLoader
                     isShown={this.state.isLoading}
                 />
@@ -202,6 +207,31 @@ class CategoriesPage extends Component {
             )
     }
 
+    makeInfoPopup() {
+        const body = (
+            <span>This category is needed for specialty calibration modes and cannot be deleted</span>
+        )
+        return(
+            <GenericPopup
+                show={this.state.infoPopup.isShown}
+                body={body}
+                headerText="Permanent Category"
+                closeButtonText="Close"
+                onClose={this.onInfoPopupClose}
+                isSubmitButtonShown={false}
+            />
+        )
+    }
+
+    onInfoPopupClose() {
+        this.setState({
+            infoPopup: {
+                ...this.state.infoPopup,
+                isShown: false,
+            }
+        })
+    }
+
 
 
     makeDeletePopup() {
@@ -242,7 +272,7 @@ class CategoriesPage extends Component {
             isLoading: true
         })
         let pagination = this.state.modelCategories.pagination;
-        await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage).then(
+        await categoryServices.getCategories('model', pagination.showAll, pagination.desiredPage, pagination.resultsPerPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.modelCategories.pagination.showAll;
@@ -269,7 +299,7 @@ class CategoriesPage extends Component {
             isLoading: true
         })
         let pagination = this.state.instrumentCategories.pagination;
-        await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage).then(
+        await categoryServices.getCategories('instrument', pagination.showAll, pagination.desiredPage, pagination.resultsPerPage).then(
             (result) => {
                 if (result.success) {
                     let showAll = this.state.instrumentCategories.pagination.showAll;
@@ -309,7 +339,8 @@ class CategoriesPage extends Component {
                         pagination: {
                             ...this.state.modelCategories.pagination,
                             desiredPage: (showAll ? 1 : page),
-                            showAll: showAll
+                            showAll: showAll,
+                            resultsPerPage: sizePerPage
                         }
                     }
                 }, () => this.updateModelCategories());
@@ -329,7 +360,8 @@ class CategoriesPage extends Component {
                         pagination: {
                             ...this.state.instrumentCategories.pagination,
                             desiredPage: (showAll ? 1 : page),
-                            showAll: showAll
+                            showAll: showAll,
+                            resultsPerPage: sizePerPage
                         }
                     }
                 }, () => this.updateInstrumentCategories());
@@ -440,7 +472,17 @@ class CategoriesPage extends Component {
                     this.updateTabCategory();
                     this.onDeleteCancel();
                 } else {
-                    if (result.errors.delete_error !== undefined) {
+                    console.log(result.errors);
+                    if(result.errors.implicit_delete_error !== undefined) {
+                        this.setState({
+                            infoPopup: {
+                                ...this.state.infoPopup,
+                                isShown: true,
+                            }
+                        })
+                    }
+                    else if (result.errors.delete_error !== undefined && result.errors.delete_error.includes('Category is not empty.')) {
+                        console.log('includes non empty error');
                         this.setState({
                             deletePopup: {
                                 ...this.state.deletePopup,

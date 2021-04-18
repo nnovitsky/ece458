@@ -67,6 +67,8 @@ class UserPage extends React.Component {
                 calEvent: null,
                 isApprovalForm: true,
                 errors: [],
+                instrumentName: '',
+                assetTag: '',
             },
         };
 
@@ -316,6 +318,8 @@ class UserPage extends React.Component {
     makeCalibrationPopup() {
         return (
             <CalibrationPopup
+                instrument_name={this.state.calibrationPopup.instrumentName}
+                asset_tag={this.state.calibrationPopup.assetTag}
                 calibrationEvent={this.state.calibrationPopup.calEvent}
                 currentUser={this.state.userData}
                 isApprovalForm={true}
@@ -465,6 +469,7 @@ class UserPage extends React.Component {
     }
 
     onShowCalibrationPopup(calEvent) {
+        console.log(calEvent);
         console.log('click');
         const isApprover = hasApprovalAccess(this.state.groups);
         this.setState({
@@ -472,7 +477,9 @@ class UserPage extends React.Component {
                 ...this.state.calibrationPopup,
                 isShown: true,
                 calEvent: calEvent,
-                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
+                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending'),
+                assetTag: calEvent.asset_tag,
+                instrumentName: calEvent.instrument_name,
             }
         })
     }

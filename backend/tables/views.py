@@ -19,7 +19,8 @@ from backend.import_export import validate_model_import, validate_instrument_imp
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPROVAL_STATUSES
-from backend.config.load_bank_config import CALIBRATION_MODES
+from backend.config.load_bank_config import CALIBRATION_MODES, DEFAULT_CATEGORIES
+from backend.config.category_config import get_special_pks
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
 from backend.tables import cal_with
@@ -801,10 +802,17 @@ def category_list(request, type):
     data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
 def get_special_categories(request):
-    
-    return False
+    data = {}
+    special_pks = get_special_pks()
+
+    for pk, cat_name in zip(special_pks, DEFAULT_CATEGORIES):
+        data[cat_name] = pk
+
+    return Response(data, status=status.HTTP_200_OK)
+
 
 @api_view(['GET', 'POST'])
 def cal_approval(request, cal_event_pk):

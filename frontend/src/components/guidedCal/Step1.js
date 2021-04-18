@@ -5,8 +5,10 @@ import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
 import GuidedCalServices from "../../api/guidedCalServices.js";
+import InstrumentServices from "../../api/instrumentServices.js";
 
 const guidedCalServices = new GuidedCalServices();
+const instrumentServices = new InstrumentServices();
 
 
 
@@ -28,12 +30,16 @@ class Step1 extends React.Component {
                 freq: "",
                 voltage: "",
             },
+            validKlufeMeter: false,
+            klufeAssetTag: '',
+            instrumentPK: this.props.instrumentPK,
         }
 
         //this.getStatus = this.getStatus.bind(this);
         this.onSetSourceClicked = this.onSetSourceClicked.bind(this);
         this.onCheckMultimeter = this.onCheckMultimeter.bind(this);
         this.onCheckConnection = this.onCheckConnection.bind(this);
+        this.onTextInput = this.onTextInput.bind(this);
     }
 
 
@@ -52,7 +58,7 @@ class Step1 extends React.Component {
                 onClose={this.props.onClose}
                 body={body}
                 incrementStep={this.props.incrementStep}
-                disableContinue={!this.state.sucessfulSet || !this.state.sucessfulFunction || !this.state.sucessfulConnection}
+                disableContinue={!this.state.validKlufeMeter || !this.state.sucessfulSet || !this.state.sucessfulFunction || !this.state.sucessfulConnection}
                 decrementStep={this.props.decrementStep}
                 progress={this.props.progress}
             />
@@ -68,16 +74,20 @@ class Step1 extends React.Component {
                 <br></br>Once you complete a step, the next step will become enabled.</h7>
                 <div className="row">
                     <div className="col">
-                        <Form.Group className="form-inline" name="First" style={{ marginTop: "20px" }}>
-                            <Form.Label className="col-sm-6 col-form-label">1. Set the source for VDC = 0V</Form.Label>
-                            <Button onClick={this.onSetSourceClicked}>Click to set source</Button>
+                        <Form.Group className="form-inline" style={{ marginTop: "20px" }}>
+                            <Form.Label className="col-sm-6 col-form-label">1. Asset tag of Klufe Instrument to use</Form.Label>
+                            <Form.Control className={this.state.validKlufeMeter ? "validated" : null} value={this.state.klufeAssetTag} onChange={this.onTextInput} ></Form.Control>
+                        </Form.Group>
+                        <Form.Group className="form-inline" name="First">
+                            <Form.Label className="col-sm-6 col-form-label">2. Set the source for VDC = 0V</Form.Label>
+                            <Button disabled={!this.state.validKlufeMeter} onClick={this.onSetSourceClicked}>Click to set source</Button>
                         </Form.Group>
                         <Form.Group className={this.state.sucessfulSet ? "form-inline" : "form-inline disabled"}>
-                            <Form.Label className="col-sm-6 col-form-label">2. On the multimeter, set the V⎓ function</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">3. On the multimeter, set the V⎓ function</Form.Label>
                             <Form.Check id="set_function_instrument" label="Check when completed" onChange={this.onCheckMultimeter} checked={this.state.sucessfulFunction} disabled={!this.state.sucessfulSet}></Form.Check>
                         </Form.Group>
                         <Form.Group className={(this.state.sucessfulSet && this.state.sucessfulFunction) ? "form-inline" : "form-inline disabled"}>
-                            <Form.Label className="col-sm-6 col-form-label">3. Connect the source to the Model 87 VΩ⏄ and COM inputs</Form.Label>
+                            <Form.Label className="col-sm-6 col-form-label">4. Connect the source to the Model 87 VΩ⏄ and COM inputs</Form.Label>
                             <Form.Check id="connect_instrument" label="Check when completed" onChange={this.onCheckConnection} disabled={!this.state.sucessfulSet || !this.state.sucessfulFunction}></Form.Check>
                         </Form.Group>
                     </div>
@@ -91,12 +101,37 @@ class Step1 extends React.Component {
         </div>
     }
 
+    onTextInput(e) {
+        let val = e.target.value;
+        this.setState({
+            klufeAssetTag: val
+        })
 
-    async onSetSourceClicked() {
-        guidedCalServices.connectSSH().then(result =>{
-            console.log(result)
+        instrumentServices.validateCalibratorInstrument(this.state.instrumentPK, Number(val))
+        .then(result =>{
             if(result.success)
             {
+                if(result.data.is_valid === true){
+                    this.setState({
+                        validKlufeMeter: true,
+                        errors: [],
+                    })
+                } else {   
+                    this.setState({
+                        validKlufeMeter: false,
+                        errors: [result.data.calibration_errors[0]],
+                    })
+                }
+            }
+            console.log(result)
+        })
+    }
+
+
+    async onSetSourceClicked() {
+        guidedCalServices.connectSSH().then(result => {
+            console.log(result)
+            if (result.success) {
                 console.log(result.data.SSH_success)
                 this.setState({
                     sucessfulSet: true,
@@ -106,7 +141,7 @@ class Step1 extends React.Component {
                         mode: "DC",
                         freq: "0Hz",
                         voltage: 0,
-                },
+                    },
                 })
                 this.turnOffSource();
             }
@@ -125,10 +160,13 @@ class Step1 extends React.Component {
         })
     }
 
-    async turnOffSource(){
+    async validateKlufeMeter() {
+
+    }
+
+    async turnOffSource() {
         guidedCalServices.turnOffSource().then(result => {
-            if(result.success)
-            {
+            if (result.success) {
                 console.log(result.data.SSH_success)
                 this.setState({
                     klufe: {

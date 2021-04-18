@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
+import CategoryServices from '../../api/categoryServices';
 import ModelServices from '../../api/modelServices';
 import GenericPopup from '../generic/GenericPopup';
 import ModelCategoriesPicklist from '../generic/picklist/ModelCategoriesPicklist';
@@ -29,6 +30,7 @@ const commentName = "comment";
 const callibrationName = "callibration";
 
 const modelServices = new ModelServices();
+const categoryServices = new CategoryServices();
 
 class AddModelPopup extends Component {
     constructor(props) {
@@ -52,11 +54,8 @@ class AddModelPopup extends Component {
                 },
                 calibratorCategories: {
                     klufe_k5700: [
-                        { name: 'Klufe_K5700-compatible', pk: 125 },
                     ],
                     load_bank: [
-                        { name: 'current_shunt_meter', pk: 129 },
-                        { name: 'voltmeter', pk: 126 },
                     ],
                 },
                 allCalModes: [],
@@ -109,7 +108,32 @@ class AddModelPopup extends Component {
                 console.log(`Failed to get the cal modes for the add/edit model popup`);
                 console.log(result.errors);
             }
-        })
+        });
+        await categoryServices.getSpecialCategories().then((result) => {
+            if(result.success) {
+                this.setState({
+                    calibration_modes: {
+                        ...this.state.calibratorCategories,
+                        klufe_k5700: [
+                            {
+                                name: 'Klufe_K5700-compatible',
+                                pk: result.data['Klufe_K5700-compatible']
+                            }
+                        ],
+                        load_bank: [
+                            {
+                                name: 'voltmeter',
+                                pk: result.data['voltmeter']
+                            },
+                            {
+                                name: 'current_shunt_meter',
+                                pk: result.data['current_shunt_meter'],
+                            }
+                        ]
+                    }
+                })
+            }
+        });
     }
 
     render() {

@@ -4,6 +4,7 @@ import BasePicklist from './BasePicklist';
 
 // selectedCategories: an array of name to pk pairs of the selected categories
 // onChange: an event handler that will be passed the array of selected name/pk pairs
+// isDisabled: optional and defaults to false
 function ModelCategoriesPicklist(props) {
     return (
         <BasePicklist
@@ -15,6 +16,7 @@ function ModelCategoriesPicklist(props) {
             displayField="name"
             valueField="pk"
             isMulti={true}
+            isDisabled={props.isDisabled}
         />
     )
 }
@@ -34,3 +36,7 @@ async function getModelCategories() {
 }
 
 export default ModelCategoriesPicklist;
+
+ModelCategoriesPicklist.defaultProps = {
+    isDisabled: false,
+}

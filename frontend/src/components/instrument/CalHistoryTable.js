@@ -29,6 +29,7 @@ import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.pn
 // requiresApproval: boolean if the table is going to be including requires approval
 // onRowClick: an event handler that will be called with the calibration event
 // hasApprovalPermissions: boolean if the pending should show a link
+// emptyTableText: string to be displayed if the table is empty
 // displayInstrumentInfo: optional that defaults to false
 const keyField = 'pk';
 
@@ -42,7 +43,7 @@ const calHistoryTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
-            noResults='No Calibration History'
+            noResults={props.emptyTableText}
             inlineElements={props.inlineElements}
             isHoverMessageDisplayed={false}
             rowClasses={rowClasses}

@@ -15,6 +15,7 @@ import Select from 'react-select';
 // the props below can be omitted if the type is of 'string'
 // displayField: a string that is the data field of the name to be displayed in the picklist
 // valueField: a string that is the data field of the value to be linked to the name
+// isDisabled: defaults to false, a boolean
 
 let displayField;
 let valueField;
@@ -45,6 +46,7 @@ function BasePicklist(props) {
             onChange={(filterList) => { props.onChange(returnFormatOptions(filterList)) }}
             placeholder={props.placeholderText}
             isMulti={props.isMulti}
+            isDisabled={props.isDisabled}
         />
     )
 }
@@ -96,6 +98,7 @@ export default BasePicklist;
 BasePicklist.defaultProps = {
     isMulti: false,
     displayField: '',
-    valueField: ''
+    valueField: '',
+    isDisabled: false,
 }
 

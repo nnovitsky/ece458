@@ -216,7 +216,7 @@ class InstrumentDetailView extends Component {
         return (
             <div hidden={!isCalibratable}>
                 <h3>Calibration History</h3>
-                <span>(Click on a row for more information)</span>
+                {this.getTableText()}
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}
@@ -234,9 +234,24 @@ class InstrumentDetailView extends Component {
                     requiresApproval={this.state.instrument_info.requires_approval}
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
+                    emptyTableText="No Calibration History"
                 />
             </div>
         )
+    }
+
+    getTableText() {
+        const requiresApproval = this.state.instrument_info.requires_approval;
+        if(requiresApproval) {
+            return(
+                <span>(Click on a row for approval and calibrator information)</span>
+            );
+        } else {
+            return(
+                <span>(Click on a row for more information)</span>
+            );
+        }
+
     }
 
     async getInstrumentInfo() {

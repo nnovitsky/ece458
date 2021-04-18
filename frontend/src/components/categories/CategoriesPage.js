@@ -12,7 +12,7 @@ import { rawErrorsToDisplayed, hasModelEditAccess, hasInstrumentEditAccess } fro
 import LogoHeader from '../generic/LogoTitleHeader';
 import CategoriesTable from './CategoriesTable';
 import RenamePopup from './RenamePopup';
-import DeletePopup from '../generic/GenericPopup';
+import GenericPopup from '../generic/GenericPopup';
 import CategoryServices from '../../api/categoryServices';
 import GenericLoader from '../generic/GenericLoader';
 
@@ -209,7 +209,7 @@ class CategoriesPage extends Component {
             <p>This category is being used, are you sure you want to delete '{this.state.deletePopup.name}'?</p>
         )
         return(
-            <DeletePopup
+            <GenericPopup
                 show={this.state.deletePopup.isShown}
                 body={body}
                 headerText="Warning!"

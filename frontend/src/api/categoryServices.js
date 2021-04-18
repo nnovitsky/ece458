@@ -56,6 +56,37 @@ export default class CategoryServices {
             })
     }
 
+    async getSpecialCategories() {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/special_categories/`;
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            })
+    }
+
     // type is either instrument or model
     // name is the category name
     async addCategory(type, name) {

@@ -30,11 +30,12 @@ import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.pn
 // onRowClick: an event handler that will be called with the calibration event
 // hasApprovalPermissions: boolean if the pending should show a link
 // emptyTableText: string to be displayed if the table is empty
+// displayInstrumentInfo: optional that defaults to false
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.onFormClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.onFormClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick, props.displayInstrumentInfo);
     return (
         <DataTable
             data={props.data}
@@ -64,7 +65,7 @@ const getApprovalStatusIcon = (approvalStatus) => {
     }
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, onFormClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, onFormClick, requiresApproval, hasApprovalPermissions, onRowClick, displayInstrumentInfo) => {
     return (
         [
             // this is a column for a number for the table
@@ -126,6 +127,20 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     onClick: (e, column, columnIndex, row, rowIndex) => {
                         onRowClick(row)
                     },
+                },
+            },
+            {
+                dataField: 'instrument_name',
+                hidden: !displayInstrumentInfo,
+                text: 'Calibrated Instrument',
+                sort: false,
+                title: (cell, row) => `Calibrated Instrument: ${ cell }(${ row.asset_tag })\nClick for the instrument detail view`,
+                headerClasses: 'ct-instrument-column',
+                formatter: (cell, row) => {
+                    return(
+                        <Link className="green-link" to={`/instruments-detail/${row.instrument_pk}`}>{`${cell} (${row.asset_tag})`}</Link>
+                    )
+
                 },
             },
             {
@@ -265,5 +280,6 @@ export default calHistoryTable;
 
 calHistoryTable.defaultProps = {
     data: [],
-    inlineElements: <></>
+    inlineElements: <></>,
+    displayInstrumentInfo: false
 }

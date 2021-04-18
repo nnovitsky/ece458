@@ -472,6 +472,8 @@ class InstrumentDetailView extends Component {
     makeCalibrationPopup() {
         return(
             <CalibrationPopup
+                instrument_name={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number}`}
+                asset_tag={this.state.instrument_info.asset_tag}
                 calibrationEvent={this.state.calibrationPopup.calEvent}
                 currentUser={this.props.user}
                 isApprovalForm={this.state.calibrationPopup.isApprovalForm}

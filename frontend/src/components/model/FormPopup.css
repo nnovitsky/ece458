@@ -100,6 +100,10 @@
   height: min(12vh, 70px) !important;
 }
 
+.text-input{
+  height: min(16vh, 140px) !important;
+}
+
 .check{
   height: min(15vh, 80px) !important;
 }
@@ -175,6 +179,15 @@ input[type=number]::-webkit-inner-spin-button {
   margin-bottom: -4px !important;
   background-color: white;
   height: min(12vh, 70px) !important;
+  overflow: auto;
+}
+
+.form-item-builder  .text-input{
+  margin-top: -10px !important;
+  margin-bottom: -4px !important;
+  background-color: white;
+  height: min(16vh, 140px) !important;
+  font-size: min(5vw, 15px);
   overflow: auto;
 }
 

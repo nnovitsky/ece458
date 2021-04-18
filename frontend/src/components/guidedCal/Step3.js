@@ -300,6 +300,7 @@ class Step2 extends React.Component {
                     result.data.voltage_tests.forEach(element =>{
                         if(element.index === newIndex && element.voltage_okay)
                         {
+                            console.log(result)
                             console.log("Element matches with index " + element.index)
                             this.setState({
                                 sucessfulSet: true,

@@ -32,6 +32,8 @@ class Summary extends React.Component {
 
     async componentDidMount()
     {
+        window.sessionStorage.removeItem("klufe");
+        window.sessionStorage.removeItem("klufepk");
         await this.getKlufeDetails();
     }
 

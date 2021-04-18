@@ -249,6 +249,7 @@ class ModelTablePage extends Component {
         modelServices.addModel(newModel.vendor, newModel.model_number, newModel.description, newModel.comment, newModel.calibration_frequency, newModel.categories, newModel.calibration_modes, newModel.calibrator_categories_set, newModel.requires_approval)
             .then((res) => {
                 if (res.success) {
+                    if(newModel.calibration_modes.includes('custom_form')){ window.sessionStorage.setItem('formModelMade', 'true'); }
                     this.updateModelTable();
                     this.onAddModelClosed();
                     this.setState({

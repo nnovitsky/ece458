@@ -83,4 +83,5 @@ urlpatterns = [
     path('api/calibration_form/<int:model_pk>/', form_views.form_data),
     path('api/submit_calibration_form/', form_views.submit_form),
     path('api/view_submitted_form/<int:cal_event_pk>/', form_views.view_submitted_form),
+    path('api/special_categories/', views.get_special_categories),
 ]

@@ -801,6 +801,10 @@ def category_list(request, type):
     data = [sorted(data, key=lambda i: i['name'].lower())]
     return Response(data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def get_special_categories(request):
+    
+    return False
 
 @api_view(['GET', 'POST'])
 def cal_approval(request, cal_event_pk):

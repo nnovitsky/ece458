@@ -50,6 +50,15 @@ class AddModelPopup extends Component {
                     calibrator_categories_set: props.currentModel.calibrator_categories_set,
                     requires_approval: props.currentModel.requires_approval,
                 },
+                calibratorCategories: {
+                    klufe_k5700: [
+                        { name: 'Klufe_K5700-compatible', pk: 125 },
+                    ],
+                    load_bank: [
+                        { name: 'current_shunt_meter', pk: 129 },
+                        { name: 'voltmeter', pk: 126 },
+                    ],
+                },
                 allCalModes: [],
             }
         } else {
@@ -66,6 +75,15 @@ class AddModelPopup extends Component {
                     calibration_modes: [],
                     calibrator_categories_set: [],
                     requires_approval: false,
+                },
+                calibratorCategories: {
+                    klufe_k5700: [
+                        { name: 'Klufe_K5700-compatible', pk: 125 },
+                    ],
+                    load_bank: [
+                        { name: 'current_shunt_meter', pk: 129 },
+                        { name: 'voltmeter', pk: 126 },
+                    ],
                 },
                 allCalModes: [],
             }
@@ -125,18 +143,23 @@ class AddModelPopup extends Component {
             <ModelCategoriesPicklist
                 selectedCategories={this.state.newModel.calibrator_categories_set}
                 onChange={this.onCalibratedWithInput}
+                isDisabled={this.isChecked('load_bank') || this.isChecked('klufe_k5700')}
             />
         );
-
+        const calModes = this.state.newModel.calibration_modes;
+        const isLoadBankOrKlufe = calModes.includes('load_bank') || calModes.includes('klufe_k5700');
         const calibratableSection = (
             <>
                 <Form.Label>Calibrator Categories</Form.Label>
                 { calibratedWithPicklist}
+                <Form.Text muted hidden={!isLoadBankOrKlufe}>Calibrator categories for this calibration mode cannot be changed</Form.Text>
                 <Form.Label>Specialty Calibration Mode</Form.Label>
                 { this.makeCheckboxes()}
                 <Form.Text muted>Must have a calibration frequency and only one mode may be selected</Form.Text>
+                <Form.Text muted hidden={!this.isChecked('custom_form')}>The custom form editor will open on the creation of the model</Form.Text>
                 <Form.Label>Validation</Form.Label>
                 <Form.Check
+                    id="validation-box"
                     type="checkbox"
                     label="Calibration Requires Validation"
                     onChange={this.onRequiresValidationInput}
@@ -171,7 +194,6 @@ class AddModelPopup extends Component {
                 <Form.Label>Calibration Frequency (days)</Form.Label>
                 <Form.Control required type="text" value={this.state.newModel.calibration_frequency} name={callibrationName} onChange={this.onTextInput} placeholder="Enter Calibration Frequency" />
                 <Form.Text muted>If not calibratable, leave empty</Form.Text>
-
                 {this.isCalibratable() ? calibratableSection : null}
             </Form>
         )
@@ -185,7 +207,7 @@ class AddModelPopup extends Component {
                     id={calMode}
                     type="checkbox"
                     label={CalibrationModeDisplayMap[calMode]}
-                    onChange={() => this.onCalModeInput(calMode)}
+                    onChange={(e) => this.onCalModeInput(calMode, e.target.checked)}
                     checked={this.isChecked(calMode)}
                     disabled={this.isDisabled(calMode)} />
             );
@@ -220,13 +242,19 @@ class AddModelPopup extends Component {
         return calFrequency > 0 && !isNaN(calFrequency);
     }
 
-    onCalModeInput(calMode) {
+    onCalModeInput(calMode, isChecked) {
         this.setState(prevState => {
-            const wasChecked = prevState.newModel.calibration_modes.includes(calMode);
+            let calibratorCategories = prevState.newModel.calibrator_categories_set;
+            if (calMode === 'load_bank' && isChecked) {
+                calibratorCategories = this.state.calibratorCategories[calMode];
+            } else if(calMode === 'klufe_k5700' && isChecked) {
+                calibratorCategories = this.state.calibratorCategories[calMode];
+            }
             return {
                 newModel: {
                     ...this.state.newModel,
-                    calibration_modes: (!wasChecked ? [calMode] : [])
+                    calibration_modes: (isChecked ? [calMode] : []),
+                    calibrator_categories_set: calibratorCategories,
                 }
             }
         })

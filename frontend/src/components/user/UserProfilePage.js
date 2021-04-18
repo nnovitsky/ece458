@@ -395,6 +395,7 @@ class UserPage extends React.Component {
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
                     inlineElements="(Click on a row for more information)"
+                    emptyTableText="No Calibration Events Pending Approval"
                 />
             </div>
         )

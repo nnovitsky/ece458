@@ -222,7 +222,6 @@ class UserPage extends React.Component {
     async updatePendingTable() {
         const pagination = this.state.calibration_pagination;
         await instrumentServices.getAllPendingCalEvents(pagination.desiredPage, pagination.isShowAll, pagination.resultsPerPage).then((result) => {
-            console.log(result);
             if(result.success) {
                 this.setState({
                     calibrationData: result.data.data,
@@ -469,8 +468,6 @@ class UserPage extends React.Component {
     }
 
     onShowCalibrationPopup(calEvent) {
-        console.log(calEvent);
-        console.log('click');
         const isApprover = hasApprovalAccess(this.state.groups);
         this.setState({
             calibrationPopup: {

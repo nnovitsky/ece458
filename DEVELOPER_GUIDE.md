@@ -16,6 +16,7 @@ The connection to the backend is facilitated through several JavaScript service 
         └───components:  all the page classes and their children components that make up the site
             ├───admin: contains all files relevant to the admin page
             ├───categories: contains all files relevant to the model categories page
+            ├───formCal: contains all files relevant to the custom form calibration
             ├───generic: contains components that were built to be generic and reusable
             ├───guidedCal: contains the components that make the guided hardware popup modal
             ├───import: contains components that make up the import page
@@ -42,6 +43,9 @@ Beyond the service files and the components, the frontend has installed several 
 - react-bootstrap-table-next: a package that provides a very versatile and configurable table
 - react-bootstrap-table2-paginator: an extension for the bootstrap table next package to allow for remote pagination
 - react-datepicker: package that provides a calendar date-picking component, used for calibration dates
+- react-dnd:
+- react-dnd-html5-backend:
+- react-edit-text:
 - react-router-dom: used for routing within the site and declaring url paths
 - react-select: used for a dropdown searchable picklist for assisted input
 

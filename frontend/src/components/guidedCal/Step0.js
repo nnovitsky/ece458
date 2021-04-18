@@ -4,9 +4,11 @@ import Form from 'react-bootstrap/Form';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
 import GuidedCalServices from "../../api/guidedCalServices.js";
+import InstrumentServices from "../../api/instrumentServices.js";
 import "react-datepicker/dist/react-datepicker.css";
 
 const guidedCalServices = new GuidedCalServices();
+const instrumentServices = new InstrumentServices();
 const dateDetails = "T00:00:00";
 
 class Step0 extends React.Component {
@@ -27,13 +29,16 @@ class Step0 extends React.Component {
                 date_object: new Date(),
                 instrument_pk: this.props.instrument_pk,
                 comment: '',
+                klufeAssetTag: '',
             },
+            validKlufeMeter: false,
             user: this.props.user
         }
 
         this.onDateChange = this.onDateChange.bind(this);
         this.createKlufeCal = this.createKlufeCal.bind(this);
         this.onCommentInput = this.onCommentInput.bind(this);
+        this.onTextInput = this.onTextInput.bind(this);
 
     }
 
@@ -54,17 +59,20 @@ class Step0 extends React.Component {
                 incrementStep={this.createKlufeCal}
                 decrementStep={this.props.decrementStep}
                 progress={this.props.progress}
+                disableContinue={!this.state.validKlufeMeter}
                 progressBarHidden={true}
-                
+
             />
         );
     }
 
     makeBody() {
         return <div>
-            <Form className="guidedCal" style={{textAlign: "Left"}}>
-            <h3>Calibration Info</h3>
-                <p>Please select a date for this calibration event. <br></br>Next, click continue to begin the Guided Calibration.</p>
+            <Form className="guidedCal" style={{ textAlign: "Left" }}>
+                <h3>Calibration Info</h3>
+                <p>First, please input the asset tag of the Klufe instrument used for this calibration. 
+                    <br></br>If your tag is valid, the input will turn green.
+                    <br></br>Next, select a date for this calibration event. <br></br>Once your input has been validated, click continue to begin the Guided Calibration.</p>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Vendor:</Form.Label>
                     <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.vendor} />
@@ -78,21 +86,21 @@ class Step0 extends React.Component {
                     <Form.Control readOnly="readonly" type="text" value={this.state.calInfo.asset_tag} />
                 </Form.Group>
                 <Form.Group className="form-inline">
-                    <Form.Label className="col-sm-3 col-form-label">Engineer:</Form.Label>
-                    <Form.Control readOnly="readonly" type="text" value={this.props.user.username}/>
+                    <Form.Label className="col-sm-3 col-form-label">Klufe Calibrator Asset Tag:</Form.Label>
+                    <Form.Control className={this.state.validKlufeMeter ? "validated" : null} value={this.state.klufeAssetTag} onChange={this.onTextInput} ></Form.Control>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
-                    <DatePicker className="datepicker" onChange={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()}/>
+                    <DatePicker className="datepicker" onChange={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()} />
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Comment:</Form.Label>
-                    <Form.Control className="col-sm-7" as="textarea" type="text" value={this.state.calInfo.comment} onChange={this.onCommentInput}/>
+                    <Form.Control className="col-sm-7" as="textarea" type="text" value={this.state.calInfo.comment} onChange={this.onCommentInput} />
                 </Form.Group>
             </Form>
 
         </div>
     }
 
-    onDateChange(e){
+    onDateChange(e) {
         this.setState({
             calInfo: {
                 ...this.state.calInfo,
@@ -111,12 +119,39 @@ class Step0 extends React.Component {
         })
     }
 
-    async createKlufeCal(){
-        if(this.state.klufePK === null)
-        {
+    onTextInput(e) {
+        let val = e.target.value;
+        this.setState({
+            calInfo: {
+                ...this.state.calInfo,
+                klufeAssetTag: val
+            }
+        })
+
+        instrumentServices.validateCalibratorInstrument(this.state.calInfo.instrument_pk, Number(val))
+        .then(result =>{
+            if(result.success)
+            {
+                if(result.data.is_valid === true){
+                    this.setState({
+                        validKlufeMeter: true,
+                        errors: [],
+                    })
+                } else {   
+                    this.setState({
+                        validKlufeMeter: false,
+                        errors: [result.data.calibration_errors[0]],
+                    })
+                }
+            }
+            console.log(result)
+        })
+    }
+
+    async createKlufeCal() {
+        if (this.state.klufePK === null) {
             guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.calInfo.comment, this.state.user.userPK).then(result => {
-                if(result.success)
-                {
+                if (result.success) {
                     this.props.setEventPKs(result.data.klufe_calibration.pk, result.data.klufe_calibration.cal_event_pk);
                     this.setState({
                         klufePK: result.data.klufe_calibration.pk,
@@ -125,7 +160,7 @@ class Step0 extends React.Component {
                     this.props.incrementStep();
                 }
                 else {
-                        this.setState({
+                    this.setState({
                         errors: result.data
                     })
                 }
@@ -135,11 +170,11 @@ class Step0 extends React.Component {
         else {
             console.log("not creating new event and editing current")
             // TODO: call an edit
-            guidedCalServices.updateKlufeCal(this.state.calInfo.date_string, this.state.calInfo.comment, this.state.klufePK).then(result =>{
-                if(result.success){
+            guidedCalServices.updateKlufeCal(this.state.calInfo.date_string, this.state.calInfo.comment, this.state.klufePK).then(result => {
+                if (result.success) {
                     this.props.incrementStep();
                 }
-                else{
+                else {
                     this.setState({
                         errors: result.data
                     })
@@ -148,10 +183,8 @@ class Step0 extends React.Component {
         }
     }
 
-    async getStatus()
-    {
-        if(this.state.klufePK !== null)
-        {
+    async getStatus() {
+        if (this.state.klufePK !== null) {
             guidedCalServices.getKlufeCalDetails(this.state.klufePK).then(result => {
                 if (result.success) {
                     this.setState({

@@ -740,7 +740,7 @@ def model_category_detail(request, pk):
 
     if category.pk in get_special_pks():
         return Response(
-            {"delete_error":[f"Category \'{category.name}\' is immutable and may not be modified."]},
+            {"implicit_delete_error":[f"Category \'{category.name}\' is immutable and may not be modified."]},
             status=status.HTTP_400_BAD_REQUEST
         )
 

@@ -245,10 +245,12 @@ class AddModelPopup extends Component {
     onCalModeInput(calMode, isChecked) {
         this.setState(prevState => {
             let calibratorCategories = prevState.newModel.calibrator_categories_set;
-            if (calMode === 'load_bank' && isChecked) {
-                calibratorCategories = this.state.calibratorCategories[calMode];
-            } else if(calMode === 'klufe_k5700' && isChecked) {
-                calibratorCategories = this.state.calibratorCategories[calMode];
+            if (calMode === 'load_bank' || calMode === 'klufe_k5700') {
+                if(isChecked) {
+                    calibratorCategories = this.state.calibratorCategories[calMode];
+                } else {
+                    calibratorCategories = [];
+                }
             }
             return {
                 newModel: {

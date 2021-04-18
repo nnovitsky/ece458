@@ -685,7 +685,6 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        default_categories()
         categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
@@ -693,7 +692,6 @@ def model_category_list(request):
         if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-        default_categories()
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -736,6 +734,12 @@ def model_category_detail(request, pk):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
+    if category.pk in get_special_pks():
+        return Response(
+            {"delete_error":[f"Category \'{category.name}\' is immutable and may not be modified."]},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     if request.method == 'PUT':
         if 'name' not in request.data: request.data['name'] = category.name
         if 'item_models' in request.data: request.data.pop('item_models')
@@ -743,7 +747,6 @@ def model_category_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        default_categories()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -752,7 +755,6 @@ def model_category_detail(request, pk):
                 {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
-            default_categories()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

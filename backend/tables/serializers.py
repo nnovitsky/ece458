@@ -308,6 +308,11 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     klufe_cal_pk = serializers.SerializerMethodField()
     has_approval = serializers.SerializerMethodField()
     calibrated_by_instruments = serializers.SerializerMethodField()
+    instrument_name = serializers.SerializerMethodField()
+
+    def get_instrument_name(self, obj):
+        mod = obj.instrument.item_model
+        return mod.vendor + " " + mod.model_number
 
     def get_lb_cal_pk(self, obj):
         lb_cals = obj.loadbankcalibration_set.all()
@@ -337,7 +342,7 @@ class SimpleCalibrationEventReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationEvent
         fields = ('pk', 'date', 'user', 'comment', 'file_type', 'lb_cal_pk', 'klufe_cal_pk', 'approval_status',
-                  'has_approval', 'calibrated_by_instruments')
+                  'has_approval', 'calibrated_by_instruments', 'instrument_name')
 
 
 class CalibrationEventWriteSerializer(serializers.ModelSerializer):

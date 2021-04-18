@@ -67,6 +67,8 @@ class FormPopup extends Component {
                 submitButtonVariant="primary"
                 errors={this.state.errors}
                 size={"xl"}
+                keyboard={false}
+                backdrop="static"
             />
         )
     }

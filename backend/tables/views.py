@@ -391,6 +391,10 @@ def models_detail(request, pk):
         mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'calibration_modes' in request.data:
+            request.data['calibrator_categories_set'] = get_calibration_categories_from_mode(request)
+
         request.data['calibrationmode_set'] = mode_pks
 
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})

@@ -6,7 +6,7 @@ export default class CategoryServices {
 
     // type is either 'instrument' or 'model'
     // showAll is a boolean
-    async getCategories(type, showAll, desiredPage) {
+    async getCategories(type, showAll, desiredPage, resultsPerPage) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -32,8 +32,39 @@ export default class CategoryServices {
         if (showAll) {
             url += '?get_all';
         } else {
-            url += `?page=${desiredPage}`
+            url += `?page=${desiredPage}&results_per_page=${resultsPerPage}`
         }
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            })
+    }
+
+    async getSpecialCategories() {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: true,
+            data: [],
+        }
+
+        let url = `${API_URL}/api/special_categories/`;
 
         return fetch(url, {
             method: 'GET',

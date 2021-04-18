@@ -25,7 +25,6 @@ const keyField = 'pk';
 const NewModelTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
     let config = makeConfig(countStart, props.onMoreClicked);
-    console.log(props.data);
     return (
         <DataTable
             data={props.data}

@@ -11,6 +11,11 @@
     },
     "permission_error": {
       "User does not have permission.": "You no longer have access to perform this action"
+    },
+    "implicit_delete_error": {
+      "Category 'voltmeter' is immutable and may not be modified.": "The 'voltmeter' category cannot be modified",
+      "Category 'current_shunt_meter' is immutable and may not be modified.": "The 'current_shunt_meter' category cannot be modified",
+      "Category 'Klufe_K5700-compatible' is immutable and may not be modified.": "The 'Klufe_K5700-compatible' category cannot be modified"
     }
   }
 }

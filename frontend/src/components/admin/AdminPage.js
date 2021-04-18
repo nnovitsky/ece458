@@ -124,6 +124,7 @@ class AdminPage extends React.Component {
                 submitButtonVariant="danger"
                 onClose={this.onDeleteClose}
                 onSubmit={this.onUserDelete}
+                isPrimaryOnLeft={true}
             />
         )
     }

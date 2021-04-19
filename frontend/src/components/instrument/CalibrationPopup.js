@@ -9,6 +9,8 @@ import Col from 'react-bootstrap/esm/Col';
 import InstrumentServices from '../../api/instrumentServices';
 import { Link } from 'react-router-dom';
 //props
+// 'instrument_name': includes: string name of the instrument being calibrated
+// 'asset_tag': asset tag of the instrument being calirbated
 // 'calibrationEvent': calibration event from the cal event search
 // 'currentUser': current user object
 // 'isApprovalForm': boolean if the display should be an approval form (true) or a cal event summary (false)
@@ -53,7 +55,7 @@ const CalibrationPopup = (props) => {
 
     const body = (
         <>
-            {makeSummary(props.calibrationEvent, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick)}
+            {makeSummary(props.calibrationEvent, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.instrument_name, props.asset_tag)}
             {approvalState.hasApprovalSection ? makeApprovalSection(props.calibrationEvent, approvalState, dispatch) : null}
             {props.calibrationEvent.approval_status === 'NA' ? makeApprovalNoInfoSection(props.calibrationEvent) : null}
         </>
@@ -75,7 +77,7 @@ const CalibrationPopup = (props) => {
     )
 }
 
-const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick) => {
+const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick, instrumentName, assetTag) => {
     const supplementData = getSupplementButton(calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick)
     return (
         <div>
@@ -85,6 +87,10 @@ const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeCli
                 <h4>Original Event</h4>
                 <Table bordered>
                     <tbody>
+                        <tr>
+                            <td><strong>Calibrated Instrument</strong></td>
+                            <td>{`${instrumentName} (${assetTag})`}</td>
+                        </tr>
                         <tr>
                             <td><strong>Engineer</strong></td>
                             <td>{`${calEvent.user.first_name} ${calEvent.user.last_name}`}</td>

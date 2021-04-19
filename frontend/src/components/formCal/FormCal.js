@@ -181,8 +181,11 @@ class FormCal extends React.Component {
                 } else {
                     if(result.errors.form_error){
                         let err = result.errors.form_error[0]
+                        let message;
+                        if(err.error.actual_string) { message = err.error.actual_string }
+                        else { message = err.error }
                         this.setState({
-                            errors: [`Invalid input for [${this.getLabel(err.index - 1)}]: ` + err.error]
+                            errors: [`Invalid input for [${this.getLabel(err.index - 1)}]: ` + message]
                         })
                     }
                 }
@@ -278,8 +281,8 @@ class FormCal extends React.Component {
     }
 
     onBoolInput(e) {
-        const newBool = e.target.checked;
         const id = e.target.id;
+        const newBool = !this.state.data[id].actual_bool;
         let data = this.state.data;
         let field = this.state.data[id]
         field.actual_bool = newBool

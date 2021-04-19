@@ -11,6 +11,7 @@ from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
 from backend.config.klufe_config import HOST, PORT, SSH_USER, SSH_PASS, VOLTAGE_LEVELS
+import backend.tables.cal_with as cal_with
 
 
 @api_view(['GET', 'PUT'])
@@ -50,6 +51,11 @@ def start_klufe(request):
                             status=status.HTTP_400_BAD_REQUEST)
         if model.requires_approval:
             request.data['approval_status'] = APPROVAL_STATUSES['pending']
+
+        if len(request.data['calibrated_by_instruments']) > 0:
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, request.data['calibrated_by_instruments'])
+            if not valid_cal:
+                return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = CalibrationEventWriteSerializer(data=request.data)
 

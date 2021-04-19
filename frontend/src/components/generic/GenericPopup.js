@@ -30,10 +30,7 @@ const genericPopup = (props) => {
                 <Modal.Title>{props.headerText}</Modal.Title>
             </Modal.Header>
 
-            <Modal.Body style={{
-                maxHeight: '60vh',
-                overflow: 'scroll'
-            }}>
+            <Modal.Body>
                 {props.body}
             </Modal.Body>
 

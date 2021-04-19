@@ -16,6 +16,7 @@ The connection to the backend is facilitated through several JavaScript service 
         └───components:  all the page classes and their children components that make up the site
             ├───admin: contains all files relevant to the admin page
             ├───categories: contains all files relevant to the model categories page
+            ├───formCal: contains all files relevant to the custom form calibration
             ├───generic: contains components that were built to be generic and reusable
             ├───guidedCal: contains the components that make the guided hardware popup modal
             ├───import: contains components that make up the import page
@@ -42,6 +43,9 @@ Beyond the service files and the components, the frontend has installed several 
 - react-bootstrap-table-next: a package that provides a very versatile and configurable table
 - react-bootstrap-table2-paginator: an extension for the bootstrap table next package to allow for remote pagination
 - react-datepicker: package that provides a calendar date-picking component, used for calibration dates
+- react-dnd:
+- react-dnd-html5-backend:
+- react-edit-text:
 - react-router-dom: used for routing within the site and declaring url paths
 - react-select: used for a dropdown searchable picklist for assisted input
 
@@ -85,10 +89,12 @@ The database for this project is set up with 13 related models:
 - Instrument: data inherent to a single instrument
 - InstrumentCategory: grouping for Instruments in a user-defined category
 - CalibrationEvent: data inherent to a calibration event, regardless of type/calibration mode
+- CalibrationApproval: data about approval/rejection of a calibration event
 - LoadBankCalibration: detailed data for a load bank calibration (voltmeter, shunt meter, etc.)
 - LoadCurrent: details about a single current reading at a test current for a load bank calibration
 - LoadVoltage: details about a single voltage reading at test voltage for a load bank calibration
 - KlufeCalibration: detailed data for a Klufe hardware calibration
 - KlufeVoltageReading: details about a single voltage reading for a Klufe calibration
+- CalibrationFormField: one section of a custom calibration form, linked to either an ItemModel (if template) or CalibrationEvent (if form used to submit calibration)
 
-![DB Diagram](db_diagram3.PNG)
+![DB Diagram](db_diagram4.png)

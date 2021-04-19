@@ -24,7 +24,7 @@ const CalibratedWithInput = (props) => {
         }
     }, [calibratorState.callParent, calibratorState.instrumentsAdded, props]);
     return (
-        <div className="calibrator-instrument-div" onKeyUp={(e) => e.key === 'Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
+        <div hidden={props.calibratorCategories.length === 0} className="calibrator-instrument-div" onKeyUp={(e) => e.key === 'Enter' ? onAddInstrument(calibratorState, dispatch) : null}>
             <Form.Label>Calibrator Instruments</Form.Label>
             <Form.Text muted>Calibrator Categories: {props.calibratorCategories.join(', ')}</Form.Text>
             <InputGroup noValidate style={{padding: '0px'}}>

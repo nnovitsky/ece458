@@ -5,8 +5,9 @@ import Form from 'react-bootstrap/Form';
 const checkInputGroup = (props) => {
 
     return (
-        <Form.Group className="form-inline"> 
-            <Form.Check className="required-field" id={props.id} label={props.label} checked={props.value} onChange={props.onChange}></Form.Check>
+        <Form.Group style={{overflow: 'auto'}} className="form-inline"> 
+            <Form.Label id={props.id} onClick={props.onChange} className="required-field">{props.label}</Form.Label>
+            <Form.Check id={props.id} checked={props.value} onChange={props.onChange}></Form.Check>
         </Form.Group>
     )
 

@@ -25,7 +25,6 @@ class NumericInput extends React.Component {
     render() {
         let body = this.makeBody();
         let preview = this.makePreview();
-        console.log(this.props.totalLength)
         return (
             <div >
                 <Item
@@ -41,6 +40,8 @@ class NumericInput extends React.Component {
     }
 
     makeBody() {
+        let max = this.props.max === null || typeof(this.props.max) === 'undefined' ? '' : this.props.max;
+        let min = this.props.min === null || typeof(this.props.min) === 'undefined' ? '' : this.props.min;
         return <div>
             <h5>Float Input</h5>
             <div style={{display: "flex"}}>
@@ -48,9 +49,9 @@ class NumericInput extends React.Component {
                     <input required name={setLabel} type="text" value={this.props.label} onChange={this.onTextInput}></input>
                 </div>
                 <div className="special">
-            Min: <input style={{border: 0}} type="number" name={setMin} value={this.props.min} ref={this.state.minRef}
+            Min: <input style={{border: 0}} type="number" name={setMin} value={min} ref={this.state.minRef}
                                 onWheel={() => this.onWheel(this.state.minRef)} onChange={this.onTextInput} placeholder="Enter min"></input>
-            Max: <input style={{border: 0}} type="number" name={setMax} value={this.props.max} ref={this.state.maxRef}
+            Max: <input style={{border: 0}} type="number" name={setMax} value={max} ref={this.state.maxRef}
                                 onWheel={() => this.onWheel(this.state.maxRef)} onChange={this.onTextInput} placeholder="Enter max"></input>
             </div>
         </div>

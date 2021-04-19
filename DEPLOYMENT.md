@@ -197,7 +197,8 @@ User= your_ubuntu_server_user
 Group=www-data
 WorkingDirectory=/home/hpt_project_folder/ece458/backend
 Environment="PYTHONPATH=/home/hpt_project_folder/ece458/"
-ExecStart=/home/hpt_project_folder/ece458/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/hpt_project_folder/ece458/backend/backend.sock hpt.wsgi
+ExecStart=/home/hpt_project_folder/ece458/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind 
+unix:/home/hpt_project_folder/ece458/backend/backend.sock hpt.wsgi
 
 [Install]
 WantedBy=multi-user.target
@@ -441,12 +442,14 @@ Next, we want the action to pull any new code which was pushed. Not having to ma
 Check to see if any new requirements were added. 
 ```
 	- name: Start venv and Download Requirements.txt
-        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458 && pip3 install -r requirements.txt'
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 
+	&& cd /your/path/to/ece458 && pip3 install -r requirements.txt'
 ```
 Perform the necessary migrations, make a build of the frontend and restart the server
 ```
 	- name: Perform migrations
-        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 
+	&& cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
       - name: Build Frontend
@@ -500,11 +503,13 @@ jobs:
 	
 	
 	- name: Start venv and Download Requirements.txt
-        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458 && pip3 install -r requirements.txt'
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 
+	&& cd /your/path/to/ece458 && pip3 install -r requirements.txt'
 	
 	
 	- name: Perform migrations
-        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 && cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+        run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate && export PYTHONPATH=/your/path/to/ece458 
+	&& cd /your/path/to/ece458/backend && python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
 	- name: Build Frontend
@@ -554,7 +559,8 @@ Naviagte to `ece458/frontend/src/components/login/LoginPage.js` and open the fil
         username: '',
         password: '',
         redirect: null,
-        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=you_client_id&redirect_uri=https%3Ayour_host_name/oauth/consume&response_type=code',
+        oauthLink: 'https://oauth.oit.duke.edu/oidc/authorize?client_id=you_client_id&redirect_uri=https%3Ayour_host_name/
+			oauth/consume&response_type=code',
     };
 ```
 Once you have completed these steps, Oauth will be set up with the project. You will need to enter your server through ssh and restart gunicorn as well as run another build of the frontend.

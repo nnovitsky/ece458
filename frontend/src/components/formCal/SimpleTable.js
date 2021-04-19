@@ -18,7 +18,7 @@ const simpleTable = (props) => {
                 columns={config}
                 onTableChange={null}
                 headerClasses='data-table-header'
-                bodyClasses='data-table cell-padding'
+                bodyClasses='cell-padding'
             />
         </div>
     )

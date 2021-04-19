@@ -343,6 +343,8 @@ def get_custom_form_data(cal_pk):
             reported_value = form_test.actual_float
         elif field_type == FORM_FIELDS['bool_input']:
             reported_value = form_test.actual_bool
+        else:
+            reported_value = ""
 
         cleaned_data.append([
             str(index+1),

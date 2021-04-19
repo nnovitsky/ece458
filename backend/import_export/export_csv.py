@@ -5,8 +5,11 @@ import pytz
 import pandas as pd
 
 from django.http import FileResponse, HttpResponse
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
+
+from backend.config.admin_config import APPROVAL_STATUSES
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.tables.models import ItemModelCategory, CalibrationMode
 
@@ -121,7 +124,10 @@ def get_file_info(db_instrument):
 
 
 def check_calibration_type(instrument):
-    most_recent_cal = instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
+    no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+    approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+    most_recent_cal = \
+    instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1]
 
     if len(most_recent_cal) != 0:
         file_type = str(most_recent_cal[0].file_type).strip()
@@ -131,6 +137,8 @@ def check_calibration_type(instrument):
             return get_file_info(instrument)
         elif file_type == 'Klufe':
             return "Calibration via Klufe calibrator"
+        elif file_type == 'Form':
+            return "Calibration via custom form"
     return ""
 
 
@@ -146,7 +154,10 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date = ""
             cal_comment = ""
         else:
-            last_cal = db_instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
+            no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+            approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+            last_cal = \
+                db_instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1]
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 

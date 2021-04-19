@@ -857,6 +857,8 @@ def cal_approval(request, cal_event_pk):
             return Response({"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if cal_event.approval_status != APPROVAL_STATUSES['pending']:
             return Response({"description": ["Calibration event does not need approval."]}, status=status.HTTP_400_BAD_REQUEST)
+        if 'approved' not in request.data:
+            return Response({"description": ["Approval status must be provided."]}, status=status.HTTP_400_BAD_REQUEST)
 
         approved = request.data.pop('approved')
         request.data['cal_event'] = cal_event_pk

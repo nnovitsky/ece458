@@ -85,13 +85,13 @@ def validate_cal_cats(reader):
     db_cats = ItemModelCategory.objects.all().values_list('name', flat=True)
 
     for row in reader:
-        category = row[CALIBRATOR_CATS_INDEX]
+        categories = row[CALIBRATOR_CATS_INDEX].split(' ')
+        for category in categories:
+            if category.strip() == "":
+                continue
 
-        if category.strip() == "":
-            continue
-
-        if category not in db_cats:
-            return False, f"{category} referenced as a calibrator category does not exist."
+            if category not in db_cats:
+                return False, f"{category} referenced as a calibrator category does not exist."
 
     return True, ""
 

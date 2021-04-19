@@ -240,7 +240,10 @@ def check_instrument_is_calibrated(instrument_asset_tag):
 
 
 def check_lb_categories(instrument, instrument_field):
-    lb_instrument_categories = list(ItemModelCategory.objects.filter(item_models=instrument.item_model))
+    if instrument_field == 'shunt_meter':
+        instrument_field = 'current_shunt_meter'
+
+    lb_instrument_categories = ItemModelCategory.objects.filter(item_models=instrument.item_model).values_list("name", flat=True)
     if instrument_field not in lb_instrument_categories:
         return f"{instrument_field} not a category for item model of instrument {str(instrument)}"
     else:

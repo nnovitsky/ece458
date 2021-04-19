@@ -178,7 +178,7 @@ class AddModelPopup extends Component {
                 <Form.Label>Specialty Calibration Mode</Form.Label>
                 { this.makeCheckboxes()}
                 <Form.Text muted>Must have a calibration frequency and only one mode may be selected</Form.Text>
-                <Form.Text muted hidden={!this.isChecked('custom_form')}>The custom form editor will open on the creation of the model</Form.Text>
+                <Form.Text muted hidden={!this.isChecked('custom_form')}><strong>The custom form editor will open on the creation of the model</strong></Form.Text>
                 <Form.Label>Validation</Form.Label>
                 <Form.Check
                     id="validation-box"

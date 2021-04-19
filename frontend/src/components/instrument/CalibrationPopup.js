@@ -262,7 +262,7 @@ const getEmptyState = () => {
     return (
         {
             comment: '',
-            isApproved: null,
+            isApproved: true,
             isApprovalForm: false,
             hasApprovalSection: true,
             date: '',

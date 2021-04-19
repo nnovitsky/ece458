@@ -1,4 +1,6 @@
-Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency
-VendorA,Model123,Multimeter with temp probes,An example of a calibratable model,,Klufe,90
-VendorB,Model456,External Battery,An example of a noncalibratable model,probe void_warranty,,N/A
-VendorB,Model789,Battery Bank,An example of a load bank model,load_bank_support,Load-Bank,120
+Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency,Calibration-Requires-Approval,Calibrator-Categories
+Fluke,1KA,current shunt meter,1K,,,60,Y,
+Fluke,99V,voltmeter,voltmeter,voltmeter,,60,Y,
+HPT,LBC21,load bank,calibrator,,Load-Bank,10,,precision-multimeter
+Fluke,5080A,High Compliance Multi-Product Calibrator,calibrates your analog and digital workload accurately and economically,Multi-Product Calibrator,,41,,precision-multimeter
+Fluke,RustyMM,very real thing,,,,66,,precision-ammeter precision-voltmeter

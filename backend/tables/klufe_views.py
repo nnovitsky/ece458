@@ -53,7 +53,7 @@ def start_klufe(request):
             request.data['approval_status'] = APPROVAL_STATUSES['pending']
 
         if len(request.data['calibrated_by_instruments']) > 0:
-            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, request.data['calibrated_by_instruments'])
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, request.data['calibrated_by_instruments'], ins.pk)
             if not valid_cal:
                 return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
 

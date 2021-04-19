@@ -443,15 +443,15 @@ Check to see if any new requirements were added.
 ```
 	- name: Start venv and Download Requirements.txt
         run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate 
-	run: export PYTHONPATH=/your/path/to/ece458 cd /your/path/to/ece458 
-	run: pip3 install -r requirements.txt'
+		run: export PYTHONPATH=/your/path/to/ece458 cd /your/path/to/ece458 
+		run: pip3 install -r requirements.txt'
 ```
 Perform the necessary migrations, make a build of the frontend and restart the server
 ```
 	- name: Perform migrations
         run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate 
-	run: export PYTHONPATH=/your/path/to/ece458 && /your/path/to/ece458/backend
-	run: python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+		run: export PYTHONPATH=/your/path/to/ece458 && /your/path/to/ece458/backend
+		run: python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
       - name: Build Frontend
@@ -506,14 +506,14 @@ jobs:
 	
 	- name: Start venv and Download Requirements.txt
         run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate 
-	run: export PYTHONPATH=/your/path/to/ece458 cd /your/path/to/ece458 
-	run: pip3 install -r requirements.txt'
+		run: export PYTHONPATH=/your/path/to/ece458 cd /your/path/to/ece458 
+		run: pip3 install -r requirements.txt'
 	
 	
 	- name: Perform migrations
         run: ssh test_server 'cd /your/path/to/ece458/backend && source venv/bin/activate 
-	run: export PYTHONPATH=/your/path/to/ece458 && /your/path/to/ece458/backend
-	run: python3 manage.py migrate && python3 manage.py collectstatic --noinput'
+		run: export PYTHONPATH=/your/path/to/ece458 && /your/path/to/ece458/backend
+		run: python3 manage.py migrate && python3 manage.py collectstatic --noinput'
 
 
 	- name: Build Frontend

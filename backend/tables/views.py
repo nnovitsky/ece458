@@ -14,7 +14,7 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserT
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
-from backend.import_export import export_csv, export_pdf
+from backend.import_export import export_csv, export_pdf, export_chain
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
@@ -442,6 +442,24 @@ def export_calibration_event_pdf(request, pk):
                         status=status.HTTP_400_BAD_REQUEST)
 
     return export_pdf.handler(instrument)
+
+
+@api_view(['GET'])
+def export_calibration_chain(request, pk):
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument can not be calibrated."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return export_chain.handler(instrument)
 
 
 @api_view(['PUT'])

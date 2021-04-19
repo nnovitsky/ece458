@@ -343,7 +343,7 @@ def models_list(request):
         request.data['calibrationmode_set'] = mode_pks
 
         default_cal_with = get_calibration_categories_from_mode(request)
-        if len(default_cal_with) != 0:
+        if len(default_cal_with) != 0 or request.data['calibration_modes'] == 'custom_form':
             if 'calibrator_categories_set' not in request.data:
                 request.data['calibrator_categories_set'] = default_cal_with
             else:
@@ -393,7 +393,11 @@ def models_detail(request, pk):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
         if 'calibration_modes' in request.data:
-            request.data['calibrator_categories_set'] = get_calibration_categories_from_mode(request)
+            default_cats = get_calibration_categories_from_mode(request)
+            if len(default_cats) > 0:
+                request.data['calibrator_categories_set'] = default_cats
+        else:
+            request.data['calibrator_categories_set'] = []
 
         request.data['calibrationmode_set'] = mode_pks
 

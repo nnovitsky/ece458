@@ -76,7 +76,7 @@ def update_lb_cal_field(request, lb_cal_pk):
                 return Response({"loadbank_error": [category_error]}, status=status.HTTP_400_BAD_REQUEST)
 
             calibrator_instruments[instrument_field] = instrument.pk
-            yes_cycle = check_for_cycle(lb_cal.cal_event.instrument , instrument.pk)
+            yes_cycle = check_for_cycle(lb_cal.cal_event.instrument , [instrument.pk])
             if yes_cycle:
                 return Response({"loadbank_error": [f"instrument ({asset_tag}) causes cycle."]},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -89,9 +89,9 @@ def update_lb_cal_field(request, lb_cal_pk):
             current_ins_asset = getattr(lb_cal, instrument_field + '_asset_tag')
             if current_ins_asset:
                 current_ins = Instrument.objects.get(asset_tag=current_ins_asset)
-                lb_cal.cal_event.calibrated_with.remove(current_ins)
+                lb_cal.cal_event.calibrated_by_instruments.remove(current_ins)
 
-            lb_cal.cal_event.calibrated_with.add(instrument)
+            lb_cal.cal_event.calibrated_by_instruments.add(instrument)
             lb_cal.cal_event.save()
 
     request.data['cal_event'] = lb_cal.cal_event.pk

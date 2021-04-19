@@ -8,6 +8,7 @@ CALIBRATION_FREQUENCY_MAX_LENGTH = 10
 SERIAL_NUM_MAX_LENGTH = 40
 USERNAME_MAX_LENGTH = 50
 CALIBRATION_DATE_MAX_LENGTH = 20
+CALIBRATION_APPROVAL_MAX_LENGTH = 1
 
 MODEL_CATEGORIES_MAX_LENGTH = 100
 INSTRUMENT_CATEGORIES_MAX_LENGTH = 100
@@ -27,8 +28,10 @@ VALID_CAL_TYPES = [
 
 def validate_column_headers(headers, expected_headers):
 
-    if len(headers) != len(expected_headers):
-        return False, "Headers and expected headers quantity mismatch."
+    if len(headers) < len(expected_headers):
+        return False, "Missing headers in file."
+    elif len(headers) > len(expected_headers):
+        headers = headers[0:len(expected_headers)-1]
 
     for header, expected_header in zip(headers, expected_headers):
         if header != expected_header:
@@ -162,9 +165,9 @@ def is_valid_cal_type(cal_type_field):
     stripped_field = cal_type_field.strip()
 
     if stripped_field in VALID_CAL_TYPES:
-        return True, "Valid load-bank-support entry"
+        return True, ""
 
-    return False, f"\'{cal_type_field}\' is not a valid load-bank-support entry. " \
+    return False, f"\'{cal_type_field}\' is not a valid special calibration type entry. " \
                   f"Must be one of the following {len(VALID_CAL_TYPES)} possibilities: {VALID_CAL_TYPES}."
 
 
@@ -194,3 +197,10 @@ def is_valid_instrument_categories(instrument_categories):
                       f"Max: {INSTRUMENT_CATEGORIES_MAX_LENGTH} chars long"
 
     return True, "Valid set of instrument categories."
+
+
+def is_valid_approval_column(approval_field):
+    if len(approval_field.strip()) == 0 or approval_field.strip() == 'Y':
+        return True, ""
+
+    return False, f"Invalid value ({approval_field}). Must be \'Y\' or blank."

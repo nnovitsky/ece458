@@ -7,7 +7,10 @@ import Table from 'react-bootstrap/esm/Table';
 import Row from 'react-bootstrap/esm/Row';
 import Col from 'react-bootstrap/esm/Col';
 import InstrumentServices from '../../api/instrumentServices';
+import { Link } from 'react-router-dom';
 //props
+// 'instrument_name': includes: string name of the instrument being calibrated
+// 'asset_tag': asset tag of the instrument being calirbated
 // 'calibrationEvent': calibration event from the cal event search
 // 'currentUser': current user object
 // 'isApprovalForm': boolean if the display should be an approval form (true) or a cal event summary (false)
@@ -52,8 +55,9 @@ const CalibrationPopup = (props) => {
 
     const body = (
         <>
-            {makeSummary(props.calibrationEvent, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick)}
+            {makeSummary(props.calibrationEvent, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.instrument_name, props.asset_tag)}
             {approvalState.hasApprovalSection ? makeApprovalSection(props.calibrationEvent, approvalState, dispatch) : null}
+            {props.calibrationEvent.approval_status === 'NA' ? makeApprovalNoInfoSection(props.calibrationEvent) : null}
         </>
     );
     const isApprovalForm = approvalState.isApprovalForm;
@@ -61,7 +65,7 @@ const CalibrationPopup = (props) => {
         <GenericPopup
             show={props.isShown}
             body={body}
-            headerText={`Calibration Event - ${props.calibrationEvent.approval_status}`}
+            headerText={`Calibration Event - ${props.calibrationEvent.approval_status === 'NA' ? 'Approved' : props.calibrationEvent.approval_status}`}
             closeButtonText={isApprovalForm ? 'Cancel' : 'Close'}
             submitButtonText="Submit"
             onClose={() => onClose(dispatch, props.onClose)}
@@ -73,7 +77,7 @@ const CalibrationPopup = (props) => {
     )
 }
 
-const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick) => {
+const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick, instrumentName, assetTag) => {
     const supplementData = getSupplementButton(calEvent, onSupplementDownload, onLoadBankClick, onKlufeClick)
     return (
         <div>
@@ -83,6 +87,10 @@ const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeCli
                 <h4>Original Event</h4>
                 <Table bordered>
                     <tbody>
+                        <tr>
+                            <td><strong>Calibrated Instrument</strong></td>
+                            <td>{`${instrumentName} (${assetTag})`}</td>
+                        </tr>
                         <tr>
                             <td><strong>Engineer</strong></td>
                             <td>{`${calEvent.user.first_name} ${calEvent.user.last_name}`}</td>
@@ -100,8 +108,12 @@ const makeSummary = (calEvent, onSupplementDownload, onLoadBankClick, onKlufeCli
 
                             <td>
                                 <div className="detail-view-categories">
-                                    <p>Coming Soon</p>
-                                    {/* {this.state.calEvent.calibrator_categories.map(el => el.name).join(', ')} */}
+                                    {calEvent.calibrated_by_instruments.map((el, index) => {
+                                        return ((<>
+                                            <a href={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</a>
+                                            {index !== calEvent.calibrated_by_instruments.length - 1 ? ', ' : null}
+                                        </>))
+                                    })}
                                 </div>
                             </td>
                         </tr>
@@ -142,6 +154,19 @@ const getSupplementButton = (calEvent, onSupplementDownload, onLoadBankClick, on
     }
 }
 
+const makeApprovalNoInfoSection = (calEvent) => {
+    const statusSpan = getSpanStatusColored('Approved');
+    return (
+        <>
+            <hr />
+            <Form className="popup">
+                <h4 >Approval Event: {statusSpan}</h4>
+            <span>This calibration was implicitly approved when the model was changed to require approval</span>
+            </Form>
+        </>
+    );
+}
+
 const makeApprovalSection = (calEvent, approvalState, dispatch) => {
     const isApprovalForm = approvalState.isApprovalForm;
     const statusSpan = getSpanStatusColored(calEvent.approval_status);
@@ -150,6 +175,7 @@ const makeApprovalSection = (calEvent, approvalState, dispatch) => {
             <hr />
             <Form className="popup">
                 <h4 hidden={isApprovalForm}>Approval Event: {statusSpan}</h4>
+                <h4 hidden={!isApprovalForm}>Approval Section:</h4>
                 <Form.Group>
                     <Row>
 

@@ -102,7 +102,7 @@ class FormDisplay extends React.Component {
                         pk: counter,
                         type: 'Text',
                         label: formField.label,
-                        value: formField.actual_text
+                        value: formField.actual_string
                     };
                     inputs.push(group);
                     counter++;

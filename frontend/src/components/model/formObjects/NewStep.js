@@ -41,8 +41,8 @@ class NewStep extends React.Component {
         </div>
         </div>;
 
-        let prompt = <div onClick={this.addNewStepMenu} style={{ width: "100%", height: "100%" , marginTop: "30px"}}>
-                Add a New Step
+        let prompt = <div onClick={this.addNewStepMenu} style={{ width: "100%", height: "100%"}}>
+                <p style={{paddingTop: "30px"}}>Add a New Step</p>
         </div>
         return (
             <div className="new-step">

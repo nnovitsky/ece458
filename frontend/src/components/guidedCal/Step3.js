@@ -94,7 +94,6 @@ class Step2 extends React.Component {
 
     render() {
         let body = this.makeBody();
-        console.log(this.state.validDisplay)
         return (
             <Base
                 title="Guided Calibration"
@@ -120,7 +119,7 @@ class Step2 extends React.Component {
         atFreqText = `${this.state.sourceData.AC ? "at" : "DC"} ${this.getHzString(this.state.sourceData.freq)}`,
         voltageText = `${this.state.sourceData.AC ? "VAC" : "VDC"} = ${this.state.sourceData.source}V ${atFreqText}`;
 
-        return <div>
+        return <div onKeyUp={(e) => e.key === 'Enter' ? this.validateInput() : null}>
             <Form className="guidedCal">
                 <h3>Calibration: {this.state.sourceData.source}V {atFreqText}</h3>
                 <h7>Follow the steps in order to calibrate your instrument.
@@ -300,7 +299,6 @@ class Step2 extends React.Component {
                     result.data.voltage_tests.forEach(element =>{
                         if(element.index === newIndex && element.voltage_okay)
                         {
-                            console.log("Element matches with index " + element.index)
                             this.setState({
                                 sucessfulSet: true,
                                 displayVoltage: element.reported_voltage,

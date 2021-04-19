@@ -4,18 +4,25 @@ import '../generic/General.css';
 import logo from '../../assets/HPT_logo_crop.png';
 import AuthServices from "../../api/authServices";
 import UserServices from "../../api/userServices";
+import InstrumentServices from "../../api/instrumentServices";
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import EditUserPopup from './EditUserPopup.js'
 import ErrorsFile from "../../api/ErrorMapping/AdminErrors.json";
-import { rawErrorsToDisplayed } from "../generic/Util";
+import { rawErrorsToDisplayed, hasApprovalAccess, nameAndDownloadFile } from "../generic/Util";
 import Button from 'react-bootstrap/Button';
 import {PrivilegesDisplayMap} from '../generic/Util';
-
+import CalHistoryTable from '../instrument/CalHistoryTable';
+import ErrorFile from "../../api/ErrorMapping/InstrumentErrors.json";
+import CalibrationPopup from '../instrument/CalibrationPopup';
+import GuidedCal from '../guidedCal/GuidedCal';
+import Wizard from '../wizard/Wizard';
+import DisplayFormCal from '../formCal/FormDisplay.js';
 
 const authServices = new AuthServices();
 const userServices = new UserServices();
+const instrumentServices = new InstrumentServices();
 
 class UserPage extends React.Component {
 
@@ -30,25 +37,85 @@ class UserPage extends React.Component {
                 errors: []
             },
             groups:[],
+            calibrationData: [],
+            calibration_pagination: {
+                resultCount: 0,
+                numPages: 1,
+                resultsPerPage: 25,
+                currentPageNum: 1,
+                isShowAll: false,
+                desiredPage: 1
+            },
+            wizardPopup: {
+                isShown: false,
+                lbPK: null,
+            },
+            guidedCalPopup: {
+                isShown: false,
+                pk: null,
+            },
+            formCalPopup: {
+                isShown: false,
+                pk: null,
+            },
+            displayFormCalPopup: {
+                isShown: false,
+                pk: null,
+            },
+            calibrationPopup: {
+                isShown: false,
+                calEvent: null,
+                isApprovalForm: true,
+                errors: [],
+                instrumentName: '',
+                assetTag: '',
+            },
         };
 
         this.onEditUserClosed = this.onEditUserClosed.bind(this);
         this.onEditUserSubmit = this.onEditUserSubmit.bind(this);
         this.getGroupsString = this.getGroupsString.bind(this);
+
+        this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
+        this.onLoadBankClick = this.onLoadBankClick.bind(this);
+        this.onKlufeClick = this.onKlufeClick.bind(this);
+        this.onShowCalibrationPopup = this.onShowCalibrationPopup.bind(this);
+        this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
+        this.onCalibrationPopupClose = this.onCalibrationPopupClose.bind(this);
+
+        this.onWizardClose = this.onWizardClose.bind(this);
+        this.makeWizardPopup = this.makeWizardPopup.bind(this);
+
+        this.onDisplayFormCalClicked = this.onDisplayFormCalClicked.bind(this);
+        this.onDisplayFormCalClose = this.onDisplayFormCalClose.bind(this);
+
+        this.makeGuidedCalPopup = this.makeGuidedCalPopup.bind(this);
+        this.onGuidedCalClose = this.onGuidedCalClose.bind(this);
+        this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
     }
-
-
 
     async componentDidMount() {
         await this.updateUserInfo();
+        await this.updatePendingTable();
     }
 
 
     render() {
         let editUserPopup = (this.state.editUserPopup.isShown) ? this.makeEditProfilePopup() : null;
+        let pendingTable = hasApprovalAccess(this.state.groups) ? this.makeCalHistoryTable() : null;
+        const calibrationPopup = this.state.calibrationPopup.isShown ? this.makeCalibrationPopup() : null;
+        let wizardPopup = (this.state.wizardPopup.isShown) ? this.makeWizardPopup() : null;
+        let guidedCalPopup = (this.state.guidedCalPopup.isShown) ? this.makeGuidedCalPopup() : null;
+        let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
+        let displayFormCalPopup = (this.state.displayFormCalPopup.isShown) ? this.makeDisplayFormCalPopup() : null;
         return (
             <div>
                 {editUserPopup}
+                {wizardPopup}
+                {guidedCalPopup}
+                {formCalPopup}
+                {displayFormCalPopup}
+                {calibrationPopup}
                 <div className="background">
                     <div className="row mainContent">
                         <div className="col-2 text-center">
@@ -67,6 +134,10 @@ class UserPage extends React.Component {
                                 </Col>
                             </Row>
                         </div>
+                        <div className="bottom-element">
+                            {pendingTable}
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -135,7 +206,7 @@ class UserPage extends React.Component {
     }
 
     async updateUserInfo() {
-        authServices.getCurrentUser().then((result) => {
+        await authServices.getCurrentUser().then((result) => {
             if (result.success) {
                 this.setState({
                     userData: result.data,
@@ -146,6 +217,38 @@ class UserPage extends React.Component {
             }
         }
         )
+    }
+
+    async updatePendingTable() {
+        const pagination = this.state.calibration_pagination;
+        await instrumentServices.getAllPendingCalEvents(pagination.desiredPage, pagination.isShowAll, pagination.resultsPerPage).then((result) => {
+            if(result.success) {
+                this.setState({
+                    calibrationData: result.data.data,
+                    calibration_pagination: {
+                        ...this.state.calibration_pagination,
+                        resultCount: result.data.count
+                    }
+                })
+            }
+            if (!this.state.calibration_pagination.isShowAll) {
+                this.setState({
+                    calibration_pagination: {
+                        ...this.state.calibration_pagination,
+                        resultCount: result.data.count,
+                        numPages: result.data.numpages,
+                        currentPageNum: result.data.currentpage,
+                    }
+                });
+            } else {
+                this.setState({
+                    calibration_pagination: {
+                        ...this.state.calibration_pagination,
+                        currentPageNum: 1
+                    }
+                })
+            }
+        })
     }
 
     async logInNewCredentials(data) {
@@ -210,6 +313,246 @@ class UserPage extends React.Component {
         }
         return groupString;
     }
+
+    makeCalibrationPopup() {
+        return (
+            <CalibrationPopup
+                instrument_name={this.state.calibrationPopup.instrumentName}
+                asset_tag={this.state.calibrationPopup.assetTag}
+                calibrationEvent={this.state.calibrationPopup.calEvent}
+                currentUser={this.state.userData}
+                isApprovalForm={true}
+                isShown={this.state.calibrationPopup.isShown}
+                onClose={this.onCalibrationPopupClose}
+                onSubmit={this.onCalibrationPopupApprovalSubmit}
+                errors={this.state.calibrationPopup.errors}
+                onSupplementDownload={this.onSupplementDownloadClicked}
+                onLoadBankClick={this.onLoadBankClick}
+                onKlufeClick={this.onKlufeClick}
+
+            />
+        )
+    }
+
+    makeGuidedCalPopup() {
+        return (
+            <GuidedCal
+                isShown={this.state.guidedCalPopup.isShown}
+                onClose={this.onGuidedCalClose}
+                klufePK={this.state.guidedCalPopup.pk}
+                user={this.state.userData}
+                model_number={null}
+                vendor={null}
+                serial_number={null}
+                instrument_pk={null}
+                asset_tag={null}
+
+            />
+        )
+    }
+
+    makeWizardPopup() {
+        return (
+            <Wizard
+                isShown={this.state.wizardPopup.isShown}
+                onClose={this.onWizardClose}
+                model_number={null}
+                vendor={null}
+                serial_number={null}
+                instrument_pk={null}
+                asset_tag={null}
+                lb_pk={this.state.wizardPopup.lbPK}
+                user={this.state.userData}
+            />
+        )
+    }
+
+    makeDisplayFormCalPopup() {
+        return (
+            <DisplayFormCal
+                isShown={this.state.displayFormCalPopup.isShown}
+                onClose={this.onDisplayFormCalClose}
+                cal_pk={this.state.displayFormCalPopup.pk} />
+        )
+    }
+
+    makeCalHistoryTable() {
+        return(
+            <div>
+                <hr />
+                <h3>Calibration Events Pending Approval {`(${this.state.calibration_pagination.resultCount})`}</h3>
+                <CalHistoryTable
+                    data={this.state.calibrationData}
+                    onTableChange={this.onCalHistoryTableChange}
+                    pagination={
+                        {
+                            page: this.state.calibration_pagination.currentPageNum,
+                            sizePerPage: (this.state.calibration_pagination.isShowAll ? this.state.calibration_pagination.resultCount : this.state.calibration_pagination.resultsPerPage),
+                            totalSize: this.state.calibration_pagination.resultCount
+                        }}
+                    onSupplementDownload={this.onSupplementDownloadClicked}
+                    onLoadBankClick={this.onLoadBankClick}
+                    onKlufeClick={this.onKlufeClick}
+                    onFormClick={this.onDisplayFormCalClicked}
+                    requiresApproval={true}
+                    onRowClick={this.onShowCalibrationPopup}
+                    hasApprovalPermissions={true}
+                    inlineElements="(Click on a row for more information and approval)"
+                    displayInstrumentInfo={true}
+                />
+            </div>
+        )
+    }
+
+    async onCalHistoryTableChange(type, { page, sizePerPage }) {
+        switch (type) {
+            case 'pagination':
+                if (sizePerPage === this.state.calibration_pagination.resultCount) {
+                    this.setState({
+                        calibration_pagination: {
+                            ...this.state.calibration_pagination,
+                            desiredPage: 1,
+                            isShowAll: true,
+                        }
+                    }, () => {
+                        this.updatePendingTable();
+                    })
+                } else {
+                    this.setState({
+                        calibration_pagination: {
+                            ...this.state.calibration_pagination,
+                            desiredPage: page,
+                            isShowAll: false,
+                            resultsPerPage: sizePerPage,
+                        }
+                    }, () => {
+                        this.updatePendingTable();
+                    })
+                }
+                return;
+            default:
+                return;
+        }
+    }
+
+    async onSupplementDownloadClicked(e) {
+        let cal_pk = e.target.value;
+        instrumentServices.getCalEventFile(cal_pk)
+            .then((result) => {
+                if (result.success) {
+                    nameAndDownloadFile(result.url, `supplement-file`, result.type);
+                } else {
+                    console.log('no file exists');
+                }
+            })
+    }
+
+    onLoadBankClick(e) {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: true,
+                lbPK: e.target.value
+            }
+        })
+    }
+
+    onKlufeClick(e) {
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: true,
+                pk: e.target.value
+            }
+        })
+    }
+
+    onShowCalibrationPopup(calEvent) {
+        const isApprover = hasApprovalAccess(this.state.groups);
+        this.setState({
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: true,
+                calEvent: calEvent,
+                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending'),
+                assetTag: calEvent.asset_tag,
+                instrumentName: calEvent.instrument_name,
+            }
+        })
+    }
+
+    onCalibrationPopupClose() {
+        this.setState({
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
+                calEvent: null,
+            }
+        })
+    }
+
+    async onCalibrationPopupApprovalSubmit(comment, isApproved) {
+        await instrumentServices.setCalEventApproval(this.state.calibrationPopup.calEvent.pk, comment, isApproved).then((result) => {
+            if (result.success) {
+                this.updatePendingTable();
+                this.onCalibrationPopupClose();
+            } else {
+                let formattedErrors = rawErrorsToDisplayed(result.errors, ErrorFile["add_calibration"]);
+                this.setState({
+                    calibrationPopup: {
+                        ...this.state.calibrationPopup,
+                        errors: formattedErrors
+                    }
+                })
+            }
+        })
+    }
+
+    onDisplayFormCalClicked(e) {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: e.target.value,
+                isShown: true,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
+            }
+        })
+    }
+
+    onDisplayFormCalClose() {
+        this.setState({
+            displayFormCalPopup: {
+                ...this.state.displayFormCalPopup,
+                pk: null,
+                isShown: false,
+            },
+        })
+    }
+
+    onGuidedCalClose() {
+        this.setState({
+            guidedCalPopup: {
+                ...this.state.guidedCalPopup,
+                isShown: false,
+                pk: null,
+            }
+        })
+    }
+
+    onWizardClose() {
+        this.setState({
+            wizardPopup: {
+                ...this.state.wizardPopup,
+                isShown: false,
+                lbPK: null,
+            }
+        })
+    }
+
+    
 
 }
 

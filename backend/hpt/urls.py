@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/instrument_search/', api_views.InstrumentList.as_view(), name='instrument_search'),
     path('api/calibration_event_search/', api_views.CalibrationEventList.as_view(), name='calibration_event_search'),
     path('api/export_calibration_event_pdf/<int:pk>/', views.export_calibration_event_pdf),
+    path('api/export_calibration_event_pdf_chain/<int:pk>/', views.export_calibration_chain),
     path('api/import_models_csv/', views.import_models_csv),
     path('api/import_instruments_csv/', views.import_instruments_csv),
     path('api/export_models_csv/', api_views.ItemModelExport.as_view()),
@@ -83,4 +84,5 @@ urlpatterns = [
     path('api/calibration_form/<int:model_pk>/', form_views.form_data),
     path('api/submit_calibration_form/', form_views.submit_form),
     path('api/view_submitted_form/<int:cal_event_pk>/', form_views.view_submitted_form),
+    path('api/special_categories/', views.get_special_categories),
 ]

@@ -14,12 +14,13 @@ from backend.tables.models import ItemModel, Instrument, CalibrationEvent, UserT
 from backend.tables.serializers import *
 from backend.tables.utils import *
 from backend.tables.filters import *
-from backend.import_export import export_csv, export_pdf
+from backend.import_export import export_csv, export_pdf, export_chain
 from backend.import_export import validate_model_import, validate_instrument_import
 from backend.import_export import write_import_models, write_import_instruments
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
 from backend.config.admin_config import ADMIN_USERNAME, PERMISSION_GROUPS, APPROVAL_STATUSES
-from backend.config.load_bank_config import CALIBRATION_MODES
+from backend.config.load_bank_config import CALIBRATION_MODES, DEFAULT_CATEGORIES
+from backend.config.category_config import get_special_pks
 from backend.tables.oauth import get_token, parse_id_token, get_user_details, login_oauth_user
 from backend.hpt.settings import MEDIA_ROOT
 from backend.tables import cal_with
@@ -390,6 +391,10 @@ def models_detail(request, pk):
         mode_pks, error = get_calibration_mode_pks(request)
         if error:
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'calibration_modes' in request.data:
+            request.data['calibrator_categories_set'] = get_calibration_categories_from_mode(request)
+
         request.data['calibrationmode_set'] = mode_pks
 
         serializer = ItemModelSerializer(model, data=request.data, context={'request': request})
@@ -437,6 +442,24 @@ def export_calibration_event_pdf(request, pk):
                         status=status.HTTP_400_BAD_REQUEST)
 
     return export_pdf.handler(instrument)
+
+
+@api_view(['GET'])
+def export_calibration_chain(request, pk):
+    try:
+        instrument = Instrument.objects.get(pk=pk)
+    except Instrument.DoesNotExist:
+        return Response({"description": ["Instrument does not exist."]}, status=status.HTTP_404_NOT_FOUND)
+
+    if instrument.item_model.calibration_frequency <= 0:
+        return Response({"description": ["Instrument can not be calibrated."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ListInstrumentReadSerializer(instrument)
+    if len(serializer.data['calibration_event']) == 0:
+        return Response({"description": ["Instrument has no associated calibration events"]},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    return export_chain.handler(instrument)
 
 
 @api_view(['PUT'])
@@ -684,7 +707,6 @@ def model_category_list(request):
     if request.method == 'GET':
         nextPage = 1
         previousPage = 1
-        default_categories()
         categories = ItemModelCategory.objects.order_by(Lower("name"))
         return get_page_response(categories, request, ListItemModelCategorySerializer, nextPage, previousPage)
 
@@ -692,7 +714,6 @@ def model_category_list(request):
         if not UserType.contains_user(request.user, "models"):
             return Response(
                 {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
-        default_categories()
         serializer = ItemModelCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -735,6 +756,12 @@ def model_category_detail(request, pk):
         return Response(
             {"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
 
+    if category.pk in get_special_pks():
+        return Response(
+            {"implicit_delete_error":[f"Category \'{category.name}\' is immutable and may not be modified."]},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     if request.method == 'PUT':
         if 'name' not in request.data: request.data['name'] = category.name
         if 'item_models' in request.data: request.data.pop('item_models')
@@ -742,7 +769,6 @@ def model_category_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        default_categories()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -751,7 +777,6 @@ def model_category_detail(request, pk):
                 {"delete_error": ["Category is not empty."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             category.delete()
-            default_categories()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -799,6 +824,17 @@ def category_list(request, type):
 
     data = [{'name': cat.name, 'pk': cat.pk} for cat in categories]
     data = [sorted(data, key=lambda i: i['name'].lower())]
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_special_categories(request):
+    data = {}
+    special_pks = get_special_pks()
+
+    for pk, cat_name in zip(special_pks, DEFAULT_CATEGORIES):
+        data[cat_name] = pk
+
     return Response(data, status=status.HTTP_200_OK)
 
 

@@ -142,7 +142,7 @@ export default class GuidedCalServices {
         })
     }
 
-    async createKlufeCal(instrument, date, comment, userPK)
+    async createKlufeCal(instrument, date, comment, userPK, calibratedWith)
     {
         const token = window.sessionStorage.getItem('token');
 
@@ -151,8 +151,8 @@ export default class GuidedCalServices {
             date: date,
             user: userPK,
             comment: comment,
+            calibrated_by_instruments: calibratedWith, 
         }
-
         let result = {
             success: false,
             data: [],

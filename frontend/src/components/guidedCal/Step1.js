@@ -5,8 +5,10 @@ import Button from 'react-bootstrap/Button';
 import Klufe from './Klufe.js';
 import './GuidedCal.css'
 import GuidedCalServices from "../../api/guidedCalServices.js";
+import InstrumentServices from "../../api/instrumentServices.js";
 
 const guidedCalServices = new GuidedCalServices();
+const instrumentServices = new InstrumentServices();
 
 
 
@@ -28,6 +30,7 @@ class Step1 extends React.Component {
                 freq: "",
                 voltage: "",
             },
+            instrumentPK: this.props.instrumentPK,
         }
 
         //this.getStatus = this.getStatus.bind(this);
@@ -68,7 +71,7 @@ class Step1 extends React.Component {
                 <br></br>Once you complete a step, the next step will become enabled.</h7>
                 <div className="row">
                     <div className="col">
-                        <Form.Group className="form-inline" name="First" style={{ marginTop: "20px" }}>
+                        <Form.Group className="form-inline" style={{ marginTop: "20px" }} name="First">
                             <Form.Label className="col-sm-6 col-form-label">1. Set the source for VDC = 0V</Form.Label>
                             <Button onClick={this.onSetSourceClicked}>Click to set source</Button>
                         </Form.Group>
@@ -93,10 +96,9 @@ class Step1 extends React.Component {
 
 
     async onSetSourceClicked() {
-        guidedCalServices.connectSSH().then(result =>{
+        guidedCalServices.connectSSH().then(result => {
             console.log(result)
-            if(result.success)
-            {
+            if (result.success) {
                 console.log(result.data.SSH_success)
                 this.setState({
                     sucessfulSet: true,
@@ -106,7 +108,7 @@ class Step1 extends React.Component {
                         mode: "DC",
                         freq: "0Hz",
                         voltage: 0,
-                },
+                    },
                 })
                 this.turnOffSource();
             }
@@ -125,10 +127,13 @@ class Step1 extends React.Component {
         })
     }
 
-    async turnOffSource(){
+    async validateKlufeMeter() {
+
+    }
+
+    async turnOffSource() {
         guidedCalServices.turnOffSource().then(result => {
-            if(result.success)
-            {
+            if (result.success) {
                 console.log(result.data.SSH_success)
                 this.setState({
                     klufe: {

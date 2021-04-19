@@ -240,11 +240,15 @@ export default class InstrumentServices {
         formData.append('instrument', instrument_pk);
         formData.append('date', date);
         formData.append('comment', comment);
-        //formData.append('calibrated_by_instruments', calibratorInstrumentArr);
-
+        console.log(calibratorInstrumentArr);
+        console.log(instrument_pk);
         if (file !== '') {
             formData.append('file', file);
         }
+        if(calibratorInstrumentArr.length > 0) {
+            formData.append('calibrated_by_instruments', JSON.stringify(calibratorInstrumentArr));
+        }
+        console.log(JSON.stringify(calibratorInstrumentArr));
 
         let result = {
             success: true,
@@ -321,16 +325,19 @@ export default class InstrumentServices {
             success: true,
             errors: {}
         }
+
         const token = window.sessionStorage.getItem('token');
         const body = {
-            "instrument_pk": instrumentPk,
-            "calibrator_asset_tags": [
+            instrument_pk: instrumentPk,
+            calibrator_asset_tags: [
                 calibratorAssetTag
             ]
         }
 
+        console.log(body);
+
         return fetch(`${API_URL}/api/validate_calibrators/`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
@@ -341,6 +348,7 @@ export default class InstrumentServices {
                 if (res.ok) {
                     return res.json().then(json => {
                         result.data = json;
+                        console.log(result);
                         return result;
                     });
                 } else {
@@ -417,7 +425,7 @@ export default class InstrumentServices {
     }
 
     // safely handled modified/expired tokens
-    async getCalibrationPDF(pk) {
+    async getCalibrationPDF(pk, hasChainOfTruth) {
         const token = window.sessionStorage.getItem('token');
 
         let result = {
@@ -665,6 +673,42 @@ export default class InstrumentServices {
             }
         }
         )
+    }
+
+    async getAllPendingCalEvents(pageNum, showAll, perPage) {
+        const token = window.sessionStorage.getItem('token');
+
+        let result = {
+            success: true,
+            url: [],
+        }
+
+        let url = `${API_URL}/api/calibration_event_search/?approval_status=Pending`;
+
+        if (showAll) {
+            url = `${url}&get_all`
+        } else {
+            url = `${url}&page=${pageNum}&results_per_page=${perPage}`
+        }
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(json => {
+                        result.data = json;
+                        return result;
+                    });
+                } else {
+                    return res.json().then(async (json) => {
+                        return await checkBadResponse(json, result);
+                    });
+                }
+            })
     }
 }
 

@@ -28,13 +28,14 @@ const AddCalibrationPopup = (props) => {
             date: dateToString(new Date()),
             comment: '',
             file: '',
+            calibratorInstruments: [],
         }
     }, [])
 
     return (
         <GenericPopup
             show={props.isShown}
-            body={makeBody(calDate, setCalDate, props.calibratorCategories)}
+            body={makeBody(calDate, setCalDate, props.calibratorCategories, props.instrumentPk)}
             headerText="Add Calibration"
             closeButtonText="Cancel"
             submitButtonText="Submit Calibration"
@@ -48,7 +49,7 @@ const AddCalibrationPopup = (props) => {
     )
 }
 
-const makeBody = (calDate, setCalDate, calibratorCategories) => {
+const makeBody = (calDate, setCalDate, calibratorCategories, instrumentPk) => {
     return (
         <div>
             <Form className="popup">
@@ -81,6 +82,7 @@ const makeBody = (calDate, setCalDate, calibratorCategories) => {
                 <CalibratedWithInput 
                     onInstrumentChange={onCalibratorInstrumentsChange}
                     calibratorCategories={calibratorCategories}
+                    instrumentPk={instrumentPk}
                 /> 
             </Form>
         </div>
@@ -91,12 +93,14 @@ const preClose = (parentHandler) => {
     newCalibration = {
         date: dateToString(new Date()),
         comment: '',
-        file: ''
+        file: '',
+        calibratorInstruments: [],
     }
     parentHandler();
 }
 
 const preSubmit = (parentHandler) => {
+    console.log(newCalibration);
     parentHandler(newCalibration);
 }
 

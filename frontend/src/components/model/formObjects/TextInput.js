@@ -26,6 +26,8 @@ class TextInput extends React.Component {
                     itemBody={body}
                     preview={preview}
                     id={this.props.id}
+                    classes={this.props.classes}
+                    previewClasses={this.props.classes}
                     setStepNumber={this.props.setStepNumber}
                     delete={this.props.onDelete}
                     totalLength={this.props.totalLength}
@@ -79,5 +81,5 @@ class TextInput extends React.Component {
 export default TextInput;
 
 TextInput.defaultProps = {
-    classes: "form-item-builder header",
+    classes: "form-item-builder text-input",
 }

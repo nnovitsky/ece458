@@ -20,6 +20,7 @@ import DetailView from '../generic/DetailView';
 import GuidedCalServices from '../../api/guidedCalServices.js';
 import WizardServices from '../../api/wizardServices.js';
 import CalibrationPopup from './CalibrationPopup';
+import DownloadCertificatePopup from './DownloadCertPopup';
 
 const guidedCalServices = new GuidedCalServices();
 const wizardServices = new WizardServices();
@@ -69,6 +70,9 @@ class InstrumentDetailView extends Component {
             editInstrumentPopup: {
                 isShown: false,
                 errors: []
+            },
+            downloadCertPopup: {
+                isShown: false,
             },
             wizardPopup: {
                 isShown: false,
@@ -122,7 +126,10 @@ class InstrumentDetailView extends Component {
         this.onCalibrationPopupApprovalSubmit = this.onCalibrationPopupApprovalSubmit.bind(this);
         this.onShowCalibrationPopup = this.onShowCalibrationPopup.bind(this);
 
-        this.onCertificateRequested = this.onCertificateRequested.bind(this);
+        this.onDownloadCertificateSubmit = this.onDownloadCertificateSubmit.bind(this);
+        this.onDownloadCertificateClick = this.onDownloadCertificateClick.bind(this);
+        this.onDownloadCertificateClose = this.onDownloadCertificateClose.bind(this);
+
         this.onToggleShowAll = this.onToggleShowAll.bind(this);
         this.onCalHistoryTableChange = this.onCalHistoryTableChange.bind(this);
         this.onSupplementDownloadClicked = this.onSupplementDownloadClicked.bind(this);
@@ -160,6 +167,7 @@ class InstrumentDetailView extends Component {
         let formCalPopup = (this.state.formCalPopup.isShown) ? this.makeFormCalPopup() : null;
         let displayFormCalPopup = (this.state.displayFormCalPopup.isShown) ? this.makeDisplayFormCalPopup() : null;
         let calibrationPopup = (this.state.calibrationPopup.isShown) ? this.makeCalibrationPopup() : null;
+        let downloadCertificatePopup = (this.state.downloadCertPopup.isShown ? this.makeDownloadCertPopup() : null);
 
         if (this.state.redirect != null) {
             return <Redirect push to={this.state.redirect} />
@@ -168,6 +176,7 @@ class InstrumentDetailView extends Component {
         let comment = (this.state.instrument_info.comment === '' ? 'No Comment Entered' : this.state.instrument_info.comment);
         return (
             <div>
+                {downloadCertificatePopup}
                 {addCalibrationPopup}
                 {editInstrumentPopup}
                 {deleteInstrumentPopup}
@@ -197,7 +206,7 @@ class InstrumentDetailView extends Component {
         const isForm = this.state.instrument_info.calibration_modes.includes("custom_form");
         let calButtonRow = (
             <div className="table-button-row">
-                <Button onClick={this.onCertificateRequested} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
+                <Button onClick={this.onDownloadCertificateClick} disabled={this.state.instrument_info.calibration_history.length === 0}>Download Certificate</Button>
                 <Button hidden={!isCalibratable || !isCalibrationAdmin} onClick={this.onAddCalibrationClicked}>Add Calibration</Button>
                 <Button onClick={this.onWizardClicked} hidden={!isLoadBank || !isCalibrationAdmin}>Add Load Bank Calibration</Button>
                 <Button onClick={this.onGuidedCalClicked} hidden={!isKlufe || !isCalibrationAdmin}>Add Guided Calibration</Button>
@@ -207,7 +216,7 @@ class InstrumentDetailView extends Component {
         return (
             <div hidden={!isCalibratable}>
                 <h3>Calibration History</h3>
-                <span>(Click on a row for more information)</span>
+                {this.getTableText()}
                 <CalHistoryTable
                     data={this.state.instrument_info.calibration_history}
                     onTableChange={this.onCalHistoryTableChange}
@@ -225,9 +234,24 @@ class InstrumentDetailView extends Component {
                     requiresApproval={this.state.instrument_info.requires_approval}
                     onRowClick={this.onShowCalibrationPopup}
                     hasApprovalPermissions={true}
+                    emptyTableText="No Calibration History"
                 />
             </div>
         )
+    }
+
+    getTableText() {
+        const requiresApproval = this.state.instrument_info.requires_approval;
+        if(requiresApproval) {
+            return(
+                <span>(Click on a row for approval and calibrator information)</span>
+            );
+        } else {
+            return(
+                <span>(Click on a row for more information)</span>
+            );
+        }
+
     }
 
     async getInstrumentInfo() {
@@ -380,6 +404,16 @@ class InstrumentDetailView extends Component {
         )
     }
 
+    makeDownloadCertPopup() {
+        return(
+            <DownloadCertificatePopup
+                isShown={this.state.downloadCertPopup.isShown}
+                onClose={this.onDownloadCertificateClose}
+                onSubmit={this.onDownloadCertificateSubmit}
+            />
+        )
+    }
+
     makeWizardPopup() {
         return (
             <Wizard
@@ -421,6 +455,7 @@ class InstrumentDetailView extends Component {
                 user={this.props.user}
                 instrument_pk={this.state.instrument_info.pk}
                 model_pk={this.state.instrument_info.model_pk}
+                calibratorCategories={this.state.instrument_info.calibrator_categories.map(x => x.name)}
             />
         )
     }
@@ -437,6 +472,8 @@ class InstrumentDetailView extends Component {
     makeCalibrationPopup() {
         return(
             <CalibrationPopup
+                instrument_name={`${this.state.instrument_info.vendor} ${this.state.instrument_info.model_number}`}
+                asset_tag={this.state.instrument_info.asset_tag}
                 calibrationEvent={this.state.calibrationPopup.calEvent}
                 currentUser={this.props.user}
                 isApprovalForm={this.state.calibrationPopup.isApprovalForm}
@@ -540,14 +577,25 @@ class InstrumentDetailView extends Component {
 
     onShowCalibrationPopup(calEvent) {
         const isApprover = hasApprovalAccess(this.props.user.permissions_groups);
-        this.setState({
-            calibrationPopup: {
-                ...this.state.calibrationPopup,
-                isShown: true,
-                calEvent: calEvent,
-                isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
-            }
-        })
+        console.log(this.isOtherModalShowing());
+        if(!this.isOtherModalShowing()) {
+            this.setState({
+                calibrationPopup: {
+                    ...this.state.calibrationPopup,
+                    isShown: true,
+                    calEvent: calEvent,
+                    isApprovalForm: (isApprover && calEvent.approval_status === 'Pending')
+                },
+            })
+        }
+    }
+
+    isOtherModalShowing() {
+        const isLoadBankShowing = this.state.wizardPopup.isShown;
+        const isGuidedCalShowing = this.state.guidedCalPopup.isShown;
+        const isFormCalShown = this.state.formCalPopup.isShown;
+        const isDisplayFormCalShown = this.state.displayFormCalPopup.isShown;
+        return isLoadBankShowing || isGuidedCalShowing || isFormCalShown || isDisplayFormCalShown;
     }
 
     onCalibrationPopupClose() {
@@ -587,12 +635,13 @@ class InstrumentDetailView extends Component {
     }
 
     async onAddCalibrationSubmit(calibrationEvent) {
+        console.log(calibrationEvent.calibratorInstruments);
         if (this.isFileSizeGood(calibrationEvent.file)) {
             this.setState({
                 isLoading: true,
                 isSubmitEnabled: false,
             }, async () => {
-                    await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file, calibrationEvent.calibratorInstruments)
+                await instrumentServices.addCalibrationEvent(this.state.instrument_info.pk, calibrationEvent.date, calibrationEvent.comment, calibrationEvent.file, calibrationEvent.calibratorInstruments)
                     .then((result) => {
                         if (result.success) {
                             this.getInstrumentInfo();
@@ -748,6 +797,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.formCalPopup,
                 isShown: true,
                 pk: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -770,6 +823,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.displayFormCalPopup,
                 pk: e.target.value,
                 isShown: true,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -780,7 +837,7 @@ class InstrumentDetailView extends Component {
                 ...this.state.displayFormCalPopup,
                 pk: null,
                 isShown: false,
-            }
+            },
         })
     }
 
@@ -799,6 +856,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.wizardPopup,
                 isShown: true,
                 lbPK: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -820,6 +881,10 @@ class InstrumentDetailView extends Component {
                 ...this.state.guidedCalPopup,
                 isShown: true,
                 pk: null,
+            },
+            calibrationPopup: {
+                ...this.state.calibrationPopup,
+                isShown: false,
             }
         })
     }
@@ -836,14 +901,32 @@ class InstrumentDetailView extends Component {
         this.getCalHistory();
     }
 
-    async onCertificateRequested(e) {
-        instrumentServices.getCalibrationPDF(this.state.instrument_info.pk)
+    onDownloadCertificateClick() {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: true,
+            }
+        })
+    }
+    onDownloadCertificateClose() {
+        this.setState({
+            downloadCertPopup: {
+                ...this.state.downloadCertPopup,
+                isShown: false,
+            }
+        })
+    }
+
+    async onDownloadCertificateSubmit(hasChainOfTruth) {
+        await instrumentServices.getCalibrationPDF(this.state.instrument_info.pk, hasChainOfTruth)
             .then((result) => {
                 if (result.success) {
                     let date = dateToString(new Date());
                     nameAndDownloadFile(result.url, `${date}-${this.state.instrument_info.asset_tag}-calibration-certificate`, result.type);
                 }
-            })
+            });
+        this.onDownloadCertificateClose();
     }
 
     async onPaginationClick(num) {

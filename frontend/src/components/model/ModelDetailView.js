@@ -78,6 +78,11 @@ class ModelDetailView extends React.Component {
     }
 
     async componentDidMount() {
+        if(window.sessionStorage.getItem('formModelMade') === 'true')
+        {
+            window.sessionStorage.removeItem('formModelMade')
+            this.onFormClicked();
+        }
         await this.updateModelInfo();
         await this.getInstruments();
     }

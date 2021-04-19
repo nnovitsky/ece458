@@ -183,6 +183,10 @@ takes up the rest of the space
     filter: alpha(opacity = 100);
 }
 
+.ct-instrument-column {
+    width: 15%;
+}
+
 .ct-cal-column {
     width: 120px;
 }

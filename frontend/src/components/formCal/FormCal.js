@@ -10,6 +10,7 @@ import HeaderGroup from './formGroups/HeaderGroup.js';
 import DatePicker from 'react-datepicker';
 import { dateToString } from '../generic/Util';
 import FormCalServices from "../../api/formCalServices";
+import CalibratedWithInput from '../instrument/CalibratedWithInput.js';
 
 const formCalServices = new FormCalServices();
 
@@ -23,9 +24,11 @@ class FormCal extends React.Component {
             date_string: dateToString(new Date()),
             date_object: new Date(),
             comment: '',
-            instrument_pk: this.props.instrument_pk,
+            instrument_pk: props.instrument_pk,
             model_pk: this.props.model_pk,
             cal_event_pk: '',
+            calibrator_instruments: [],
+            calibrator_categories: this.props.calibratorCategories,
         }
 
         this.onNumericInput = this.onNumericInput.bind(this);
@@ -36,6 +39,7 @@ class FormCal extends React.Component {
         this.submitForm = this.submitForm.bind(this);
         this.getForm = this.getForm.bind(this);
         this.getLabel = this.getLabel.bind(this);
+        this.onCalibratorInstrumentsChange = this.onCalibratorInstrumentsChange.bind(this);
     }
 
     async componentDidMount() {
@@ -65,13 +69,23 @@ class FormCal extends React.Component {
     makeBody() {
         let formItems = this.makeForm();
         let introItems = this.makeIntro();
-        console.log(this.state.data)
-        return <div>
-            <Form style={{ height: "60vh", overflowY: "auto" }}>
+        return (<div>
+            <Form>
                 {introItems}
                 {formItems}
+                <CalibratedWithInput 
+                    onInstrumentChange={this.onCalibratorInstrumentsChange}
+                    calibratorCategories={this.state.calibrator_categories}
+                    instrumentPk={this.state.instrument_pk}
+                /> 
             </Form>
-        </div>
+        </div>)
+    }
+
+    onCalibratorInstrumentsChange(instrumentsArr){
+        this.setState({
+            calibrator_instruments: instrumentsArr
+        })
     }
 
     makeIntro() {
@@ -167,8 +181,11 @@ class FormCal extends React.Component {
                 } else {
                     if(result.errors.form_error){
                         let err = result.errors.form_error[0]
+                        let message;
+                        if(err.error.actual_string) { message = err.error.actual_string }
+                        else { message = err.error }
                         this.setState({
-                            errors: [`Invalid input for [${this.getLabel(err.index - 1)}]: ` + err.error]
+                            errors: [`Invalid input for [${this.getLabel(err.index - 1)}]: ` + message]
                         })
                     }
                 }
@@ -264,8 +281,8 @@ class FormCal extends React.Component {
     }
 
     onBoolInput(e) {
-        const newBool = e.target.checked;
         const id = e.target.id;
+        const newBool = !this.state.data[id].actual_bool;
         let data = this.state.data;
         let field = this.state.data[id]
         field.actual_bool = newBool

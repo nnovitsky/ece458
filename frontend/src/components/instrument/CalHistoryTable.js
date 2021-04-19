@@ -2,6 +2,7 @@ import React from 'react';
 import DataTable from '../generic/DataTable';
 import "../generic/ColumnSizeFormatting.css";
 import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
 
 import RejectedIcon from "../../assets/CalibrationIcons/Expired.png";
 import PendingIcon from "../../assets/CalibrationIcons/Warning.png";
@@ -28,11 +29,13 @@ import NonapplicableIcon from "../../assets/CalibrationIcons/Non-Calibratable.pn
 // requiresApproval: boolean if the table is going to be including requires approval
 // onRowClick: an event handler that will be called with the calibration event
 // hasApprovalPermissions: boolean if the pending should show a link
+// emptyTableText: string to be displayed if the table is empty
+// displayInstrumentInfo: optional that defaults to false
 const keyField = 'pk';
 
 const calHistoryTable = (props) => {
     let countStart = (props.pagination.page - 1) * props.pagination.sizePerPage + 1;
-    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.onFormClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick);
+    let config = makeConfig(countStart, props.onSupplementDownload, props.onLoadBankClick, props.onKlufeClick, props.onFormClick, props.requiresApproval, props.hasApprovalPermissions, props.onRowClick, props.displayInstrumentInfo);
     return (
         <DataTable
             data={props.data}
@@ -40,10 +43,9 @@ const calHistoryTable = (props) => {
             pagination={props.pagination}
             keyField={keyField}
             config={config}
-            noResults='No Calibration History'
+            noResults={props.emptyTableText}
             inlineElements={props.inlineElements}
             isHoverMessageDisplayed={false}
-            onRowClick={(row) => props.onRowClick(row)}
             rowClasses={rowClasses}
             striped={false}
         />
@@ -51,7 +53,7 @@ const calHistoryTable = (props) => {
 }
 
 const getApprovalStatusIcon = (approvalStatus) => {
-    switch(approvalStatus) {
+    switch (approvalStatus) {
         case 'Approved':
             return ApprovedIcon;
         case 'Rejected':
@@ -63,7 +65,7 @@ const getApprovalStatusIcon = (approvalStatus) => {
     }
 }
 
-let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, onFormClick, requiresApproval, hasApprovalPermissions, onRowClick) => {
+let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClick, onFormClick, requiresApproval, hasApprovalPermissions, onRowClick, displayInstrumentInfo) => {
     return (
         [
             // this is a column for a number for the table
@@ -80,7 +82,12 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                     return `#${rowNumber + 1}`;
                 },
                 formatExtraData: countStart,    // this is a way to pass in extra data (the fourth variable) to the formatter function
-                headerClasses: 'ct-num-column'
+                headerClasses: 'ct-num-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
             {
                 hidden: !requiresApproval,
@@ -88,25 +95,65 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 isKey: true,
                 text: 'Status',      //displayed column header text
                 title: (cell) => {   //formats the data and the returned is displayed in the cell
-                    return `Approval Status: ${cell}`
+                    switch (cell) {
+                        case 'NA':
+                            return 'Approval Status: Approved\nThis instrument was implicitly approved when the model was changed to requiring approval';
+                        default:
+                            return `Approval Status: ${cell}`
+                    }
                 },
                 formatter: (cell, row, rowIndex, hasApprovalPermissions) => {
-                    const style = (cell === 'Pending') ? {backgroundColor: 'yellow'} : {};
-                    return <div style={{ display: "flex", ...style }}>
-                        {cell}
-                    </div>;
+                    switch (cell) {
+                        case 'NA':
+                            return <span>Approved</span>
+                        default:
+                            return <div style={{ display: "flex" }}>
+                                {cell}
+                            </div>;
+                    }
+
+                },
+                style: (cell) => {
+                    if (cell === 'Pending') {
+                        return {
+                            backgroundColor: '#FFFF00'
+                        };
+                    }
                 },
                 formatExtraData: hasApprovalPermissions,
                 headerClasses: 'ct-status-column',
-                classes: 'ct-status-column'
+                classes: 'ct-status-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
+            },
+            {
+                dataField: 'instrument_name',
+                hidden: !displayInstrumentInfo,
+                text: 'Calibrated Instrument',
+                sort: false,
+                title: (cell, row) => `Calibrated Instrument: ${ cell }(${ row.asset_tag })\nClick for the instrument detail view`,
+                headerClasses: 'ct-instrument-column',
+                formatter: (cell, row) => {
+                    return(
+                        <Link className="green-link" to={`/instruments-detail/${row.instrument_pk}`}>{`${cell} (${row.asset_tag})`}</Link>
+                    )
 
+                },
             },
             {
                 dataField: 'date',
                 text: 'Date',
                 sort: false,
                 title: (cell) => `Calibration Date: ${cell}`,
-                headerClasses: 'ct-cal-column'
+                headerClasses: 'ct-cal-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
             {
                 dataField: 'file_type',
@@ -133,7 +180,7 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 formatter: ((cell, row) => {
                     switch (cell) {
                         case 'None':
-                            return <span style={{padding: "1px 3px 1px 3px"}}>-</span>;
+                            return <span style={{ padding: "1px 3px 1px 3px" }}>-</span>;
                         case 'Artifact':
                             return <Button onClick={onSupplementDownload} value={row.pk} className="data-table-button">Uploaded File</Button>
                         case 'Load Bank':
@@ -145,7 +192,14 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                         default:
                             return <span>N/A</span>
                     }
-                })
+                }),
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        if (row.file_type === 'None') {
+                            onRowClick(row)
+                        }
+                    },
+                },
             },
             {
                 dataField: 'user',
@@ -155,14 +209,50 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 headerClasses: 'ct-name-column',
                 formatter: (user) => {
                     return <span>{`${user.first_name} ${user.last_name}`}</span>
-                }
+                },
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
+
+            },
+            {
+                dataField: 'calibrated_by_instruments',
+                text: 'Calibrator Instruments',
+                sort: false,
+                title: (cell) => `Comment: ${cell}`,
+                headerClasses: 'ct-comment-column',
+                formatter: (cell) => {
+                    if(cell.length === 0) {
+                        return <span style={{ padding: "1px 3px 1px 3px" }}>-</span>;
+                    }
+                        return cell.map((el, index) => {
+                            return (<>
+                            <a href={`/instruments-detail/${el.instrument_pk}`} className="green-link">{`${el.instrument_name} (${el.asset_tag})`}</a>
+                            {index !== cell.length - 1 ? ', ' : null}
+                            </>)
+                        });
+                },
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        if (row.calibrated_by_instruments.length === 0) {
+                            onRowClick(row);
+                        }
+                    },
+                },
             },
             {
                 dataField: 'comment',
                 text: 'Comment',
                 sort: false,
                 title: (cell) => `Comment: ${cell}`,
-                headerClasses: 'ct-comment-column'
+                headerClasses: 'ct-comment-column',
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        onRowClick(row)
+                    },
+                },
             },
         ]
     )
@@ -171,17 +261,17 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
 const rowClasses = (row) => {
     let classes = 'can-click';
 
-   switch(row.approval_status) {
-       case 'Rejected':
+    switch (row.approval_status) {
+        case 'Rejected':
             classes += ' rejected-row';
             break;
         case 'Pending':
             classes += ' pending-row';
             break
         default:
-           classes += ' approved-row';
+            classes += ' approved-row';
             break
-   }
+    }
 
     return classes;
 };
@@ -190,5 +280,6 @@ export default calHistoryTable;
 
 calHistoryTable.defaultProps = {
     data: [],
-    inlineElements: <></>
+    inlineElements: <></>,
+    displayInstrumentInfo: false
 }

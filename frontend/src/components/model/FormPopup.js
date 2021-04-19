@@ -1,10 +1,7 @@
 import React, { Component, useState } from 'react';
-import Form from 'react-bootstrap/Form';
 import GenericPopup from '../generic/GenericPopup';
-import FormDnD from './FormDnD.js'
 import NewStep from './formObjects/NewStep.js'
 import Header from './formObjects/Header.js'
-import TextArea from './formObjects/TextArea.js'
 import PlainText from './formObjects/PlainText.js'
 import NumericInput from './formObjects/NumericInput.js'
 import TextInput from './formObjects/TextInput.js'
@@ -67,6 +64,8 @@ class FormPopup extends Component {
                 submitButtonVariant="primary"
                 errors={this.state.errors}
                 size={"xl"}
+                keyboard={false}
+                backdrop="static"
             />
         )
     }
@@ -145,6 +144,8 @@ class FormPopup extends Component {
                     if(err.error && err.error.label) message = err.error.label
                     else if(err.error && err.error.expected_max) message = err.error.expected_max
                     else if(err.error && err.error.expected_min) message = err.error.expected_min
+                    else if(err.error && err.error.plaintext) message = err.error.plaintext
+                    else if(err.error && err.error.expected_string) message = err.error.expected_string
                     else {
                         message = err.error
                     }

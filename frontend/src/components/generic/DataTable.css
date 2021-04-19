@@ -116,10 +116,16 @@
     cursor: pointer !important;
 }
 
+.can-click:hover {
+    background-color: rgba(65, 66, 68, 0.20);
+    padding: 10px !important;
+}
+
 .rejected-row {
-    opacity: 0.7; /* Real browsers */
-    filter: alpha(opacity = 70); /* MSIE */
+    opacity: 0.5; /* Real browsers */
+    filter: alpha(opacity = 50); /* MSIE */
     text-decoration: line-through;
+    background-color: rgba(65, 66, 68, 0.10);
 }
 
 .pending-row {
@@ -128,5 +134,5 @@
 }
 
 .approved-row {
-background-color: rgba(65, 66, 68, 0.1);
+
 }

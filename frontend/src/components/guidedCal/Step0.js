@@ -30,8 +30,10 @@ class Step0 extends React.Component {
                 instrument_pk: this.props.instrument_pk,
                 comment: '',
                 klufeAssetTag: '',
+                calibrated_with: [],
             },
             validKlufeMeter: false,
+            klufeInputDisabled: false,
             user: this.props.user
         }
 
@@ -39,6 +41,8 @@ class Step0 extends React.Component {
         this.createKlufeCal = this.createKlufeCal.bind(this);
         this.onCommentInput = this.onCommentInput.bind(this);
         this.onTextInput = this.onTextInput.bind(this);
+        this.getAssetTag = this.getAssetTag.bind(this);
+        this.getStatus = this.getStatus.bind(this);
 
     }
 
@@ -48,6 +52,7 @@ class Step0 extends React.Component {
 
 
     render() {
+        console.log(this.state.calInfo.klufeAssetTag)
         let body = this.makeBody();
         return (
             <Base
@@ -87,7 +92,7 @@ class Step0 extends React.Component {
                 </Form.Group>
                 <Form.Group className="form-inline">
                     <Form.Label className="col-sm-3 col-form-label">Klufe Calibrator Asset Tag:</Form.Label>
-                    <Form.Control className={this.state.validKlufeMeter ? "validated" : null} value={this.state.klufeAssetTag} onChange={this.onTextInput} ></Form.Control>
+                    <Form.Control className={this.state.validKlufeMeter && !this.state.klufeInputDisabled ? "validated" : null} disabled={this.state.klufeInputDisabled} value={this.state.calInfo.klufeAssetTag} onChange={this.onTextInput} ></Form.Control>
                     <Form.Label className="col-sm-3 col-form-label">Select a Date:</Form.Label>
                     <DatePicker className="datepicker" onChange={this.onDateChange} selected={this.state.calInfo.date_object} maxDate={new Date()} />
                 </Form.Group>
@@ -135,11 +140,19 @@ class Step0 extends React.Component {
                 if(result.data.is_valid === true){
                     this.setState({
                         validKlufeMeter: true,
+                        calInfo: {
+                            ...this.state.calInfo,
+                            calibrated_with: result.data.calibrated_by_instruments,
+                        },
                         errors: [],
                     })
                 } else {   
                     this.setState({
                         validKlufeMeter: false,
+                        calInfo: {
+                            ...this.state.calInfo,
+                            calibrated_with: []
+                        },
                         errors: [result.data.calibration_errors[0]],
                     })
                 }
@@ -150,7 +163,7 @@ class Step0 extends React.Component {
 
     async createKlufeCal() {
         if (this.state.klufePK === null) {
-            guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.calInfo.comment, this.state.user.userPK).then(result => {
+            guidedCalServices.createKlufeCal(Number(this.state.calInfo.instrument_pk), this.state.calInfo.date_string, this.state.calInfo.comment, this.state.user.userPK, this.state.calInfo.calibrated_with).then(result => {
                 if (result.success) {
                     this.props.setEventPKs(result.data.klufe_calibration.pk, result.data.klufe_calibration.cal_event_pk);
                     this.setState({
@@ -195,9 +208,25 @@ class Step0 extends React.Component {
                             date_string: result.data.cal_event.date,
                         }
                     })
+                    this.getAssetTag(result.data.cal_event.calibrated_by_instruments[0])
                 }
             })
         }
+    }
+
+    async getAssetTag(assetTag){
+        instrumentServices.getInstrument(assetTag).then(result => {
+            if(result.success){
+                this.setState({
+                    validKlufeMeter: true,
+                    klufeInputDisabled: true,
+                    calInfo: {
+                        ...this.state.calInfo,
+                        klufeAssetTag: result.data.asset_tag,
+                    }
+                })
+            }
+        })
     }
 }
 

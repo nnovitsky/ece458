@@ -197,6 +197,7 @@ input[type=number]::-webkit-inner-spin-button {
   background-color: white;
   height: min(15vh, 80px) !important;
   font-size: min(5vw, 15px);
+  overflow: auto;
 }
 
 .form-item-builder  .plain-text{
@@ -214,6 +215,8 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 10px;
   margin-left: 5px;
   font-style: italic !important;
+  overflow-x: none;
+  overflow: auto;
 }
 
 .required-field:after {

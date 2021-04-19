@@ -1,10 +1,6 @@
 
 import React from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Alert from 'react-bootstrap/Alert';
 import '../FormPopup.css'
-import { EditText } from 'react-edit-text';
-import 'react-edit-text/dist/index.css';
 
 
 class Item extends React.Component {

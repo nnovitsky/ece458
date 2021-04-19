@@ -120,7 +120,7 @@ def calibration_event_list(request):
         else:
             raw_string = request_data['calibrated_by_instruments'].lstrip('[').rstrip(']')
             calibrated_by_instruments = [int(pk) for pk in raw_string.split(',')]
-            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments, ins.pk)
 
             if valid_cal:
                 request_data['calibrated_by_instruments'] = calibrated_by_instruments
@@ -343,7 +343,7 @@ def models_list(request):
         request.data['calibrationmode_set'] = mode_pks
 
         default_cal_with = get_calibration_categories_from_mode(request)
-        if len(default_cal_with) != 0:
+        if len(default_cal_with) != 0 or ('calibration_modes' in request.data and 'custom_form' in request.data['calibration_modes']):
             if 'calibrator_categories_set' not in request.data:
                 request.data['calibrator_categories_set'] = default_cal_with
             else:
@@ -393,7 +393,11 @@ def models_detail(request, pk):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
         if 'calibration_modes' in request.data:
-            request.data['calibrator_categories_set'] = get_calibration_categories_from_mode(request)
+            default_cats = get_calibration_categories_from_mode(request)
+            if len(default_cats) > 0:
+                request.data['calibrator_categories_set'] = default_cats
+        else:
+            request.data['calibrator_categories_set'] = []
 
         request.data['calibrationmode_set'] = mode_pks
 
@@ -857,6 +861,8 @@ def cal_approval(request, cal_event_pk):
             return Response({"permission_error": ["User does not have permission."]}, status=status.HTTP_401_UNAUTHORIZED)
         if cal_event.approval_status != APPROVAL_STATUSES['pending']:
             return Response({"description": ["Calibration event does not need approval."]}, status=status.HTTP_400_BAD_REQUEST)
+        if 'approved' not in request.data:
+            return Response({"description": ["Approval status must be provided."]}, status=status.HTTP_400_BAD_REQUEST)
 
         approved = request.data.pop('approved')
         request.data['cal_event'] = cal_event_pk

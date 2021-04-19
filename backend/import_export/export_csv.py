@@ -5,13 +5,18 @@ import pytz
 import pandas as pd
 
 from django.http import FileResponse, HttpResponse
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
+
+from backend.config.admin_config import APPROVAL_STATUSES
 from backend.config.export_flags import MODEL_EXPORT, INSTRUMENT_EXPORT, ZIP_EXPORT
+from backend.tables.models import ItemModelCategory, CalibrationMode
 
 image_types = ['gif', 'jpg', 'png']
 model_headers = ['Vendor', 'Model-Number', 'Short-Description', 'Comment', 'Model-Categories',
-                 'Special-Calibration-Support', 'Calibration-Frequency']
+                 'Special-Calibration-Support', 'Calibration-Frequency', 'Calibration-Requires-Approval',
+                 'Calibrator-Categories', 'Custom-Form-Exists']
 instrument_headers = ['Vendor', 'Model-Number', 'Serial-Number', 'Asset-Tag', 'Comment', 'Calibration-Date',
                       'Calibration-Comment', 'Instrument-Categories', 'Calibration-Attachment-Type']
 
@@ -36,11 +41,39 @@ def get_cal_modes(model):
     return ""
 
 
+def get_cal_cats(model):
+    cal_cats = []
+    for cal_cat in ItemModelCategory.objects.filter(item_models=model.pk).values_list("name", flat=True):
+        cal_cats.append(cal_cat)
+
+    if len(cal_cats) == 0:
+        return ""
+    elif len(cal_cats) == 1:
+        return str(cal_cats[0])
+    else:
+        return " ".join(cal_cats)
+
+
 def write_model_sheet(db_models, buffer):
     model_list = []
     for db_model in db_models:
         model_categories = get_model_categories(db_model)
+        cal_cats = get_cal_cats(db_model)
         cal_modes = get_cal_modes(db_model)
+
+        if db_model.requires_approval:
+            approval = "Y"
+        else:
+            approval = ""
+
+        try:
+            CalibrationMode.objects.get(models=db_model.pk)
+            if CalibrationMode.objects.get(models=db_model.pk).name == 'custom_form':
+                custom_form = "Y"
+            else:
+                custom_form = ""
+        except CalibrationMode.DoesNotExist:
+            custom_form = ""
 
         model_row = [
             str(db_model.vendor),
@@ -49,7 +82,10 @@ def write_model_sheet(db_models, buffer):
             str(db_model.comment),
             model_categories,
             cal_modes,
-            str(db_model.calibration_frequency)
+            str(db_model.calibration_frequency),
+            approval,
+            cal_cats,
+            custom_form
         ]
         model_list.append(model_row)
 
@@ -88,7 +124,10 @@ def get_file_info(db_instrument):
 
 
 def check_calibration_type(instrument):
-    most_recent_cal = instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
+    no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+    approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+    most_recent_cal = \
+    instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1]
 
     if len(most_recent_cal) != 0:
         file_type = str(most_recent_cal[0].file_type).strip()
@@ -98,6 +137,8 @@ def check_calibration_type(instrument):
             return get_file_info(instrument)
         elif file_type == 'Klufe':
             return "Calibration via Klufe calibrator"
+        elif file_type == 'Form':
+            return "Calibration via custom form"
     return ""
 
 
@@ -113,7 +154,10 @@ def write_instrument_sheet(db_instruments, buffer):
             cal_date = ""
             cal_comment = ""
         else:
-            last_cal = db_instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
+            no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+            approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+            last_cal = \
+                db_instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date', '-pk')[:1]
             cal_date = '' if len(last_cal) == 0 else last_cal[0].date
             cal_comment = 'Requires calibration' if len(last_cal) == 0 else last_cal[0].comment
 

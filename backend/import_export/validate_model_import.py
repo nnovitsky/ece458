@@ -84,7 +84,9 @@ def validate_cal_cats(reader):
     cat_header = next(reader)
     db_cats = ItemModelCategory.objects.all().values_list('name', flat=True)
 
-    for category in reader[CALIBRATOR_CATS_INDEX]:
+    for row in reader:
+        category = row[CALIBRATOR_CATS_INDEX]
+
         if category.strip() == "":
             continue
 
@@ -99,11 +101,12 @@ def handler(uploaded_file):
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
 
-    cat_reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
-    valid_cal_cats, cal_cat_info = validate_cal_cats(cat_reader)
+
+    valid_cal_cats, cal_cat_info = validate_cal_cats(reader)
     if not valid_cal_cats:
         return False, cal_cat_info
 
+    uploaded_file.seek(0)
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
     if not has_valid_columns:

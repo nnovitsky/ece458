@@ -64,7 +64,7 @@ def get_cal_fields(row, load_bank_pk, klufe_pk):
 
 def get_model_category_set(row, db_categories):
     model_category_set = []
-    row_categories = row[CAL_CATEGORIES_INDEX].strip()
+    row_categories = row[MODEL_CATEGORIES_INDEX].strip()
 
     if len(row_categories) > 0:
         for category in row_categories.split(' '):
@@ -81,7 +81,7 @@ def get_model_category_set(row, db_categories):
 
 def get_cal_cats(row, db_categories):
     model_categories = []
-    row_categories = row[MODEL_CATEGORIES_INDEX].strip()
+    row_categories = row[CAL_CATEGORIES_INDEX].strip()
 
     if len(row_categories) > 0:
         for category in row_categories.split(' '):

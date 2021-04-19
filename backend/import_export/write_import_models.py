@@ -64,6 +64,21 @@ def get_cal_fields(row, load_bank_pk, klufe_pk):
 
 def get_model_category_set(row, db_categories):
     model_category_set = set()
+    row_categories = row[CAL_CATEGORIES_INDEX].strip()
+
+    if len(row_categories) > 0:
+        for category in row_categories.split(' '):
+            try:
+                category_pk = ItemModelCategory.objects.filter(name=category)[0].pk
+                model_category_set.add(category_pk)
+            except ItemModelCategory.DoesNotExist:
+                return [], f"Calibrator category ({category}) does not exist in database."
+
+    return model_category_set, None
+
+
+def get_cal_cats(row, db_categories):
+    model_category_set = set()
     row_categories = row[MODEL_CATEGORIES_INDEX].strip()
 
     if len(row_categories) > 0:
@@ -92,6 +107,9 @@ def get_model_list(file, load_bank_pk, klufe_pk, db_categories):
         cal_freq, cal_mode = get_cal_fields(row, load_bank_pk, klufe_pk)
         model_category_set = get_model_category_set(row, db_categories)
         requires_approval = row[REQUIRES_APPROVAL_INDEX] == 'Y'
+        cal_cats, error = get_cal_cats(row, db_categories)
+        if error is not None:
+            return []
 
         model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX], row[COMMENT_INDEX], cal_freq,
                       list(model_category_set), cal_mode, requires_approval]

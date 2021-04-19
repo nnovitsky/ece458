@@ -239,6 +239,14 @@ def check_instrument_is_calibrated(instrument_asset_tag):
         return "Instrument not calibrated.", None, None
 
 
+def check_lb_categories(instrument, instrument_field):
+    lb_instrument_categories = list(ItemModelCategory.objects.filter(item_models=instrument.item_model))
+    if instrument_field not in lb_instrument_categories:
+        return f"{instrument_field} not a category for item model of instrument {str(instrument)}"
+    else:
+        return None
+
+
 def get_calibration_mode_pks(request):
     mode_pks = []
     if 'calibration_modes' in request.data:

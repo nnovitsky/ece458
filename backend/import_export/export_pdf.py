@@ -20,7 +20,7 @@ from backend.config.klufe_config import VOLTAGE_LEVELS
 from backend.config.form_config import FORM_FIELDS
 from backend.tables.serializers import ListInstrumentReadSerializer
 from backend.tables.models import CalibrationEvent, LoadBankCalibration, LoadVoltage, LoadCurrent, KlufeCalibration, \
-                                  KlufeVoltageReading, CalibrationFormField
+                                  KlufeVoltageReading, CalibrationFormField, CalibrationApproval
 
 EXPECTED_FIELDS = [
     'Vendor',
@@ -58,6 +58,12 @@ custom_form_headers = [
     'Type of Input',
     'Prompt',
     'Reported Value'
+]
+
+approval_headers = [
+    'Date',
+    'User',
+    'Comment'
 ]
 
 FILE_TYPE_INDEX = 0
@@ -360,6 +366,28 @@ def get_custom_table(cal_pk):
     elements.append(form_table)
 
 
+def add_approval_table(cal_pk):
+    global elements
+
+    form_header = '<font size="14">%s</font>' % "Approval Data:"
+    elements.append(Paragraph(form_header, styles["Heading2"]))
+
+    cal_approval = CalibrationApproval.objects.get(cal_event=cal_pk)
+    user = cal_approval.approver
+    user_data = f"{user.get_full_name()}, ({user.username}, {user.email})"
+
+    approval_data = [approval_headers, [cal_approval.date, user_data, cal_approval.comment]]
+    approval_table = Table(approval_data)
+    approval_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (2, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (2, 0), colors.white),
+        ('FONTSIZE', (0, 0), (-1, -1), 12)
+    ]))
+
+    elements.append(approval_table)
+
+
 def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     global elements
     elements.clear()
@@ -388,6 +416,9 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
         text = '<font size="12">%s</font>' % line
         elements.append(Paragraph(text, styles["Normal"]))
         elements.append(Spacer(1, 10))
+
+    if CalibrationEvent.objects.get(pk=cal_pk).approval_status == APPROVAL_STATUSES['approved']:
+        add_approval_table(cal_pk)
 
     if cal_file_data[FILE_TYPE_INDEX] == 'Artifact' and is_image_file(cal_file_data[FILE_NAME_INDEX]):
         elements.append(Spacer(1, 10))

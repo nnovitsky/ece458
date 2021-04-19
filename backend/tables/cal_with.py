@@ -63,7 +63,7 @@ def get_calibrator_pks(instrument_pk):
     return []
 
 
-def validate_helper(calibrator_model_pk, instruments):
+def validate_helper(calibrator_model_pk, instruments, instrument_pk):
     valid_cats = ItemModelCategory.objects.all().filter(calibrated_with=calibrator_model_pk)
 
     for instrument in instruments:
@@ -78,7 +78,7 @@ def validate_helper(calibrator_model_pk, instruments):
         if not yes_valid_instruments:
             return False, f"Calibrator instrument {instrument_name} is out of calibration."
 
-    cycle_exists = check_for_cycle(calibrator_model_pk, get_calibrator_pks(calibrator_model_pk))
+    cycle_exists = check_for_cycle(calibrator_model_pk, get_calibrator_pks(instrument_pk))
     if cycle_exists:
         return False, "Calibration creates circular dependency."
 

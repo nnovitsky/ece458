@@ -120,7 +120,7 @@ def calibration_event_list(request):
         else:
             raw_string = request_data['calibrated_by_instruments'].lstrip('[').rstrip(']')
             calibrated_by_instruments = [int(pk) for pk in raw_string.split(',')]
-            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments)
+            valid_cal, error = cal_with.validate_helper(ins.item_model.pk, calibrated_by_instruments, ins.pk)
 
             if valid_cal:
                 request_data['calibrated_by_instruments'] = calibrated_by_instruments

@@ -118,7 +118,7 @@ class App extends Component {
             username: result.data.user.username,
             permissions_groups: result.data.user.groups,
             userPK: result.data.user.pk,
-            irst_name: result.data.first_name,
+            first_name: result.data.first_name,
             last_name: result.data.last_name
           }
         });

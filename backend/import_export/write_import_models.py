@@ -63,23 +63,8 @@ def get_cal_fields(row, load_bank_pk, klufe_pk):
 
 
 def get_model_category_set(row, db_categories):
-    model_category_set = set()
+    model_category_set = []
     row_categories = row[CAL_CATEGORIES_INDEX].strip()
-
-    if len(row_categories) > 0:
-        for category in row_categories.split(' '):
-            try:
-                category_pk = ItemModelCategory.objects.filter(name=category)[0].pk
-                model_category_set.add(category_pk)
-            except ItemModelCategory.DoesNotExist:
-                return [], f"Calibrator category ({category}) does not exist in database."
-
-    return model_category_set, None
-
-
-def get_cal_cats(row, db_categories):
-    model_category_set = set()
-    row_categories = row[MODEL_CATEGORIES_INDEX].strip()
 
     if len(row_categories) > 0:
         for category in row_categories.split(' '):
@@ -89,9 +74,24 @@ def get_cal_cats(row, db_categories):
                 db_categories.append(category)
 
             category_pk = ItemModelCategory.objects.filter(name=category)[0].pk
-            model_category_set.add(category_pk)
+            model_category_set.append(category_pk)
 
     return model_category_set
+
+
+def get_cal_cats(row, db_categories):
+    model_categories = []
+    row_categories = row[MODEL_CATEGORIES_INDEX].strip()
+
+    if len(row_categories) > 0:
+        for category in row_categories.split(' '):
+            if category not in db_categories:
+                return [], f"DB model write error: calibrator_category ({category}) does not exist in the DB."
+
+            category_pk = ItemModelCategory.objects.filter(name=category)[0].pk
+            model_categories.append(category_pk)
+
+    return model_categories, None
 
 
 def get_model_list(file, load_bank_pk, klufe_pk, db_categories):
@@ -112,7 +112,8 @@ def get_model_list(file, load_bank_pk, klufe_pk, db_categories):
             return []
 
         model_info = [row[VENDOR_INDEX], row[MODEL_NUM_INDEX], row[DESC_INDEX], row[COMMENT_INDEX], cal_freq,
-                      list(model_category_set), cal_mode, requires_approval]
+                      model_category_set, cal_mode, requires_approval, cal_cats]
+        print("model_info: ", model_info)
         model_records.append(dict(zip(model_keys, model_info)))
 
     return model_records
@@ -127,9 +128,15 @@ def handler(verified_file):
         with transaction.atomic():
             model_data = get_model_list(verified_file, load_bank_pk, klufe_pk, db_categories)
             db_model_upload = ItemModelSerializer(data=model_data, many=True)
-            if db_model_upload.is_valid(): upload_results = db_model_upload.save()
+            print("db_model_upload length: ", len(model_data))
+            if db_model_upload.is_valid():
+                upload_results = db_model_upload.save()
+            else:
+                # print("serializer errors: ", db_model_upload.errors)
+                return False, None, "Error serializing data."
     except IOError:
         return False, None, f"Error writing models to db: {db_model_upload.errors}"
 
     upload_summary = f"Successfully wrote {len(model_data)} model(s) to the database."
+    print("upload_summary: ", upload_summary)
     return True, upload_results, upload_summary

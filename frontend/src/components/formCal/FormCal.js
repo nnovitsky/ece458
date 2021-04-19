@@ -29,6 +29,7 @@ class FormCal extends React.Component {
             cal_event_pk: '',
             calibrator_instruments: [],
             calibrator_categories: this.props.calibratorCategories,
+            enableSubmit: true,
         }
 
         this.onNumericInput = this.onNumericInput.bind(this);
@@ -59,7 +60,7 @@ class FormCal extends React.Component {
                 onSubmit={this.submitForm}
                 submitButtonVariant="primary"
                 errors={this.state.errors}
-                isPrimaryEnabled={true}
+                isPrimaryButtonEnabled={this.state.enableSubmit}
                 keyboard={false}
                 backdrop="static"
             />
@@ -162,8 +163,16 @@ class FormCal extends React.Component {
                 if (result.success) {
                     this.setState({
                         data: result.data,
-                        errors: []
+                        errors: [],
+                        enableSubmit: true,
                     })
+                } else{
+                    if(result.errors.form_error){
+                        this.setState({
+                            errors: [result.errors.form_error + " The form has not been created or was deleted."],
+                            enableSubmit: false,
+                        })
+                    }
                 }
 
             })

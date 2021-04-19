@@ -161,7 +161,7 @@ const makeApprovalNoInfoSection = (calEvent) => {
             <hr />
             <Form className="popup">
                 <h4 >Approval Event: {statusSpan}</h4>
-            <span>This calibration was implicitly approved when the model was changed to require approval</span>
+                <span>This calibration was implicitly approved when the model was changed to require approval</span>
             </Form>
         </>
     );
@@ -176,33 +176,69 @@ const makeApprovalSection = (calEvent, approvalState, dispatch) => {
             <Form className="popup">
                 <h4 hidden={isApprovalForm}>Approval Event: {statusSpan}</h4>
                 <h4 hidden={!isApprovalForm}>Approval Section:</h4>
-                <Form.Group>
-                    <Row>
+                {isApprovalForm ? (
+                    <>
+                        <Form.Group>
+                            <Row>
 
 
-                        <Col md={7}>
-                            <Form.Label className="">Engineer:</Form.Label>
-                            <Form.Control readOnly="readonly" type="text" value={`${approvalState.user.first_name} ${approvalState.user.last_name}`} />
-                        </Col>
-                        <Col>
-                            <Form.Label>Date:</Form.Label>
-                            <Form.Control readOnly="readonly" type="text" value={calEvent.date} />
-                        </Col>
+                                <Col md={7}>
+                                    <Form.Label className="">Engineer:</Form.Label>
+                                    <Form.Control readOnly="readonly" type="text" value={`${approvalState.user.first_name} ${approvalState.user.last_name}`} />
+                                </Col>
+                                <Col>
+                                    <Form.Label>Date:</Form.Label>
+                                    <Form.Control readOnly="readonly" type="text" value={calEvent.date} />
+                                </Col>
 
-                    </Row>
-                </Form.Group>
-                <Form.Label hidden={!isApprovalForm}>Action:</Form.Label>
-                <div hidden={!isApprovalForm}>
-                    <Form.Check label="Approve" type='radio' id={`inline-radio-1`} checked={approvalState.isApproved ? true : false} onChange={() => dispatch({ type: 'is_approve', payload: true })} />
-                    <Form.Check label="Reject" type='radio' id={`inline-radio-2`} checked={approvalState.isApproved === false ? true : false} onChange={() => dispatch({ type: 'is_approve', payload: false })} />
-                </div>
-                <Form.Group>
-                    <Form.Label>Comment:</Form.Label>
-                    <Form.Control as="textarea" readOnly={isApprovalForm ? '' : 'readonly'} rows={3} onChange={(e) => dispatch({ type: 'comment', payload: e.target.value })} value={approvalState.comment}/>
-                    <Form.Text muted hidden={!isApprovalForm}>
-                        Max 2000 characters
+                            </Row>
+                        </Form.Group>
+                        <Form.Label hidden={!isApprovalForm}>Action:</Form.Label>
+                        <div hidden={!isApprovalForm}>
+                            <Form.Check label="Approve" type='radio' id={`inline-radio-1`} checked={approvalState.isApproved ? true : false} onChange={() => dispatch({ type: 'is_approve', payload: true })} />
+                            <Form.Check label="Reject" type='radio' id={`inline-radio-2`} checked={approvalState.isApproved === false ? true : false} onChange={() => dispatch({ type: 'is_approve', payload: false })} />
+                        </div>
+                        <Form.Group>
+                            <Form.Label>Comment:</Form.Label>
+                            <Form.Control as="textarea" readOnly={isApprovalForm ? '' : 'readonly'} rows={3} onChange={(e) => dispatch({ type: 'comment', payload: e.target.value })} value={approvalState.comment} />
+                            <Form.Text muted hidden={!isApprovalForm}>
+                                Max 2000 characters
                     </Form.Text>
-                </Form.Group>
+                        </Form.Group>
+                    </>
+                ) : (
+                    <>
+                    <Table bordered>
+                        <tbody>
+                            <tr>
+                                <td><strong>Engineer</strong></td>
+                                    <td>{`${approvalState.user.first_name} ${approvalState.user.last_name}`}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Date</strong></td>
+                                <td>{calEvent.date}</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                            <Table size="sm" bordered>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Comments</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div className="detail-view-comment">
+                                                {approvalState.comment !== '' ? approvalState.comment : 'None Entered'}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                            </>
+                )}
+
             </Form>
         </>
     );
@@ -210,7 +246,7 @@ const makeApprovalSection = (calEvent, approvalState, dispatch) => {
 
 function getSpanStatusColored(approvalStatus) {
     let color;
-    switch(approvalStatus) {
+    switch (approvalStatus) {
         case 'Rejected':
             color = 'red';
             break;
@@ -223,7 +259,7 @@ function getSpanStatusColored(approvalStatus) {
         default:
             color = 'auto';
     };
-    return <span style={{color: color}}>{approvalStatus}</span>
+    return <span style={{ color: color }}>{approvalStatus}</span>
 }
 
 function onSubmit(approvalState, dispatch, parentSubmit) {
@@ -247,7 +283,7 @@ function reducer(state, action) {
             return { ...state, user: action.payload }
         case 'is_approve':
             return { ...state, isApproved: action.payload };
-        case 'has_approval_section': 
+        case 'has_approval_section':
             return { ...state, hasApprovalSection: action.payload };
         case 'is_approval_form':
             return { ...state, isApprovalForm: action.payload };
@@ -262,7 +298,7 @@ const getEmptyState = () => {
     return (
         {
             comment: '',
-            isApproved: null,
+            isApproved: true,
             isApprovalForm: false,
             hasApprovalSection: true,
             date: '',

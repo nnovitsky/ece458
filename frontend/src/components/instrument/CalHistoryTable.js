@@ -221,7 +221,11 @@ let makeConfig = (countStart, onSupplementDownload, onLoadBankClick, onKlufeClic
                 dataField: 'calibrated_by_instruments',
                 text: 'Calibrator Instruments',
                 sort: false,
-                title: (cell) => `Comment: ${cell}`,
+                title: (cell, row) => {
+                    const mapped = cell.map((el, index) => {
+                        return (`${el.instrument_name} (${el.asset_tag})`)});
+                    return `Calibrator Instruments: ${mapped.join(', ')}`;
+                },
                 headerClasses: 'ct-comment-column',
                 formatter: (cell) => {
                     if(cell.length === 0) {

@@ -4,6 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from backend.tables.models import ItemModel, Instrument, ItemModelCategory
+from backend.tables.graph import Graph
+from backend.config.admin_config import APPROVAL_STATUSES
+
+
+valid_status = [
+    APPROVAL_STATUSES['approved'],
+    APPROVAL_STATUSES['pending'],
+    APPROVAL_STATUSES['no_approval']
+]
 
 
 def check_instrument_cal_status(calibrator_pk):
@@ -34,6 +43,26 @@ def check_categories(calibrator_pk, valid_cats):
     return valid_calibrator
 
 
+def get_calibrator_pks(instrument_pk):
+    instrument = Instrument.objects.get(pk=instrument_pk)
+    cal_events = instrument.calibrationevent_set.order_by('-date', '-pk')[:1]
+    if cal_events.count() == 0:
+        return []
+    elif cal_events.count() == 1 and cal_events[0].approval_status == APPROVAL_STATUSES['rejected']:
+        return []
+    elif cal_events.count() == 1:
+        if cal_events[0].calibrated_by_instruments.all().count() == 0:
+            return []
+        else:
+            return cal_events[0].calibrated_by_instruments.values_list('pk', flat=True)
+    else:
+        for cal_event in cal_events.all():
+            if cal_event.approval_status in valid_status:
+                return list(cal_event.calibrated_by_instruments.all())
+
+    return []
+
+
 def validate_helper(calibrator_model_pk, instruments):
     valid_cats = ItemModelCategory.objects.all().filter(calibrated_with=calibrator_model_pk)
 
@@ -49,7 +78,45 @@ def validate_helper(calibrator_model_pk, instruments):
         if not yes_valid_instruments:
             return False, f"Calibrator instrument {instrument_name} is out of calibration."
 
+    cycle_exists = check_for_cycle(calibrator_model_pk, get_calibrator_pks(calibrator_model_pk))
+    if cycle_exists:
+        return False, "Calibration creates circular dependency."
+
     return True, ""
+
+
+def check_for_cycle_helper(instrument_pk, edges, unique_nodes):
+    if instrument_pk not in unique_nodes:
+        unique_nodes.append(instrument_pk)
+
+    calibrator_pks = get_calibrator_pks(instrument_pk)
+    if len(calibrator_pks) > 0:
+        for pk in calibrator_pks:
+            edges.append([instrument_pk, pk])
+            edges, unique_nodes = check_for_cycle_helper(pk, edges, unique_nodes)
+
+    return edges, unique_nodes
+
+
+def check_for_cycle(instrument_pk, calibrator_pks):
+    if instrument_pk in calibrator_pks:
+        return True
+
+    edges = []
+    unique_nodes = [instrument_pk]
+
+    for pk in calibrator_pks:
+        edges.append([instrument_pk, pk])
+        edges, unique_nodes = check_for_cycle_helper(pk, edges, unique_nodes)
+
+    graph = Graph(len(unique_nodes))
+    for edge in edges:
+        if edge[0] == edge[1]:
+            return True
+
+        graph.add_edge(edge[0], edge[1])
+
+    return graph.is_cyclic()
 
 
 def handler(errors, valid_cats, instruments, pks):
@@ -65,6 +132,10 @@ def handler(errors, valid_cats, instruments, pks):
         instrument_in_cal = check_instrument_cal_status(calibrator_pk)
         if not instrument_in_cal:
             errors.append(f"Calibration instrument {Instrument.objects.get(pk=calibrator_pk)} is out of calibration.")
+
+    cycle_exists = check_for_cycle(instrument_pk, instruments)
+    if cycle_exists:
+        errors.append("Calibration creates circular dependency.")
 
     if len(errors) != 0:
         return Response({"is_valid": False, "calibration_errors": errors},

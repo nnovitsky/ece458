@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from backend.tables.models import *
 from backend.tables.serializers import *
-from backend.tables.utils import check_instrument_is_calibrated, validate_lb_cal
+from backend.tables.utils import check_instrument_is_calibrated, validate_lb_cal, check_lb_categories
 from backend.config.load_bank_config import LOAD_LEVELS
 
 
@@ -68,6 +68,9 @@ def update_lb_cal_field(request, lb_cal_pk):
             error, instrument, exp_date = check_instrument_is_calibrated(asset_tag)
             if error:
                 return Response({"loadbank_error": [error]}, status=status.HTTP_400_BAD_REQUEST)
+            category_error = check_lb_categories(instrument, instrument_field)
+            if category_error:
+                return Response({"loadbank_error": [category_error]}, status=status.HTTP_400_BAD_REQUEST)
             request.data[instrument_field + '_asset_tag'] = asset_tag
             request.data[instrument_field + '_vendor'] = instrument.item_model.vendor
             request.data[instrument_field + '_model_num'] = instrument.item_model.model_number

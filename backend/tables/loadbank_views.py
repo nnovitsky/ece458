@@ -62,6 +62,7 @@ def update_lb_cal_field(request, lb_cal_pk):
         return Response({"loadbank_error": ["Loadbank calibration event does not exist."]}, status=status.HTTP_404_NOT_FOUND)
 
     exp_dates = {}
+    calibrator_instruments = {}
     for instrument_field in ['voltmeter', 'shunt_meter']:
         if instrument_field in request.data:
             asset_tag = request.data.pop(instrument_field)
@@ -71,11 +72,14 @@ def update_lb_cal_field(request, lb_cal_pk):
             category_error = check_lb_categories(instrument, instrument_field)
             if category_error:
                 return Response({"loadbank_error": [category_error]}, status=status.HTTP_400_BAD_REQUEST)
+            calibrator_instruments[instrument_field] = instrument.pk
+
             request.data[instrument_field + '_asset_tag'] = asset_tag
             request.data[instrument_field + '_vendor'] = instrument.item_model.vendor
             request.data[instrument_field + '_model_num'] = instrument.item_model.model_number
             exp_dates[instrument_field] = exp_date
 
+    lb_cal.cal_event.calibrated_with = calibrator_instruments.values()
     request.data['cal_event'] = lb_cal.cal_event.pk
     serializer = LBCalSerializer(lb_cal, data=request.data)
     if serializer.is_valid():

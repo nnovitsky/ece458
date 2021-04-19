@@ -8,7 +8,8 @@ Please upload a “.csv” file that contains the following seven headers locate
 <li>Model-Categories</li>
 <li>Special-Calibration-Support</li>
 <li>Calibration-Frequency</li>
-</ul>
+<li>Calibration-Requires-Approval</li>
+<li>Calibrator-Categories</li></ul>
 All subsequent rows must contain the appropriate information that falls under the correct column and corresponds to the desired models to upload. Every field is required except for those that fall under the ‘Comment’ column. A model that does not require calibration should have a ‘N/A’ as its calibration frequency. 
 All fields are case-sensitive; models and model categories with different capitalization will be considered different items. Uploaded models that have already been uploaded to the system will cause an upload error. Model categories that do not exist will be created upon import. Failure to adhere to these format requirements will result in a failed upload.
 <br></br>

@@ -85,13 +85,13 @@ def validate_cal_cats(reader):
     db_cats = ItemModelCategory.objects.all().values_list('name', flat=True)
 
     for row in reader:
-        category = row[CALIBRATOR_CATS_INDEX]
+        categories = row[CALIBRATOR_CATS_INDEX].split(' ')
+        for category in categories:
+            if category.strip() == "":
+                continue
 
-        if category.strip() == "":
-            continue
-
-        if category not in db_cats:
-            return False, f"{category} referenced as a calibrator category does not exist."
+            if category not in db_cats:
+                return False, f"{category} referenced as a calibrator category does not exist."
 
     return True, ""
 
@@ -107,6 +107,7 @@ def handler(uploaded_file):
         return False, cal_cat_info
 
     uploaded_file.seek(0)
+    reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
     if not has_valid_columns:

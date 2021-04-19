@@ -275,6 +275,9 @@ class ModelDetailView extends React.Component {
     async onEditSubmit(editedModel) {
         await modelServices.editModel(editedModel.pk, editedModel.vendor, editedModel.model_number, editedModel.description, editedModel.comment, editedModel.calibration_frequency, editedModel.categories, editedModel.calibration_modes, editedModel.calibrator_categories_set, editedModel.requires_approval).then(result => {
             if (result.success) {
+                if(editedModel.calibration_modes.includes('custom_form') && !this.state.model_info.calibration_modes.includes('custom_form')){ 
+                    this.onFormClicked();
+                 }
                 this.setState({
                     deletePopup: {
                         ...this.state.deletePopup,

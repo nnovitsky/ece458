@@ -6,6 +6,7 @@ from backend.tables.models import *
 from backend.tables.serializers import *
 from backend.tables.utils import check_instrument_is_calibrated, validate_lb_cal, check_lb_categories
 from backend.config.load_bank_config import LOAD_LEVELS
+from backend.tables.cal_with import check_for_cycle
 
 
 @api_view(['POST'])
@@ -69,17 +70,30 @@ def update_lb_cal_field(request, lb_cal_pk):
             error, instrument, exp_date = check_instrument_is_calibrated(asset_tag)
             if error:
                 return Response({"loadbank_error": [error]}, status=status.HTTP_400_BAD_REQUEST)
+
             category_error = check_lb_categories(instrument, instrument_field)
             if category_error:
                 return Response({"loadbank_error": [category_error]}, status=status.HTTP_400_BAD_REQUEST)
+
             calibrator_instruments[instrument_field] = instrument.pk
+            yes_cycle = check_for_cycle(lb_cal.cal_event.instrument , [instrument.pk])
+            if yes_cycle:
+                return Response({"loadbank_error": [f"instrument ({asset_tag}) causes cycle."]},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             request.data[instrument_field + '_asset_tag'] = asset_tag
             request.data[instrument_field + '_vendor'] = instrument.item_model.vendor
             request.data[instrument_field + '_model_num'] = instrument.item_model.model_number
             exp_dates[instrument_field] = exp_date
 
-    lb_cal.cal_event.calibrated_with = calibrator_instruments.values()
+            current_ins_asset = getattr(lb_cal, instrument_field + '_asset_tag')
+            if current_ins_asset:
+                current_ins = Instrument.objects.get(asset_tag=current_ins_asset)
+                lb_cal.cal_event.calibrated_by_instruments.remove(current_ins)
+
+            lb_cal.cal_event.calibrated_by_instruments.add(instrument)
+            lb_cal.cal_event.save()
+
     request.data['cal_event'] = lb_cal.cal_event.pk
     serializer = LBCalSerializer(lb_cal, data=request.data)
     if serializer.is_valid():

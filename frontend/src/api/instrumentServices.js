@@ -432,8 +432,13 @@ export default class InstrumentServices {
             success: true,
             url: [],
         }
-
-        const url = `${API_URL}/api/export_calibration_event_pdf/${pk}`;
+        let url;
+        if(hasChainOfTruth) {
+            url = `${API_URL}/api/export_calibration_event_pdf_chain/${pk}`;
+        } else {
+            url = `${API_URL}/api/export_calibration_event_pdf/${pk}`;
+        }
+        
         return fetch(url, {
             method: 'GET',
             headers: {

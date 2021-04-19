@@ -18,6 +18,7 @@ column_types = [
 
 VENDOR_INDEX = 0
 MODEL_NUM_INDEX = 1
+CALIBRATOR_CATS_INDEX = 8
 
 sheet_models = []
 sheet_categories = []
@@ -79,10 +80,29 @@ def contains_duplicates():
     return False, "No Duplicates!"
 
 
+def validate_cal_cats(reader):
+    cat_header = next(reader)
+    db_cats = ItemModelCategory.objects.all().values_list('name', flat=True)
+
+    for category in reader[CALIBRATOR_CATS_INDEX]:
+        if category.strip() == "":
+            continue
+
+        if category not in db_cats:
+            return False, f"{category} referenced as a calibrator category does not exist."
+
+    return True, ""
+
+
 def handler(uploaded_file):
     sheet_models.clear()
     uploaded_file.seek(0)
     reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
+
+    cat_reader = csv.reader(io.StringIO(uploaded_file.read().decode('utf-8-sig')))
+    valid_cal_cats, cal_cat_info = validate_cal_cats(cat_reader)
+    if not valid_cal_cats:
+        return False, cal_cat_info
 
     headers = next(reader)
     has_valid_columns, header_log = field_validators.validate_column_headers(headers, column_types)
@@ -90,6 +110,7 @@ def handler(uploaded_file):
         return False, header_log
 
     row_number = 1
+
     for row in reader:
         valid_row, row_info = validate_row(row)
         if not valid_row:

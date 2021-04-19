@@ -38,7 +38,8 @@ class ItemModelTests(TestCase):
             "description": "a test model",
             "comment": "my comment",
             "calibration_frequency": 180,
-            "itemmodelcategory_set": []
+            "itemmodelcategory_set": [],
+            "calibration_modes": []
         }
 
     def test_model_create_auth(self):

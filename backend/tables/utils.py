@@ -227,7 +227,9 @@ def check_instrument_is_calibrated(instrument_asset_tag):
     cal_frequency = instrument.item_model.calibration_frequency
     if cal_frequency < 1:
         return "Instrument not calibratable.", None, None
-    last_cal = instrument.calibrationevent_set.order_by('-date')[:1]
+    no_approval_filter = Q(approval_status=APPROVAL_STATUSES['no_approval'])
+    approved_filter = Q(approval_status=APPROVAL_STATUSES['approved'])
+    last_cal = instrument.calibrationevent_set.filter(no_approval_filter | approved_filter).order_by('-date')[:1]
     if len(last_cal) > 0:
         last_cal = last_cal[0]
         exp_date = last_cal.date + datetime.timedelta(cal_frequency)

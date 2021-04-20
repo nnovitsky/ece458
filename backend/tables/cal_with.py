@@ -177,6 +177,6 @@ def handler(errors, valid_cats, instruments, pks):
     ins = Instrument.objects.get(pk=calibrator_pk)
     return Response({"is_valid": True,
                      "calibrated_by_instruments": instruments,
-                     "instrument_name": f"{str(ins.item_model)} {ins.asset_tag}"
+                     "instrument_name": f"{str(ins.item_model)}"
                      },
                      status=status.HTTP_200_OK)

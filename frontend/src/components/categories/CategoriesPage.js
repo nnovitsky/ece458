@@ -481,7 +481,7 @@ class CategoriesPage extends Component {
                             }
                         })
                     }
-                    else if (result.errors.delete_error !== undefined && result.errors.delete_error.includes('Category is not empty.')) {
+                    else if (result.errors.delete_error !== undefined) {
                         console.log('includes non empty error');
                         this.setState({
                             deletePopup: {

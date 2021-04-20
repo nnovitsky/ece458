@@ -342,7 +342,17 @@ def get_custom_form_data(cal_pk):
             expected_value = form_test.expected_string
         elif field_type == FORM_FIELDS['float_input']:
             reported_value = form_test.actual_float
-            expected_value = f"Min: {form_test.expected_min}\nMax: {form_test.expected_max}"
+            yes_min = form_test.expected_min is not None
+            yes_max = form_test.expected_max is not None
+            if yes_min and yes_max:
+                expected_value = f"Min: {form_test.expected_min}\nMax: {form_test.expected_max}"
+            elif yes_max and not yes_min:
+                expected_value = f"Max: {form_test.expected_max}"
+            elif yes_min and not yes_max:
+                expected_value = f"Min: {form_test.expected_min}"
+            else:
+                expected_value = "NA"
+
         elif field_type == FORM_FIELDS['bool_input']:
             reported_value = form_test.actual_bool
             expected_value = "True"
@@ -350,14 +360,14 @@ def get_custom_form_data(cal_pk):
             reported_value = ""
 
         label = Paragraph(str(form_test.label), styleN)
-        entry = Paragraph(str(reported_value), styleN)
+        # entry = Paragraph(str(reported_value), styleN)
 
 
         cleaned_data.append([
             str(index+1),
             field_type,
             label,
-            entry,
+            str(reported_value),
             expected_value
         ])
 

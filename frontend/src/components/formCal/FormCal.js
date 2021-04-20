@@ -273,7 +273,10 @@ class FormCal extends React.Component {
 
     onTextInput(e) {
         const newText = e.target.value;
-        const id = e.target.id;
+        console.log(e)
+        console.log(e.target)
+        console.log(e.target.name)
+        const id = Number(e.target.name);
         let data = this.state.data;
         data[id]['actual_string'] = newText
 

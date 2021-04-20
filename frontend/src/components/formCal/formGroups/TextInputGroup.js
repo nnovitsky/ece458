@@ -7,7 +7,7 @@ const textInputGroup = (props) => {
     return (
         <Form.Group style={{overflow: 'auto'}}>
             <Form.Label>{props.label}</Form.Label>
-            <Form.Control id={props.id} value={props.value} onChange={props.onChange} style={{width: "90%", marginLeft: "5px"}}></Form.Control>
+            <Form.Control name={props.id} value={props.value} onChange={props.onChange} style={{width: "90%", marginLeft: "5px"}}></Form.Control>
             <Form.Label className="subtext">{text}</Form.Label>
         </Form.Group>
     )

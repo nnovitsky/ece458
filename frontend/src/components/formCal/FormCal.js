@@ -70,8 +70,9 @@ class FormCal extends React.Component {
     makeBody() {
         let formItems = this.makeForm();
         let introItems = this.makeIntro();
-        return (<div>
+        return (<div style={{height: "65vh", overflow: "auto"}}>
             <Form>
+                <p>Scroll to enter all inputs for the form calibration.<br></br></p>
                 {introItems}
                 {formItems}
                 <CalibratedWithInput 

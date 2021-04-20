@@ -29,6 +29,7 @@ const CalibratedWithInput = (props) => {
             <Form.Text muted>Calibrator Categories: {props.calibratorCategories.join(', ')}</Form.Text>
             <InputGroup noValidate style={{padding: '0px'}}>
                 <FormControl
+                style={{margin: '0px'}}
                     required
                     type="text"
                     placeholder="Asset Tag"

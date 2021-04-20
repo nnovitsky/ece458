@@ -157,7 +157,7 @@ class App extends Component {
               username: json.user.username,
               permissions_groups: json.user.groups,
               userPK: json.user.pk,
-              irst_name: json.user.first_name,
+              first_name: json.user.first_name,
               last_name: json.user.last_name
             }
           });

@@ -21,6 +21,8 @@ class Graph():
                 elif stack[neighbor]:
                     return True
 
+        print("stack: ", stack)
+        print("visited: ", visited)
         stack[v] = False
         return False
 

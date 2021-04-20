@@ -125,6 +125,7 @@ const onTextInput = async (text, dispatch, calibratorState) => {
             await instrumentServices.validateCalibratorInstrument(instrumentPk, text).then((result) => {
                 if (result.success) {
                     if (result.data.is_valid) {
+                        console.log(result);
                         const currentInstrument = {
                             instrument_pk: result.data.calibrated_by_instruments[0],
                             asset_tag: text,

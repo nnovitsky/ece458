@@ -58,7 +58,7 @@ custom_form_headers = [
     'Order Inputted',
     'Type of Input',
     'Prompt',
-    'Reported Value'
+    'Entry'
 ]
 
 approval_headers = [
@@ -76,6 +76,7 @@ cal_with_headers = [
 FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
 styles = getSampleStyleSheet()
+styleN = styles["BodyText"]
 elements = []
 
 
@@ -346,11 +347,15 @@ def get_custom_form_data(cal_pk):
         else:
             reported_value = ""
 
+        label = Paragraph(str(form_test.label), styleN)
+        entry = Paragraph(str(reported_value), styleN)
+
+
         cleaned_data.append([
             str(index+1),
             field_type,
-            str(form_test.label),
-            str(reported_value)
+            label,
+            entry
         ])
 
     return cleaned_data

@@ -230,7 +230,7 @@ def validate_calibrator_instruments(request):
     calibration_errors = []
 
     try:
-        instrument_pk = request.data['instrument_pk']
+        instrument_pk = int(request.data['instrument_pk'])
         item_model_pk = Instrument.objects.get(pk=instrument_pk).item_model.pk
     except Instrument.DoesNotExist:
         calibration_errors.append(f"No instrument associated with primary key provided ({request.data['instrument_pk']}) "
@@ -238,7 +238,7 @@ def validate_calibrator_instruments(request):
 
     for asset_tag in request.data['calibrator_asset_tags']:
         try:
-            calibrator_instruments.append(Instrument.objects.get(asset_tag=asset_tag).pk)
+            calibrator_instruments.append(Instrument.objects.get(asset_tag=int(asset_tag)).pk)
         except Instrument.DoesNotExist:
             calibration_errors.append(f"Instrument corresponding to provided asset tag {asset_tag} does not exist.")
 
@@ -396,8 +396,6 @@ def models_detail(request, pk):
             default_cats = get_calibration_categories_from_mode(request)
             if len(default_cats) > 0:
                 request.data['calibrator_categories_set'] = default_cats
-        else:
-            request.data['calibrator_categories_set'] = []
 
         request.data['calibrationmode_set'] = mode_pks
 

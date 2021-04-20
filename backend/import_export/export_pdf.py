@@ -459,6 +459,10 @@ def fill_pdf(buffer, fields, cal_file_data, cal_pk):
     if CalibrationEvent.objects.get(pk=cal_pk).calibrated_by_instruments.count() > 0:
         instruments_used = CalibrationEvent.objects.get(pk=cal_pk).calibrated_by_instruments.all()
         add_cal_with_table(cal_pk, instruments_used)
+    else:
+        text = '<font size="12">%s</font>' % "No instruments used during calibration."
+        elements.append(Paragraph(text, styles["Italic"]))
+        elements.append(Spacer(1, 10))
 
     if CalibrationEvent.objects.get(pk=cal_pk).approval_status == APPROVAL_STATUSES['approved']:
         add_approval_table(cal_pk)

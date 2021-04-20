@@ -89,7 +89,7 @@ export default class FormCalServices {
     }
 
 
-    async submitFormData(instrument_pk, date, comment, form)
+    async submitFormData(instrument_pk, date, comment, categories, form)
     {
         const token = window.sessionStorage.getItem('token');
 
@@ -101,7 +101,8 @@ export default class FormCalServices {
         let cal_event = {
             instrument: Number(instrument_pk),
             date: date,
-            comment: comment
+            comment: comment,
+            calibrated_by_instruments: categories, 
         }
 
         let data = {

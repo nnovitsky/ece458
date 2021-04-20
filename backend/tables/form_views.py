@@ -4,6 +4,7 @@ from rest_framework import status
 from backend.tables.models import *
 from backend.tables.serializers import *
 from backend.config.form_config import *
+from backend.tables import cal_with
 
 
 @api_view(['GET', 'POST'])
@@ -72,6 +73,13 @@ def submit_form(request):
     if itemmodel.requires_approval:
         cal_event_data['approval_status'] = APPROVAL_STATUSES['pending']
 
+    if 'calibrated_by_instruments' in request.data:
+        valid_cal, error = cal_with.validate_helper(itemmodel.pk, request.data['calibrated_by_instruments'], ins.pk)
+        if not valid_cal:
+            return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        request.data['calibrated_by_instruments'] = []
+
     cal_serializer = CalibrationEventWriteSerializer(data=cal_event_data)
     if not cal_serializer.is_valid():
         return Response(cal_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -137,7 +145,7 @@ def validate_new_form(fields, model_pk):
             unexpected_fields = ALL_FIELDS - ALL_FLOAT_FIELDS
             min = field['expected_min'] if 'expected_min' in field else None
             max = field['expected_max'] if 'expected_max' in field else None
-            if min and max and min > max:
+            if (min == 0 or min) and (max == 0 or max) and min > max:
                 errors.append({'index': field['index'], 'error': "Min cannot be greater than max."})
         elif field['fieldtype'] == FORM_FIELDS['text_input']:
             unexpected_fields = ALL_FIELDS - ALL_TEXT_FIELDS
@@ -192,7 +200,7 @@ def validate_form_submit(fields):
                 max = field['expected_max'] if 'expected_max' in field else None
                 if val != 0 and not val:
                     errors.append({'index': field['index'], 'error': "Value cannot be empty."})
-                elif (min and val < min) or (max and val > max):
+                elif ((min == 0 or min) and val < min) or ((max == 0 or max) and val > max):
                     errors.append({'index': field['index'], 'error': "Value is outside acceptable range."})
                 else:
                     field['value_okay'] = True

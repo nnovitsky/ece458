@@ -4,6 +4,7 @@ from rest_framework import status
 from backend.tables.models import *
 from backend.tables.serializers import *
 from backend.config.form_config import *
+from backend.tables import cal_with
 
 
 @api_view(['GET', 'POST'])
@@ -71,6 +72,13 @@ def submit_form(request):
 
     if itemmodel.requires_approval:
         cal_event_data['approval_status'] = APPROVAL_STATUSES['pending']
+
+    if 'calibrated_by_instruments' in request.data:
+        valid_cal, error = cal_with.validate_helper(itemmodel.pk, request.data['calibrated_by_instruments'], ins.pk)
+        if not valid_cal:
+            return Response({"description": [error]}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        request.data['calibrated_by_instruments'] = []
 
     cal_serializer = CalibrationEventWriteSerializer(data=cal_event_data)
     if not cal_serializer.is_valid():

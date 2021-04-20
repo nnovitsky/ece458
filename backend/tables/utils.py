@@ -291,7 +291,6 @@ def default_categories():
             cat.save()
 
 
-
 def validate_lb_cal(lb_cal):
     expected_load_readings = {}
     for page in LOAD_LEVELS:

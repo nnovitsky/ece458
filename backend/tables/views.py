@@ -396,8 +396,6 @@ def models_detail(request, pk):
             default_cats = get_calibration_categories_from_mode(request)
             if len(default_cats) > 0:
                 request.data['calibrator_categories_set'] = default_cats
-        else:
-            request.data['calibrator_categories_set'] = []
 
         request.data['calibrationmode_set'] = mode_pks
 

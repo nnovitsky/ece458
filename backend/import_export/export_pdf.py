@@ -58,7 +58,8 @@ custom_form_headers = [
     'Order Inputted',
     'Type of Input',
     'Prompt',
-    'Entry'
+    'Entry',
+    'Expected Input'
 ]
 
 approval_headers = [
@@ -336,26 +337,38 @@ def get_custom_form_data(cal_pk):
         form_test = form_tests.filter(index=index+1)[0]
         field_type = str(form_test.fieldtype)
 
-        if field_type == FORM_FIELDS['plaintext']:
-            reported_value = form_test.plaintext
-        elif field_type == FORM_FIELDS['text_input']:
+        if field_type == FORM_FIELDS['text_input']:
             reported_value = form_test.actual_string
+            expected_value = form_test.expected_string
         elif field_type == FORM_FIELDS['float_input']:
             reported_value = form_test.actual_float
+            yes_min = form_test.expected_min is not None
+            yes_max = form_test.expected_max is not None
+            if yes_min and yes_max:
+                expected_value = f"Min: {form_test.expected_min}\nMax: {form_test.expected_max}"
+            elif yes_max and not yes_min:
+                expected_value = f"Max: {form_test.expected_max}"
+            elif yes_min and not yes_max:
+                expected_value = f"Min: {form_test.expected_min}"
+            else:
+                expected_value = "NA"
+
         elif field_type == FORM_FIELDS['bool_input']:
             reported_value = form_test.actual_bool
+            expected_value = "True"
         else:
             reported_value = ""
 
         label = Paragraph(str(form_test.label), styleN)
-        entry = Paragraph(str(reported_value), styleN)
+        # entry = Paragraph(str(reported_value), styleN)
 
 
         cleaned_data.append([
             str(index+1),
             field_type,
             label,
-            entry
+            str(reported_value),
+            expected_value
         ])
 
     return cleaned_data
@@ -371,8 +384,8 @@ def get_custom_table(cal_pk):
     form_table = Table(form_data)
     form_table.setStyle(TableStyle([
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('BACKGROUND', (0,0), (3,0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (3,0), colors.white),
+        ('BACKGROUND', (0,0), (4,0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (4,0), colors.white),
         ('BACKGROUND', (3, 1), (3, len(form_data)-1), colors.lightgreen),
         ('FONTSIZE', (0, 0), (-1, -1), 10)
     ]))
@@ -395,7 +408,6 @@ def add_cal_with_table(cal_pk, cal_instruments):
         for cat in ItemModelCategory.objects.filter(item_models=ins.item_model.pk):
             if cat in relevant_categories:
                 relevant_cats.append(cat.name)
-
 
         cal_with_data.append([str(ins.item_model), ins.asset_tag, ", ".join(relevant_cats)])
 

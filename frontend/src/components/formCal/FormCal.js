@@ -116,6 +116,7 @@ class FormCal extends React.Component {
 
     makeForm() {
         let form = []
+        console.log(this.state.data)
         for (let i = 0; i < this.state.data.length; i++) {
             let group;
             let formField = this.state.data[i];
@@ -161,6 +162,7 @@ class FormCal extends React.Component {
         formCalServices.getExistingForm(this.state.model_pk)
             .then(result => {
                 if (result.success) {
+                    console.log(result)
                     this.setState({
                         data: result.data,
                         errors: [],
@@ -179,7 +181,7 @@ class FormCal extends React.Component {
     }
 
     async submitForm() {
-        formCalServices.submitFormData(this.state.instrument_pk, this.state.date_string, this.state.comment, this.state.data)
+        formCalServices.submitFormData(this.state.instrument_pk, this.state.date_string, this.state.comment, this.state.calibrator_instruments, this.state.data)
             .then(result => {
                 if (result.success) {
                     this.setState({
@@ -245,8 +247,8 @@ class FormCal extends React.Component {
         const newVal = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        if(newVal !== '') data[id].actual_float = Number(newVal)
-        else data[id].actual_float = newVal
+        if(newVal !== '') data[id]['actual_float'] = Number(newVal)
+        else data[id]['actual_float'] = newVal
 
         this.setState({
             data: data
@@ -272,7 +274,7 @@ class FormCal extends React.Component {
         const newText = e.target.value;
         const id = e.target.id;
         let data = this.state.data;
-        data[id].actual_string = newText
+        data[id]['actual_string'] = newText
 
         this.setState({
             data: data
@@ -290,12 +292,14 @@ class FormCal extends React.Component {
     }
 
     onBoolInput(e) {
-        const id = e.target.id;
-        const newBool = !this.state.data[id].actual_bool;
+        const id = Number(e.target.id);
+        let newBool;
+        if(typeof(this.state.data[id].actual_bool) === 'undefined' || this.state.data[id].actual_bool === null)  { newBool = true; }
+        else { newBool = !this.state.data[id].actual_bool; }
         let data = this.state.data;
         let field = this.state.data[id]
-        field.actual_bool = newBool
-        data[id].actual_bool = newBool
+        field['actual_bool'] = newBool
+        data[id]['actual_bool'] = newBool 
 
         this.setState({
             data: data

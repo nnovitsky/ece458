@@ -70,8 +70,9 @@ class FormCal extends React.Component {
     makeBody() {
         let formItems = this.makeForm();
         let introItems = this.makeIntro();
-        return (<div>
+        return (<div style={{height: "65vh", overflow: "auto"}}>
             <Form>
+                <p>Scroll to enter all inputs for the form calibration.<br></br></p>
                 {introItems}
                 {formItems}
                 <CalibratedWithInput 
@@ -245,7 +246,10 @@ class FormCal extends React.Component {
 
     onNumericInput(e) {
         const newVal = e.target.value;
-        const id = e.target.id;
+        console.log(e)
+        console.log(e.target)
+        console.log(e.target.id)
+        const id = Number(e.target.id);
         let data = this.state.data;
         if(newVal !== '') data[id]['actual_float'] = Number(newVal)
         else data[id]['actual_float'] = newVal
@@ -272,7 +276,10 @@ class FormCal extends React.Component {
 
     onTextInput(e) {
         const newText = e.target.value;
-        const id = e.target.id;
+        console.log(e)
+        console.log(e.target)
+        console.log(e.target.name)
+        const id = Number(e.target.name);
         let data = this.state.data;
         data[id]['actual_string'] = newText
 
@@ -280,7 +287,7 @@ class FormCal extends React.Component {
             data: data
         })
 
-        if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string !== newText) {
+        if (data[id].expected_string !== '' && data[id].expected_string !== null && data[id].expected_string.toLowerCase() !== newText.toLowerCase()) {
             this.setState({
                 errors: [`Invalid input for [${this.getLabel(id)}]: Value does not match expected string.`]
             })
@@ -293,6 +300,9 @@ class FormCal extends React.Component {
 
     onBoolInput(e) {
         const id = Number(e.target.id);
+        console.log(e)
+        console.log(e.target)
+        console.log(e.target.id)
         let newBool;
         if(typeof(this.state.data[id].actual_bool) === 'undefined' || this.state.data[id].actual_bool === null)  { newBool = true; }
         else { newBool = !this.state.data[id].actual_bool; }

@@ -21,7 +21,7 @@ def check_instrument_cal_status(calibrator_pk):
     cal_frequency = instrument.item_model.calibration_frequency
 
     if cal_frequency < 1:
-        return True
+        return False
     cal_set = instrument.calibrationevent_set.order_by('-date')
     if len(cal_set) > 0:
         for cal in cal_set:

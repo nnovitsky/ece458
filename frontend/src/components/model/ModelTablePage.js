@@ -94,6 +94,10 @@ class ModelTablePage extends Component {
                 sortingIndicator: searchParams.sortingIndicator,
                 desiredPage: searchParams.desiredPage,
                 showAll: searchParams.showAll
+            },
+            pagination: {
+                ...this.state.pagination,
+                resultsPerPage: searchParams.perPage,
             }
         }, () => this.updateModelTable());
     }

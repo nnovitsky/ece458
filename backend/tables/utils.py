@@ -282,10 +282,6 @@ def get_calibration_categories_from_mode(request):
     return cal_cats
 
 
-
-    return cal_cats
-
-
 def default_categories():
     for def_cat in DEFAULT_CATEGORIES:
         try:

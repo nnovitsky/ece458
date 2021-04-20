@@ -67,12 +67,18 @@ approval_headers = [
     'User',
     'Comment'
 ]
+#
+# cal_with_headers = [
+#     'Vendor & Model Num.',
+#     'Asset Tag',
+#     'Relevant Categories'
+# ]
 
 cal_with_headers = [
     'Vendor & Model Num.',
-    'Asset Tag',
-    'Relevant Categories'
+    'Asset Tag'
 ]
+
 
 FILE_TYPE_INDEX = 0
 FILE_NAME_INDEX = 1
@@ -399,23 +405,24 @@ def add_cal_with_table(cal_pk, cal_instruments):
     form_header = '<font size="12">%s</font>' % "Calibration Instruments:"
     elements.append(Paragraph(form_header, styles["Heading2"]))
 
-    relevant_categories = ItemModelCategory.objects.all().filter(calibrated_with=CalibrationEvent.objects.get(pk=cal_pk)
-                                                                 .instrument.item_model)
-
+    # relevant_categories = ItemModelCategory.objects.all().filter(calibrated_with=CalibrationEvent.objects.get(pk=cal_pk)
+    #                                                              .instrument.item_model)
+    #
     cal_with_data = [cal_with_headers]
     for ins in cal_instruments:
-        relevant_cats = []
-        for cat in ItemModelCategory.objects.filter(item_models=ins.item_model.pk):
-            if cat in relevant_categories:
-                relevant_cats.append(cat.name)
-
-        cal_with_data.append([str(ins.item_model), ins.asset_tag, ", ".join(relevant_cats)])
+        cal_with_data.append([str(ins.item_model), ins.asset_tag])
+    #     relevant_cats = []
+    #     for cat in ItemModelCategory.objects.filter(item_models=ins.item_model.pk):
+    #         if cat in relevant_categories:
+    #             relevant_cats.append(cat.name)
+    #
+         # cal_with_data.append([str(ins.item_model), ins.asset_tag, ", ".join(relevant_cats)])
 
     cal_with_table = Table(cal_with_data)
     cal_with_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('BACKGROUND', (0, 0), (2, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (2, 0), colors.white),
+        ('BACKGROUND', (0, 0), (1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
         ('FONTSIZE', (0, 0), (-1, -1), 11)
     ]))
 
